@@ -41,7 +41,7 @@ jobs:
       - name: Create "docs" folder if it does not exits
         run: mkdir -p ./docs
       - name: Run deptrac
-        continue-on-error: true
+        continue-on-error: true # Deptrac returns 1 for some reason, even when there is no issue...
         run: vendor/bin/deptrac analyse --formatter=graphviz-image --output docs/diagram.png
       - name: Setup Pages
         uses: actions/configure-pages@v5
