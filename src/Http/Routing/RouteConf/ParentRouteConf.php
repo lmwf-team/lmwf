@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Http\Routing\RouteParam;
+namespace LM\WebFramework\Http\Routing\RouteConf;
 
 use InvalidArgumentException;
 
-final readonly class ParentRouteParam
+final readonly class ParentRouteConf
 {
     public function __construct(
         public array $routes = [],

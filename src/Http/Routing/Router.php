@@ -7,23 +7,19 @@ namespace LM\WebFramework\Http\Routing;
 use DomainException;
 use LM\WebFramework\ErrorHandling\Log;
 use LM\WebFramework\Http\Routing\Exception\RouteNotFoundException;
-use LM\WebFramework\Http\Routing\RouteParam\ParameterizedRouteParam;
-use LM\WebFramework\Http\Routing\RouteParam\ParentRouteParam;
+use LM\WebFramework\Http\Routing\RouteConf\ParamRouteConf;
+use LM\WebFramework\Http\Routing\RouteConf\ParentRouteConf;
 use LogicException;
 
 final readonly class Router
 {
     /**
-     * Convert an absolute path to a list of path segments.
+     * Convert an ABSOLUTE path to a list of path segments.
      * 
-     * A Path Segment is defined as the URL-decoded part of the path that is
-     * delimited by forward slash and that does not contain, before being
-     * decoded, any forward slash.
-     * However, if the absolute path is "/", the only path segment is "".
+     * A "path segment" is defined in the context of lmwf as the
+     * URL-decoded part of each path segment of the given absolute path.
      *
-     * @param string $path An absolute, valid URL-encoded HTTP path (as can be
-     * returned by PSR-7's getPath method) relative to the scheme, host and
-     * port.
+     * @param string $path An absolute, valid HTTP path.
      * @todo Use pipe operator!
      * @return array<string>
      */
@@ -62,22 +58,22 @@ final readonly class Router
     ): Route {
         Log::debug("Current seg is '{$currentSeg}', next segs are: [" . implode(', ', $nextSegs) . "].");
 
-        if ($routeDef->params instanceof ParameterizedRouteParam) {
+        if ($routeDef->conf instanceof ParamRouteConf) {
             $nArgs = count($nextSegs);
-            if ($nArgs < $routeDef->params->nArgsLowerLimit || $nArgs > $routeDef->params->nArgsUpperLimit) {
-                throw new RouteNotFoundException("No route could be found for segment. It does not have the correct number of arguments. ({$nArgs} when it should be between {$routeDef->params->nArgsLowerLimit} and {$routeDef->params->nArgsUpperLimit}.)");
+            if ($nArgs < $routeDef->conf->nArgsLowerLimit || $nArgs > $routeDef->conf->nArgsUpperLimit) {
+                throw new RouteNotFoundException("No route could be found for segment. It does not have the correct number of arguments. ({$nArgs} when it should be between {$routeDef->conf->nArgsLowerLimit} and {$routeDef->conf->nArgsUpperLimit}.)");
             }
             return new Route($routeDef, $currentSeg, $nextSegs, $parentRoute);
-        } elseif ($routeDef->params instanceof ParentRouteParam) {
+        } elseif ($routeDef->conf instanceof ParentRouteConf) {
             $route = new Route($routeDef, $currentSeg, [], $parentRoute);
             if ([] === $nextSegs) {
                 return $route;
             }
             $nextSeg = $nextSegs[0];
-            if (!key_exists($nextSeg, $routeDef->params->routes)) {
+            if (!key_exists($nextSeg, $routeDef->conf->routes)) {
                 throw new RouteNotFoundException("No child route could be found for segment: {$nextSeg}.");
             }
-            return $this->getRouteFromSegs($routeDef->params->routes[$nextSeg], $route, $nextSeg, array_slice($nextSegs, 1));
+            return $this->getRouteFromSegs($routeDef->conf->routes[$nextSeg], $route, $nextSeg, array_slice($nextSegs, 1));
         }
         throw new LogicException("Route type is not known.");
     }

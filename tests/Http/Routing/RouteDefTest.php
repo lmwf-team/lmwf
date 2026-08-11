@@ -6,8 +6,8 @@ namespace LM\WebFramework\Tests\Http\Routing;
 
 use InvalidArgumentException;
 use LM\WebFramework\Http\Routing\RouteDef;
-use LM\WebFramework\Http\Routing\RouteParam\ParentRouteParam;
-use LM\WebFramework\Http\Routing\RouteParam\ParameterizedRouteParam;
+use LM\WebFramework\Http\Routing\RouteConf\ParentRouteConf;
+use LM\WebFramework\Http\Routing\RouteConf\ParamRouteConf;
 use PHPUnit\Framework\TestCase;
 
 final class RouteDefTest extends TestCase
@@ -21,24 +21,24 @@ final class RouteDefTest extends TestCase
     public function testWithNoRouteId(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        new ParentRouteParam([new RouteDef(self::class)]);
+        new ParentRouteConf([new RouteDef(self::class)]);
     }
 
     public function testWithNegativeMinArgs(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        new ParameterizedRouteParam(-1);
+        new ParamRouteConf(-1);
     }
 
     public function testWithNegativeMaxArgs(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        new ParameterizedRouteParam(nArgsUpperLimit: -1);
+        new ParamRouteConf(nArgsUpperLimit: -1);
     }
 
     public function testWithMaxArgsLowerThanMinArgs(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        new ParameterizedRouteParam(nArgsLowerLimit: 3, nArgsUpperLimit: 1);
+        new ParamRouteConf(nArgsLowerLimit: 3, nArgsUpperLimit: 1);
     }
 }

@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace LM\WebFramework\Http\Routing;
 
 use InvalidArgumentException;
-use LM\WebFramework\Http\Routing\RouteParam\ParameterizedRouteParam;
-use LM\WebFramework\Http\Routing\RouteParam\ParentRouteParam;
+use LM\WebFramework\Http\Routing\RouteConf\ParamRouteConf;
+use LM\WebFramework\Http\Routing\RouteConf\ParentRouteConf;
 
 /**
- * Base class for route definitions.
+ * A route definition.
  *
  * It was necessary to introduce the dual concept of a route and of a route
  * definition. This is because some parts of the application are only concerned
@@ -30,7 +30,7 @@ final readonly class RouteDef
     public function __construct(
         public string $fqcn,
         public array $roles = [],
-        public ParentRouteParam|ParameterizedRouteParam $params = new ParameterizedRouteParam(),
+        public ParentRouteConf|ParamRouteConf $conf = new ParamRouteConf(),
     ) {
         foreach ($roles as $role) {
             if (!is_string($role)) {

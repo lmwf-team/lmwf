@@ -9,8 +9,8 @@ use LM\WebFramework\Http\Routing\Exception\InvalidRouteConfException;
 use LM\WebFramework\Http\Routing\Exception\OnlyChildCannotHaveSiblingsException;
 use LM\WebFramework\Http\Routing\Exception\SubRouteCannotAddRoleConfException;
 use LM\WebFramework\Http\Routing\Exception\UnauthorizedAttributeConfException;
-use LM\WebFramework\Http\Routing\RouteParam\ParameterizedRouteParam;
-use LM\WebFramework\Http\Routing\RouteParam\ParentRouteParam;
+use LM\WebFramework\Http\Routing\RouteConf\ParamRouteConf;
+use LM\WebFramework\Http\Routing\RouteConf\ParentRouteConf;
 use LM\WebFramework\Http\Routing\RouteDef;
 
 final readonly class RouteDefParser
@@ -76,7 +76,7 @@ final readonly class RouteDefParser
             return new RouteDef(
                 $fqcn,
                 $roles,
-                new ParameterizedRouteParam(
+                new ParamRouteConf(
                     $route[self::ARGS_MIN_KN] ?? 0,
                     $route[self::ARGS_MAX_KN] ?? 0,
                     $fqcnIfParams,
@@ -91,7 +91,7 @@ final readonly class RouteDefParser
         return new RouteDef(
             $fqcn,
             $roles,
-            new ParentRouteParam($routes),
+            new ParentRouteConf($routes),
         );
     }
 
