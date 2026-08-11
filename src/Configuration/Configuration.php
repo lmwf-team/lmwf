@@ -7,6 +7,9 @@ namespace LM\WebFramework\Configuration;
 use LM\WebFramework\DataStructures\AppObject;
 use LM\WebFramework\DataStructures\Factory\CollectionFactory;
 
+/**
+ * @todo Add appName setting.
+ */
 final class Configuration
 {
     public const string APP_PATH_KEY = "appPath";

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace LM\WebFramework\Http\Routing;
 
 use LM\WebFramework\Http\Routing\Exception\InvalidRouteConfException;
+use LM\WebFramework\Http\Routing\Exception\OnlyChildCannotHaveSiblingsException;
 use LM\WebFramework\Http\Routing\Exception\SubRouteCannotAddRoleConfException;
 use LM\WebFramework\Http\Routing\Exception\UnauthorizedAttributeConfException;
 
@@ -24,7 +25,7 @@ final readonly class RouteDefParser
     public function parse(array $route, array $parentRoles = [], bool $allowOverridingParentRoles = false): RouteDef
     {
         foreach ($route as $key => $_) {
-            if (!in_array($key, ['roles', 'fqcn', 'minArgs', 'maxArgs', 'routes'])) {
+            if (!in_array($key, ['roles', 'fqcn', 'minArgs', 'maxArgs', 'route', 'routes'])) {
                 throw new UnauthorizedAttributeConfException("Attribute '{$key}' is unknown and not allowed in a route definition.");
             }
         }
@@ -39,7 +40,17 @@ final readonly class RouteDefParser
             if (key_exists('routes', $route)) {
                 throw new InvalidRouteConfException("A route definition cannot both defines 'routes' and 'minArgs' or 'maxArgs'.");
             }
+            if (key_exists('route', $route)) {
+                throw new InvalidRouteConfException("A route definition cannot both defines 'route' and 'minArgs' or 'maxArgs'.");
+            }
             return new ParameterizedRoute($fqcn, $roles, $route['minArgs'] ?? 0, $route['maxArgs'] ?? 0);
+        }
+        if (key_exists('route', $route)) {
+            if (key_exists('routes', $route)) {
+                throw new OnlyChildCannotHaveSiblingsException("A route definition cannot both defines 'routes' and 'route'.");
+            }
+            $onlyChildRouteDef = $this->parse($route['route'], $roles);
+            return new OnlyChildParentRouteDef($fqcn, $onlyChildRouteDef, $roles);
         }
         $routes = [];
         foreach ($route['routes'] ?? [] as $subRouteId => $subRoute) {

@@ -5,8 +5,11 @@ declare(strict_types=1);
 namespace LM\WebFramework\Tests\Http\Routing;
 
 use LM\WebFramework\Http\Routing\Exception\InvalidRouteConfException;
+use LM\WebFramework\Http\Routing\Exception\OnlyChildCannotHaveSiblingsException;
+use LM\WebFramework\Http\Routing\Exception\OnlyChildMustTakeAtLeastOneArgument;
 use LM\WebFramework\Http\Routing\Exception\SubRouteCannotAddRoleConfException;
 use LM\WebFramework\Http\Routing\Exception\UnauthorizedAttributeConfException;
+use LM\WebFramework\Http\Routing\OnlyChildParentRouteDef;
 use LM\WebFramework\Http\Routing\ParameterizedRoute;
 use LM\WebFramework\Http\Routing\ParentRoute;
 use LM\WebFramework\Http\Routing\RouteDef;
@@ -65,6 +68,20 @@ final class RouteParserTest extends TestCase
         $this->assertEquals($expected, $parser->parseJson(__DIR__ . "/resources/route_w_both.json"));
     }
 
+    public function testParsingInvalidOnlyChild0(): void
+    {
+        $parser = new RouteDefParser;
+        $this->expectException(OnlyChildCannotHaveSiblingsException::class);
+        $parser->parseJson(__DIR__ . "/resources/invalid_only_child_0.json");
+    }
+
+    public function testParsingInvalidOnlyChild1(): void
+    {
+        $parser = new RouteDefParser;
+        $this->expectException(OnlyChildMustTakeAtLeastOneArgument::class);
+        $parser->parseJson(__DIR__ . "/resources/invalid_only_child_1.json");
+    }
+
     public function testParsingInvalidRoute(): void
     {
         $parser = new RouteDefParser;
@@ -91,5 +108,16 @@ final class RouteParserTest extends TestCase
         $parser = new RouteDefParser;
         $this->expectException(UnauthorizedAttributeConfException::class);
         $parser->parseJson(__DIR__ . "/resources/route_w_extra_2.json");
+    }
+
+    public function testParsingOnlyChildParent(): void
+    {
+        $expected = new OnlyChildParentRouteDef(
+            "App\Controller\RouteController",
+            new ParameterizedRoute("App\Controller\SubRouteController", minArgs: 1, maxArgs: 1),
+        );
+        $parser = new RouteDefParser;
+        $routeDef = $parser->parseJson(__DIR__ . "/resources/route_w_only_child.json");
+        $this->assertEquals($expected, $routeDef);
     }
 }
