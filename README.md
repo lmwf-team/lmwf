@@ -1,4 +1,4 @@
-[![PHPUnit](https://github.com/lmwf-team/lmwf/actions/workflows/php.yml/badge.svg)](https://github.com/lmwf-team/lmwf/actions/workflows/php.yml)
+[![PHPUnit](https://github.com/lmwf-team/lmwf/actions/workflows/php-ci.yml/badge.svg)](https://github.com/lmwf-team/lmwf/actions/workflows/php-ci.yml)
 [![PHPStan](https://github.com/lmwf-team/lmwf/actions/workflows/phpstan.yml/badge.svg)](https://github.com/lmwf-team/lmwf/actions/workflows/phpstan.yml)
 
 # lmwf
