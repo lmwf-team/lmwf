@@ -10,14 +10,16 @@
          displayDetailsOnPhpunitDeprecations="true"
          failOnPhpunitDeprecation="true"
          failOnRisky="true"
-         failOnWarning="true">
+         failOnWarning="true"
+         stopOnFailure="false"
+         >
     <testsuites>
         <testsuite name="default">
             <directory>../../tests</directory>
         </testsuite>
     </testsuites>
 
-    <source ignoreIndirectDeprecations="true" restrictNotices="true" restrictWarnings="true">
+    <source ignoreIndirectDeprecations="true">
         <include>
             <directory>../../src</directory>
         </include>

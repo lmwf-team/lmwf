@@ -16,4 +16,4 @@ jobs:
       - uses: ./.github/actions/set-up-repository
 
       - name: Run PHPStan
-        run: vendor/bin/phpstan analyse -c dev/phpstan/phpstan.neon -qn --no-progress
+        run: ./dev/phpstan/phpstan.sh -qn --no-progress
