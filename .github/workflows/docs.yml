@@ -49,7 +49,6 @@ jobs:
           phpdoc
       - uses: actions/download-artifact@v8
         continue-on-error: true
-        artifact-ids: coverage
         run-id: ${{ github.event.workflow_run.id }}
         with:
           name: coverage
