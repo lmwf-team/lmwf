@@ -18,7 +18,7 @@ final readonly class Router
      */
     public function getRouteFromPath(string $path): InstantiatedRoute|ParentRoute
     {
-        $segs = array_filter(explode('/', $path), fn($value) => '' !== $value) |> array_values(...);
+        $segs = array_values(array_filter(explode('/', $path), fn($value) => '' !== $value));
         $nSegs = count($segs);
 
         $i = 0;
