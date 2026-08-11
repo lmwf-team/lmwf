@@ -25,7 +25,7 @@ class LoginView extends TemplateView
 	<body>
 		<?php $this->displayPageHeader('Login', $this->breadcrumb) ?>
 		<main>
-			<div class="main-black-transparent-background">
+			<div class="main-content-container">
 				<form>
 					<dl class="no-margin-top">
 						<dt>

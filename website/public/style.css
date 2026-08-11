@@ -1,10 +1,26 @@
+/*
+ * General
+ */
+
+body {
+    font-family: Caladea;
+}
+
+a:hover {
+    text-decoration: none;
+}
+
+/*
+ * Page Layout
+ */
+
 body {
     margin-left: 0;
     margin-right: 0;
     margin-top: 0;
     background: #ededed;
-    font-family: Caladea;
 }
+
 
 .breadcrumb {
     list-style-type: none;
@@ -21,39 +37,26 @@ body {
     background-repeat: no-repeat;
 }
 
-label {
-    display: block;
-}
 
-input[type=submit] {
-    display: block;
-}
-
-header > h1 {
+.website-title {
     background: #282828;
     margin-top: 0;
+    margin-bottom: 0;
     color: #ffffff;
     border-bottom: 0.5rem #600000 solid;
     box-sizing: border-box;
     padding-top: 1rem;
 }
 
-.main-black-transparent-background {
+.breadcrumb-content-container,
+.main-content-container {
     background: white;
     margin-left: 20%;
     margin-right: 20%;
     padding: 1rem;
 }
 
-.no-margin-top {
-    margin-top: 0;
-}
-
-.no-margin-bottom {
-    margin-bottom: 0;
-}
-
-.black-background {
+.website-title-content-container {
     background: #000000;
     margin-left: 20%;
     margin-right: 20%;
@@ -63,6 +66,14 @@ header > h1 {
     padding: 1rem;
 }
 
-a:hover {
-    text-decoration: none;
+/*
+ * Forms
+ */
+
+label {
+    display: block;
+}
+
+input[type=submit] {
+    display: block;
 }

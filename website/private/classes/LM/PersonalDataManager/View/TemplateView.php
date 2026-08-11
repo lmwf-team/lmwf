@@ -36,12 +36,12 @@ abstract class TemplateView implements IView
 	{
 ?>
 	<header>
-		<h1 class="no-margin-bottom">
-			<div class="black-background">
+		<h1 class="website-title">
+			<div class="website-title-content-container">
 				<?= $pageHeader ?>
 			</div>
 		</h1>
-		<div class="main-black-transparent-background">
+		<div class="breadcrumb-content-container">
 			<nav>
 				<ol class="breadcrumb">
 					<?php $this->displayAllBreadcrumbLis($breadcrumb) ?>
