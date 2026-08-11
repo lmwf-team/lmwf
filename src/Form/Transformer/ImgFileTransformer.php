@@ -58,7 +58,7 @@ final readonly class ImgFileTransformer implements IFormTransformer
     /**
      * @todo Handle multiple filenames.
      *
-     * @param array<string, mixed> $parsedPayload
+     * @param array<mixed> $parsedPayload
      */
     private function extractPreviousFilename(array $parsedPayload): ?string
     {

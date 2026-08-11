@@ -8,6 +8,7 @@ use Closure;
 use LMWF\Constraint\Value\IRangeConstraint;
 use LMWF\Constraint\Type\IModel;
 use Traversable;
+use LMWF\Form\Defaults\IDefaultCallable;
 
 /**
  * @phpstan-type fieldvalues iterable<array{text: string, value: int|string}>
@@ -15,9 +16,10 @@ use Traversable;
 readonly class FormFieldConf
 {
     /**
+     * @template T
      * @param ?IModel $model The data model for the field's value.
      * @param string $label The label to describe to the user the field.
-     * @param ?Closure $default A function to call with the submitted data to
+     * @param ?IDefaultCallable<T> $default A function to call with the submitted data to
      * set the value of the field in case no value was submitted.
      * @param FormFieldType $type The input type of the field.
      * @param null|fieldvalues $values All the values allowed for the field.
@@ -28,7 +30,7 @@ readonly class FormFieldConf
         public ?IModel $model,
         public string $label,
         public ?string $autocomplete,
-        public ?Closure $default,
+        public ?IDefaultCallable $default,
         public ?string $id,
         public bool $isRequired,
         public ?IRangeConstraint $rangeConstraint,

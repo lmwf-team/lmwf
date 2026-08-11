@@ -5,14 +5,15 @@ declare(strict_types=1);
 namespace LMWF\Form\Transformer;
 
 use UnexpectedValueException;
+use LMWF\Form\Defaults\IDefaultCallable;
 
 final class ArrayTransformer implements IFormTransformer
 {
     /**
      * @param array<string, IFormTransformer> $fieldTransformers
-     * @param array<string, callable> $fieldDefaults Array that can be
+     * @param array<string, IDefaultCallable<mixed>> $fieldDefaults Array that can be
      * empty. For any of the field defined in $fieldTransformers can be
-     * associated default callback, that sets its value in case its transformer
+     * associated default callable, that sets its value in case its transformer
      * evaluates to null.
      */
     public function __construct(
@@ -52,7 +53,7 @@ final class ArrayTransformer implements IFormTransformer
         }
         foreach ($nullFieldNames as $fieldName) {
             if (key_exists($fieldName, $this->fieldDefaults)) {
-                $formData[$fieldName] = $this->fieldDefaults[$fieldName]($formData);
+                $formData[$fieldName] = $this->fieldDefaults[$fieldName]->generateValue($formData);
             }
         }
         if (null !== $this->csrf) {

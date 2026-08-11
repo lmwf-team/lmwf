@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace LMWF\Session;
 
+use LMWF\DataStructures\Exceptions\UnexpectedPropertyType;
 use UnexpectedValueException;
 
 /**
@@ -98,6 +99,9 @@ final class SessionManager
     public function addMessage(string $msg): void
     {
         if (key_exists(self::MESSAGES, $this->data)) {
+            if (!is_array($this->data[self::MESSAGES]) || !array_is_list($this->data[self::MESSAGES])) {
+                throw new UnexpectedPropertyType(self::MESSAGES, 'array');
+            }
             $this->data[self::MESSAGES][] = $msg;
         } else {
             $this->data[self::MESSAGES] = [
@@ -113,7 +117,7 @@ final class SessionManager
     {
         if (key_exists(self::MESSAGES, $this->data)) {
             $msgs = $this->data[self::MESSAGES];
-            if (!array_is_list($msgs)) {
+            if (!is_array($msgs) || !array_is_list($msgs)) {
                 throw new UnexpectedValueException("Expected list of messages in session to be a list.");
             }
             foreach ($msgs as $msg) {

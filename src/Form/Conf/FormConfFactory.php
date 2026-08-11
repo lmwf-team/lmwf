@@ -16,6 +16,8 @@ use LMWF\Constraint\Type\ILengthModel;
 use LMWF\Constraint\Type\IModel;
 use LMWF\Constraint\Type\IntModel;
 use LMWF\Constraint\Type\StringModel;
+use LMWF\Form\Defaults\IDefaultCallable;
+use LMWF\Form\Defaults\SlugDefaultCallable;
 use UnexpectedValueException;
 
 /**
@@ -103,18 +105,13 @@ final readonly class FormConfFactory
     }
 
     /**
-     * @param Closure|array{slug: string} $callbackConf
+     * @param array{slug: non-decimal-int-string, ...} $defaultConf
+     * @return IDefaultCallable<mixed>
      * @todo Type hint with callable instead of Closure?
      */
-    private function getCallback(array|Closure $callbackConf): Closure
+    private function getCallback(array $defaultConf): IDefaultCallable
     {
-        if ($callbackConf instanceof Closure) {
-            return $callbackConf;
-        }
-        $slugCallbackConf = $callbackConf[self::DEFAULT_SLUG_KN];
-        return function ($values) use ($slugCallbackConf) {
-            return null !== $values[$slugCallbackConf] ? (new Slug($values[$slugCallbackConf], true))->__toString() : null;
-        };
+        return new SlugDefaultCallable($defaultConf[self::DEFAULT_SLUG_KN]);
     }
 
     /**

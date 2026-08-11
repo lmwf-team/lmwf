@@ -83,8 +83,9 @@ class CollectionFactory
      * Parse the given JSON file as an associative array.
      * 
      * @param string $filePath Path to the JSON file.
-     * @todo Return AppObject instead?
      * @return array<string, mixed>
+     * @todo Return AppObject instead?
+     * @todo Wait for PHPStan to fix issue and remove ignore of return.type.
      */
     public static function fromJson(string $filePath): array
     {
@@ -97,17 +98,10 @@ class CollectionFactory
             throw new UnexpectedValueException("Expected the decoded JSON to be an associative array.");
         }
 
-        // @todo duplicated code, again.
-        $onlyStringKeys = true;
-        foreach ($decoded as $key => $_) {
-            if (is_int($key)) {
-                $onlyStringKeys = false;
-                break;
-            }
-        }
-        if (!$onlyStringKeys) {
+        if (!array_all(array_keys($decoded), 'is_string')) {
             throw new UnexpectedValueException('Not all of the keys of the parsed JSON were strings.');
         }
+        // @phpstan-ignore return.type
         return $decoded;
     }
 }

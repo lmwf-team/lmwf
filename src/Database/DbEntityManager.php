@@ -59,7 +59,8 @@ final class DbEntityManager
                 if (array_is_list($pValue) && [] !== $pValue) {
                     throw new UnexpectedValueException('Cannot convert an app data list into DB data.');
                 }
-                // @phpstan-ignore argument.type
+                
+                // @phpstan-ignore argument.type, argument.type
                 $dbArray += $this->convertAppArrayIntoDbArray($pValue, prefix: $prefix . $pName);
             } else {
                 $dbArray[$prefix . $pName] = $this->convertAppVarToDbScalar($pValue);
