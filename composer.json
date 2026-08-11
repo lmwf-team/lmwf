@@ -5,7 +5,7 @@
             "role": "Developer"
         }
     ],
-    "name": "",
+    "name": "lmwf-team/lmwf",
     "description": "Lightweight web framework that doesn't require tons of dependencies and keeps you in control.",
     "autoload": {
         "psr-4": {
