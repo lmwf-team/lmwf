@@ -57,7 +57,7 @@ class FormFactory
             if (null !== $model->getStringConstraints()) {
                 foreach ($model->getStringConstraints() as $c) {
                     if ($c instanceof IUploadedImageConstraint) {
-                        return new FileTransformer($this->config->getUploadedFileFolder(), $name);
+                        return new FileTransformer($this->config->getPathOfUploadedFiles(), $name);
                     }
                 }
             }

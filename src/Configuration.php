@@ -34,6 +34,14 @@ class Configuration
         return $this->getSetting('homeUrl');
     }
 
+    public function getPathOfProjectDirectory(): string {
+        return $this->env['pathOfProjectDirectory'];
+    }
+
+    public function getPathOfUploadedFiles(): string {
+        return $this->env['pathOfUploadedFiles'];
+    }
+
     public function getPublicUrl(): string {
         return $this->getSetting('publicUrl');
     }
@@ -44,10 +52,6 @@ class Configuration
 
     public function getSetting(string $key): string {
         return $this->env[$key];
-    }
-
-    public function getUploadedFileFolder(): string {
-        return $this->env['uploadedFilesFolder'];
     }
 
     public function isDev(): bool {
