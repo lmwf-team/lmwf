@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace LM\WebFramework\Http;
 
-use LengthException;
-use LM\WebFramework\AccessControl\Clearance;
 use LM\WebFramework\Configuration\Configuration;
 use LM\WebFramework\Configuration\Exception\SettingNotFoundException;
 use LM\WebFramework\Controller\Exception\AccessDenied;
@@ -43,9 +41,6 @@ final class HttpRequestHandler
         try {
             $route = $this->configuration->getControllerFqcn($pathSegments);
 
-            /**
-             * @todo Define clearance in config
-             */
             if (false === $route['roles']['admins'] && $this->session->isUserLoggedIn()) {
                 throw new AlreadyAuthenticated();
             } elseif (false === $route['roles']['visitors'] && !$this->session->isUserLoggedIn()) {

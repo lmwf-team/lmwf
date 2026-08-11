@@ -4,12 +4,20 @@ declare(strict_types=1);
 
 namespace LM\WebFramework\Controller;
 
-use LM\WebFramework\AccessControl\Clearance;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
-/**
- * A Controller is a Response Generator for requests matching a defined
- * route.
- */
-interface IController extends IResponseGenerator
+interface IController
 {
+    /**
+     * @todo $serverParams was added so that the error could passed to
+     * and displayed by the error page, but actually it might have
+     * sufficed to have created an IErrorController interface or
+     * something like it.
+     */
+    public function generateResponse(
+        ServerRequestInterface $request,
+        array $routeParams,
+        array $serverParams,
+    ): ResponseInterface;
 }
