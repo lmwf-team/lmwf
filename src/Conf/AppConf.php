@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace LM\WebFramework\Conf;
 
-use InvalidArgumentException;
 use LM\WebFramework\Conf\Exception\CouldNotReadFileException;
 use LM\WebFramework\DataStructures\AppObject;
 use LM\WebFramework\DataStructures\Factory\CollectionFactory;
@@ -138,11 +137,11 @@ final class AppConf
     /**
      * @todo Add test.
      */
-    public function getSetting(string $key): string
+    public function getSetting(string $keyPath): string
     {
-        $path = explode('.', $key);
+        $keys = explode('.', $keyPath);
         $data = $this->confData;
-        foreach ($path as $key) {
+        foreach ($keys as $key) {
             $data = $data[$key];
         }
         return $data;
@@ -150,6 +149,6 @@ final class AppConf
 
     public function hasSetting(string $key): bool
     {
-        return key_exists($key, $this->confData);
+        return $this->confData->hasProperty($key);
     }
 }

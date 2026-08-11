@@ -17,7 +17,7 @@ use OutOfBoundsException;
 final readonly class AppObject extends ImmutableArray
 {
     /**
-     * @param array<string, mixed> $appArray An associative array.
+     * @param array<string, mixed> $array An associative array.
      */
     public function __construct(array $array)
     {
@@ -69,9 +69,9 @@ final readonly class AppObject extends ImmutableArray
      * @param mixed $value The new value of the specified property.
      * @return AppObject An identical AppObject with the requested change executed.
      */
-    public function set(string $offet, mixed $value): self
+    public function set(string $offset, mixed $value): self
     {
-        return new self([$offet => $value] + $this->data);
+        return new self([$offset => $value] + $this->data);
     }
 
     /**
