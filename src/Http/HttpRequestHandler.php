@@ -48,7 +48,7 @@ final class HttpRequestHandler
              */
             if (false === $route['roles']['admins'] && $this->session->isUserLoggedIn()) {
                 throw new AlreadyAuthenticated();
-            } elseif (true === $route['roles']['admins'] && !$this->session->isUserLoggedIn()) {
+            } elseif (false === $route['roles']['visitors'] && !$this->session->isUserLoggedIn()) {
                 throw new AccessDenied();
             }
 
