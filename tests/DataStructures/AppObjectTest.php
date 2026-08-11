@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Tests\Database;
+namespace LM\WebFramework\Tests\DataStructures;
 
 use InvalidArgumentException;
 use LM\WebFramework\DataStructures\AppObject;
