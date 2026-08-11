@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace LM\WebFramework\Form\Conf;
 
 use Closure;
-use IteratorAggregate;
+use Traversable;
 use LM\WebFramework\Model\Type\IModel;
 
 readonly class FormFieldConf
@@ -16,7 +16,7 @@ readonly class FormFieldConf
      * @param ?Closure $closure A function to call with the submitted data to
      * set the value of the field in case no value was submitted.
      * @param ?string $type The input type of the field.
-     * @param ?IteratorAggregate All the values allowed for the field.
+     * @param null|array|Traversable All the values allowed for the field.
      * @todo Use enum for type, with support for file and image to determine accept?
      * @todo For $values, create struct for items? (with keys 'value' and 'text' or 'label')
      */
@@ -27,7 +27,7 @@ readonly class FormFieldConf
         public ?Closure $default,
         public ?bool $isRequired,
         public ?string $type,
-        public ?IteratorAggregate $values,
+        public null|array|Traversable $values,
     ) {
     }
 }
