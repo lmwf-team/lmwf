@@ -26,8 +26,8 @@ final class Configuration
         string $language,
         array $configData = [],
     ): self {
-        $env = file_get_contents("$confFolderPath/.env.json");
-        $envLocal = file_get_contents("$confFolderPath/.env.json.local");
+        $env = file_get_contents("$confFolderPath/lmwf_app.json");
+        $envLocal = file_get_contents("$confFolderPath/lmwf_app.local.json");
         $configData += false !== $envLocal ? json_decode($envLocal, true, flags: JSON_THROW_ON_ERROR) : [];
         $configData += false !== $env ? json_decode($env, true, flags: JSON_THROW_ON_ERROR) : [];
         $configData += [
