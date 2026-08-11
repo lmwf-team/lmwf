@@ -10,7 +10,7 @@ use LM\WebFramework\Model\Constraints\IUploadedImageConstraint;
 final class FileService
 {
     public function __construct(
-        private Configuration $configuration,
+        private Configuration $conf,
     ) {
     }
 
@@ -21,7 +21,7 @@ final class FileService
      */
     public function getUploadedImages(bool $includeThumbnails = true): array
     {
-        $listOfFiles = scandir($this->configuration->getPathOfUploadedFiles());
+        $listOfFiles = scandir($this->conf->getPathOfUploadedFiles());
 
         if (!$includeThumbnails) {
             $listOfFiles = array_filter($listOfFiles, fn ($value) => !str_contains($value, '.medium.') && !str_contains($value, '.small.'));

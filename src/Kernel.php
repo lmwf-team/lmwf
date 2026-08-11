@@ -21,7 +21,6 @@ final class Kernel
 
     /// @brief Reads the configuration and initialises the container.
     ///
-    /// @todo Rename config to conf or cfg
     /// @todo Rename projectRootPath to appRootPath or appFolderPath
     /// @todo Rename to initFromConfFile?
     public static function initialize(
@@ -30,19 +29,19 @@ final class Kernel
         array $runtimeConfig = [],
         ?LoggerInterface $logger = null,
     ): ContainerInterface {
-        $config = Configuration::createFromEnvFile(
+        $conf = Configuration::createFromEnvFile(
             $projectRootPath,
             $runtimeConfig,
         );
 
         $cb = new ContainerBuilder();
-        if (!$config->isDev) {
-            $cb->enableCompilation("{$config->appRootPath}/var/cache");
+        if (!$conf->isDev) {
+            $cb->enableCompilation("{$conf->appRootPath}/var/cache");
         }
         $container = $cb
             ->addDefinitions([
-                Configuration::class => $config,
-                HttpConf::class => $config->httpConf,
+                Configuration::class => $conf,
+                HttpConf::class => $conf->httpConf,
             ])
             ->build()
         ;
