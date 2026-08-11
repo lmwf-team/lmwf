@@ -6,7 +6,11 @@ class Configuration
 {
     private array $env;
 
+    private string $configFolderPath;
+
     public function __construct(string $configFolderPath) {
+        $this->configFolderPath = $configFolderPath;
+
         $env = file_get_contents("$configFolderPath/.env.json");
         $envLocal = file_get_contents("$configFolderPath/.env.local.json");
         $this->env = (false !== $envLocal ? json_decode($envLocal, true) : []) +
@@ -35,7 +39,7 @@ class Configuration
     }
 
     public function getPathOfProjectDirectory(): string {
-        return $this->env['pathOfProjectDirectory'];
+        return $this->configFolderPath;
     }
 
     public function getPathOfUploadedFiles(): string {
