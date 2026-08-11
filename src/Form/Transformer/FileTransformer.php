@@ -43,7 +43,7 @@ final readonly class FileTransformer implements IFormTransformer
      * Save and convert the submitted file and return its path, or return the
      * previously submitted file.
      * 
-     * @return null|string[]|string
+     * @return null|list<string>|string
      */
     #[\Override]
     public function transformSubmittedData(array $parsedPayload, array $uploadedFiles): null|array|string

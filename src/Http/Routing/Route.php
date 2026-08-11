@@ -33,7 +33,7 @@ final readonly class Route
 
     /**
      * @param RouteDef $def The associated route definition.
-     * @param string[] $params the associated path segments of the path
+     * @param list<string> $params the associated path segments of the path
      * that instantiated the current route. For a parameterised route, only the
      * segments corresponding to the arguments are passed.
      * @todo PathSegList?
@@ -110,7 +110,7 @@ final readonly class Route
     }
 
     /**
-     * @return string[]
+     * @return list<string>
      */
     public function getRoles(): array
     {

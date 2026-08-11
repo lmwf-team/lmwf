@@ -11,7 +11,7 @@ use Stringable;
 final readonly class ScalarValueViolation implements Stringable, ValueViolation
 {
     /**
-     * @param IndividualViolation[] $violations
+     * @param list<IndividualViolation> $violations
      */
     public function __construct(
         public array $violations,

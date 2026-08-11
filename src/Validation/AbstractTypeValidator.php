@@ -50,7 +50,7 @@ abstract readonly class AbstractTypeValidator implements ITypeValidator
     }
 
     /**
-     * @param mixed[]|bool|float|int|object|string $value
+     * @param list<mixed>|bool|float|int|object|string $value
      */
     abstract public function validateNonNullValue(array|bool|float|int|object|string $value): null|TypeViolation|ValueViolation;
 }

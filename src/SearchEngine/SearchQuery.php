@@ -23,7 +23,7 @@ final readonly class SearchQuery
 
     /**
      * @todo Use Ds\Set.
-     * @var string[]
+     * @var list<string>
      */
     private array $keywords;
 

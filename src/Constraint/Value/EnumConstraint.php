@@ -10,12 +10,12 @@ use LM\WebFramework\Constraint\IConstraint;
 final readonly class EnumConstraint implements IConstraint
 {
     /**
-     * @property string[] $values
+     * @var list<string>
      */
     private array $values;
 
     /**
-     * @param \BackedEnum[] $enumCases List of permitted values.
+     * @param list<\BackedEnum> $enumCases List of permitted values.
      */
     public function __construct(array $enumCases)
     {
@@ -30,7 +30,7 @@ final readonly class EnumConstraint implements IConstraint
     }
 
     /**
-     * @return string[]
+     * @return list<string>
      */
     public function getValues(): array
     {

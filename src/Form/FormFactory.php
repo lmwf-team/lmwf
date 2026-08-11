@@ -91,6 +91,9 @@ final class FormFactory
         }
     }
 
+    /**
+     * @param array<string, FormFieldConf> $formConf
+     */
     public function createFormTransformer(
         array $formConf,
         ?string $name = null,

@@ -10,7 +10,7 @@ final class ArrayTransformer implements IFormTransformer
 {
     /**
      * @param array<string, IFormTransformer> $fieldTransformers
-     * @param array<string, IFormTransformer> $fieldDefaults Array that can be
+     * @param array<string, callable> $fieldDefaults Array that can be
      * empty. For any of the field defined in $fieldTransformers can be
      * associated default callback, that sets its value in case its transformer
      * evaluates to null.
@@ -24,7 +24,7 @@ final class ArrayTransformer implements IFormTransformer
     }
 
     /**
-     * @return mixed[] An empty array if no data was submitted, or an associate
+     * @return array<string, mixed> An empty array if no data was submitted, or an associate
      * arrays of transformed submitted data mapped by $fieldTransformers keys.
      */
     #[\Override]

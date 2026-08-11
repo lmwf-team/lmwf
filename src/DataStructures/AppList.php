@@ -12,6 +12,9 @@ use InvalidArgumentException;
  */
 readonly class AppList extends ImmutableArray
 {
+    /**
+     * @param list<mixed> $data
+     */
     public function __construct(array $data)
     {
         if (!array_is_list($data)) {

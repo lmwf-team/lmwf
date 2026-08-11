@@ -7,7 +7,7 @@ namespace LM\WebFramework\Constraint\Value;
 final readonly class StringEnumConstraint implements IEnumConstraint
 {
     /**
-     * @param string[] $allowedValues List of permitted values.
+     * @param list<string> $allowedValues List of permitted values.
      */
     public function __construct(
         private array $allowedValues,

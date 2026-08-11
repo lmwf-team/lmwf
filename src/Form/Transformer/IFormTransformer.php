@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace LM\WebFramework\Form\Transformer;
 
+use Psr\Http\Message\UploadedFileInterface;
+
 /**
  * Transforms the data submitted with a POST request from its PHP representation
  * (parsedBody) to its representation in the app (formData).
@@ -24,7 +26,7 @@ interface IFormTransformer
      * string and not to null.
      *
      * @param array<string, mixed> $parsedPayload
-     * @param mixed[] $uploadedFiles
+     * @param array<string, array|UploadedFileInterface> $uploadedFiles
      * @return mixed The submitted value converted to the app data format, or
      * null if the user submitted a value evaluating to null.
      * @throws \LM\WebFramework\Form\Exceptions\MissingInputException If no value was submitted for the field.

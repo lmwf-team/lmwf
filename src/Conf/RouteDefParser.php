@@ -31,7 +31,7 @@ final readonly class RouteDefParser
 
     /**
      * @param array<string, mixed> $route The JSON-decoded route as an associative array.
-     * @param null|string[] $parentRoles The parent roles if defined, null if the current route is the root route.
+     * @param null|list<string> $parentRoles The parent roles if defined, null if the current route is the root route.
      * @param bool $allowOverridingParentRoles If true, a subroute can add role its parent does not have.
      */
     public function parse(
@@ -83,6 +83,9 @@ final readonly class RouteDefParser
         );
     }
 
+    /**
+     * @param string $routeArray
+     */
     private function parseFqcn(array $routeArray, string $key): ?string
     {
         if (key_exists($key, $routeArray)) {

@@ -10,6 +10,9 @@ final class HttpConf
 {
     const string NONCE_SPECIFIER = '{NONCE}';
 
+    /**
+     * @param array<string, list<string>> $csp
+     */
     public function __construct(
         public readonly RouteDef $rootRoute,
         public readonly bool $handleExceptions,

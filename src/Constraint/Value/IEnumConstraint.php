@@ -9,7 +9,7 @@ use LM\WebFramework\Constraint\IConstraint;
 interface IEnumConstraint extends IConstraint
 {
     /**
-     * @return string[] $allowedValues List of permitted string values.
+     * @return list<string> $allowedValues List of permitted string values.
      */
     public function getValues(): array;
 }

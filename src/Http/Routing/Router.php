@@ -18,7 +18,7 @@ final readonly class Router
      * URL-decoded part of each path segment of the given absolute path.
      *
      * @param string $absPath An *ABSOLUTE*, valid HTTP path.
-     * @return string[]
+     * @return list<string>
      */
     public function getSegs(string $absPath): array
     {
@@ -44,7 +44,7 @@ final readonly class Router
 
     /**
      * @todo Create SegsList type?
-     * @param string[] $nextSegs
+     * @param list<string> $nextSegs
      */
     public function getRouteFromSegs(
         RouteDef $routeDef,

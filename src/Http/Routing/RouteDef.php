@@ -23,7 +23,7 @@ final readonly class RouteDef
      * @param ?string $fqcn The FQCN of the controller responsible for this
      * particular partition of paths. If null, this route definition only serves
      * to set the paths of sub route definitions, set shared roles, etc.
-     * @param string[] $roles Required roles to access this route.
+     * @param list<string> $roles Required roles to access this route.
      * @param array<string, self> $subroutes The child routes as an array of route definitions, indexed by the path segment through which they are accessed.
      * @todo What happens when an object argument has a default???
      */

@@ -34,14 +34,6 @@ final class DbEntityManager
     public const SEP = '_';
 
     /**
-     * @todo Could be removed? (And array_is_list could be used instead.)
-     */
-    private function isOrdered(array $array): bool
-    {
-        return count($array) === count(array_filter($array, fn ($key) => is_int($key), ARRAY_FILTER_USE_KEY));
-    }
-
-    /**
      * Convert a variable in DB Data format into App Data format.
      *
      * The following order of priority applies when converting the DB data into
@@ -79,7 +71,7 @@ final class DbEntityManager
      *
      * @todo Create type for dbRows, as a list of associative arrays?
      * @todo Throw exception is passed array is empty.
-     * @param array[] $dbRows A list of associative arrays each storing a
+     * @param list<array> $dbRows A list of associative arrays each storing a
      * different row.
      * @param EntityModel $model The model of each row.
      * @param int $index The row identifier of the main entity.
@@ -237,13 +229,13 @@ final class DbEntityManager
             return $appData->format('Y-m-d H:i:s');
         } elseif (is_array($appData)) {
             $dbArray = [];
-            if ($this->isOrdered($appData)) {
+            if (array_is_list($appData)) {
                 throw new InvalidArgumentException('Not supported.');
             } else {
                 foreach ($appData as $pName => $pValue) {
                     if (!in_array($pName, $ignoreProperties, strict: true)) {
                         if (is_array($pValue)) {
-                            if (!$this->isOrdered($pValue)) {
+                            if (!array_is_list($pValue)) {
                                 $dbArray += $this->toDbValue($pValue, $pName);
                             }
                         } else {
@@ -262,9 +254,9 @@ final class DbEntityManager
      * Perform an outer join on two result sets, as if the two were issued from
      * an outer join request.
      *
-     * @param array[] $dbRowsLeft A list of rows returned from the database.
-     * @param array[] $dbRowsRight A list of rows returned from the database.
-     * @return array[] A list of rows with $dbRowsRight appended to $dbRowsLeft,
+     * @param list<array> $dbRowsLeft A list of rows returned from the database.
+     * @param list<array> $dbRowsRight A list of rows returned from the database.
+     * @return list<array> A list of rows with $dbRowsRight appended to $dbRowsLeft,
      * and with each row having all the same columns.
      */
     public function outerJoinDbRows(array $dbRowsLeft, array $dbRowsRight): array
@@ -290,6 +282,10 @@ final class DbEntityManager
         return $dbRows;
     }
 
+    /**
+     * @param array<string, mixed>[] $dbRows
+     * @return list<int>
+     */
     private function getReferencedRowNos(
         array $dbRows,
         ForeignEntityModel $property,

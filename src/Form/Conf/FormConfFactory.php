@@ -59,7 +59,7 @@ readonly class FormConfFactory
     }
 
     /**
-     * @param $fieldConfParams array<string, mixed>
+     * @param array<string, mixed> $fieldConfParams
      */
     private function createFormFieldConf(?IModel $model, array $fieldConfParams): FormFieldConf
     {
@@ -92,6 +92,10 @@ readonly class FormConfFactory
         );
     }
 
+    /**
+     * @param Closure|array{slug: string} $callbackConf
+     * @todo Type hint with callable instead of Closure?
+     */
     private function getCallback(array|Closure $callbackConf): Closure
     {
         if ($callbackConf instanceof Closure) {

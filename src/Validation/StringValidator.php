@@ -47,7 +47,7 @@ final readonly class StringValidator extends AbstractTypeValidator
     }
 
     /**
-     * @return IndividualViolation[]
+     * @return list<IndividualViolation>
      */
     private function validateEnum(string $value, IEnumConstraint $constraint): array
     {
@@ -60,7 +60,7 @@ final readonly class StringValidator extends AbstractTypeValidator
     }
 
     /**
-     * @return IndividualViolation[]
+     * @return list<IndividualViolation>
      */
     public function isRegexValid(string $value, IRegexConstraint $constraint): array
     {

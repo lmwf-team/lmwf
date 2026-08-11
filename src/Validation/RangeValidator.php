@@ -15,7 +15,7 @@ final class RangeValidator
     }
 
     /**
-     * @return IndividualViolation[]
+     * @return list<IndividualViolation>
      */
     public function validateInt(int $value): array
     {
@@ -30,7 +30,7 @@ final class RangeValidator
     }
 
     /**
-     * @return IndividualViolation[]
+     * @return list<IndividualViolation>
      */
     public function validateString(string $value): array
     {

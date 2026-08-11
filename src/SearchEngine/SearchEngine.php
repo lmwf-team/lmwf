@@ -8,7 +8,7 @@ final readonly class SearchEngine
 {
     /**
      * @param array<string, string> $result
-     * @param Searchable[] $searchables
+     * @param list<Searchable> $searchables
      */
     public function rankResult(
         SearchQuery $query,

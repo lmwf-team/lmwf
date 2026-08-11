@@ -19,12 +19,12 @@ final class SessionManager
     public const MESSAGES = 'messages';
 
     /**
-     * @var mixed[]
+     * @var array<string, mixed>
      */
     private array $sessionData;
 
     /**
-     * @param null|mixed[] $sessionData
+     * @param null|array<string, mixed> $sessionData
      */
     public function __construct(?array $sessionData = null)
     {
@@ -85,7 +85,7 @@ final class SessionManager
     }
 
     /**
-     * @return string[]
+     * @return list<string>
      */
     public function getAndDeleteMessages(): array
     {

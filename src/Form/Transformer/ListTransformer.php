@@ -20,7 +20,7 @@ final class ListTransformer implements IFormTransformer
     }
 
     /**
-     * @return mixed[]
+     * @return list<mixed>
     */
     #[\Override]
     public function transformSubmittedData(array $parsedPayload, array $uploadedFiles): array

@@ -91,8 +91,11 @@ final class AppConf
     /**
      * The path is the absolute path on the server file system. The relative
      * path is the path on the file system relative to the app root.
+     * 
      * @todo Create model for configuration, and check it is valid? (Would make testing harder.)
      * @todo Accept an array and create a model from it?
+     * 
+     * @param array<string, mixed> $confData
      */
     public function __construct(array $confData)
     {
