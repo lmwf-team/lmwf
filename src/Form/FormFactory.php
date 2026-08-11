@@ -83,7 +83,7 @@ final class FormFactory
             return new FileTransformer($this->conf->getPathOfUploadedFiles(), $name);
         } elseif (FormFieldType::Checkbox === $fieldConf->type) {
             return new CheckboxTransformer($name);
-        } elseif (FormFieldType::Date === $fieldConf->model) {
+        } elseif (FormFieldType::Date === $fieldConf->type) {
             return new DateTimeTransformer($name);
         }
 
