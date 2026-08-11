@@ -33,109 +33,48 @@ final class HttpRequestHandler
     ) {
     }
 
-    /// @todo Use pipe operator!
+    /**
+     * Generates a response from globals.
+     * 
+     * @todo Use pipe operator!
+     * */
     public function respondToOngoingRequest(): void
     {
         $request = ServerRequest::fromGlobals();
         $response = $this->generateResponse($request);
         $this->sendResponse($response);
-
-        // set_error_handler(
-        //     function ($errNo, $errStr, $errFile, $errLine)
-        //     {
-        //         $exception = new LoggedException(
-        //             $errStr,
-        //             $errNo,
-        //             $errFile,
-        //             $errLine,
-        //             time(),
-        //         );
-        //         throw $exception;
-        //     }
-        // );
-
-        // set_exception_handler(
-        //     function (Throwable $exception) use ($config, $container, $request)
-        //     {
-        //         if (null !== $config->getLoggerFqcn()) {
-        //             $container->get($config->getLoggerFqcn())->info($exception->getMessage());
-        //         }
-
-        //         if ($config->isDev()) {
-        //             throw $exception;
-        //         } else {
-        //             try {
-        //                 $response = $container->get(HttpRequestHandler::class)->generateErrorResponse($request, $exception);
-        //                 self::sendResponse($response);
-        //             } catch (Throwable $t) {
-        //                 $container->get($config->getLoggerFqcn())->info($t->getMessage());
-        //                 throw $t;
-        //             }
-        //         }
-        //         exit();
-        //     }
-        // );
     }
 
     /**
-     * Handles the entire process of responding to an HTTP request and return an
-     * HTTP response.
+     * Generates a response from the given ServerRequestInterface object.
      */
     public function generateResponse(ServerRequestInterface $request): ResponseInterface
     {
-        $path = $request->getUri()->getPath();
-        Log::info("Path is: $path.");
-        $segs = $this->router->getSegs($path);
-        Log::info("Found segments are: [" . implode(", ", $segs) . "].");
-        $params = [];
-
-
         if (!$this->conf->handleExceptions) {
             Log::info("Exceptions are not handled by the app.");
             return $this->generateResponseFromRoute($request);
         }
 
+        Log::info("Exceptions are handled by the app.");
+        $serverParamsIfException = [];
         try {
-            Log::info("Exceptions are handled by the app.");
             return $this->generateResponseFromRoute($request);
-        } catch (RouteNotFoundException | RequestedResourceNotFound) {
-            Log::info("Resource requested by user was not found.");
-            $fqcn = $this->conf->routeError404ControllerFQCN;
-        } catch (AlreadyAuthenticated) {
-            Log::info("User cannot access this route, already authenticated.");
-            $fqcn = $this->conf->routeErrorAlreadyLoggedInControllerFQCN;
-        } catch (AccessDenied) {
-            Log::info("User is not authorized.");
-            $fqcn = $this->conf->routeErrorNotLoggedInControllerFQCN;
-        } catch (UnsupportedMethodException) {
-            Log::info("HTTP method is not supported.");
-            $fqcn = $this->conf->routeErrorMethodNotSupportedFQCN;
         } catch (Throwable $t) {
-            Log::error($t->__toString());
-            $fqcn = $this->conf->serverErrorControllerFQCN;
-            $params = [
-                'throwable_hash' => hash('sha256', $t->__toString()),
-            ];
+            return $this->generateResponseFromRouteException($request, $t);
         }
-
-        Log::info("Actual controller FQCN is \"{$fqcn}\".");
-        $controller = $this->container->get($fqcn);
-        $response = $controller->generateResponse($request, $segs, $params);
-
-        return $this->addCspSources($response);
     }
 
-    /**
-     * @param string[] $segs A list of URL-decoded path segments.
-    */
     public function generateResponseFromRoute(ServerRequestInterface $request): ResponseInterface
     {
         if (!in_array($request->getMethod(), self::SUPPORTED_METHODS, true)) {
             throw new UnsupportedMethodException();
         }
 
-        $route = (new Router())->getRouteFromPath($this->conf->rootRoute, $request->getUri()->getPath());
+        $route = $this->router->getRouteFromPath($this->conf->rootRoute, $request->getUri()->getPath());
         Log::info("Request matches controller \"{$route->getFqcn()}\".");
+        if (null === $route->getFqcn()) {
+            throw new RequestedResourceNotFound();
+        }
         $controller = $this->container->get($route->getFqcn());
 
         // @todo Add real role system
@@ -160,6 +99,41 @@ final class HttpRequestHandler
             $request,
             $route->parameters,
             [],
+        );
+
+        return $this->addCspSources($response);
+    }
+
+    public function generateResponseFromRouteException(
+        ServerRequestInterface $request,
+        Throwable $t,
+    ): ResponseInterface {
+        try {
+            throw $t;
+        } catch (RouteNotFoundException | RequestedResourceNotFound) {
+            Log::info("Resource requested by user was not found.");
+            $fqcn = $this->conf->routeError404ControllerFQCN;
+        } catch (AlreadyAuthenticated) {
+            Log::info("User cannot access this route, already authenticated.");
+            $fqcn = $this->conf->routeErrorAlreadyLoggedInControllerFQCN;
+        } catch (AccessDenied) {
+            Log::info("User is not authorized.");
+            $fqcn = $this->conf->routeErrorNotLoggedInControllerFQCN;
+        } catch (UnsupportedMethodException) {
+            Log::info("HTTP method is not supported.");
+            $fqcn = $this->conf->routeErrorMethodNotSupportedFQCN;
+        } catch (Throwable) {
+            Log::error($t->__toString());
+            $fqcn = $this->conf->serverErrorControllerFQCN;
+        }
+
+        Log::info("Exception controller FQCN is \"{$fqcn}\".");
+        $controller = $this->container->get($fqcn);
+        $response = $controller->generateResponse(
+            $request,
+            [
+                'throwable_hash' => hash('sha256', $t->__toString()),
+            ],
         );
 
         return $this->addCspSources($response);

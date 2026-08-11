@@ -19,7 +19,7 @@ final readonly class Router
      * A "path segment" is defined in the context of lmwf as the
      * URL-decoded part of each path segment of the given absolute path.
      *
-     * @param string $path An absolute, valid HTTP path.
+     * @param string $path An *ABSOLUTE*, valid HTTP path.
      * @todo Use pipe operator!
      * @return array<string>
      */
@@ -41,6 +41,7 @@ final readonly class Router
     public function getRouteFromPath(RouteDef $routeDef, string $path): Route
     {
         $segs = self::getSegs($path);
+        Log::debug('Segments are: [' . implode(',', $segs) . ']');
         return $this->getRouteFromSegs($routeDef, null, $segs[0], array_slice($segs, 1));
     }
 
@@ -62,9 +63,11 @@ final readonly class Router
             if ($nArgs < $routeDef->conf->nArgsLowerLimit || $nArgs > $routeDef->conf->nArgsUpperLimit) {
                 throw new RouteNotFoundException("No route could be found for segment. It does not have the correct number of arguments. ({$nArgs} when it should be between {$routeDef->conf->nArgsLowerLimit} and {$routeDef->conf->nArgsUpperLimit}.)");
             }
+            Log::debug("Found route with FQCN {$routeDef->fqcn}.");
             return new Route($routeDef, $currentSeg, $nextSegs, $parentRoute);
         } elseif ($routeDef->conf instanceof ParentRouteConf) {
             $route = new Route($routeDef, $currentSeg, [], $parentRoute);
+            Log::debug("Current route definition is a parent route.");
             if ([] === $nextSegs) {
                 return $route;
             }

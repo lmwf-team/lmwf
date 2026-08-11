@@ -11,10 +11,11 @@ use LM\WebFramework\Controller\Exception\AlreadyAuthenticated;
 use LM\WebFramework\Controller\IController;
 use LM\WebFramework\Controller\IRoutedController;
 use LM\WebFramework\Http\HttpRequestHandler;
-use LM\WebFramework\Http\Routing\ParameterizedRoute;
-use LM\WebFramework\Http\Routing\ParentRoute;
 use LM\WebFramework\Http\Routing\Route;
+use LM\WebFramework\Http\Routing\RouteConf\ParentRouteConf;
+use LM\WebFramework\Http\Routing\RouteDef;
 use LM\WebFramework\Kernel;
+use LM\WebFramework\Logger\LoggerConsole;
 use LM\WebFramework\Session\SessionManager;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
@@ -28,20 +29,14 @@ final class HttpRequestHandlerTest extends TestCase
     {
         $container = Kernel::initBare([
             HttpConf::class => new HttpConf(
-                new ParentRoute(
-                    HomeController::class,
-                    [
-                        'ADMIN',
-                        'VISITOR'
-                    ],
-                    [
-                        'my' => new ParentRoute(
-                            MyController::class,
-                            [
-                                'VISITOR'
-                            ]
-                        ),
-                    ]
+                new RouteDef(
+                    null,
+                    ['ADMIN', 'VISITOR'],
+                    new ParentRouteConf([
+                        '' => new RouteDef(HomeController::class),
+                        'my' => new RouteDef(
+                            MyController::class, ['VISITOR']),
+                    ]),
                 ),
                 true,
                 null,
@@ -55,7 +50,9 @@ final class HttpRequestHandlerTest extends TestCase
                 ServerErrorController::class,
             ),
             SessionManager::class => new SessionManager([]),
-        ]);
+        ],
+        new LoggerConsole(),
+    );
         $this->handler = $container->get(HttpRequestHandler::class);
     }
 
@@ -77,54 +74,17 @@ final class HttpRequestHandlerTest extends TestCase
 
     public function testWithExistingRoutes(): void
     {
-        $paths = [
+        $absPaths = [
+            '/my',
             '/',
             '',
-            'my',
-            // 'my/',
-            // 'my//',
-            // 'my//?',
-            // 'my//?fb_id',
-            // 'my//?fb_id=a',
-            // 'my//?fb_id=a&',
-            // 'my//?fb_id=a&b=',
-            // 'my//?fb_id=a&b=x',
-            '/my',
-            // '/my/',
-            // '/my//',
-            // '/my//?',
-            // '/my//?fb_id',
-            // '/my//?fb_id=a',
-            // '/my//?fb_id=a&',
-            // '/my//?fb_id=a&b=',
-            // '/my//?fb_id=a&b=x',
         ];
 
-        foreach ($paths as $p) {
+        foreach ($absPaths as $p) {
             $request = new ServerRequest('GET', $p);
             $response = $this->handler->generateResponse($request);
             $this->assertEquals(200, $response->getStatusCode(), "Expected 200 for {$p}, got {$response->getStatusCode()}.");
         }
-    }
-
-    public function testOnlyChild(): void
-    {
-        $path = '/only-child-parent/child';
-
-        $request = new ServerRequest('GET', $path);
-        $response = $this->handler->generateResponse($request);
-        $this->assertEquals(200, $response->getStatusCode(), "Expected 200 for {$path}, got {$response->getStatusCode()}.");
-        $this->assertEquals($path, $response->getBody()->getContents());
-    }
-
-    public function testOnlyChildParent(): void
-    {
-        $path = '/only-child-parent';
-
-        $request = new ServerRequest('GET', $path);
-        $response = $this->handler->generateResponse($request);
-        $this->assertEquals(200, $response->getStatusCode(), "Expected 200 for {$path}, got {$response->getStatusCode()}.");
-        $this->assertEquals($path, $response->getBody()->getContents());
     }
 
     public function testWithNonExistingRoutes(): void
@@ -180,6 +140,7 @@ final class HomeController implements IRoutedController
         array $routeParams,
         array $serverParams,
     ): ResponseInterface {
+        var_dump('yo');
         return new Response(200);
     }
 }

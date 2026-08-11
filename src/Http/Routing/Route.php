@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace LM\WebFramework\Http\Routing;
 
-use InvalidArgumentException;
 use DomainException;
+use InvalidArgumentException;
+use LM\WebFramework\Http\Routing\Exception\RootRouteWithDefaultControllerException;
 use LM\WebFramework\Http\Routing\RouteConf\ParamRouteConf;
 use LM\WebFramework\Http\Routing\RouteConf\ParentRouteConf;
 
@@ -33,27 +34,27 @@ final readonly class Route
     }
 
     /**
-     * @param RouteDef $routeDef The associated route definition.
+     * @param RouteDef $def The associated route definition.
      * @param string[] $parameters the associated path segments of the path
      * that instantiated the current route. For a parameterised route, only the
      * segments corresponding to the arguments are passed.
      * @todo PathSegList?
      */
     public function __construct(
-        public RouteDef $routeDef,
+        public RouteDef $def,
         public string $seg,
         public array $parameters = [],
         public ?Route $parent = null,
     ) {
         $nArgs = count($parameters);
-        if ($routeDef->conf instanceof ParentRouteConf && $nArgs > 0) {
+        if ($def->conf instanceof ParentRouteConf && $nArgs > 0) {
             throw new DomainException("A parent route cannot have parameters.");
         }
-        if ($routeDef->conf instanceof ParamRouteConf) {
-            if ($nArgs < $routeDef->conf->nArgsLowerLimit) {
-                throw new DomainException("Instantiation of a parameterized route has a number of arguments below the minimum ({$nArgs} < {$routeDef->conf->nArgsLowerLimit}).");
-            } elseif ($nArgs > $routeDef->conf->nArgsUpperLimit) {
-                throw new DomainException("Instantiation of parameterized route has a number of arguments above the maximum ({$nArgs} > {$routeDef->conf->nArgsUpperLimit}).");
+        if ($def->conf instanceof ParamRouteConf) {
+            if ($nArgs < $def->conf->nArgsLowerLimit) {
+                throw new DomainException("Instantiation of a parameterized route has a number of arguments below the minimum ({$nArgs} < {$def->conf->nArgsLowerLimit}).");
+            } elseif ($nArgs > $def->conf->nArgsUpperLimit) {
+                throw new DomainException("Instantiation of parameterized route has a number of arguments above the maximum ({$nArgs} > {$def->conf->nArgsUpperLimit}).");
             }
         }
 
@@ -66,9 +67,9 @@ final readonly class Route
         if (null === $this->parent) {
             if ('' !== $this->seg) {
                 throw new DomainException('The root route can only match an empty path segment.');
-            } elseif (null !== $routeDef->fqcn) {
-                throw new DomainException('The root route cannot be associated with a controller, unless it is a controller for when it receives parameters.');
-            } elseif ($routeDef->conf instanceof ParamRouteConf && 0 === $routeDef->conf->nArgsLowerLimit) {
+            } elseif (null !== $def->fqcn) {
+                throw new RootRouteWithDefaultControllerException();
+            } elseif ($def->conf instanceof ParamRouteConf && 0 === $def->conf->nArgsLowerLimit) {
                 throw new DomainException('The root route cannot accept a null number of parameters.');
             }
         }
@@ -79,10 +80,10 @@ final readonly class Route
      */
     public function getFqcn(): ?string
     {
-        if ($this->routeDef->conf instanceof ParamRouteConf && null !== $this->routeDef->conf->fqcnIfParams) {
-            return $this->routeDef->conf->fqcnIfParams;
+        if ($this->def->conf instanceof ParamRouteConf && null !== $this->def->conf->fqcnIfParams) {
+            return $this->def->conf->fqcnIfParams;
         } else {
-            return $this->routeDef->fqcn;
+            return $this->def->fqcn;
         }
     }
 
@@ -108,6 +109,6 @@ final readonly class Route
      */
     public function getRoles(): array
     {
-        return $this->routeDef->roles;
+        return $this->def->roles;
     }
 }
