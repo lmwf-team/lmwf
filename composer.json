@@ -19,16 +19,16 @@
     ],
     "license": "MIT",
     "require": {
-        "php-di/php-di": "^7.0",
+        "php-di/php-di": "^7.1",
         "guzzlehttp/guzzle": "^7.14",
-        "voku/portable-ascii": "^2.0",
+        "voku/portable-ascii": "^2.1",
         "psr/log": "^3.0"
     },
     "require-dev": {
-        "phpstan/phpstan": "^2.1",
-        "phpunit/phpunit": "^13.0",
-        "squizlabs/php_codesniffer": "*",
-        "spaze/phpstan-disallowed-calls": "^4.8",
+        "phpstan/phpstan": "^2.2",
+        "phpunit/phpunit": "^13.2",
+        "squizlabs/php_codesniffer": "^4.0",
+        "spaze/phpstan-disallowed-calls": "^4.13",
         "ergebnis/phpstan-rules": "^2.13"
     }
 }
