@@ -146,7 +146,6 @@ final class ResourceNotFoundController implements IController
 {
     public function generateResponse(
         ServerRequestInterface $request,
-        array $routeParams,
         array $serverParams,
     ): ResponseInterface {
         return new Response(404);
@@ -157,7 +156,6 @@ final class MethodNotSupportedController implements IController
 {
     public function generateResponse(
         ServerRequestInterface $request,
-        array $routeParams,
         array $serverParams,
     ): ResponseInterface {
         return new Response(501);
@@ -168,7 +166,6 @@ final class ServerErrorController implements IController
 {
     public function generateResponse(
         ServerRequestInterface $request,
-        array $routeParams,
         array $serverParams,
     ): ResponseInterface {
         return new Response(500);

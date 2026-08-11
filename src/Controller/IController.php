@@ -18,7 +18,6 @@ interface IController
      */
     public function generateResponse(
         ServerRequestInterface $request,
-        array $routeParams,
         array $serverParams,
     ): ResponseInterface;
 }
