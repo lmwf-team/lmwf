@@ -29,7 +29,12 @@ final class Configuration
 
     public readonly LogLevel $logLevel;
 
-    private readonly array $confData;
+    /**
+     * Gives access to the raw configuration data.
+     * 
+     * Stored as AppObject to ensure it cannot be mutated.
+     */
+    public readonly AppObject $confData;
 
     public readonly bool $handleExceptions;
     public readonly bool $isDev;
@@ -110,7 +115,7 @@ final class Configuration
         $this->logLevel = self::parseLogLevel($confData[self::LOG_LEVEL_KEY]);
 
         $this->httpConf = new HttpConf(
-            new RouteDefParser()->parse($confData['rootRoute']),
+            (new RouteDefParser())->parse($confData['rootRoute']),
             $this->handleExceptions,
             implode(' ', $confData['cspDefaultSources']),
             implode(' ', $confData['cspFontSources']),
@@ -123,7 +128,7 @@ final class Configuration
             $confData['serverErrorControllerFQCN'],
         );
 
-        $this->confData = $confData;
+        $this->confData = CollectionFactory::createDeepAppObject($confData);
     }
 
     public function getBoolSetting(string $key): bool
