@@ -14,40 +14,74 @@ use DomainException;
 
 final class RouteTest extends TestCase
 {
+    public function createRootRoute(array $routes): Route
+    {
+        $rootRouteDef = new RouteDef(null, conf: new ParentRouteConf($routes));
+        return new Route($rootRouteDef, '');
+    }
+
     public function testInvalidRootRouteWithSeg(): void
     {
         $this->expectException(DomainException::class);
-        new Route(new RouteDef(self::class), 'home');
+        new Route(new RouteDef(self::class), 'seg');
+    }
+
+    public function testInvalidRootRouteWithFqcn(): void
+    {
+        $this->expectException(DomainException::class);
+        new Route(new RouteDef(self::class), '');
+    }
+
+    public function testInvalidRootRouteWithNoParams(): void
+    {
+        $this->expectException(DomainException::class);
+        new Route(new RouteDef(self::class, conf: new ParamRouteConf()), '');
+    }
+
+    public function testInvalidRouteParams(): void
+    {
+        $rootRouteDef = new RouteDef(null, conf: new ParamRouteConf(nArgsLowerLimit: 1, nArgsUpperLimit: 2));
+        $this->expectException(DomainException::class);
+        $rootRouteArgs4 = new Route($rootRouteDef, '', ['args1', 'args2', 'args3']);
     }
 
     public function testRootRoute(): void
     {
-        $routeDef = new RouteDef(self::class);
-        $route = new Route($routeDef, '');
-        $this->assertSame('/', $route->getPath());
+        $homeRouteDef = new RouteDef(self::class);
+        $rootRoute = $this->createRootRoute(['' => $homeRouteDef]);
+        $homeRoute = new Route($homeRouteDef, '', parent: $rootRoute);
+        $this->assertSame('', $rootRoute->getPath());
+        $this->assertSame('/', $homeRoute->getPath());
     }
 
     public function testRootRouteWithParams(): void
     {
-        $routeDef = new RouteDef(
+        $rootRouteDef = new RouteDef(null, conf: new ParamRouteConf(nArgsLowerLimit: 1, nArgsUpperLimit: 2));
+        $rootRouteArgs1 = new Route($rootRouteDef, '', ['']);
+        $rootRouteArgs2 = new Route($rootRouteDef, '', ['args2']);
+        $rootRouteArgs3 = new Route($rootRouteDef, '', ['args3a', 'args3b']);
+        $this->assertSame('/', $rootRouteArgs1->getPath());
+        $this->assertSame('/args2', $rootRouteArgs2->getPath());
+        $this->assertSame('/args3a/args3b', $rootRouteArgs3->getPath());
+    }
+
+    public function testHomeRouteWithParams(): void
+    {
+        $homeRouteDef = new RouteDef(
             self::class,
             conf: new ParamRouteConf(nArgsLowerLimit: 1, nArgsUpperLimit: 1),
         );
-        $route = new Route($routeDef, '', ['test-param']);
-        $this->assertSame('/test-param', $route->getPath());
+        $rootRoute = $this->createRootRoute(['' => $homeRouteDef]);
+        $homeRoute = new Route($homeRouteDef, '', ['test-param'], parent: $rootRoute);
+        $this->assertSame('//test-param', $homeRoute->getPath());
     }
 
     public function testParentRoute(): void
     {
         $subRouteDef = new RouteDef(self::class);
-        $routeDef = new RouteDef(
-            self::class,
-            conf: new ParentRouteConf([
-                'sub' => $subRouteDef,
-            ]),
-        );
-        $route = new Route($routeDef, '');
-        $subRoute = new Route($subRouteDef, 'sub', parent: $route);
+        $rootRoute = $this->createRootRoute(['sub' => $subRouteDef]);
+        
+        $subRoute = new Route($subRouteDef, 'sub', parent: $rootRoute);
         $this->assertSame('/sub', $subRoute->getPath());
     }
 
@@ -60,14 +94,11 @@ final class RouteTest extends TestCase
                 'sub2' => $subSubRouteDef,
             ]),
         );
-        $routeDef = new RouteDef(
-            self::class,
-            conf: new ParentRouteConf([
-                'sub1' => $subRouteDef,
-            ]),
-        );
-        $route = new Route($routeDef, '');
-        $subRoute = new Route($subRouteDef, 'sub1', parent: $route);
+        $rootRoute = $this->createRootRoute([
+            'sub1' => $subRouteDef,
+        ]);
+        
+        $subRoute = new Route($subRouteDef, 'sub1', parent: $rootRoute);
         $subSubRoute = new Route($subSubRouteDef, 'sub2', parent: $subRoute);
         $this->assertSame('/sub1/sub2', $subSubRoute->getPath());
     }
@@ -84,20 +115,16 @@ final class RouteTest extends TestCase
                 '' => $subSub2RouteDef,
             ]),
         );
-        $routeDef = new RouteDef(
-            self::class,
-            conf: new ParentRouteConf([
-                '' => $sub1RouteDef,
-                'sub2' => $sub2RouteDef,
-            ]),
-        );
+        $rootRoute = $this->createRootRoute([
+            '' => $sub1RouteDef,
+            'sub2' => $sub2RouteDef,
+        ]);
 
-        $route = new Route($routeDef, '');
-        $sub1Route = new Route($sub1RouteDef, '', parent: $route);
-        $sub2Route = new Route($sub2RouteDef, 'sub2', parent: $route);
+        $sub1Route = new Route($sub1RouteDef, '', parent: $rootRoute);
+        $sub2Route = new Route($sub2RouteDef, 'sub2', parent: $rootRoute);
         $subSub2Route = new Route($subSub2RouteDef, '', parent: $sub2Route);
-        $this->assertSame('/', $route->getPath());
-        $this->assertSame('//', $sub1Route->getPath());
+        $this->assertSame('', $rootRoute->getPath());
+        $this->assertSame('/', $sub1Route->getPath());
         $this->assertSame('/sub2', $sub2Route->getPath());
         $this->assertSame('/sub2/', $subSub2Route->getPath());
     }

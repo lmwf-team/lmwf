@@ -12,13 +12,14 @@ use LM\WebFramework\Http\Routing\RouteConf\ParentRouteConf;
 /**
  * Instantiation of a RouteDef, based on a given path.
  *
- * A path (in the HTTP sense) is split into segments. Starting from the left,
- * one or more segments are associated with a route definition, and for those
- * segments, referred to as the "relevant segments", a route is instantiated.
- *
- * @todo Add name to a Route? Not great because name is often dynamic.
- * @todo Embed request? Probably best to only rely on path.
- * @todo Should include query data. Probably best to only rely on path.
+ * The root route is the parent of all routes in the context of any request. It
+ * sets shared roles, but cannot be associated with a controller.
+ * As the path of any request starts with '/' (even '' as it is equivalent to
+ * '/'), and as a path segment is defined as each URL-decoded segment of the
+ * absolute path split by (before being decoded) forward slash, then the first
+ * path segment of any request is '', which matches the root route.
+ * The home route is the root route's child (assuming it is a parent route) with
+ * the key '', assuming it is defined.
  */
 final readonly class Route
 {
@@ -37,13 +38,13 @@ final readonly class Route
     ) {
         $nArgs = count($parameters);
         if ($routeDef->conf instanceof ParentRouteConf && $nArgs > 0) {
-            throw new InvalidArgumentException("A route with child routes cannot have parameters.");
+            throw new DomainException("A parent route cannot have parameters.");
         }
         if ($routeDef->conf instanceof ParamRouteConf) {
             if ($nArgs < $routeDef->conf->nArgsLowerLimit) {
-                throw new InvalidArgumentException("Instantiation of a parameterized route has a number of arguments below the minimum ({$nArgs} < {$routeDef->conf->nArgsLowerLimit}).");
+                throw new DomainException("Instantiation of a parameterized route has a number of arguments below the minimum ({$nArgs} < {$routeDef->conf->nArgsLowerLimit}).");
             } elseif ($nArgs > $routeDef->conf->nArgsUpperLimit) {
-                throw new InvalidArgumentException("Instantiation of parameterized route has a number of arguments above the maximum ({$nArgs} > {$routeDef->conf->nArgsUpperLimit}).");
+                throw new DomainException("Instantiation of parameterized route has a number of arguments above the maximum ({$nArgs} > {$routeDef->conf->nArgsUpperLimit}).");
             }
         }
 
@@ -53,8 +54,14 @@ final readonly class Route
             }
         }
 
-        if (null === $this->parent && '' !== $this->seg) {
-            throw new DomainException('A root route can only match an empty path segment.');
+        if (null === $this->parent) {
+            if ('' !== $this->seg) {
+                throw new DomainException('The root route can only match an empty path segment.');
+            } elseif (null !== $routeDef->fqcn) {
+                throw new DomainException('The root route cannot be associated with a controller, unless it is a controller for when it receives parameters.');
+            } elseif ($routeDef->conf instanceof ParamRouteConf && 0 === $routeDef->conf->nArgsLowerLimit) {
+                throw new DomainException('The root route cannot accept a null number of parameters.');
+            }
         }
     }
 
@@ -73,16 +80,16 @@ final readonly class Route
     /**
      * Compute the absolute path from the root route up to this route.
      * 
-     * This will always have a leading slash and no trailing slash.
+     * This will always have a leading slash.
      */
     public function getPath(): string
     {
-        $path = $this->parent?->getPath() ?? '';
-        $path .= '/';
-        $path .= $this->seg;
+        $path = '';
+        if (null !== $this->parent) {
+            $path .= "{$this->parent->getPath()}/{$this->seg}";
+        }
         if (count($this->parameters) > 0) {
-            $path .= '/';
-            $path .= implode('/', $this->parameters);
+            $path .= '/' . implode('/', $this->parameters);
         }
         return $path;
     }

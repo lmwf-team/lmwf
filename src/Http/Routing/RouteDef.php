@@ -22,13 +22,14 @@ use LM\WebFramework\Http\Routing\RouteConf\ParentRouteConf;
 final readonly class RouteDef
 {
     /**
-     * @param $fqcn The FQCN of the controller responsible for this particular
-     * partition of paths.
+     * @param ?string $fqcn The FQCN of the controller responsible for this
+     * particular partition of paths. If null, this route definition only serves
+     * to set the paths of sub route definitions, set shared roles, etc.
      * @param string[] $roles Required roles to access this route.
      * @todo What happens when an object argument has a default???
      */
     public function __construct(
-        public string $fqcn,
+        public ?string $fqcn,
         public array $roles = [],
         public ParentRouteConf|ParamRouteConf $conf = new ParamRouteConf(),
     ) {
