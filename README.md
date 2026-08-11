@@ -7,5 +7,9 @@ Lightweight web framework that doesn’t require tons of dependencies and keeps 
 
 ## TODO
 
- - Add unit tests
- - Add coding style test and other static analysis tools
+ - Check test coverage
+ - Add mutation testing
+ - Add coding style check
+ - Make PHPStan test pass and increase rule level
+ - Add back functional constraints
+ - Add documentation

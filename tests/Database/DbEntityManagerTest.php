@@ -2,21 +2,21 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Tests;
+namespace LM\WebFramework\Tests\Database;
 
 use DateTimeImmutable;
 use LM\WebFramework\Database\DbEntityManager;
 use LM\WebFramework\Database\Exceptions\InvalidDbDataException;
 use LM\WebFramework\Database\Exceptions\NullDbDataNotAllowedException;
 use LM\WebFramework\DataStructures\AppObject;
-use LM\WebFramework\Model\BoolModel;
-use LM\WebFramework\Model\DateTimeModel;
-use LM\WebFramework\Model\EntityModel;
-use LM\WebFramework\Model\ForeignEntityModel;
-use LM\WebFramework\Model\IntModel;
-use LM\WebFramework\Model\ListModel;
-use LM\WebFramework\Model\StringModel;
-use PHPUnit\Framework\Attributes\DataProvider;
+use LM\WebFramework\Model\Type\BoolModel;
+use LM\WebFramework\Model\Type\DateTimeModel;
+use LM\WebFramework\Model\Type\EntityModel;
+use LM\WebFramework\Model\Type\ForeignEntityModel;
+use LM\WebFramework\Model\Type\IntModel;
+use LM\WebFramework\Model\Type\EntityListModel;
+use LM\WebFramework\Model\Type\ListModel;
+use LM\WebFramework\Model\Type\StringModel;
 use PHPUnit\Framework\TestCase;
 
 final class DbEntityManagerTest extends TestCase
@@ -154,7 +154,7 @@ final class DbEntityManagerTest extends TestCase
             'category',
             [
                 'id' => new StringModel(),
-                'children' => new ListModel(new ForeignEntityModel(
+                'children' => new EntityListModel(new ForeignEntityModel(
                     'parent_id',
                     'id',
                     'category',
@@ -180,17 +180,26 @@ final class DbEntityManagerTest extends TestCase
             ]),
         ]);
 
-        var_dump($this->em->convertDbRowsToAppObject($dbRows, $parentModel, 0));
-
         $this->assertEquals(
             $expectedParent,
             $this->em->convertDbRowsToAppObject($dbRows, $parentModel, 0),
         );
     }
 
-    // public function testListModel(): void
-    // {
-    //     $toAppDatad = $this->em->convertDbScalar(['1', '2', '3'], new ListModel(new UintModel()));
-    //     $this->assertEquals([1, 2, 3], $toAppDatad);
-    // }
+    public function testEntityListModel(): void
+    {
+        $dbRows = [
+            '4',
+            '7',
+            '8',
+        ];
+        $expectedList = [
+            4,
+            7,
+            8,
+        ];
+        $model = new ListModel(new IntModel(0, 10));
+        $appData = $this->em->convertDbList($dbRows, $model);
+        $this->assertEquals($appData, $expectedList);
+    }
 }

@@ -2,14 +2,19 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Constraints;
+namespace LM\WebFramework\Model\Constraints;
 
-final class RangeConstraint implements INumberConstraint
+use InvalidArgumentException;
+
+final class RangeConstraint implements IRangeConstraint
 {
     public function __construct(
         private ?int $min = 0,
         private ?int $max = null,
     ) {
+        if (null !== $min && null !== $max && $min > $max) {
+            throw new InvalidArgumentException('Min cannot be higher than max.');
+        }
     }
 
     public function getMin(): ?int {

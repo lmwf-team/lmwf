@@ -7,7 +7,7 @@ namespace LM\WebFramework\Form;
 use DomainException;
 use InvalidArgumentException;
 use LM\WebFramework\Configuration;
-use LM\WebFramework\Constraints\IUploadedImageConstraint;
+use LM\WebFramework\Model\Constraints\IUploadedImageConstraint;
 use LM\WebFramework\Form\Transformer\ArrayTransformer;
 use LM\WebFramework\Form\Transformer\CheckboxTransformer;
 use LM\WebFramework\Form\Transformer\CsrfTransformer;
@@ -16,7 +16,7 @@ use LM\WebFramework\Form\Transformer\FileTransformer;
 use LM\WebFramework\Form\Transformer\IFormTransformer;
 use LM\WebFramework\Form\Transformer\ListTransformer;
 use LM\WebFramework\Form\Transformer\StringTransformer;
-use LM\WebFramework\Model\IModel;
+use LM\WebFramework\Model\Type\IModel;
 
 /**
  * Automatically creates a Form object from a model definition.

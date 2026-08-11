@@ -10,15 +10,16 @@ use InvalidArgumentException;
 use LM\WebFramework\Database\Exceptions\InvalidDbDataException;
 use LM\WebFramework\Database\Exceptions\NullDbDataNotAllowedException;
 use LM\WebFramework\DataStructures\AppObject;
-use LM\WebFramework\Model\AbstractEntityModel;
-use LM\WebFramework\Model\BoolModel;
-use LM\WebFramework\Model\DateTimeModel;
-use LM\WebFramework\Model\EntityModel;
-use LM\WebFramework\Model\ForeignEntityModel;
-use LM\WebFramework\Model\IntModel;
-use LM\WebFramework\Model\IScalarModel;
-use LM\WebFramework\Model\ListModel;
-use LM\WebFramework\Model\StringModel;
+use LM\WebFramework\Model\Type\AbstractEntityModel;
+use LM\WebFramework\Model\Type\BoolModel;
+use LM\WebFramework\Model\Type\DateTimeModel;
+use LM\WebFramework\Model\Type\EntityModel;
+use LM\WebFramework\Model\Type\ForeignEntityModel;
+use LM\WebFramework\Model\Type\IntModel;
+use LM\WebFramework\Model\Type\IScalarModel;
+use LM\WebFramework\Model\Type\EntityListModel;
+use LM\WebFramework\Model\Type\ListModel;
+use LM\WebFramework\Model\Type\StringModel;
 use UnexpectedValueException;
 
 /**
@@ -96,17 +97,10 @@ final class DbEntityManager
                 }
             } elseif ($property instanceof EntityModel) {
                 $value = $this->convertDbRowsToAppObject($dbRows, $property, $index);
-            } elseif ($property instanceof ListModel) {
+            } elseif ($property instanceof EntityListModel) {
                 $itemModel = $property->getItemModel();
-                $value = [];
-                $ids = [];
-                $parentId = $dbRows[$index][$model->getIdentifier() . self::SEP . $itemModel->getParentIdKey()];
-                foreach ($dbRows as $rowIndex => $row) {
-                    $rowId = $row[$itemModel->getIdentifier() . self::SEP . $itemModel->getChildIdKey()];
-                    if ($rowId === $parentId && !in_array($rowId, $ids)) {
-                        $value[] = $this->convertDbRowsToAppObject($dbRows, $itemModel, $rowIndex);
-                    }
-                }
+                $parentId = $dbRows[$index][$itemModel->getIdentifier() . self::SEP . $itemModel->getParentIdKey()];
+                $value = $this->convertDbEntityList($dbRows, $property, $parentId);
             } else {
                 $value = $this->convertDbScalar($dbRows[$index][$model->getIdentifier() . self::SEP . $key], $property);
             }
@@ -114,6 +108,38 @@ final class DbEntityManager
             $transientAppObject[$key] = $value;
         }
         return new AppObject($transientAppObject);
+    }
+
+    public function convertDbEntityList(array $dbRows, EntityListModel $EntityListModel, ?string $parentId) : array
+    {
+        $itemModel = $EntityListModel->getItemModel();
+        $appItems = [];
+        $ids = [];
+        
+        foreach ($dbRows as $rowIndex => $row) {
+            $rowId = $row[$itemModel->getIdentifier() . self::SEP . $itemModel->getChildIdKey()];
+            if ((null === $parentId || $rowId === $parentId) && !in_array($rowId, $ids)) {
+                $appItems[] = $this->convertDbRowsToAppObject($dbRows, $itemModel, $rowIndex);
+            }
+        }
+
+        return $appItems;
+    }
+
+    public function convertDbList(array $dbRows, ListModel $listModel): array
+    {
+        $itemModel = $listModel->getItemModel();
+        $appData = [];
+        foreach ($dbRows as $key => $row) {
+            if ($itemModel instanceof IScalarModel) {
+                $appData[] = $this->convertDbScalar($row, $itemModel);
+            } elseif ($itemModel instanceof AbstractEntityModel) {
+                $appData[] = $this->convertDbRowsToAppObject($dbRows, $itemModel, $key);
+            } elseif ($itemModel instanceof ListModel) {
+                $appData[] = $this->convertDbList($row, $itemModel);
+            }
+        }
+        return $appData;
     }
 
     /**

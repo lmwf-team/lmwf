@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace LM\WebFramework\DataStructures;
 
-use LM\WebFramework\Constraints\IConstraint;
+use LM\WebFramework\Model\Constraints\IConstraint;
 use Stringable;
 
 final class ConstraintViolation implements Stringable

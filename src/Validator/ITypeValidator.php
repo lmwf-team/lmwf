@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace LM\WebFramework\Validator;
 
-interface IValidator
+interface ITypeValidator
 {
     /**
      * @return \LM\WebFramework\DataStructures\ConstraintViolation[]

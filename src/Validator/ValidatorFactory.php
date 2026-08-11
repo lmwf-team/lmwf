@@ -4,40 +4,61 @@ declare(strict_types=1);
 
 namespace LM\WebFramework\Validator;
 
+use BadMethodCallException;
 use DomainException;
-use LM\WebFramework\Constraints\EnumConstraint;
-use LM\WebFramework\Constraints\IConstraint;
-use LM\WebFramework\Constraints\EntityConstraint;
-use LM\WebFramework\Constraints\INotNullConstraint;
-use LM\WebFramework\Constraints\INumberConstraint;
-use LM\WebFramework\Constraints\IUploadedImageConstraint;
-use LM\WebFramework\Constraints\StringConstraint;
-use LM\WebFramework\Type\ModelValidator;
+use InvalidArgumentException;
+use LM\WebFramework\Model\Constraints\IConstraint;
+use LM\WebFramework\Model\Type\BoolModel;
+use LM\WebFramework\Model\Type\DateTimeModel;
+use LM\WebFramework\Model\Type\EntityListModel;
+use LM\WebFramework\Model\Type\EntityModel;
+use LM\WebFramework\Model\Type\ForeignEntityModel;
+use LM\WebFramework\Model\Type\IntModel;
+use LM\WebFramework\Model\Type\ListModel;
+use LM\WebFramework\Model\Type\StringModel;
 
 final class ValidatorFactory
 {
     /**
      * @throws DomainException If no validator is associated with the constraint.
      */
-    public function createValidator(IConstraint $constraint, ModelValidator $modelValidator) {
-        if ($constraint instanceof INotNullConstraint) {
-            return new NotNullValidator($constraint);
+    public function createValidator(IConstraint $constraint): ITypeValidator
+    {
+        switch ($constraint::class) {
+            case EntityModel::class:
+            case ForeignEntityModel::class:
+                // @todo
+                throw new BadMethodCallException();
+
+            case BoolModel::class:
+                return new BoolValidator($constraint);
+            
+            case DateTimeModel::class:
+                return new DateTimeValidator($constraint);
+            
+            case IntModel::class:
+                return new IntValidator($constraint);
+
+            case EntityListModel::class:
+            case ListModel::class:
+                return new ListValidator($constraint);
+            
+            case StringModel::class:
+                return new StringValidator($constraint);
+
+            // case EnumConstraint::class:
+            //     return new EnumValidator($constraint);
+            
+            // case INotNullConstraint::class:
+            //     return new NotNullValidator($constraint);
+
+            // case IRangeConstraint::class:
+            //     return new RangeValidator($constraint);
+
+            // case IRegexConstraint::class:
+            //     return new RegexValidator($constraint);
         }
-        if ($constraint instanceof EntityConstraint) {
-            return new EntityValidator($constraint, $modelValidator);
-        }
-        if ($constraint instanceof StringConstraint) {
-            return new StringValidator($constraint);
-        }
-        if ($constraint instanceof EnumConstraint) {
-            return new EnumValidator($constraint);
-        }
-        if ($constraint instanceof INumberConstraint) {
-            return new RangeValidator($constraint);
-        }
-        if ($constraint instanceof IUploadedImageConstraint) {
-            return new UploadedImageValidator($constraint);
-        }
-        throw new DomainException('Constraint of type ' . get_class($constraint) . ' is unknown.');
+
+        throw new InvalidArgumentException('Constraint not supported.');
     }
 }

@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Model;
+namespace LM\WebFramework\Model\Type;
 
-use LM\WebFramework\Constraints\RangeConstraint;
+use LM\WebFramework\Model\Constraints\IRangeConstraint;
+use LM\WebFramework\Model\Constraints\RangeConstraint;
 
 final class IntModel extends AbstractModel implements IScalarModel
 {
@@ -14,26 +15,23 @@ final class IntModel extends AbstractModel implements IScalarModel
 
     const MIN = -32767;
 
-    private array $constraints;
+    private ?IRangeConstraint $rangeConstraint;
 
-    /**
-     * @param LM\WebFramework\Constraints\INumberConstraint[] $constraints
-     */
     public function __construct(
         ?int $min = null,
         ?int $max = null,
         bool $isNullable = false,
     ) {
         if (null !== $min || null !== $max) {
-            $this->constraints = new RangeConstraint($min, $max);
+            $this->rangeConstraint = new RangeConstraint($min, $max);
         }
         parent::__construct(
             isNullable: $isNullable,
         );
     }
 
-    public function getNumberConstraints(): array
+    public function getRangeConstraint(): ?IRangeConstraint
     {
-        return $this->constraints;
+        return $this->rangeConstraint;
     }
 }

@@ -4,25 +4,36 @@ declare(strict_types=1);
 
 namespace LM\WebFramework\Validator;
 
-use LM\WebFramework\Constraints\StringConstraint;
 use LM\WebFramework\DataStructures\ConstraintViolation;
+use LM\WebFramework\Model\Type\StringModel;
 
-final class StringValidator implements IValidator
+final class StringValidator implements ITypeValidator
 {
     public function __construct(
-        private StringConstraint $constraint,
+        private StringModel $model,
     ) {
     }
 
-    public function validate(mixed $data): array {
-        $cvs = [];
-        if (mb_strlen($data) < $this->constraint->getMinLength()) {
-            $cvs[] = new ConstraintViolation($this->constraint, "$data is too short.");
-        } elseif (null !== $this->constraint->getMaxLength() && mb_strlen($data) > $this->constraint->getMaxLength()) {
-            $cvs[] = new ConstraintViolation($this->constraint, "$data is too long.");
+    public function validate(mixed $value): array
+    {
+        if (!is_string($value)) {
+            return [
+                new ConstraintViolation(
+                    $this->model,
+                    'Data must be a string.',
+                ),
+            ];
         }
-        if (null !== $this->constraint->getRegex() && 1 !== preg_match('/' . $this->constraint->getRegex() . '/', $data)) {
-            $cvs[] = new ConstraintViolation($this->constraint, "$data does not match format.");
+        $cvs = [];
+
+        if (null !== $this->model->getRangeConstraint()) {
+            $rangeValidator = new RangeValidator($this->model->getRangeConstraint());
+            $cvs += $rangeValidator->validateString($value);
+        }
+
+        if (null !== $this->model->getRegexConstraint()) {
+            $regexValidator = new RegexValidator($this->model->getRegexConstraint());
+            $cvs += $regexValidator->validateString($value);
         }
         return $cvs;
     }

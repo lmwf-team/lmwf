@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Model;
+namespace LM\WebFramework\Model\Type;
 
 use InvalidArgumentException;
 
@@ -39,7 +39,7 @@ abstract class AbstractEntityModel extends AbstractModel
     }
 
     /**
-     * @return \LM\WebFramework\Model\IModel[] An associative array of
+     * @return \LM\WebFramework\Model\Type\IModel[] An associative array of
      * properties. This guarantees each property has a unique key in the context
      * of the model.
      */

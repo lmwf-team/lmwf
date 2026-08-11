@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace LM\WebFramework\Database\Exceptions;
 
 use InvalidArgumentException;
-use LM\WebFramework\Model\IModel;
+use LM\WebFramework\Model\Type\IModel;
 
 class InvalidDbDataException extends InvalidArgumentException
 {

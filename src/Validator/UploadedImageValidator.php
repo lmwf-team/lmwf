@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace LM\WebFramework\Validator;
 
-use LM\WebFramework\Constraints\IUploadedImageConstraint;
+use LM\WebFramework\Model\Constraints\IUploadedImageConstraint;
 use LM\WebFramework\DataStructures\ConstraintViolation;
 
-final class UploadedImageValidator implements IValidator
+final class UploadedImageValidator implements ITypeValidator
 {
     public function __construct(
         private IUploadedImageConstraint $constraint,

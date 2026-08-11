@@ -2,9 +2,7 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Model;
-
-use InvalidArgumentException;
+namespace LM\WebFramework\Model\Type;
 
 final class ForeignEntityModel extends AbstractEntityModel
 {

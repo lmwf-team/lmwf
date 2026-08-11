@@ -6,7 +6,7 @@ namespace LM\WebFramework\Form\Transformer;
 
 use LM\WebFramework\Form\Exceptions\ExtractionException;
 use LM\WebFramework\Form\FormFactory;
-use LM\WebFramework\Model\IModel;
+use LM\WebFramework\Model\Type\IModel;
 
 final class ListTransformer implements IFormTransformer
 {

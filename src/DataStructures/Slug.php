@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace LM\WebFramework\DataStructures;
 
-use LM\WebFramework\Constraints\StringConstraint;
+use LM\WebFramework\Model\Constraints\StringConstraint;
 use Stringable;
 use UnexpectedValueException;
 use voku\helper\ASCII;

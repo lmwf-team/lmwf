@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace LM\WebFramework\Form\Transformer;
 
-use LM\WebFramework\Constraints\IUploadedImageConstraint;
+use LM\WebFramework\Model\Constraints\IUploadedImageConstraint;
 use LM\WebFramework\DataStructures\Filename;
 use LM\WebFramework\Form\Exceptions\IllegalUserInputException;
 use LM\WebFramework\Form\Exceptions\MissingInputException;
