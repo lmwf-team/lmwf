@@ -14,6 +14,6 @@ class UriBuilder implements IUriBuilder
 
     public function getUri(string $resource_name): string
     {
-        return $_SERVER['SERVER_NAME'].$this->config['prefix'].$resource_name;
+        return $_SERVER['SERVER_NAME'].'/'.$this->config['prefix'].$resource_name;
     }
 }
