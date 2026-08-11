@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace LM\WebFramework\Tests\DataStructures;
 
 use GuzzleHttp\Psr7\Request;
+use InvalidArgumentException;
 use LM\WebFramework\Configuration\Configuration;
 use LM\WebFramework\Controller\Exception\RequestedResourceNotFound;
 use LM\WebFramework\Http\HttpRequestHandler;
@@ -151,15 +152,37 @@ final class RouterTest extends TestCase
         );
         
         $this->assertEquals(
-            [],
-            HttpRequestHandler::getPathSegments('//'),
-        );
-        
-        $this->assertEquals(
             [
                 'aui',
             ],
             HttpRequestHandler::getPathSegments('/aui/'),
         );
+        
+        $this->assertEquals(
+            [
+                'aui',
+                'test',
+                'something'
+            ],
+            HttpRequestHandler::getPathSegments('aui/test/something'),
+        );
+        
+        $this->assertEquals(
+            [
+                'something',
+                'else',
+            ],
+            HttpRequestHandler::getPathSegments('/something/else?eius&36ab2'),
+        );
+        
+        $this->assertEquals(
+            [
+                urldecode('a-zA-Z0-9.-_~!$&\'()*+,;=:@'),
+            ],
+            HttpRequestHandler::getPathSegments('a-zA-Z0-9.-_~!$&\'()*+,;=:@?p=26'),
+        );
+
+        $this->expectException(InvalidArgumentException::class);
+        HttpRequestHandler::getPathSegments('//');
     }
 }

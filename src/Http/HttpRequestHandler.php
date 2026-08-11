@@ -6,6 +6,7 @@ namespace LM\WebFramework\Http;
 
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\ServerRequest;
+use InvalidArgumentException;
 use LM\WebFramework\Configuration\Configuration;
 use LM\WebFramework\Controller\Exception\AccessDenied;
 use LM\WebFramework\Controller\Exception\AlreadyAuthenticated;
@@ -157,18 +158,24 @@ final class HttpRequestHandler
      * or the last part after the last slash.
      * 
      * @todo Make not static? It would be more OOP.
+     * @todo Use AppList instead?
+     * @todo Make sur the url conform to rfc3986?
      * 
      * @return array<string>
      */
-    public static function getPathSegments(string $requestTarget): array
+    public static function getPathSegments(string $url): array
     {
-        if ('/' === substr($requestTarget, 0, 1)) {
-            $requestTarget = substr($requestTarget, 1);
+        $parsed = parse_url($url, PHP_URL_PATH);
+        if (false === $parsed) {
+            throw new InvalidArgumentException("Could not parse the given URL: {$url}");
         }
-        if ('/' === substr($requestTarget, -1, 1)) {
-            $requestTarget = substr($requestTarget, 0, -1);
+        if ('/' === substr($parsed, 0, 1)) {
+            $parsed = substr($parsed, 1);
         }
-        $parts = array_map(fn ($e) => urldecode($e), explode('/', $requestTarget));
+        if ('/' === substr($parsed, -1, 1)) {
+            $parsed = substr($parsed, 0, -1);
+        }
+        $parts = array_map(fn ($e) => urldecode($e), explode('/', $parsed));
         if ([''] === $parts) {
             return [];
         } else {
