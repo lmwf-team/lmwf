@@ -14,11 +14,16 @@ class UriBuilder implements IUriBuilder
 
     public function getUri(string $resource_name): string
     {
-        return $this->getProtocol().$_SERVER['SERVER_NAME'].'/'.$this->config['prefix'].$resource_name;
+        return $this->getProtocol().$this->getServerName().'/'.$this->config['prefix'].$resource_name;
     }
 
     private function getProtocol(): string
     {
         return $this->config['protocol'];
+    }
+
+    private function getServerName(): string
+    {
+        return $this->config['server-name'];
     }
 }
