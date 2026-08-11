@@ -30,7 +30,6 @@ The framework files are organised as below:
                  * Controller/: the IController interface
                  * View/: the IView interface
                  * Router.php: the Router class
-     * functions/: contains the functions of the project (to be removed)
  * public/:
     * index.php: the main controller of the framework. It's a script and its 
     specific name and path makes it able to handle all requests related to the
@@ -38,8 +37,6 @@ The framework files are organised as below:
     calls the right method on the controller (retrieved via a Router object).
 
 A number of modifications could be made in the future.
-
-
  * First, "Controller" could be later changed for "PageController", as it is less
 ambiguous and avoids confusion between a page controller and the main
 controller.
@@ -51,9 +48,6 @@ interface, e.g. IRouter.
  Ultimately, server configuration will be necessary to ensure URLs are displayed
  properly and that the main controller can be located and named in a way more
  consistent with the rest of the framework's files.
- * The functions folder could be removed, in order to make the framework (and 
- the website) 100% OOP, except the main controller. But this would require
- finding a way to register an object's method as an autoloader.
  * PHP documentation needs to be applied and package names need to be
  determined.
 
