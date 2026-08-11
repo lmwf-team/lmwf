@@ -3,7 +3,7 @@
 namespace LM\WebFramework\Http;
 
 use GuzzleHttp\Psr7\ServerRequest;
-use LM\WebFramework\Clearance;
+use LM\WebFramework\AccessControl\Clearance;
 use LM\WebFramework\Configuration;
 use LM\WebFramework\Controller\ControllerInterface;
 use LM\WebFramework\Session\SessionManager;

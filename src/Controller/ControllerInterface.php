@@ -2,7 +2,7 @@
 
 namespace LM\WebFramework\Controller;
 
-use LM\WebFramework\Clearance;
+use LM\WebFramework\AccessControl\Clearance;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
