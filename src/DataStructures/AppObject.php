@@ -10,6 +10,7 @@ use BadMethodCallException;
 use Countable;
 use InvalidArgumentException;
 use IteratorAggregate;
+use OutOfBoundsException;
 use Traversable;
 
 /**
@@ -22,7 +23,8 @@ final class AppObject implements ArrayAccess, Countable, IteratorAggregate
     /**
      * @param array<string, array|bool|int|string|null> $appArray An app array.
      */
-    public function __construct(array $appArray) {
+    public function __construct(array $appArray)
+    {
         if (array_is_list($appArray)) {
             throw new InvalidArgumentException('App array must be an associative array with string keys, not a list.');
         }
@@ -35,7 +37,9 @@ final class AppObject implements ArrayAccess, Countable, IteratorAggregate
 
     private function toAppObject(mixed $appValue): mixed
     {
-        if (is_array($appValue)) {
+        if ($appValue instanceof AppObject) {
+            return $appValue;
+        } elseif (is_array($appValue)) {
             if (array_is_list($appValue)) {
                 $list = [];
                 foreach ($appValue as $value) {
@@ -50,11 +54,13 @@ final class AppObject implements ArrayAccess, Countable, IteratorAggregate
         }
     }
 
-    public function __get(string $name): mixed {
+    public function __get(string $name): mixed
+    {
         return $this->attributeGet($name);
     }
 
-    public function attributeGet(string $offset): mixed {
+    public function attributeGet(string $offset): mixed
+    {
         $keyName = (new KeyName($offset))->__toString();
         return $this->data[$keyName];
     }
@@ -64,31 +70,60 @@ final class AppObject implements ArrayAccess, Countable, IteratorAggregate
         return count($this->data);
     }
 
-    public function getIterator(): Traversable {
+    public function getIterator(): Traversable
+    {
         return new ArrayIterator($this->data);
     }
 
-    public function offsetExists(mixed $offset): bool {
+    public function offsetExists(mixed $offset): bool
+    {
         return array_key_exists($offset, $this->data);
     }
 
-    public function offsetGet(mixed $offset): mixed {
+    public function offsetGet(mixed $offset): mixed
+    {
         return isset($this->data[$offset]) ? $this->data[$offset] : $this->attributeGet($offset);
     }
 
-    public function offsetSet(mixed $offset, mixed $value): void {
+    public function offsetSet(mixed $offset, mixed $value): void
+    {
         throw new BadMethodCallException('This object cannot be modified.');
     }
 
-    public function offsetUnset(mixed $offset): void {
+    public function offsetUnset(mixed $offset): void
+    {
         throw new BadMethodCallException('This object cannot be modified.');
     }
 
-    public function set(string $offet, mixed $value): self {
+    /**
+     * Create a new AppObject with the specified property removed.
+     * 
+     * @param string $keyToRemove The key of the property to remove.
+     * @return Another Another AppObject with the same data as this one, but
+     * with the specified key removed.
+     */
+    public function removeProperty(string $keyToRemove): self
+    {
+        if (!key_exists($keyToRemove, $this->data)) {
+            throw new OutOfBoundsException("There is no property with the key: {$keyToRemove}.");
+        }
+        $newData = [];
+        foreach ($this->data as $key => $value) {
+            if ($keyToRemove !== $key) {
+                $newData[$key] = $value;
+            }
+        }
+
+        return new self($newData);
+    }
+
+    public function set(string $offet, mixed $value): self
+    {
         return new self([$offet => $value] + $this->data);
     }
 
-    public function toArray(): array {
+    public function toArray(): array
+    {
         $appArray = [];
         foreach ($this->data as $pName => $pValue) {
             $appArray[$pName] = $pValue instanceof self ? $pValue->toArray() : $pValue;
@@ -96,7 +131,8 @@ final class AppObject implements ArrayAccess, Countable, IteratorAggregate
         return $appArray;
     }
 
-    public function isEqualTo(mixed $appObject): bool {
+    public function isEqualTo(mixed $appObject): bool
+    {
         if (!($appObject instanceof AppObject)) {
             return false;
         }
