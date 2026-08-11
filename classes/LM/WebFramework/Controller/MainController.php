@@ -2,11 +2,17 @@
 
 namespace LM\WebFramework\Controller;
 
+use LM\Exception\SessionStartFailureException();
+
 class MainController
 {
     public function processRequest()
     {
-        session_start();
+        $isSessionStarted = session_start();
+
+        if (false === $isSessionStarted) {
+            throw new SessionStartFailureException();
+        }
 
         // TODO: php doc
         // TODO: namespaces for autoLoadClass?
