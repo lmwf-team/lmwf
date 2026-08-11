@@ -28,6 +28,24 @@ final class HttpRequestHandler
         private SessionManager $session,
     ) {
     }
+    
+    public function sendResponse(ResponseInterface $response): void
+    {
+        http_response_code($response->getStatusCode());
+
+        foreach ($response->getHeaders() as $headerName => $headerValues) {
+            header($headerName . ': ' . implode(', ', $headerValues));
+        };
+
+        echo $response->getBody()->__toString();
+    }
+
+    public function respondToOngoingRequest(): void
+    {
+        $request = ServerRequest::fromGlobals();
+        $this->generateResponse($request);
+        $this->sendResponse($response);
+    }
 
     /**
      * Handles the entire process of responding to an HTTP request and return an
@@ -35,21 +53,62 @@ final class HttpRequestHandler
      */
     public function generateResponse(ServerRequestInterface $request): ResponseInterface
     {
+        session_start();
+
+        set_error_handler(
+            function ($errNo, $errStr, $errFile, $errLine)
+            {
+                $exception = new LoggedException(
+                    $errStr,
+                    $errNo,
+                    $errFile,
+                    $errLine,
+                    time(),
+                );
+                throw $exception;
+            }
+        );
+
+        set_exception_handler(
+            function (Throwable $exception) use ($config, $container, $request)
+            {
+                if (null !== $config->getLoggerFqcn()) {
+                    $container->get($config->getLoggerFqcn())->info($exception->getMessage());
+                }
+                
+                if ($config->isDev()) {
+                    throw $exception;
+                } else {
+                    try {
+                        $response = $container->get(HttpRequestHandler::class)->generateErrorResponse($request, $exception);
+                        self::sendResponse($response);
+                    } catch (Throwable $t) {
+                        $container->get($config->getLoggerFqcn())->info($t->getMessage());
+                        throw $t;
+                    }
+                }
+                exit();
+            }
+        );
+
         $pathSegments = $this->getPathSegments($request->getRequestTarget());
 
+        /// @todo Magic strings
         $route = $this->router->getControllerFqcn(
             $pathSegments,
             $this->session->isUserLoggedIn() ? 'admins' : 'visitors',
         );
 
+        /// @todo Create RouteInfo class.
         $controller = $this->container->get($route['class']);
 
-
-        return $this->addCspSources($controller->generateResponse(
+        $response = $this->addCspSources($controller->generateResponse(
             $request,
             0 === $route['n_args'] ? [] : array_slice($pathSegments, -$route['n_args']),
             [],
         ));
+
+        return $repsonse;
     }
 
     /**
