@@ -10,11 +10,11 @@ use Stringable;
 /**
  * @todo Should be moved to Validator namespace.
  */
-final class ConstraintViolation implements Stringable
+final readonly class ConstraintViolation implements Stringable
 {
     public function __construct(
-        private IConstraint $constraint,
-        private string $message,
+        public IConstraint $constraint,
+        public string $message,
     ) {
     }
 
