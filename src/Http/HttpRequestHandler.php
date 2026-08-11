@@ -103,15 +103,15 @@ final class HttpRequestHandler
     public function generateResponse(ServerRequestInterface $request): ResponseInterface
     {
         $path = $request->getUri()->getPath();
-        $segs = $this->getPathSegments($path);
+        $segs = Router::getSegmentsFromPath($path);
         $params = [];
     
         if (!$this->conf->handleExceptions()) {
-            return $this->generateResponseFromRoute($request);
+            return $this->generateResponseFromRoute($request, $segs);
         }
 
         try {
-            return $this->generateResponseFromRoute($request);
+            return $this->generateResponseFromRoute($request, $segs);
         } catch (RouteNotFoundException|RequestedResourceNotFound) {
             $fqcn = $this->conf->getErrorNotFoundControllerFQCN();
         } catch (AlreadyAuthenticated) {
@@ -133,15 +133,15 @@ final class HttpRequestHandler
         return $this->addCspSources($response);
     }
 
-    public function generateResponseFromRoute(ServerRequestInterface $request): ResponseInterface
+    /**
+     * @param string[] $segs A list of URL-decoded path segments.
+    */
+    public function generateResponseFromRoute(ServerRequestInterface $request, array $segs): ResponseInterface
     {
-        $path = $request->getUri()->getPath();
-        $segs = $this->getPathSegments($path);
-
         if (!in_array($request->getMethod(), self::SUPPORTED_METHODS, true)) {
             throw new UnsupportedMethodException();
         }
-        $route = (new Router())->getRouteFromPath($this->rootRoute, $path);
+        $route = (new Router())->getRouteFromSegs($this->rootRoute, null, $segs);
         $controller = $this->container->get($route->getFqcn());
 
         // @todo Add real role system
@@ -168,37 +168,6 @@ final class HttpRequestHandler
         );
 
         return $this->addCspSources($response);
-    }
-
-    /**
-     * A Path Segment is defined as any part of the Request Target
-     * (origin-form of the composed URI) that is between two slashes,
-     * or the last part after the last slash.
-     * 
-     * @todo Make not static? It would be more OOP.
-     * @todo Use AppList instead?
-     * @todo Make sur the url conform to rfc3986?
-     * 
-     * @return array<string>
-     */
-    public static function getPathSegments(string $url): array
-    {
-        $parsed = parse_url($url, PHP_URL_PATH);
-        if (false === $parsed) {
-            throw new InvalidArgumentException("Could not parse the given URL: {$url}");
-        }
-        if ('/' === substr($parsed, 0, 1)) {
-            $parsed = substr($parsed, 1);
-        }
-        if ('/' === substr($parsed, -1, 1)) {
-            $parsed = substr($parsed, 0, -1);
-        }
-        $parts = array_map(fn ($e) => urldecode($e), explode('/', $parsed));
-        if ([''] === $parts) {
-            return [];
-        } else {
-            return $parts;
-        }
     }
 
     private function addCspSources(ResponseInterface $response): ResponseInterface

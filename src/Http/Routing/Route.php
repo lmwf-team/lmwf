@@ -6,6 +6,11 @@ namespace LM\WebFramework\Http\Routing;
 
 use InvalidArgumentException;
 
+/**
+ * @todo Add name to a Route? Not great because name is often dynamic.
+ * @todo Embed request?
+ * @todo Should include query data.
+ */
 final readonly class Route
 {
     /**

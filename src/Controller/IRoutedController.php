@@ -8,6 +8,10 @@ use LM\WebFramework\Http\Routing\Route;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
+/**
+ * @todo Add getPage(Route $route) method.
+ * @todo Errors should also be routed controllers.
+ */
 interface IRoutedController
 {
     public function generateResponse(

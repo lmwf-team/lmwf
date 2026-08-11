@@ -23,6 +23,19 @@ final class RouterTest extends TestCase
         $this->assertEquals($route, $router->getRouteFromPath($routeDef, '//'));
         $this->assertEquals($route, $router->getRouteFromPath($routeDef, '//'));
     }
+
+    public function testRouteIdWithSpecialChars(): void
+    {
+        $subRouteId = 'c’est mon idée de route !';
+        $subRouteDef = new ParentRoute(self::class);
+        $routeDef = new ParentRoute(self::class, routes: [
+            $subRouteId => $subRouteDef,
+        ]);
+        $route = new Route($routeDef, []);
+        $subRoute = new Route($subRouteDef, [$subRouteId], $route);
+        $router = new Router();
+        $this->assertEquals($subRoute, $router->getRouteFromPath($routeDef, "/{$subRouteId}"));
+    }
     
     public function testParameterizedRoute(): void
     {
