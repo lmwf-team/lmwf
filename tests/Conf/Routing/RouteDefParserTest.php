@@ -14,7 +14,7 @@ use LM\WebFramework\Http\Routing\RouteConf\ParentRouteConf;
 use PHPUnit\Framework\TestCase;
 use TypeError;
 
-final class RouteParserTest extends TestCase
+final class RouteDefParserTest extends TestCase
 {
     public function testAddingRoles(): void
     {
