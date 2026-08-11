@@ -74,8 +74,8 @@ final class DbEntityManager
     }
 
     /**
-     * Convert the result of a database query as a list of rows into app data
-     * format.
+     * Convert the result of a database query as a list of rows into an
+     * AppObject.
      *
      * @todo Create type for dbRows, as a list of associative arrays?
      * @todo Throw exception is passed array is empty.
