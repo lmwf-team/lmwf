@@ -1,6 +1,6 @@
 #!/bin/bash
 
 set -euo pipefail
+SDIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../.." && pwd)"
 
-BASEDIR=$(dirname $0)
-phpunit -c "$BASEDIR/phpunit.xml" $@
+"$SDIR/vendor/bin/phpunit" -c "$SDIR/phpunit.xml" $@

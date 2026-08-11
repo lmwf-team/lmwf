@@ -1,6 +1,6 @@
 #!/bin/bash
 
 set -euo pipefail
+SDIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../.." && pwd)"
 
-SDIR=$(dirname "${BASH_SOURCE[0]}")
-phpstan analyse -c "$SDIR/phpstan.neon" $@
+"$SDIR/vendor/bin/phpstan" analyse -c "$SDIR/phpstan.neon" $@
