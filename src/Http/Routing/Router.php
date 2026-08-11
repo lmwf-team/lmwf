@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace LM\WebFramework\Http\Routing;
 
+use DomainException;
 use LM\WebFramework\ErrorHandling\Log;
 use LM\WebFramework\Http\Routing\Exception\RouteNotFoundException;
 use LogicException;
@@ -11,25 +12,30 @@ use LogicException;
 final readonly class Router
 {
     /**
-     * A Path Segment is defined as any part of the Request Target
-     * (origin-form of the composed URI) that is between two slashes,
-     * or the last part after the last slash.
+     * Convert an absolute path to a list of path segments.
+     * 
+     * A Path Segment is defined as the URL-decoded part of the path that is
+     * delimited by forward slash and that does not contain, before being
+     * decoded, any forward slash.
+     * However, if the absolute path is "/", the only path segment is "".
      *
-     * @param string $path An URL-encoded HTTP path, relative to the scheme,
-     * host and port.
+     * @param string $path An absolute, valid URL-encoded HTTP path (as can be
+     * returned by PSR-7's getPath method) relative to the scheme, host and
+     * port.
      * @todo Use pipe operator!
      * @return array<string>
      */
-    public function getSegmentsFromAbsolutePath(string $path): array
+    public function getSegs(string $absPath): array
     {
-        if ('/' === $path) {
-            // Normally, the empty path "" and absolute path "/" are considered
-            // equal as defined in RFC 7230 Section 2.7.3.
-            $path = '';
-        } elseif ('/' === substr($path, -1)) {
-            $path = substr($path, 0, -1);
+        if (0 === strpos($absPath, '/')) {
+            if (1 === strlen($absPath) || 1 === strpos($absPath, '/', 1)) {
+                $absPath = substr($absPath, 1);
+            }
+        } elseif ('' !== $absPath) {
+            throw new DomainException('Passed path is not absolute.');
         }
-        return array_map(fn ($seg) => urldecode($seg), explode('/', $path));
+
+        return array_map(fn ($seg) => urldecode($seg), explode('/', $absPath));
     }
 
     /**
@@ -37,7 +43,7 @@ final readonly class Router
      */
     public function getRouteFromPath(RouteDef $route, string $path): Route
     {
-        $segs = self::getSegmentsFromAbsolutePath($path);
+        $segs = self::getSegs($path);
         return $this->getRouteFromSegs($route, null, $segs[0], array_slice($segs, 1));
     }
 
