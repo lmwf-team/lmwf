@@ -1,8 +1,9 @@
 {
     "name": "lmwf-team/lmwf",
+    "description": "Simple web framework.",
     "autoload": {
         "psr-4": {
-            "LM\\": "classes/LM/"
+            "LM\\WebFramework\\": "src/"
         }
     }
 }
