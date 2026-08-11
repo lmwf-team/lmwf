@@ -43,3 +43,8 @@ function getUsername(): ?string
 {
     return isset($_SESSION['username']) ? $_SESSION['username'] : null;
 }
+
+function isConnected(): bool
+{
+    return isset($_SESSION['username']) && $_SESSION['username'] !== null;
+}
