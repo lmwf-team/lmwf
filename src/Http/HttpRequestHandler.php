@@ -36,11 +36,31 @@ final class HttpRequestHandler
     {
         $cspValue = "default-src {$this->configuration->getCSPDefaultSources()}; object-src {$this->configuration->getCSPObjectSources()}";
         
-        return $this
-            ->findController($request)
-            ->generateResponse($request, $this->extractRouteParams($request))
-            ->withAddedHeader('Content-Security-Policy', $cspValue)
-        ;
+        $response = null;
+        try {
+            $response = $this
+                ->findController($request)
+                ->generateResponse($request, $this->extractRouteParams($request))
+            ;
+        } catch (RequestedRouteNotFound|RequestedResourceNotFound) {
+            $response = $this->container->get($this->configuration->getErrorNotFoundControllerFQCN())
+                ->generateResponse($request, $this->extractRouteParams($request))
+            ;
+        } catch (AlreadyAuthenticated) {
+            $response = $this->container->get($this->configuration->getErrorLoggedInControllerFQCN())
+                ->generateResponse($request, $this->extractRouteParams($request))
+            ;
+        } catch (AccessDenied) {
+            $response = $this->container->get($this->configuration->getErrorNotLoggedInControllerFQCN())
+                ->generateResponse($request, $this->extractRouteParams($request))
+            ;
+        } catch (Throwable $t) {
+            $this->logger->log($t->__toString());
+            $response = $this->container->get($this->configuration->getServerErrorControllerFQCN())
+                ->generateResponse($request, $this->extractRouteParams($request))
+            ;
+        }
+        return $response->withAddedHeader('Content-Security-Policy', $cspValue);
     }
 
     /**
@@ -67,30 +87,19 @@ final class HttpRequestHandler
      */
     public function findController(ServerRequestInterface $request): IResponseGenerator
     {
-        try {
-            $routeId = $this->extractRouteParams($request)[0];
+        $routeId = $this->extractRouteParams($request)[0];
 
-            if (!$this->configuration->getRoutes()->hasProperty($routeId)) {
-                throw new RequestedRouteNotFound();
-            }
-    
-            $controller = $this->container->get($this->configuration->getRoutes()[$routeId]);
-            if (Clearance::VISITORS === $controller->getAccessControl() && $this->session->isUserLoggedIn()) {
-                throw new AlreadyAuthenticated();
-            } elseif (Clearance::ADMINS === $controller->getAccessControl() && !$this->session->isUserLoggedIn()) {
-                throw new AccessDenied();
-            }
-
-            return $controller;
-        } catch (RequestedRouteNotFound|RequestedResourceNotFound) {
-            return $this->container->get($this->configuration->getErrorNotFoundControllerFQCN());
-        } catch (AlreadyAuthenticated) {
-            return $this->container->get($this->configuration->getErrorLoggedInControllerFQCN());
-        } catch (AccessDenied) {
-            return $this->container->get($this->configuration->getErrorNotLoggedInControllerFQCN());
-        } catch (Throwable $t) {
-            $this->logger->log($t->__toString());
-            return $this->container->get($this->configuration->getServerErrorControllerFQCN());
+        if (!$this->configuration->getRoutes()->hasProperty($routeId)) {
+            throw new RequestedRouteNotFound();
         }
+
+        $controller = $this->container->get($this->configuration->getRoutes()[$routeId]);
+        if (Clearance::VISITORS === $controller->getAccessControl() && $this->session->isUserLoggedIn()) {
+            throw new AlreadyAuthenticated();
+        } elseif (Clearance::ADMINS === $controller->getAccessControl() && !$this->session->isUserLoggedIn()) {
+            throw new AccessDenied();
+        }
+
+        return $controller;
     }
 }
