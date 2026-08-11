@@ -1,15 +1,19 @@
 <?php
 
-// define core constants and functions
+// TODO: php doc
+// TODO: namespaces for autoLoadClass?
+
+// Constants definition
 define('PDM_PAGE', 'page');
 define('PDM_SRC', dirname(__DIR__).'/private/');
 define('PDM_CLASSES', dirname(__DIR__).'/private/classes/');
 define('PDM_FUNCTIONS', dirname(__DIR__).'/private/functions/');
 
+// Autoloader's registration
 require_once(PDM_FUNCTIONS . 'autoLoadClass.php');
-
 spl_autoload_register( autoLoadClass );
 
+// Request processing
 $router = new LM\Router;
 $controller = $router->getControllerFromRequest();
 
