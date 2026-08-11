@@ -1,4 +1,4 @@
-name: PHPStan L10
+name: PHPStan Level 10
 
 on:
   push:

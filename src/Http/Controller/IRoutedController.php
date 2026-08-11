@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace LMWF\Http\Controller;
 
+use LMWF\Http\Controller\Issue\ControllerIssue;
 use LMWF\Http\Routing\Route;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -21,5 +22,5 @@ interface IRoutedController
     public function generateResponse(
         Route $route,
         ServerRequestInterface $request,
-    ): ResponseInterface;
+    ): ResponseInterface|ControllerIssue;
 }

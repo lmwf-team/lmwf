@@ -10,6 +10,10 @@ use LMWF\Http\Controller\Exception\AccessDenied;
 use LMWF\Http\Controller\Exception\AlreadyAuthenticated;
 use LMWF\Http\Controller\Exception\RequestedResourceNotFound;
 use LMWF\ErrorHandling\Log;
+use LMWF\Http\Controller\Issue\ControllerIssue;
+use LMWF\Http\Controller\Issue\ControllerIssueCode;
+use LMWF\Http\Controller\Issue\RouteNotFoundIssue;
+use LMWF\Http\Controller\Issue\RoutingParamIssue;
 use LMWF\Http\Exception\UnsupportedMethodException;
 use LMWF\Http\Routing\Exception\RouteNotFoundException;
 use LMWF\Http\Routing\Router;
@@ -57,30 +61,31 @@ final class HttpRequestHandler
      */
     public function generateResponse(ServerRequestInterface $request): ResponseInterface
     {
-        if (!$this->httpConf->handleExceptions) {
-            Log::info("Exceptions are not handled by the app.");
-            return $this->addCspSources($this->generateResponseFromRoute($request));
-        }
+        $controllerResult = $this->generateResponseFromRoute($request);
 
-        Log::info("Exceptions are handled by the app.");
-        $serverParamsIfException = [];
-        try {
-            return $this->addCspSources($this->generateResponseFromRoute($request));
-        } catch (Throwable $t) {
-            return $this->addCspSources($this->generateResponseFromRouteException($request, $t));
-        }
+        $response = $controllerResult instanceof ControllerIssue ?
+            $this->generateResponseFromRouteException($request, $controllerResult) :
+            $controllerResult
+        ;
+        
+        return $this->addCspSources($response);
     }
 
-    public function generateResponseFromRoute(ServerRequestInterface $request): ResponseInterface
+    public function generateResponseFromRoute(ServerRequestInterface $request): ResponseInterface|ControllerIssue
     {
         if (!in_array($request->getMethod(), self::SUPPORTED_METHODS, true)) {
-            throw new UnsupportedMethodException();
+            return new ControllerIssue(ControllerIssueCode::UnsupportedMethod);
         }
 
         $route = $this->router->getRouteFromPath($this->httpConf->rootRoute, $request->getUri()->getPath());
+        if ($route instanceof RouteNotFoundIssue) {
+            return new ControllerIssue(ControllerIssueCode::ResourceNotFound);
+        } elseif ($route instanceof RoutingParamIssue) {
+            return new ControllerIssue(ControllerIssueCode::ResourceNotFound);
+        }
         Log::info("Request matches controller \"{$route->getFqcn()}\".");
         if (null === $route->getFqcn()) {
-            throw new RequestedResourceNotFound();
+            return new ControllerIssue(ControllerIssueCode::ResourceNotFound);
         }
         $controller = $this->container->get($route->getFqcn());
 
@@ -97,7 +102,7 @@ final class HttpRequestHandler
                 }
             }
             if (!$isAllowed) {
-                throw new AccessDenied("User is not allowed.");
+                return new ControllerIssue(ControllerIssueCode::AccessDenied);
             }
         }
 
@@ -111,37 +116,20 @@ final class HttpRequestHandler
 
     public function generateResponseFromRouteException(
         ServerRequestInterface $request,
-        Throwable $t,
+        ControllerIssue $issue,
     ): ResponseInterface {
-        try {
-            throw $t;
-        } catch (RouteNotFoundException | RequestedResourceNotFound) {
-            Log::info("Resource requested by user was not found.");
-            $fqcn = $this->httpConf->errorControllers->notFoundFqcn;
-        } catch (AlreadyAuthenticated) {
-            Log::info("User cannot access this route, already authenticated.");
-            $fqcn = $this->httpConf->errorControllers->alreadyLoggedInFqcn;
-        } catch (AccessDenied) {
-            Log::info("User is not authorized.");
-            $fqcn = $this->httpConf->errorControllers->notLoggedInFqcn;
-        } catch (UnsupportedMethodException) {
-            Log::info("HTTP method is not supported.");
-            $fqcn = $this->httpConf->errorControllers->methodNotSupportedFqcn;
-        } catch (Throwable) {
-            Log::error($t->__toString());
-            $fqcn = $this->httpConf->errorControllers->defaultErrorFqcn;
-        }
+        $fqcn = match ($issue->code) {
+            ControllerIssueCode::AccessDenied => $this->httpConf->errorControllers->notLoggedInFqcn,
+            ControllerIssueCode::AlreadyAuthenticated => $this->httpConf->errorControllers->alreadyLoggedInFqcn,
+            ControllerIssueCode::ResourceNotFound => $this->httpConf->errorControllers->notFoundFqcn,
+            ControllerIssueCode::UnsupportedMethod => $this->httpConf->errorControllers->methodNotSupportedFqcn,
+            ControllerIssueCode::Unspecified => $this->httpConf->errorControllers->defaultErrorFqcn,
+        };
 
         Log::info("Exception controller FQCN is \"{$fqcn}\".");
-        $controller = $this->container->get($fqcn);
-        $response = $controller->generateResponse(
-            $request,
-            [
-                'throwable_hash' => hash('sha256', $t->__toString()),
-            ],
-        );
 
-        return $response;
+        $controller = $this->container->get($fqcn);
+        return $controller->generateResponse($request, []);
     }
 
     private function addCspSources(ResponseInterface $response): ResponseInterface
@@ -160,6 +148,9 @@ final class HttpRequestHandler
         return $response->withAddedHeader('Content-Security-Policy', $cspHeaderValue);
     }
 
+    /**
+     * Send the response back to the client without altering it.
+     */
     public function sendResponse(ResponseInterface $response): void
     {
         http_response_code($response->getStatusCode());
