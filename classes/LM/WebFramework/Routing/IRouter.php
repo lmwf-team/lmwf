@@ -6,5 +6,5 @@ use LM\WebFramework\Controller\IPageController;
 
 interface IRouter
 {
-    public function getControllerFromRequest(): IPageController;
+    public function getControllerFromRequest(string $route): IPageController;
 }
