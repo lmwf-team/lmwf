@@ -37,6 +37,7 @@ class DbEntityManager
 
                 $nValidNull = 0;
                 $nInvalidNull = 0;
+                $firstNullException = null;
                 foreach ($model->getArrayDefinition() as $key => $property) {
                     try {
                         if (null !== $property->getArrayDefinition()) {
@@ -53,6 +54,9 @@ class DbEntityManager
                     } catch (NullDbDataNotAllowedException $e) {
                         $appData = $e;
                         $nInvalidNull++;
+                        if (null === $firstNullException) {
+                            $firstNullException = $e;
+                        }
                     }
                     if (null === $appData) {
                         $nValidNull++;
@@ -60,11 +64,11 @@ class DbEntityManager
                     $appArray[$key] = $appData;
                 }
 
-                if ($nInvalidNull > 0) {
+                if (null !== $firstNullException) {
                     if (count($appArray) == $nValidNull + $nInvalidNull) {
                         return $this->toAppData(null, $model, $prefix);
                     }
-                    throw new InvalidDbDataException($dbData, $model, $prefix);
+                    throw $firstNullException;
                 }
                 return new AppObject($appArray);
             } elseif (null !== $model->getListNodeModel()) {
