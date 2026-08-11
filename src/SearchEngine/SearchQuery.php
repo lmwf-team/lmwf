@@ -2,12 +2,9 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\DataStructures;
+namespace LM\WebFramework\SearchEngine;
 
-/**
- * @todo Should go in search namespace.
- */
-final class SearchQuery
+final readonly class SearchQuery
 {
     public const ACCEPTED_DELIMITERS = [
         ',',
