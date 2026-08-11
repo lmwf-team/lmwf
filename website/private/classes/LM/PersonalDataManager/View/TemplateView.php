@@ -19,21 +19,27 @@ abstract class TemplateView implements IView
 	{
 ?>
 	<header>
-		<h1><?= $pageHeader ?></h1>
-		<nav>
-			<ol class="breadcrumb">
-				<li>
-					<a href="index.php">
-						Home
-					</a>
-				</li>
-				<li>
-					<a href="index.php?page=login">
-						Login
-					</a>
-				</li>
-			</ol>
-		</nav>
+		<h1 class="no-margin-bottom">
+			<div class="black-background">
+				<?= $pageHeader ?>
+			</div>
+		</h1>
+		<div class="main-black-transparent-background">
+			<nav>
+				<ol class="breadcrumb">
+					<li>
+						<a href="index.php">
+							Home
+						</a>
+					</li>
+					<li>
+						<a href="index.php?page=login">
+							Login
+						</a>
+					</li>
+				</ol>
+			</nav>
+		</div>
 	</header>
 <?php
 	}

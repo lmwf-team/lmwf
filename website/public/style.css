@@ -1,12 +1,21 @@
+body {
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+    background: #ededed;
+    font-family: Caladea;
+}
+
 .breadcrumb {
     list-style-type: none;
     padding-left: 0;
+    margin: 0;
 }
 
 .breadcrumb li {
     display: inline-block;
     padding-left: 1rem;
-    background: url("arrow_to_right.jpg");
+    background: url("arrow_to_right.png");
     background-position: center left;
     background-size: 1rem auto;
     background-repeat: no-repeat;
@@ -18,4 +27,42 @@ label {
 
 input[type=submit] {
     display: block;
+}
+
+header > h1 {
+    background: #282828;
+    margin-top: 0;
+    color: #ffffff;
+    border-bottom: 0.5rem #600000 solid;
+    box-sizing: border-box;
+    padding-top: 1rem;
+}
+
+.main-black-transparent-background {
+    background: white;
+    margin-left: 20%;
+    margin-right: 20%;
+    padding: 1rem;
+}
+
+.no-margin-top {
+    margin-top: 0;
+}
+
+.no-margin-bottom {
+    margin-bottom: 0;
+}
+
+.black-background {
+    background: #000000;
+    margin-left: 20%;
+    margin-right: 20%;
+    position: relative;
+    top: 0.5rem;
+    border-bottom: 0.5rem solid #910000;
+    padding: 1rem;
+}
+
+a:hover {
+    text-decoration: none;
 }
