@@ -36,6 +36,22 @@ final class Configuration
         return $this->configData;
     }
 
+    /**
+     * @return string List of valid CSP origins
+     */
+    public function getCSPDefaultSources(): string
+    {
+        return implode(' ', $this->configData['cspDefaultSources']);
+    }
+
+    /**
+     * @return string List of valid CSP origins
+     */
+    public function getCSPObjectSources(): string
+    {
+        return implode(' ', $this->configData['cspObjectSources']);
+    }
+
     public function getErrorLoggedInControllerFQCN(): string
     {
         return $this->getSetting('routeErrorAlreadyLoggedInControllerFQCN');
