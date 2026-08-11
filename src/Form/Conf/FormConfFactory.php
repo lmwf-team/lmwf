@@ -63,7 +63,7 @@ readonly class FormConfFactory
         if ($model instanceof ILengthModel and null !== $model->getRangeConstraint()) {
             $rangeConstraint = $model->getRangeConstraint();
         }
-        
+
         $type = key_exists(self::TYPE_KN, $fieldConfParams) ? FormFieldType::fromString($fieldConfParams[self::TYPE_KN]) : $this->getTypeFromModel($model);
 
         return new FormFieldConf(

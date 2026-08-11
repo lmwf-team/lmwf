@@ -10,7 +10,7 @@ use LM\WebFramework\DataStructures\Factory\CollectionFactory;
 
 /**
  * Creates and validates a configuration given the path to the project folder.
- * 
+ *
  * It creates a configuration file that merges the distributed configuration
  * file, lmwf_app.json, with the local file, .lmwf_app.local.json. If the two
  * define the same key, the latter overrides the former. *Note that the entire

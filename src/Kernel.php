@@ -24,14 +24,14 @@ final class Kernel
 
     /**
      * Initialize the lmwf.
-     * 
+     *
      * Initialize the app configuration (from the provided configuration data,
      * from the provided path containing valid configuration files, or a mix of
      * both), initialize the container (for dependency injection) and register
      * the app configuration with it as well as any extra container definitions,
      * initialize the Log class with the provided logger, and register a PHP
      * error handler to turn any error, warning or notice into an exception.
-     * 
+     *
      * @param ?string $confFolderPath The path to the folder containing the
      * app configuration files, null if all the configuration is provided with
      * $confData.
@@ -74,10 +74,11 @@ final class Kernel
 
     /**
      * Initialize only the container and only with the provided definitions.
-     * 
+     *
      * The Log class is not initialized nor is the PHP error handler set.
      */
-    public static function initBare(array $containerDefinitions): ContainerInterface {
+    public static function initBare(array $containerDefinitions): ContainerInterface
+    {
         return new ContainerBuilder()
             ->addDefinitions($containerDefinitions)
             ->build()
