@@ -4,17 +4,18 @@ declare(strict_types=1);
 
 namespace LM\WebFramework\Form\Conf;
 
+use DomainException;
+use InvalidArgumentException;
 use LM\WebFramework\DataStructures\Slug;
+use LM\WebFramework\ErrorHandling\Log;
 use LM\WebFramework\Model\Type\ArrayModel;
 use LM\WebFramework\Model\Type\BoolModel;
 use LM\WebFramework\Model\Type\DateTimeModel;
 use LM\WebFramework\Model\Type\ILengthModel;
 use LM\WebFramework\Model\Type\IModel;
-use LM\WebFramework\ErrorHandling\Log;
 use LM\WebFramework\Model\Type\IntModel;
 use LM\WebFramework\Model\Type\StringModel;
 use UnexpectedValueException;
-use DomainException;
 
 /**
  * @todo Create FormConf class? Inheriting AppObject or using traits?
@@ -37,17 +38,17 @@ readonly class FormConfFactory
     {
         $formConf = [];
         $processedFieldIds = [];
-        foreach ($model->getProperties() as $pId => $property) {
-            $processedFieldIds[] = $pId;
-            if (key_exists(self::IGNORE_KN, $formConfParams[$pId]) && true === $formConfParams[$pId][self::IGNORE_KN]) {
+        $properties = $model->getProperties();
+        foreach ($formConfParams as $fieldId => $fieldConfParams) {
+            $processedFieldIds[] = $fieldId;
+            if (key_exists(self::IGNORE_KN, $fieldConfParams) && true === $fieldConfParams[self::IGNORE_KN]) {
                 continue;
             }
-            $formConf[$pId] = $this->createFormFieldConf($property, $formConfParams[$pId]);
+            $formConf[$fieldId] = $this->createFormFieldConf($properties[$fieldId] ?? null, $fieldConfParams);
         }
-        foreach ($formConfParams as $fieldId => $fieldConfParams) {
-            if (false === in_array($fieldId, $processedFieldIds, strict: true)) {
-                Log::info("Processing extra field {$fieldId}.");
-                $formConf[$fieldId] = $this->createFormFieldConf(null, $fieldConfParams);
+        foreach (array_keys($properties) as $pId) {
+            if (false === in_array($pId, $processedFieldIds, strict: true)) {
+                throw new InvalidArgumentException("A property of the model ('$pId') wasn't configured for the form.");
             }
         }
         return $formConf;
