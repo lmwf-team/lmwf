@@ -11,12 +11,10 @@ permissions:
 
 jobs:
   build:
-
-    runs-on: ubuntu-latest
+    uses: lmwf-team/lmwf/.github/workflows/shared.yml@master
+    secrets:
+      envPAT: ${{ secrets.envPAT }}
 
     steps:
-    - uses: actions/checkout@v4
-    - uses: ./.github/workflows/shared.yml
-
     - name: Run test suite
       run: vendor/bin/phpunit tests

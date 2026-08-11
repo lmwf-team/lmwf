@@ -5,11 +5,14 @@ on:
     secrets:
       envPAT:
         required: true
+
 jobs:
   reusable_workflow_job:
     runs-on: ubuntu-latest
     environment: dev
     steps:
+      - uses: actions/checkout@v4
+      
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
