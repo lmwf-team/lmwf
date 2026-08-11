@@ -8,6 +8,8 @@ class Page
         private ?Page $parent,
         private string $name,
         private string $url,
+        private bool $isIndexed = true,
+        private bool $isPartOfHierarchy = true,
     ) {
     }
 
@@ -21,5 +23,13 @@ class Page
 
     public function getUrl(): string {
         return $this->url;
+    }
+
+    public function isIndexed(): bool {
+        return $this->isIndexed;
+    }
+
+    public function isPartOfHierarchy(): bool {
+        return $this->isPartOfHierarchy;
     }
 }
