@@ -41,16 +41,14 @@ final class Configuration
      */
     public function getControllerFqcn(array $pathSegments): array
     {
-        if (0 === count($pathSegments)) {
-            throw new LengthException('There must be at least one Path Segment.');
-        }
         $currentRoute = $this->configData->getAppObject('rootRoute');
         $nPathSegments = count($pathSegments);
-        for ($i = 0; $i < count($pathSegments); $i++) {
+        $i = 0;
+        while ($i < $nPathSegments) {
             if ($currentRoute->hasProperty('routes') && $currentRoute->getAppObject('routes')->hasProperty($pathSegments[$i])) {
                 $currentRoute = $currentRoute['routes'][$pathSegments[$i]];
             } elseif ($currentRoute->hasProperty('controller')) {
-                $nRemainingPathSegments = $nPathSegments - ($i + 1);
+                $nRemainingPathSegments = $nPathSegments - $i;
                 $maxNArgs = $currentRoute['controller']['max_n_args'] ?? $currentRoute['controller']['n_args'] ?? 0;
                 $minNArgs = $currentRoute['controller']['min_n_args'] ?? $currentRoute['controller']['n_args'] ?? 0;
                 if ($nRemainingPathSegments <= $maxNArgs && $nRemainingPathSegments >= $minNArgs) {
@@ -61,6 +59,7 @@ final class Configuration
             } else {
                 throw new SettingNotFoundException("Requested route with path segment {$pathSegments[$i]} does not exist.");
             }
+            $i++;
         }
 
         if (!$currentRoute->hasProperty('controller')) {
@@ -70,8 +69,7 @@ final class Configuration
 
 
         $controllerRoute = $currentRoute['controller']->toArray();
-        $controllerRoute['max_n_args'] = $controllerRoute['max_n_args'] ?? $controllerRoute['n_args'] ?? 0;
-        $controllerRoute['min_n_args'] = $controllerRoute['min_n_args'] ?? $controllerRoute['n_args'] ?? 0;
+        $controllerRoute['n_args'] = $nPathSegments - $i;
         return $controllerRoute;
     } 
 
@@ -162,7 +160,7 @@ final class Configuration
 
     public function getRoutes(): AppObject
     {
-        return $this->configData['routes'];
+        return $this->configData['rootRoute'];
     }
 
     public function getServerErrorControllerFQCN(): string

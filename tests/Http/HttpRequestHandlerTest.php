@@ -32,9 +32,15 @@ final class HttpRequestHandlerTest extends TestCase
                                 ],
                             ]
                         ],
-                        'articles' => [
+                        'article' => [
                             'controller' => [
                                 'class' => 'ArticleController',
+                                'n_args' => 1,
+                            ]
+                        ],
+                        'articles' => [
+                            'controller' => [
+                                'class' => 'ArticlesController',
                                 'n_args' => 1,
                             ],
                             'routes' => [
@@ -59,8 +65,7 @@ final class HttpRequestHandlerTest extends TestCase
         $this->assertEquals(
             [
                 'class' => 'LoginController',
-                'max_n_args' => 0,
-                'min_n_args' => 0,
+                'n_args' => 0,
             ],
             $config->getControllerFqcn(['admin', 'login']),
         );
@@ -71,51 +76,50 @@ final class HttpRequestHandlerTest extends TestCase
         $this->assertEquals(
             [
                 'class' => 'EditArticleController',
-                'max_n_args' => 0,
-                'min_n_args' => 0,
+                'n_args' => 0,
             ],
             $config->getControllerFqcn(['articles', 'edit']),
         );
 
         $this->assertEquals(
             [
-                'class' => 'ArticleController',
-                'max_n_args' => 1,
-                'min_n_args' => 1,
+                'class' => 'ArticlesController',
+                'n_args' => 1,
             ],
             $config->getControllerFqcn(['articles', 'foo']),
         );
 
         $this->assertEquals(
             [
-                'class' => 'ArticleController',
-                'max_n_args' => 1,
-                'min_n_args' => 1,
+                'class' => 'ArticlesController',
+                'n_args' => 1,
             ],
             $config->getControllerFqcn(['articles']),
+        );
+
+        $this->assertEquals(
+            [
+                'class' => 'ArticleController',
+                'n_args' => 1,
+            ],
+            $config->getControllerFqcn(['article', 'mon-article']),
         );
     }
 
     public function testGetPathSegments(): void
     {
         $this->assertEquals(
-            [
-                '',
-            ],
+            [],
             HttpRequestHandler::getPathSegments(''),
         );
         
         $this->assertEquals(
-            [
-                '',
-            ],
+            [],
             HttpRequestHandler::getPathSegments('/'),
         );
         
         $this->assertEquals(
-            [
-                '',
-            ],
+            [],
             HttpRequestHandler::getPathSegments('//'),
         );
         

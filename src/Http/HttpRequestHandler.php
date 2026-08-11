@@ -53,7 +53,7 @@ final class HttpRequestHandler
     
             return $this->addCspSources($controller->generateResponse(
                 $request,
-                $pathSegments,
+                0 === $controllerRoute['n_args'] ? [] : array_slice($pathSegments, -$controllerRoute['n_args']),
                 [],
             ));
         } catch (SettingNotFoundException $e) {
@@ -65,27 +65,30 @@ final class HttpRequestHandler
         }
     }
 
+    /**
+     * @todo Create special interface for Error Response Generators
+     */
     public function generateErrorResponse(RequestInterface $request, Throwable $t): ResponseInterface
     {
         $pathSegments = self::getPathSegments($request->getRequestTarget());
         
         if ($t instanceof RequestedRouteNotFound || $t instanceof RequestedResourceNotFound) {
             $response = $this->container->get($this->configuration->getErrorNotFoundControllerFQCN())
-                ->generateResponse($request,$pathSegments, [])
+                ->generateResponse($request, $pathSegments, [])
             ;
         } elseif ($t instanceof AlreadyAuthenticated) {
             $response = $this->container->get($this->configuration->getErrorLoggedInControllerFQCN())
-                ->generateResponse($request,$pathSegments, [])
+                ->generateResponse($request, $pathSegments, [])
             ;
         } elseif ($t instanceof AccessDenied) {
             $response = $this->container->get($this->configuration->getErrorNotLoggedInControllerFQCN())
-                ->generateResponse($request,$pathSegments, [])
+                ->generateResponse($request, $pathSegments, [])
             ;
         } else {
             $response = $this->container->get($this->configuration->getServerErrorControllerFQCN())
                 ->generateResponse(
                     $request,
-                   $pathSegments,
+                    $pathSegments,
                     [
                         'throwable_hash' => hash('sha256', $t->__toString()),
                     ],
@@ -101,9 +104,6 @@ final class HttpRequestHandler
      * (origin-form of the composed URI) that is between two slashes,
      * or the last part after the last slash.
      * 
-     * The returned array is of length 1 at the very least, or an
-     * LengthException is thrown.
-     * 
      * @todo Make not static? It would be more OOP.
      * 
      * @return array<string>
@@ -117,10 +117,11 @@ final class HttpRequestHandler
             $requestTarget = substr($requestTarget, 0, -1);
         }
         $parts = array_map(fn ($e) => urldecode($e), explode('/', $requestTarget));
-        if (count($parts) === 0) {
-            throw new LengthException('Path should must at least one segment.');
+        if ([''] === $parts) {
+            return [];
+        } else {
+            return $parts;
         }
-        return $parts;
     }
 
     private function addCspSources(ResponseInterface $response): ResponseInterface
