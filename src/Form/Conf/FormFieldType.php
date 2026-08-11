@@ -12,6 +12,7 @@ enum FormFieldType: string
     case Date = 'date';
     case Img = 'img';
     case Int = 'int';
+    case Pwd = 'password';
     case Text = 'text';
     case Textarea = 'textarea';
 

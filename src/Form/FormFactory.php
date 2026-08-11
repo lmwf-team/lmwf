@@ -77,7 +77,7 @@ final class FormFactory
             return new ListTransformer($fieldConf, $this, $name);
         } elseif ($fieldConf->model instanceof JsonModel) {
             return new JsonTransformer($name);
-        } elseif (FormFieldType::Text === $fieldConf->type || FormFieldType::Textarea === $fieldConf->type) { 
+        } elseif (in_array($fieldConf->type, [FormFieldType::Text, FormFieldType::Textarea, FormFieldType::Pwd], strict: true)) { 
             return new StringTransformer($name);
         } elseif (FormFieldType::Img === $fieldConf->type) {
             return new FileTransformer($this->conf->getPathOfUploadedFiles(), $name);
