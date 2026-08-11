@@ -47,7 +47,6 @@ final class ArrayTransformer implements IFormTransformer
                 $relevantParsedBody,
                 $uploadedFiles,
             );
-            Log::debug("Extracted value for field $key is {$formData[$key]}.");
         }
         foreach ($formData as $key => $value) {
             if (null === $value && key_exists($key, $this->fieldDefaults)) {
