@@ -20,7 +20,7 @@ jobs:
 
       - uses: actions/upload-artifact@v7
         if: ${{ !cancelled() }}
-        overwrite: true
         with:
           name: coverage
+          overwrite: true
           path: xml-coverage/index.xml
