@@ -54,14 +54,14 @@ final class Configuration
         return $this->language;
     }
 
-    public function getPathOfProjectDirectory(): string
+    public function getPathOfAppDirectory(): string
     {
         return $this->configFolderPath;
     }
 
     public function getPathOfUploadedFiles(): string
     {
-        return $this->env['pathOfUploadedFiles'];
+        return $this->configFolderPath . '/' . $this->env['pathOfUploadedFiles'];
     }
 
     public function getPublicUrl(): string
