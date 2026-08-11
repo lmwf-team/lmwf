@@ -72,9 +72,9 @@ final class HttpRequestHandler
     /**
      * @return array<string>
      */
-    public function extractRouteParams(string $uri): array
+    public function extractRouteParams(ServerRequestInterface $request): array
     {
-        $parts = array_map(fn ($e) => urldecode($e), explode('/', $uri));
+        $parts = array_map(fn ($e) => urldecode($e), explode('/', $request->getRequestTarget()));
         if (1 === count($parts) && '' === $parts[0]) {
             return $parts;
         } else {
@@ -93,8 +93,6 @@ final class HttpRequestHandler
     public function findController(ServerRequestInterface $request): IResponseGenerator
     {
         $routeId = $this->extractRouteParams($request)[0];
-
-
 
         if (!$this->configuration->getRoutes()->hasProperty($routeId)) {
             throw new RequestedRouteNotFound();
