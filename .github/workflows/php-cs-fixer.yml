@@ -1,4 +1,4 @@
-name: PHPUnit
+name: PHP CS Fixer
 
 on:
   push:
@@ -7,13 +7,16 @@ on:
 permissions:
   contents: read
 
+env:
+  COMPOSER_CACHE_DIRECTORY: vendor
+
 jobs:
   phpunit:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
+      
       - uses: ./.github/actions/set-up-repository
 
-      - name: Run test suite
-        run: vendor/bin/phpunit tests
+      - name: Check coding style
+        run: vendor/bin/php-cs-fixer --silent -n check .
