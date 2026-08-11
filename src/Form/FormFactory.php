@@ -4,6 +4,7 @@ namespace LM\WebFramework\Form;
 
 use DomainException;
 use InvalidArgumentException;
+use LM\WebFramework\Configuration;
 use LM\WebFramework\Constraints\IUploadedImageConstraint;
 use LM\WebFramework\Form\Transformer\ArrayTransformer;
 use LM\WebFramework\Form\Transformer\CheckboxTransformer;
@@ -23,6 +24,7 @@ class FormFactory
     const CSRF_FORM_ELEMENT_NAME = '_csrf';
 
     public function __construct(
+        private Configuration $config,
         private CsrfTransformer $csrfTransformer,
     ) {
     }
@@ -55,7 +57,7 @@ class FormFactory
             if (null !== $model->getStringConstraints()) {
                 foreach ($model->getStringConstraints() as $c) {
                     if ($c instanceof IUploadedImageConstraint) {
-                        return new FileTransformer($name);
+                        return new FileTransformer($this->config->getUploadedFileFolder(), $name);
                     }
                 }
             }

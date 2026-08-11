@@ -6,10 +6,12 @@ class Configuration
 {
     private array $env;
 
-    public function __construct() {
-        $env = json_decode(file_get_contents(dirname(__FILE__) . '/../../../../.env.json'), true);
-        $envLocal = json_decode(file_get_contents(dirname(__FILE__) . '/../../../../.env.local.json'), true);
-        $this->env = $envLocal + $env;
+    public function __construct(string $configFolderPath) {
+        $env = file_get_contents("$configFolderPath/.env.json");
+        $envLocal = file_get_contents("$configFolderPath/.env.local.json");
+        $this->env = (false !== $envLocal ? json_decode($envLocal, true) : []) +
+            (false !== $env ? json_decode($env, true) : [])
+        ;
     }
 
     public function getBoolSetting(string $key): bool {
@@ -42,6 +44,10 @@ class Configuration
 
     public function getSetting(string $key): string {
         return $this->env[$key];
+    }
+
+    public function getUploadedFileFolder(): string {
+        return $this->env['uploadedFilesFolder'];
     }
 
     public function isDev(): bool {

@@ -21,11 +21,12 @@ class FileTransformer implements IFormTransformer
     private string $destinationFolder;
 
     public function __construct(
+        string $destinationFolder,
         string $name,
         bool $createThumbnails = true,
     ) {
         $this->name = $name;
-        $this->destinationFolder = dirname(__FILE__) . "/../../../../../../public/uploaded/";
+        $this->destinationFolder = $destinationFolder;
         $this->createThumbnails = $createThumbnails;
     }
 

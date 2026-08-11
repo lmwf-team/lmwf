@@ -10,8 +10,13 @@ class Kernel
 {
     const CLI_ID = 'cli';
 
-    public static function initialize(): ?ContainerInterface {
-        $container = (new ContainerBuilder())->build();
+    public static function initialize(string $projectRootPath): ?ContainerInterface {
+        $container = (new ContainerBuilder())
+            ->addDefinitions([
+                Configuration::class => new Configuration($projectRootPath),
+            ])
+            ->build()
+        ;
 
         if (self::CLI_ID === php_sapi_name()) {
             return $container;
