@@ -1,6 +1,7 @@
 <?php
 
 namespace LM\WebFramework\Model;
+
 use LM\WebFramework\Constraints\StringConstraint;
 
 class StringModel implements IModel

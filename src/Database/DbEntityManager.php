@@ -7,6 +7,7 @@ use InvalidArgumentException;
 use LM\WebFramework\Database\Exceptions\InvalidDbDataException;
 use LM\WebFramework\Database\Exceptions\NullDbDataNotAllowedException;
 use LM\WebFramework\DataStructures\AppObject;
+use LM\WebFramework\Model\AbstractEntity;
 use LM\WebFramework\Model\IModel;
 use UnexpectedValueException;
 
@@ -27,56 +28,16 @@ class DbEntityManager
      * @param mixed $dbData DB Data.
      * @param IModel $model The model of the DB Data.
      * @param string|null $prefix If DB Data is an array, the prefix to use when extracting its properties.
-     * @return mixed App Data.
+     * @return mixed App Data. (An AppObject, a boolean, etc.)
      * @throws InvalidArgumentException If $dbData is not of any DB Data variable type.
      */
     public function toAppData(mixed $dbData, IModel $model, ?string $prefix = null): mixed {
         if (is_array($dbData)) {
-            if (null !== $model->getArrayDefinition()) {
-                $appArray = [];
-
-                $nValidNull = 0;
-                $nInvalidNull = 0;
-                $firstNullException = null;
-                foreach ($model->getArrayDefinition() as $key => $property) {
-                    try {
-                        if (null !== $property->getArrayDefinition()) {
-                            $appData = $this->toAppData($dbData, $property, $key);
-                        } elseif (null !== $property->getListNodeModel()) {
-                            $subPrefix = 's' === substr($key, strlen($key) - 1) ? $subPrefix = substr($key, 0, strlen($key) - 1) : $key;
-                            $appData = $this->toAppData($dbData[$key], $property, $subPrefix);
-                        } else {
-                            $appData = $this->toAppData(
-                                $dbData[$prefix . self::SEP . $key],
-                                $property,
-                            );
-                        }
-                    } catch (NullDbDataNotAllowedException $e) {
-                        $appData = $e;
-                        $nInvalidNull++;
-                        if (null === $firstNullException) {
-                            $firstNullException = $e;
-                        }
-                    }
-                    if (null === $appData) {
-                        $nValidNull++;
-                    }
-                    $appArray[$key] = $appData;
-                }
-
-                if (null !== $firstNullException) {
-                    if (count($appArray) == $nValidNull + $nInvalidNull) {
-                        return $this->toAppData(null, $model, $prefix);
-                    }
-                    throw $firstNullException;
-                }
-                return new AppObject($appArray);
-            } elseif (null !== $model->getListNodeModel()) {
-                $appArray = [];
-                foreach ($dbData as $row) {
-                    $appArray[] = $this->toAppData($row, $model->getListNodeModel(), $prefix);
-                }
-                return $appArray;
+            if (array_is_list($dbData)) {
+                return $this->convertListToAppObject($dbData, $model, $prefix);
+            }
+            else {
+                return $this->convertNonListArrayToAppObject($dbData, $model, $prefix);
             }
         }
         if (is_numeric($dbData)) {
@@ -136,5 +97,103 @@ class DbEntityManager
         } else {
             return $appData;
         }
+    }
+
+    private function convertListToAppObject(array $dbList, IModel $model, ?string $prefix = null): ?AppObject
+    {
+        if (!array_is_list($dbList)) {
+            throw new InvalidArgumentException('Given data MUST be a list.');
+        }
+
+        if (null !== $model->getListNodeModel()) {
+            $appArray = [];
+            foreach ($dbList as $row) {
+                $appArray[] = $this->toAppData($row, $model->getListNodeModel(), $prefix);
+            }
+            return new AppObject($appArray);
+        } elseif (null !== $model->getArrayDefinition()) {
+
+            // 1. Separate, in the array definition, the list properties from the non-list properties
+            $nonListProperties = [];
+            $listProperties = [];
+            foreach ($model->getArrayDefinition() as $key => $property) {
+                if ($property->getListNodeModel()) {
+                    $listProperties[$key] = $property;
+                } else {
+                    $nonListProperties[$key] = $property;
+                }
+            }
+
+            // 2. Convert to an app object the model formed by the non-list properties
+            $appObject = $this->toAppData($dbList[0], new AbstractEntity($nonListProperties), $prefix);
+
+            // 3. Add to the app object the missing list properties
+            foreach ($listProperties as $key => $property) {
+                $subPrefix = 's' === substr($key, strlen($key) - 1) ? $subPrefix = substr($key, 0, strlen($key) - 1) : $key;
+
+                // List of items matching the current property
+                $items = [];
+                $ids = [];
+                
+                // For each list property, we will check each row of $dbList
+                foreach ($dbList as $row) {
+                    if (null !== $row["{$subPrefix}_id"] & !in_array($row["{$subPrefix}_id"], $ids, true)) {
+                        $items[] = $this->toAppData($row, $property->getListNodeModel(), $subPrefix);
+                    }
+                }
+
+                $appObject = $appObject->set($key, $items);
+            }
+
+            return $appObject;
+        } else {
+            throw new InvalidDbDataException($dbList, $model, $prefix);
+        }
+    }
+
+    private function convertNonListArrayToAppObject(array $dbArray, IModel $model, ?string $prefix = null): ?AppObject
+    {
+        if (null === $model->getArrayDefinition()) {
+            throw new InvalidDbDataException($dbArray, $model, $prefix);
+        }
+
+        $appArray = [];
+        $nValidNull = 0;
+        $nInvalidNull = 0;
+        $firstNullException = null;
+        foreach ($model->getArrayDefinition() as $key => $property) {
+            try {
+                if (null !== $property->getArrayDefinition()) {
+                    $appData = $this->toAppData($dbArray, $property, $key);
+                } elseif (null !== $property->getListNodeModel()) {
+                    $subPrefix = 's' === substr($key, strlen($key) - 1) ? $subPrefix = substr($key, 0, strlen($key) - 1) : $key;
+                    $appData = $this->toAppData($dbArray[$key], $property, $subPrefix);
+                } else {
+                    $appData = $this->toAppData(
+                        $dbArray[$prefix . self::SEP . $key],
+                        $property,
+                    );
+                }
+            } catch (NullDbDataNotAllowedException $e) {
+                $appData = $e;
+                $nInvalidNull++;
+                if (null === $firstNullException) {
+                    $firstNullException = $e;
+                }
+            }
+            if (null === $appData) {
+                $nValidNull++;
+            }
+            $appArray[$key] = $appData;
+        }
+
+        if (null !== $firstNullException) {
+            if (count($appArray) == $nValidNull + $nInvalidNull) {
+                return $this->toAppData(null, $model, $prefix);
+            }
+            throw $firstNullException;
+        }
+        
+        return new AppObject($appArray);
     }
 }

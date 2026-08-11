@@ -3,6 +3,9 @@
 namespace LM\WebFramework\Model;
 use InvalidArgumentException;
 
+/**
+ * @todo Rename so it doesn’t imply it needs to be abstract.
+ */
 class AbstractEntity implements IModel
 {
     public function __construct(

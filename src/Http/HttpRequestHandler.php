@@ -41,6 +41,7 @@ class HttpRequestHandler
     }
 
     /**
+     * @todo Should not include the route name?
      * @return array<string>
      */
     public function extractRouteParams(ServerRequestInterface $request): array {
