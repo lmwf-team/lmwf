@@ -421,37 +421,4 @@ final class DbEntityManagerTest extends TestCase
 
         self::assertEquals($expected, $this->em->convertDbRowsToEntityList($dbRows, $personModel));
     }
-
-    public function testPruning(): void
-    {
-        $model = (new EntityModel(
-            'my_model',
-            [
-                'id' => new StringModel(),
-                'sub_entity_id' => new StringModel(isNullable: true),
-            ],
-        ))->addItselfAsProperty('sub_entity', 'id', 'sub_entity_id', true);
-
-        $appObject = CollectionFactory::createDeepAppObject([
-            'id' => 'entity-00',
-            'sub_entity_id' => 'entity-01',
-            'sub_entity' => [
-                'id' => 'entity-01',
-                'sub_entity_id' => null,
-                'sub_entity' => null,
-                'extra' => 333,
-            ],
-            'extra' => false,
-        ]);
-        $expected = CollectionFactory::createDeepAppObject([
-            'id' => 'entity-00',
-            'sub_entity_id' => 'entity-01',
-            'sub_entity' => [
-                'id' => 'entity-01',
-                'sub_entity_id' => null,
-                'sub_entity' => null,
-            ],
-        ]);
-        self::assertEquals($expected, $this->em->pruneAppObject($appObject, $model));
-    }
 }

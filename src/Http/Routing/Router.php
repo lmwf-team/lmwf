@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace LM\WebFramework\Http\Routing;
 
 use DomainException;
+use LM\WebFramework\Conf\Http\RouteDef;
 use LM\WebFramework\ErrorHandling\Log;
 use LM\WebFramework\Http\Routing\Exception\RouteNotFoundException;
 use LogicException;

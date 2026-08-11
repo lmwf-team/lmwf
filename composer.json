@@ -30,6 +30,7 @@
         "squizlabs/php_codesniffer": "^4.0",
         "spaze/phpstan-disallowed-calls": "^4.13",
         "ergebnis/phpstan-rules": "^2.13",
-        "phpstan/phpstan-strict-rules": "^2.0"
+        "phpstan/phpstan-strict-rules": "^2.0",
+        "deptrac/deptrac": "^4.7"
     }
 }

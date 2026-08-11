@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace LM\WebFramework\DataStructures;
 
-use LM\WebFramework\Constraint\Factory\SlugModelFactory;
+use LM\WebFramework\Constraint\Factory\self;
 use Stringable;
 use UnexpectedValueException;
 use voku\helper\ASCII;
@@ -16,16 +16,22 @@ use voku\helper\ASCII;
  */
 final class Slug implements Stringable
 {
+    public const int SLUG_MAX_LENGTH = 255;
+
+    public const int SLUG_MIN_LENGTH = 1;
+
+    public const string SLUG_REGEX = '^(([a-z0-9])-?)*(?2)+$';
+
     private string $value;
 
     public function __construct(string $value, bool $transform = false, bool $allowEmpty = false)
     {
         if ($transform) {
-            $this->value = substr(ASCII::to_slugify($value, language: 'fr'), 0, SlugModelFactory::SLUG_MAX_LENGTH);
+            $this->value = substr(ASCII::to_slugify($value, language: 'fr'), 0, self::SLUG_MAX_LENGTH);
         } else {
             $this->value = $value;
         }
-        if (!$allowEmpty && (0 === strlen($this->value) || 1 !== preg_match('/' . SlugModelFactory::SLUG_REGEX . '/', $this->value))) {
+        if (!$allowEmpty && (0 === strlen($this->value) || 1 !== preg_match('/' . self::SLUG_REGEX . '/', $this->value))) {
             throw new UnexpectedValueException($this->value);
         }
     }

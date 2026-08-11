@@ -8,7 +8,7 @@ use DomainException;
 use LM\WebFramework\Http\Routing\Exception\RootRouteWithDefaultControllerException;
 use LM\WebFramework\Http\Routing\Exception\RouteNotFoundException;
 use LM\WebFramework\Http\Routing\Route;
-use LM\WebFramework\Http\Routing\RouteDef;
+use LM\WebFramework\Conf\Http\RouteDef;
 use LM\WebFramework\Http\Routing\Router;
 use PHPUnit\Framework\TestCase;
 

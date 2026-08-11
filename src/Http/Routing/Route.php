@@ -6,6 +6,7 @@ namespace LM\WebFramework\Http\Routing;
 
 use DomainException;
 use InvalidArgumentException;
+use LM\WebFramework\Conf\Http\RouteDef;
 use LM\WebFramework\Http\Routing\Exception\RootRouteWithDefaultControllerException;
 
 /**

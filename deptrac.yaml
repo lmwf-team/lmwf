@@ -1,0 +1,114 @@
+deptrac:
+  paths:
+    - ./src
+  exclude_files: ~
+  layers:
+    -
+      name: Conf
+      collectors:
+        -
+          type: directory
+          value: ./src/Conf
+    -
+      name: Constraint
+      collectors:
+        -
+          type: directory
+          value: ./src/Constraint
+    -
+      name: Controller
+      collectors:
+        -
+          type: directory
+          value: ./src/Controller
+    -
+      name: Database
+      collectors:
+        -
+          type: directory
+          value: ./src/Database
+    -
+      name: DataStructures
+      collectors:
+        -
+          type: directory
+          value: ./src/DataStructures
+    -
+      name: ErrorHandling
+      collectors:
+        -
+          type: directory
+          value: ./src/ErrorHandling
+    -
+      name: File
+      collectors:
+        -
+          type: directory
+          value: File/
+    -
+      name: Form
+      collectors:
+        -
+          type: directory
+          value: ./src/Form/
+    -
+      name: Http
+      collectors:
+        -
+          type: directory
+          value: ./src/Http
+    -
+      name: Kernel
+      collectors:
+        -
+          type: class
+          value: Kernel
+    -
+      name: SearchEngine
+      collectors:
+        -
+          type: directory
+          value: ./src/SearchEngine
+    -
+      name: Session
+      collectors:
+        -
+          type: directory
+          value: ./src/Session
+    -
+      name: Validation
+      collectors:
+        -
+          type: directory
+          value: ./src/Validation
+  ruleset:
+    Conf:
+      - DataStructures
+    Constraint:
+      - DataStructures
+    Controller:
+      - DataStructures
+      - Http
+    Database:
+      - Constraint
+      - DataStructures
+      - Validator
+    Validation:
+      - Constraint
+    Http:
+      - Conf
+      - Controller
+      - ErrorHandling
+      - Session
+    File:
+      - Conf
+      - Constraint
+    Form:
+      - Conf
+      - Constraint
+      - DataStructures
+      - ErrorHandling
+      - Session
+    Kernel:
+      - ErrorHandling
+      - Conf

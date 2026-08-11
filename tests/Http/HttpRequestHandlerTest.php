@@ -14,7 +14,7 @@ use LM\WebFramework\Controller\IRoutedController;
 use LM\WebFramework\Http\Security\CspNonce;
 use LM\WebFramework\Http\HttpRequestHandler;
 use LM\WebFramework\Http\Routing\Route;
-use LM\WebFramework\Http\Routing\RouteDef;
+use LM\WebFramework\Conf\Http\RouteDef;
 use LM\WebFramework\Kernel;
 use LM\WebFramework\Session\SessionManager;
 use PHPUnit\Framework\TestCase;

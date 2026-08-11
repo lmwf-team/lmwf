@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace LM\WebFramework\Tests\Http\Routing;
 
 use InvalidArgumentException;
-use LM\WebFramework\Http\Routing\RouteDef;
+use LM\WebFramework\Conf\Http\RouteDef;
 use LM\WebFramework\Http\Routing\Route;
 use PHPUnit\Framework\TestCase;
 use DomainException;

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework;
+namespace LM\WebFramework\ErrorHandling;
 
 enum ExceptionCode: int
 {

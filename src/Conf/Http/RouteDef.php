@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Http\Routing;
+namespace LM\WebFramework\Conf\Http;
 
 use InvalidArgumentException;
 

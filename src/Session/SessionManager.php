@@ -6,6 +6,9 @@ namespace LM\WebFramework\Session;
 
 use LM\WebFramework\Kernel;
 
+/**
+ * @todo Should be moved to Http.
+ */
 final class SessionManager
 {
     public const CSRF = 'csrf';
@@ -24,11 +27,12 @@ final class SessionManager
     private array $sessionData;
 
     /**
+     * @todo Magic string.
      * @param null|array<string, mixed> $sessionData
      */
     public function __construct(?array $sessionData = null)
     {
-        if (null !== $sessionData || Kernel::CLI_ID === php_sapi_name()) {
+        if (null !== $sessionData || 'cli' === php_sapi_name()) {
             $this->sessionData = $sessionData ?? [];
         } else {
             session_start();

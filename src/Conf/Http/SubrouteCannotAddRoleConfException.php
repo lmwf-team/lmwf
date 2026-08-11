@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Http\Routing\Exception;
+namespace LM\WebFramework\Conf\Http;
 
 use Exception;
 use Throwable;

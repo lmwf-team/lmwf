@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace LM\WebFramework\Conf;
 
-use LM\WebFramework\Http\Routing\RouteDef;
+use LM\WebFramework\Conf\Http\RouteDef;
 
 final class HttpConf
 {

@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace LM\WebFramework\Controller;
 
-use LM\WebFramework\Http\Routing\Route;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
+/**
+ * @todo Move Controller repo to Http namespace.
+ */
 interface IController
 {
     /**

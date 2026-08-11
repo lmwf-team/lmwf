@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace LM\WebFramework\Database;
 
-use DateMalformedStringException;
 use DateTimeImmutable;
 use InvalidArgumentException;
 use LM\WebFramework\Database\Exceptions\InvalidDbDataException;
@@ -12,7 +11,6 @@ use LM\WebFramework\Database\Exceptions\NullDbDataNotAllowedException;
 use LM\WebFramework\DataStructures\AppList;
 use LM\WebFramework\DataStructures\AppObject;
 use LM\WebFramework\DataStructures\Factory\CollectionFactory;
-use LM\WebFramework\Constraint\Type\AbstractEntityModel;
 use LM\WebFramework\Constraint\Type\BoolModel;
 use LM\WebFramework\Constraint\Type\DateTimeModel;
 use LM\WebFramework\Constraint\Type\EntityModel;
@@ -20,11 +18,9 @@ use LM\WebFramework\Constraint\Type\ForeignEntityModel;
 use LM\WebFramework\Constraint\Type\IntModel;
 use LM\WebFramework\Constraint\Type\IScalarModel;
 use LM\WebFramework\Constraint\Type\EntityListModel;
-use LM\WebFramework\Constraint\Type\IModel;
 use LM\WebFramework\Constraint\Type\ListModel;
 use LM\WebFramework\Constraint\Type\StringModel;
 use LM\WebFramework\Validation\EntityValidator;
-use LM\WebFramework\Validation\Validator;
 use UnexpectedValueException;
 
 /**
@@ -181,31 +177,6 @@ final class DbEntityManager
             }
         }
         return new AppList($appData);
-    }
-
-    /**
-     * Verifies and filter out any extra property from an AppObject.
-     *
-     * @param AppObject $appObject The AppObject instance to check and prune.
-     * @param EntityModel $model The model that the AppObject should adhere to.
-     * @return AppObject A verified AppObject trimmed of any extra property.
-     * @todo Good location for this method?
-     */
-    public function pruneAppObject(AppObject $appObject, EntityModel $model): AppObject
-    {
-        $validationResult = new EntityValidator($model)->validate($appObject->toArray());
-        if (null !== $validationResult) {
-            throw new InvalidArgumentException('Given app object does not adhere to the given model.');
-        }
-        $data = [];
-        foreach ($model->getProperties() as $key => $property) {
-            if ($property instanceof ForeignEntityModel && null !== $appObject[$key]) {
-                $data[$key] = $this->pruneAppObject($appObject[$key], $property->getEntityModel());
-            } else {
-                $data[$key] = $appObject[$key];
-            }
-        }
-        return CollectionFactory::createDeepAppObject($data);
     }
 
     /**

@@ -8,7 +8,7 @@ use LM\WebFramework\Conf\RouteDefParser;
 use LM\WebFramework\Http\Routing\Exception\InvalidRouteConfException;
 use LM\WebFramework\Http\Routing\Exception\SubrouteCannotAddRoleConfException;
 use LM\WebFramework\Http\Routing\Exception\UnauthorizedAttributeConfException;
-use LM\WebFramework\Http\Routing\RouteDef;
+use LM\WebFramework\Conf\Http\RouteDef;
 use PHPUnit\Framework\TestCase;
 use TypeError;
 
