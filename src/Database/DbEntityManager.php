@@ -104,7 +104,7 @@ final class DbEntityManager
                     $referencedRowNos = $this->getReferencedRowNos($dbRows, $property, $referenceId);
                     if (count($referencedRowNos) > 0) {
                         $value = $this->convertDbRowsToAppObject($dbRows, $property->getEntityModel(), $referencedRowNos[0]);
-                    } elseif (!$property->getEntityModel()->isNullable()) {
+                    } elseif (!$property->isNullable()) {
                         throw new UnexpectedValueException("Could not find specifed foreign entity using reference ID {$referenceId} and reference key {$property->getReferenceKeyInParent()} in parent and {$property->getReferencedKeyInChild()} in child for property {$key}.");
                     }
                 } elseif (!$property->isNullable()) {
