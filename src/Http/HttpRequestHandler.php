@@ -84,7 +84,8 @@ final class HttpRequestHandler
     public function generateResponse(ServerRequestInterface $request): ResponseInterface
     {
         $path = $request->getUri()->getPath();
-        $segs = $this->router->getSegmentsFromAbsolutePath($path);
+        Log::info("Path is: $path.");
+        $segs = $this->router->getSegs($path);
         Log::info("Found segments are: [" . implode(", ", $segs) . "].");
         $params = [];
 
@@ -110,6 +111,7 @@ final class HttpRequestHandler
             Log::info("HTTP method is not supported.");
             $fqcn = $this->conf->routeErrorMethodNotSupportedFQCN;
         } catch (Throwable $t) {
+            Log::error($t->__toString());
             $fqcn = $this->conf->serverErrorControllerFQCN;
             $params = [
                 'throwable_hash' => hash('sha256', $t->__toString()),
