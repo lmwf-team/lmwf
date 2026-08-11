@@ -1,73 +1,54 @@
 <?php
 
-session_start();
+// define core constants and functions
+define('PDM_PAGE', 'page');
+define('PDM_SRC', '../private/');
 
-require_once(private_root().'lib/f_currentlyconnecteduser/f_currentlyconnecteduser.php');
-require_once(private_root().'views/I_Controller.php');
+/**
+ * An example of a project-specific implementation.
+ *
+ * After registering this autoload function with SPL, the following line
+ * would cause the function to attempt to load the \Foo\Bar\Baz\Qux class
+ * from /path/to/project/src/Baz/Qux.php:
+ *
+ *      new \Foo\Bar\Baz\Qux;
+ *
+ * @param string $class The fully-qualified class name.
+ * @return void
+ */
+spl_autoload_register(function ($class) {
+    // project-specific namespace prefix
+    $prefix = '';
 
-// TODO: check coding style
+    // base directory for the namespace prefix
+    $base_dir = PDM_SRC;
 
-$controllerName = isset($_GET['page']) ? $_GET['page'] : 'index';
-
-$controller = getController($controllerName);
-
-switch ($_SERVER['REQUEST_METHOD']) {
-    case 'GET':
-        $controller->get();
-        break;
-    
-    case 'POST':
-        $controller->post();
-        break;
-}
-
-function getController(string $controllerName): I_Controller
-{
-    $controller;
-    switch ($controllerName) {
-        case 'index':
-            require_once(views().'Index.php');
-            $controller = new Index();
-            break;
-
-        case 'login':
-            require_once(views().'Login.php');
-            $controller = new Controller();
-            break;
-        
-        case 'logout':
-            require_once(views().'Logout.php');
-            $controller = new Logout();
-            break;
+    // does the class use the namespace prefix?
+    $len = strlen($prefix);
+    if (strncmp($prefix, $class, $len) !== 0) {
+        // no, move to the next registered autoloader
+        return;
     }
-    return $controller;
-}
 
-function views(): string
-{
-    return '../private/views/';
-}
+    // get the relative class name
+    $relative_class = substr($class, $len);
 
-function getPage(array $get): ?string
-{
-    if (!isset($get['page'])) {
-        return null;
-    } else {
-        return $get['page'];
+    // replace the namespace prefix with the base directory, replace namespace
+    // separators with directory separators in the relative class name, append
+    // with .php
+    $file = $base_dir . str_replace('\\', '/', $relative_class) . '.php';
+
+    // if the file exists, require it
+    if (file_exists($file)) {
+        require $file;
     }
-}
+});
 
-function translate(string $string): string
-{
-    return $string;
-}
+$router = new LM\Router;
+$controller = $router->getControllerFromRequest();
 
-function private_root(): string
-{
-    return '../private/';
-}
-
-function lib_root(): string
-{
-    return '../private/lib/';
+if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+    $controller->doGet();
+} elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $controller->doPost();
 }
