@@ -25,7 +25,7 @@ class FileTransformer implements IFormTransformer
         bool $createThumbnails = true,
     ) {
         $this->name = $name;
-        $this->destinationFolder = dirname(__FILE__) . "/../../../../public/uploaded/";
+        $this->destinationFolder = dirname(__FILE__) . "/../../../../../../public/uploaded/";
         $this->createThumbnails = $createThumbnails;
     }
 
