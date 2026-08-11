@@ -7,12 +7,8 @@ namespace LM\WebFramework;
 use DI\ContainerBuilder;
 use LM\WebFramework\Configuration\Configuration;
 use LM\WebFramework\Configuration\HttpConf;
-use LM\WebFramework\DataStructures\Factory\CollectionFactory;
-use LM\WebFramework\ErrorHandling\LoggedException;
 use LM\WebFramework\ErrorHandling\LogLevel;
 use Psr\Container\ContainerInterface;
-use Psr\Http\Message\ResponseInterface;
-use Throwable;
 
 final class Kernel
 {

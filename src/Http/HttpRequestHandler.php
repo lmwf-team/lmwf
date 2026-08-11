@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace LM\WebFramework\Http;
 
-use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\ServerRequest;
-use InvalidArgumentException;
 use LM\WebFramework\Configuration\HttpConf;
 use LM\WebFramework\Controller\Exception\AccessDenied;
 use LM\WebFramework\Controller\Exception\AlreadyAuthenticated;
@@ -27,31 +25,20 @@ final class HttpRequestHandler
     public const SUPPORTED_METHODS = ['GET', 'HEAD', 'POST', 'READ', 'PUT', 'PATCH', 'OPTIONS', 'DELETE'];
     public const UNEXISTING_ROUTE = 1000;
 
-    private RouteDef $rootRoute;
-
     public function __construct(
-        private HttpConf $conf,
         private ContainerInterface $container,
+        private HttpConf $conf,
+        private Router $router,
         private SessionManager $session,
     ) {
-        $this->rootRoute = $conf->rootRoute;
-    }
-
-    public function sendResponse(ResponseInterface $response): void
-    {
-        http_response_code($response->getStatusCode());
-
-        foreach ($response->getHeaders() as $headerName => $headerValues) {
-            header($headerName . ': ' . implode(', ', $headerValues));
-        };
-
-        echo $response->getBody()->__toString();
     }
 
     /// @todo Use pipe operator!
     public function respondToOngoingRequest(): void
     {
         $request = ServerRequest::fromGlobals();
+        $response = $this->generateResponse($request);
+        $this->sendResponse($response);
 
         // set_error_handler(
         //     function ($errNo, $errStr, $errFile, $errLine)
@@ -88,8 +75,6 @@ final class HttpRequestHandler
         //         exit();
         //     }
         // );
-        $response = $this->generateResponse($request);
-        $this->sendResponse($response);
     }
 
     /**
@@ -99,18 +84,18 @@ final class HttpRequestHandler
     public function generateResponse(ServerRequestInterface $request): ResponseInterface
     {
         $path = $request->getUri()->getPath();
-        $segs = Router::getSegmentsFromPath($path);
-        Logger::notice("Found segments are \"" . implode(",", $segs) . "\".");
+        $segs = $this->router->getSegmentsFromAbsolutePath($path);
+        Logger::notice("Found segments are: " . implode(", ", $segs) . ".");
         $params = [];
 
         if (!$this->conf->handleExceptions) {
             Logger::notice("Exceptions are not handled by the app.");
-            return $this->generateResponseFromRoute($request, $segs);
+            return $this->generateResponseFromRoute($request);
         }
 
         try {
             Logger::notice("Exceptions are handled by the app.");
-            return $this->generateResponseFromRoute($request, $segs);
+            return $this->generateResponseFromRoute($request);
         } catch (RouteNotFoundException | RequestedResourceNotFound) {
             Logger::notice("Resource requested by user was not found.");
             $fqcn = $this->conf->routeError404ControllerFQCN;
@@ -140,12 +125,13 @@ final class HttpRequestHandler
     /**
      * @param string[] $segs A list of URL-decoded path segments.
     */
-    public function generateResponseFromRoute(ServerRequestInterface $request, array $segs): ResponseInterface
+    public function generateResponseFromRoute(ServerRequestInterface $request): ResponseInterface
     {
         if (!in_array($request->getMethod(), self::SUPPORTED_METHODS, true)) {
             throw new UnsupportedMethodException();
         }
-        $route = (new Router())->getRouteFromSegs($this->rootRoute, null, $segs);
+        
+        $route = (new Router())->getRouteFromPath($this->conf->rootRoute, $request->getUri()->getPath());
         Logger::notice("Request matches controller \"{$route->getFqcn()}\".");
         $controller = $this->container->get($route->getFqcn());
 
@@ -169,7 +155,7 @@ final class HttpRequestHandler
         $response = $controller->generateResponse(
             $route,
             $request,
-            0 === $route->nArgs ? [] : array_slice($segs, -$route->nArgs),
+            $route->relevantSegs,
             [],
         );
 
@@ -192,5 +178,16 @@ final class HttpRequestHandler
             $cspValues[] = "style-src {$this->conf->cspStyleSources}";
         }
         return $response->withAddedHeader('Content-Security-Policy', implode(';', $cspValues));
+    }
+
+    public function sendResponse(ResponseInterface $response): void
+    {
+        http_response_code($response->getStatusCode());
+
+        foreach ($response->getHeaders() as $headerName => $headerValues) {
+            header($headerName . ': ' . implode(', ', $headerValues));
+        };
+
+        echo $response->getBody()->__toString();
     }
 }

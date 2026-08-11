@@ -19,10 +19,10 @@ final readonly class Route
      * @todo PathSegList?
      */
     public function __construct(
-        public RouteDef $routeDef,
-        public array $relevantSegs,
-        public ?Route $parent = null,
-        public int $nArgs = 0,
+        public readonly RouteDef $routeDef,
+        public readonly array $relevantSegs,
+        public readonly ?Route $parent = null,
+        public readonly int $nArgs = 0,
     ) {
         if ($nArgs < 0) {
             throw new InvalidArgumentException("A Route's number of arguments cannot be negative, received {$nArgs}.");
@@ -37,8 +37,8 @@ final readonly class Route
                 throw new InvalidArgumentException("Instantiation of ParameterizedRoute has a number of arguments above the maximum ({$nArgs} > {$routeDef->maxArgs}).");
             }
         }
-        if (0 === count($relevantSegs) && null !== $parent) {
-            throw new InvalidArgumentException("A route that is not root must have relevant path segments.");
+        if (0 === count($relevantSegs)) {
+            throw new InvalidArgumentException("A route must have relevant path segments.");
         }
         foreach ($relevantSegs as $seg) {
             if (!is_string($seg)) {
@@ -54,14 +54,7 @@ final readonly class Route
 
     public function getPath(): string
     {
-        if ([] === $this->relevantSegs) {
-            return '/';
-        }
-        $path = $this->parent?->getPath();
-        if ('/' !== $path) {
-            $path .= '/';
-        }
-        return  $path . implode('/', $this->relevantSegs);
+        return  '/' . implode('/', $this->relevantSegs);
     }
 
     /**
