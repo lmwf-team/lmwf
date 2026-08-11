@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Tests\Validator;
+namespace LM\WebFramework\Tests\Validation;
 
 use LM\WebFramework\Model\Type\EntityModel;
 use LM\WebFramework\Model\Type\IntModel;

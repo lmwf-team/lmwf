@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Validator;
+namespace LM\WebFramework\Validation;
 
-interface IStringValidator
+interface IIntValidator
 {
     /**
      * @return \LM\WebFramework\DataStructures\ConstraintViolation[]
      */
-    public function validateString(string $data): array;
+    public function validateInt(int $data): array;
 }

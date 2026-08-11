@@ -13,6 +13,7 @@ use LM\WebFramework\Form\Transformer\CsrfTransformer;
 use LM\WebFramework\Form\Transformer\DateTimeTransformer;
 use LM\WebFramework\Form\Transformer\FileTransformer;
 use LM\WebFramework\Form\Transformer\IFormTransformer;
+use LM\WebFramework\Form\Transformer\IntTransformer;
 use LM\WebFramework\Form\Transformer\ListTransformer;
 use LM\WebFramework\Form\Transformer\StringTransformer;
 use LM\WebFramework\Model\Type\BoolModel;
@@ -38,10 +39,8 @@ final class FormFactory
     ) {
     }
 
-    public function createForm(IModel $model, array $config = []): ArrayTransformer {
-        if (!$model instanceof EntityModel) {
-            throw new InvalidArgumentException('Model must possess an array definition.');
-        }
+    public function createForm(EntityModel $model, array $config = []): ArrayTransformer
+    {
         return $this->createTransformer($model, $config, null, true);
     }
 
@@ -75,7 +74,7 @@ final class FormFactory
             return new StringTransformer($name);
         }
         if ($model instanceof IntModel) {
-            return new StringTransformer($name);
+            return new IntTransformer($name);
         }
         if ($model instanceof DateTimeModel) {
             return new DateTimeTransformer($name);

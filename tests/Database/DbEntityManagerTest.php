@@ -178,7 +178,7 @@ final class DbEntityManagerTest extends TestCase
 
         $expectedParent = new AppObject([
             'id' => 'all-articles',
-            'children' => new AppObject([
+            'children' => [
                 new AppObject([
                     'id' => 'some-specific-articles',
                     'parent_id' => 'all-articles',
@@ -187,7 +187,7 @@ final class DbEntityManagerTest extends TestCase
                     'id' => 'some-even-more-specific-articles',
                     'parent_id' => 'all-articles',
                 ]),
-            ]),
+            ],
         ]);
 
         $this->assertEquals(

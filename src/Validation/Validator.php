@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Validator;
+namespace LM\WebFramework\Validation;
 
 use InvalidArgumentException;
-use LM\WebFramework\DataStructures\ConstraintViolation;
+use LM\WebFramework\Validation\ConstraintViolation\ConstraintViolation;
 use LM\WebFramework\Model\Type\IModel;
 use LM\WebFramework\Model\Type\BoolModel;
 use LM\WebFramework\Model\Type\DateTimeModel;
@@ -19,7 +19,7 @@ use LM\WebFramework\Model\Type\StringModel;
 /**
  * Validator for type model data.
  */
-final class ModelValidator
+final class Validator
 {
     private ITypeValidator $validator;
 

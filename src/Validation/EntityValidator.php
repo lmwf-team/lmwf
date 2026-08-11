@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Validator;
+namespace LM\WebFramework\Validation;
 
-use LM\WebFramework\DataStructures\ConstraintViolation;
+use LM\WebFramework\Validation\ConstraintViolation\ConstraintViolation;
 use LM\WebFramework\Model\Type\EntityModel;
 
 class EntityValidator implements ITypeValidator
@@ -25,13 +25,15 @@ class EntityValidator implements ITypeValidator
         $violations = [];
         foreach ($this->model->getProperties() as $key => $model) {
             if (key_exists($key, $value)) {
-                $propertyViolations = (new ModelValidator($model))->validate($value[$key]);
+                $propertyViolations = (new Validator($model))->validate($value[$key]);
             } else {
                 $propertyViolations = [
                     new ConstraintViolation($this->model, "Property {$key} is not defined."),
                 ];
             }
-            $violations += $propertyViolations;
+            if (count($propertyViolations) > 0) {
+                $violations[$key] = $propertyViolations;
+            }
         }
 
         return $violations;

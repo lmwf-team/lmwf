@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Validator;
+namespace LM\WebFramework\Validation;
 
 use LM\WebFramework\Model\Type\ForeignEntityModel;
 
@@ -18,6 +18,6 @@ class ForeignEntityValidator implements ITypeValidator
      */
     public function validate(mixed $value): array
     {
-        return (new ModelValidator($this->model->getEntityModel()))->validate($value);
+        return (new Validator($this->model->getEntityModel()))->validate($value);
     }
 }

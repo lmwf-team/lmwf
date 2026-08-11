@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\DataStructures;
+namespace LM\WebFramework\Validation\ConstraintViolation;
 
 use LM\WebFramework\Model\Constraints\IConstraint;
 use Stringable;

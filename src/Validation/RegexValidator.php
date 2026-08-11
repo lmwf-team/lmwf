@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Validator;
+namespace LM\WebFramework\Validation;
 
-use LM\WebFramework\DataStructures\ConstraintViolation;
+use LM\WebFramework\Validation\ConstraintViolation\ConstraintViolation;
 use LM\WebFramework\Model\Constraints\IRegexConstraint;
 
 final class RegexValidator implements IStringValidator
