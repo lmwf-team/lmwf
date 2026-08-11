@@ -6,6 +6,9 @@ namespace LM\WebFramework\DataStructures;
 
 use InvalidArgumentException;
 
+/**
+ * @todo Should go in Search namespace.
+ */
 final class Searchable
 {
     public function __construct(

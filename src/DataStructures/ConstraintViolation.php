@@ -7,6 +7,9 @@ namespace LM\WebFramework\DataStructures;
 use LM\WebFramework\Model\Constraints\IConstraint;
 use Stringable;
 
+/**
+ * @todo Should be moved to Validator namespace.
+ */
 final class ConstraintViolation implements Stringable
 {
     public function __construct(

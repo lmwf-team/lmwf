@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace LM\WebFramework\DataStructures;
 
+/**
+ * @todo Should go in web namespace.
+ */
 final class Page
 {
     public function __construct(

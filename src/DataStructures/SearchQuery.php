@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace LM\WebFramework\DataStructures;
 
+/**
+ * @todo Should go in search namespace.
+ */
 final class SearchQuery
 {
     CONST ACCEPTED_DELIMITERS = [

@@ -12,6 +12,7 @@ final class EntityModel extends AbstractModel
      * @param string $prefix The model slug identifier.
      * @param IModel[] $properties An associative list of properties.
      * @param bool $isNullable Whether the entity is nullable.
+     * @todo Check that property keys are strings.
      */
     public function __construct(
         private string $identifier,

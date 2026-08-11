@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace LM\WebFramework\DataStructures;
 
-use LM\WebFramework\Model\Constraints\IRegexConstraint;
 use LM\WebFramework\Model\Factory\SlugModelFactory;
 use Stringable;
 use UnexpectedValueException;
 use voku\helper\ASCII;
 
+/**
+ * @todo web namespace?
+ */
 final class Slug implements Stringable
 {
     private string $value;

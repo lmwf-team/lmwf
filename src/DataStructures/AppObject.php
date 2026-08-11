@@ -8,6 +8,7 @@ use ArrayAccess;
 use ArrayIterator;
 use BadMethodCallException;
 use Countable;
+use InvalidArgumentException;
 use IteratorAggregate;
 use Traversable;
 
@@ -19,12 +20,33 @@ final class AppObject implements ArrayAccess, Countable, IteratorAggregate
     private array $data;
 
     /**
-     * @param mixed[] $appArray An app array.
+     * @param array<string, array|bool|int|string|null> $appArray An app array.
      */
     public function __construct(array $appArray) {
+        if (array_is_list($appArray)) {
+            throw new InvalidArgumentException('App array must be an associative array with string keys, not a list.');
+        }
         $this->data = [];
         foreach ($appArray as $key => $value) {
-            $this->data[$key] = is_array($value) ? new self($value) : $value;
+            $this->data[$key] = $this->toAppObject($value);
+        }
+            
+    }
+
+    private function toAppObject(mixed $appValue): mixed
+    {
+        if (is_array($appValue)) {
+            if (array_is_list($appValue)) {
+                $list = [];
+                foreach ($appValue as $value) {
+                    $list[] = $this->toAppObject($value);
+                }
+                return $list;
+            } else {
+                return new self($appValue);
+            }
+        } else {
+            return $appValue;
         }
     }
 
