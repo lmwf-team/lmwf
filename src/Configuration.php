@@ -7,7 +7,9 @@ class Configuration
     private array $env;
 
     public function __construct() {
-        $this->env = json_decode(file_get_contents(dirname(__FILE__) . '/../../../../.env.json'), true);
+        $env = json_decode(file_get_contents(dirname(__FILE__) . '/../../../../.env.json'), true);
+        $envLocal = json_decode(file_get_contents(dirname(__FILE__) . '/../../../../.env.local.json'), true);
+        $this->env = $envLocal + $env;
     }
 
     public function getBoolSetting(string $key): bool {
