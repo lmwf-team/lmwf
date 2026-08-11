@@ -1,0 +1,1 @@
+docker-compose run --rm lm_web_framework_img bash

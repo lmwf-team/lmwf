@@ -1,0 +1,7 @@
+services:
+    lm_web_framework_img:
+        build:
+            context: ./docker
+        volumes:
+            - .:/usr/src/myapp
+        tty: true
