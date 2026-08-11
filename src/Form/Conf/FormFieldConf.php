@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace LM\WebFramework\Form\Conf;
 
 use Closure;
-use LM\WebFramework\Model\Constraints\RangeConstraint;
+use LM\WebFramework\Model\Constraints\IRangeConstraint;
 use LM\WebFramework\Model\Type\IModel;
 use Traversable;
 
@@ -28,7 +28,7 @@ readonly class FormFieldConf
         public ?Closure $default,
         public ?string $id,
         public bool $isRequired,
-        public ?RangeConstraint $rangeConstraint,
+        public ?IRangeConstraint $rangeConstraint,
         public FormFieldType $type,
         public null|array|Traversable $values,
     ) {

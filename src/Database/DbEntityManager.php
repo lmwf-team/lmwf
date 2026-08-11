@@ -119,8 +119,10 @@ final class DbEntityManager
                 $itemModel = $property->getItemModel();
                 $referenceId = $dbRows[$index][$model->getIdentifier() . self::SEP . $itemModel->getReferenceKeyInParent()];
                 $value = $this->convertDbEntityList($dbRows, $property, $referenceId);
-            } else {
+            } elseif ($property instanceof IScalarModel) {
                 $value = $this->convertDbScalar($dbRows[$index][$model->getIdentifier() . self::SEP . $key], $property);
+            } else {
+                throw new UnexpectedValueException('Given property is not of any expected type.');
             }
 
             $transientAppObject[$key] = $value;
