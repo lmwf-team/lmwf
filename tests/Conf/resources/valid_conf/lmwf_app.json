@@ -6,8 +6,6 @@
     "cspStyleSources": [],
     "homeUrl": "",
     "language": "en",
-    "loggerFqcn": "",
-    "logLevel": "NOTICE",
     "publicPath": "",
     "rootRoute": {
         "fqcn": "App.Controller.HomeController",

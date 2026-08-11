@@ -8,7 +8,6 @@ use InvalidArgumentException;
 use LM\WebFramework\Configuration\Exception\CouldNotReadFileException;
 use LM\WebFramework\DataStructures\AppObject;
 use LM\WebFramework\DataStructures\Factory\CollectionFactory;
-use LM\WebFramework\ErrorHandling\LogLevel;
 
 /**
  * Creates and validates a configuration given the path to the project folder.
@@ -23,11 +22,8 @@ final class Configuration
     public const string APP_PATH_KEY = "appPath";
     public const string HANLDE_EXCEPTIONS = "handleExceptions";
     public const string LANGUAGE_KEY = "language";
-    public const string LOG_LEVEL_KEY = "logLevel";
 
     public readonly HttpConf $httpConf;
-
-    public readonly LogLevel $logLevel;
 
     /**
      * Gives access to the raw configuration data.
@@ -41,7 +37,6 @@ final class Configuration
 
     public readonly string $homeUrl;
     public readonly string $language;
-    public readonly ?string $loggerFqcn;
     public readonly string $appRootPath;
     public readonly string $uploadRelPath;
     public readonly string $publicPath;
@@ -75,15 +70,6 @@ final class Configuration
         );
     }
 
-    public static function parseLogLevel(string $logLevelStr): LogLevel
-    {
-        switch ($logLevelStr) {
-            case "NOTICE":
-                return LogLevel::NOTICE;
-        }
-        throw new InvalidArgumentException("Log level \"{$logLevelStr}\" specified in configuration is unknown.");
-    }
-
     /**
      * @todo Could go in a separate service dedicated to reading files.
      */
@@ -107,12 +93,9 @@ final class Configuration
 
         $this->homeUrl = $confData['homeUrl'];
         $this->language = $confData['language'];
-        $this->loggerFqcn = $confData['loggerFqcn'];
         $this->appRootPath = $confData['appRootPath'];
         $this->uploadRelPath = $confData['uploadRelPath'];
         $this->publicPath = $confData['publicPath'];
-
-        $this->logLevel = self::parseLogLevel($confData[self::LOG_LEVEL_KEY]);
 
         $this->httpConf = new HttpConf(
             (new RouteDefParser())->parse($confData['rootRoute']),

@@ -46,13 +46,11 @@ final class ConfFileTest extends TestCase
             __DIR__ . "/resources/valid_conf",
             [
                 'handleExceptions' => true,
-                'loggerFqcn' => self::class,
                 'routeError404ControllerFQCN' => self::class . '2',
             ],
         );
         $this->assertEquals($conf->uploadRelPath, $jsonDist['uploadRelPath']);
         $this->assertEquals($conf->language, $jsonLocal['language']);
-        $this->assertEquals($conf->loggerFqcn, self::class);
         $this->assertEquals($conf->httpConf->routeError404ControllerFQCN, self::class . '2');
         $this->assertEquals($conf->handleExceptions, true);
     }

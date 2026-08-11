@@ -7,9 +7,14 @@ namespace LM\WebFramework;
 use DI\ContainerBuilder;
 use LM\WebFramework\Configuration\Configuration;
 use LM\WebFramework\Configuration\HttpConf;
-use LM\WebFramework\ErrorHandling\LogLevel;
+use LM\WebFramework\ErrorHandling\Log;
 use Psr\Container\ContainerInterface;
+use Psr\Log\LoggerInterface;
 
+/**
+ * Initialises the Dependency Injection container, the configuration as well as
+ * the logger if the configuration specifies one.
+ */
 final class Kernel
 {
     public const string CLI_ID = 'cli';
@@ -23,17 +28,12 @@ final class Kernel
         string $projectRootPath,
         string $language,
         array $runtimeConfig = [],
+        ?LoggerInterface $logger = null,
     ): ContainerInterface {
         $config = Configuration::createFromEnvFile(
             $projectRootPath,
             $runtimeConfig,
         );
-
-        if ($config->logLevel === LogLevel::NOTICE) {
-            error_reporting(E_ERROR | E_WARNING | E_PARSE | E_NOTICE);
-        } else {
-            error_reporting(E_ERROR | E_WARNING | E_PARSE);
-        }
 
         $cb = new ContainerBuilder();
         if (!$config->isDev) {
@@ -46,6 +46,7 @@ final class Kernel
             ])
             ->build()
         ;
+        Log::init($logger);
 
         return $container;
     }
@@ -53,6 +54,7 @@ final class Kernel
     public static function initWithRuntimeConf(
         array $confData = [],
         array $containerDefinitions = [],
+        ?LoggerInterface $logger = null,
     ): ContainerInterface {
         $conf = new Configuration($confData);
 
@@ -66,18 +68,21 @@ final class Kernel
             ->addDefinitions($containerDefinitions)
             ->build()
         ;
+        Log::init($logger);
 
         return $container;
     }
 
     public static function initBare(
         array $containerDefinitions = [],
+        ?LoggerInterface $logger = null,
     ): ContainerInterface {
         $cb = new ContainerBuilder();
         $container = $cb
             ->addDefinitions($containerDefinitions)
             ->build()
         ;
+        Log::init($logger);
 
         return $container;
     }
