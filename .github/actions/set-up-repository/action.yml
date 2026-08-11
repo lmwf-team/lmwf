@@ -25,6 +25,5 @@ runs:
           ${{ runner.os }}-composer-
 
     - name: Install Composer dependencies
-      if: steps.composer-cache.outputs.cache-hit != 'true'
       run: composer install --prefer-dist --no-progress
       shell: bash
