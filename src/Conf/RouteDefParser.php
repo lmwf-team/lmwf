@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace LMWF\Conf;
 
-use LMWF\Conf\Exception\SettingNotFoundException;
 use LMWF\Conf\Http\RouteDef;
 use LMWF\Conf\Http\SubrouteCannotAddRoleConfException;
 use LMWF\Conf\Http\UnauthorizedAttributeConfException;

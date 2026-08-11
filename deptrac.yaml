@@ -93,12 +93,15 @@ deptrac:
     File:
       - Conf
       - Constraint
+      - DataStructures
     Form:
       - Conf
       - Constraint
       - DataStructures
       - ErrorHandling
+      - File
       - Session
     Kernel:
       - Conf
+      - DataStructures
       - ErrorHandling

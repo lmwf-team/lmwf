@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace LMWF\Conf;
 
-use LMWF\DataStructures\AppList;
 use LMWF\DataStructures\AppObject;
 use LMWF\DataStructures\Exceptions\UnexpectedPropertyType;
 use LMWF\DataStructures\Factory\CollectionFactory;
