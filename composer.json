@@ -7,6 +7,12 @@
     ],
     "name": "lmwf-team/lmwf",
     "description": "Lightweight web framework that doesn't require tons of dependencies and keeps you in control.",
+    "homepage": "https://lmwf-team.github.io/lmwf/phpdoc/",
+    "support": {
+        "issues": "https://github.com/lmwf-team/lmwf/issues",
+        "source": "https://github.com/lmwf-team/lmwf"
+    },
+    "type": "library",
     "autoload": {
         "psr-4": {
             "LMWF\\": "src/",
