@@ -1,0 +1,10 @@
+includes:
+	- vendor/ergebnis/phpstan-rules/rules.neon
+parameters:
+	level: 2
+	paths:
+		- src
+		- tests
+	ergebnis:
+		declareStrictTypes:
+			enabled: true
