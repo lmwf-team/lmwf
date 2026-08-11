@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace LM\WebFramework\Conf;
 
 use LM\WebFramework\Conf\Exception\SettingNotFoundException;
-use LM\WebFramework\Http\Routing\Exception\SubrouteCannotAddRoleConfException;
-use LM\WebFramework\Http\Routing\Exception\UnauthorizedAttributeConfException;
 use LM\WebFramework\Conf\Http\RouteDef;
+use LM\WebFramework\Conf\Http\SubrouteCannotAddRoleConfException;
+use LM\WebFramework\Conf\Http\UnauthorizedAttributeConfException;
 
 final readonly class RouteDefParser
 {

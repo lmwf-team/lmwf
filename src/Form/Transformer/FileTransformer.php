@@ -42,7 +42,7 @@ final readonly class FileTransformer implements IFormTransformer
     /**
      * Save and convert the submitted file and return its path, or return the
      * previously submitted file.
-     * 
+     *
      * @return null|list<string>|string
      */
     #[\Override]
@@ -68,7 +68,7 @@ final readonly class FileTransformer implements IFormTransformer
 
     /**
      * @todo Handle multiple filenames.
-     * 
+     *
      * @param array<string, mixed> $parsedPayload
      */
     private function extractPreviousFilename(array $parsedPayload): ?string

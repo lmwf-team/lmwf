@@ -5,10 +5,9 @@ declare(strict_types=1);
 namespace LM\WebFramework\Tests\Conf\Routing;
 
 use LM\WebFramework\Conf\RouteDefParser;
-use LM\WebFramework\Http\Routing\Exception\InvalidRouteConfException;
-use LM\WebFramework\Http\Routing\Exception\SubrouteCannotAddRoleConfException;
-use LM\WebFramework\Http\Routing\Exception\UnauthorizedAttributeConfException;
 use LM\WebFramework\Conf\Http\RouteDef;
+use LM\WebFramework\Conf\Http\SubrouteCannotAddRoleConfException;
+use LM\WebFramework\Conf\Http\UnauthorizedAttributeConfException;
 use PHPUnit\Framework\TestCase;
 use TypeError;
 

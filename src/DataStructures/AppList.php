@@ -9,7 +9,7 @@ use InvalidArgumentException;
 /**
  * Immutable list of heterogeneous data, guaranteed to have zero-indexed
  * sequential property keys.
- * 
+ *
  * @extends ImmutableArray<int>
  */
 final readonly class AppList extends ImmutableArray

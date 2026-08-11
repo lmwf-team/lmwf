@@ -12,7 +12,7 @@ use OutOfBoundsException;
  * necessarily string, and values can be any data type.
  *
  * @todo Force a certain naming style for property keys?
- * 
+ *
  * @extends ImmutableArray<non-decimal-int-string>
  */
 final readonly class AppObject extends ImmutableArray

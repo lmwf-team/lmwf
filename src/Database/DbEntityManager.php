@@ -25,7 +25,7 @@ use UnexpectedValueException;
 
 /**
  * @todo Could be renamed to DbEntityFactory / DbArrayFactory.
- * 
+ *
  * @phpstan-type dbrow array<string, null|scalar>
  */
 final class DbEntityManager
@@ -148,7 +148,7 @@ final class DbEntityManager
      * For now, ListModel objects can only have an scalar item model. Hence
      * why the type of getItemModel() is not checked yet, look at commit
      * 6f25edc4af219c2f9753d9e4586f4dea843b4f70 to see how it was done.
-     * 
+     *
      * @param list<null|scalar> $dbDataList
      * @return list<mixed>
      */
@@ -181,7 +181,7 @@ final class DbEntityManager
 
     /**
      * Ignores list (ordered arrays).
-     * 
+     *
      * @param list<string> $propertiesToIgnore
      *
      * @throws UnexpectedValueException If some of the properties are set to be persisted and are not scalar.

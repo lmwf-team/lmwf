@@ -18,7 +18,7 @@ final class FileService
      * @todo Assume that filenames are one-byte encoded.
      * @todo Assume that filenames are in lowercase.
      * @todo Hard-coded file extensions.
-     * 
+     *
      * @return list<string>
      */
     public function getUploadedImages(bool $includeThumbnails = true): array

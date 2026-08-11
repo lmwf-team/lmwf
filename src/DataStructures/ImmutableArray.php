@@ -19,9 +19,9 @@ use UnexpectedValueException;
  * An immutable array consists of key-value pairs named properties. Keys are
  * either integers or strings (the only admissible key types in PHP), and values
  * can be any data type.
- * 
+ *
  * @template TKey
- * @implements ArrayAccess<TKey, mixed> 
+ * @implements ArrayAccess<TKey, mixed>
  * @implements IArrayable<TKey, mixed>
  * @implements IteratorAggregate<TKey, mixed>
  */
@@ -190,7 +190,7 @@ abstract readonly class ImmutableArray implements ArrayAccess, Countable, IArray
      *
      * For instance, an object with the property key '3' will return false if
      * given an offset of 3.
-     * 
+     *
      * @param TKey $offset
      */
     public function offsetExists(mixed $offset): bool

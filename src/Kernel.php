@@ -77,7 +77,7 @@ final class Kernel
      * Initialize only the container and only with the provided definitions.
      *
      * The Log class is not initialized nor is the PHP error handler set.
-     * 
+     *
      * @param array<string, object> $containerDefinitions
      */
     public static function initBare(array $containerDefinitions): ContainerInterface
