@@ -88,6 +88,18 @@ final readonly class Route
     }
 
     /**
+     * @return ?string the parameter from the given array at the given index, or null if
+     * the index is beyond the array's range.
+     */
+    public function getParamOrNull(int $index): ?string
+    {
+        if ($index >= count($this->parameters)) {
+            return null;
+        }
+        return $this->parameters[$index];
+    }
+
+    /**
      * Compute the absolute path from the root route up to this route.
      *
      * This will always have a leading slash.
