@@ -1,13 +1,13 @@
 {
     "rootRoute": {
-        "controller": "App.Controller.RouteController",
+        "fqcn": "App.Controller.RouteController",
         "roles": [
             "ADMIN",
             "VISITOR"
         ],
         "routes": {
             "test": {
-                "controller": "App.Controller.TestController"
+                "fqcn": "App.Controller.TestController"
             }
         }
     }

@@ -24,7 +24,7 @@ final readonly class RouteParser
     public function parse(array $route, array $parentRoles = [], bool $allowOverridingParentRoles = false): Route
     {
         foreach ($route as $key => $_) {
-            if (!in_array($key, ['roles', 'controller', 'minArgs', 'maxArgs', 'routes'])) {
+            if (!in_array($key, ['roles', 'fqcn', 'minArgs', 'maxArgs', 'routes'])) {
                 throw new UnauthorizedAttributeConfException("Attribute '{$key}' is unknown and not allowed in a route definition.");
             }
         }
@@ -34,17 +34,17 @@ final readonly class RouteParser
                 throw new SubRouteCannotAddRoleConfException("Unless explicitely authorized, a sub-route cannot add roles its parent does not have.");
             }
         }
-        $controller = str_replace('.', '\\', $route['controller']);
+        $fqcn = str_replace('.', '\\', $route['fqcn']);
         if (key_exists('minArgs', $route) || key_exists('maxArgs', $route)) {
             if (key_exists('routes', $route)) {
                 throw new InvalidRouteConfException("A route definition cannot both defines 'routes' and 'minArgs' or 'maxArgs'.");
             }
-            return new ParameterizedRoute($controller, $roles, $route['minArgs'] ?? 0, $route['maxArgs'] ?? 0);
+            return new ParameterizedRoute($fqcn, $roles, $route['minArgs'] ?? 0, $route['maxArgs'] ?? 0);
         }
         $routes = [];
         foreach ($route['routes'] ?? [] as $subRouteId => $subRoute) {
             $routes[$subRouteId] = $this->parse($subRoute, $roles);
         }
-        return new ParentRoute($controller, $roles, $routes);
+        return new ParentRoute($fqcn, $roles, $routes);
     }
 }

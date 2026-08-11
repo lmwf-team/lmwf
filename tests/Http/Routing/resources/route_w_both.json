@@ -1,13 +1,13 @@
 {
     "rootRoute": {
-        "controller": "Controller",
+        "fqcn": "Controller",
         "roles": [
             "ADMIN",
             "VISITOR"
         ],
         "routes": {
             "sub": {
-                "controller": "Controller",
+                "fqcn": "Controller",
                 "roles": [
                     "ADMIN"
                 ],

@@ -23,9 +23,9 @@ final readonly class ParameterizedRoute extends Route
     ) {
         parent::__construct($fqcn, $roles);
         if ($minArgs < 0) {
-            throw new InvalidArgumentException("A LeafRoute's minimum number of arguments cannot be negative, received {$minArgs}.");
+            throw new InvalidArgumentException("A ParameterizedRoute's minimum number of arguments cannot be negative, received {$minArgs}.");
         } elseif ($minArgs > $maxArgs) {
-            throw new InvalidArgumentException("A LeafRoute's minimum number of arguments (here {$minArgs}) cannot be above its maximum number of arguments (here {$maxArgs}).");
+            throw new InvalidArgumentException("A ParameterizedRoute's minimum number of arguments (here {$minArgs}) cannot be above its maximum number of arguments (here {$maxArgs}).");
         }
     }
 }

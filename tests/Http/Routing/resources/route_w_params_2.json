@@ -1,6 +1,6 @@
 {
     "rootRoute": {
-        "controller": "Controller",
+        "fqcn": "Controller",
         "maxArgs": 0
     }
 }

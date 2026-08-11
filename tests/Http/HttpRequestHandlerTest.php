@@ -4,11 +4,15 @@ declare(strict_types=1);
 
 namespace LM\WebFramework\Tests\Http;
 
+use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\ServerRequest;
+use LM\WebFramework\Controller\IController;
 use LM\WebFramework\Http\HttpRequestHandler;
 use LM\WebFramework\Kernel;
 use LM\WebFramework\Session\SessionManager;
 use PHPUnit\Framework\TestCase;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 final class HttpRequestHandlerTest extends TestCase
 {
@@ -17,9 +21,16 @@ final class HttpRequestHandlerTest extends TestCase
     public function setUp(): void
     {
         $container = Kernel::initWithRuntimeConf([
-            'routeError404ControllerFQCN' => 'Error404Controller',
+            'routeError404ControllerFQCN' => ResourceNotFoundController::class,
+            'routeMethodNotSupportedFQCN' => MethodNotSupportedController::class,
+            'serverErrorControllerFQCN' => ServerErrorController::class,
             'rootRoute' => [
-                'fqcn' => 'HomeController'
+                'fqcn' => HomeController::class,
+                'routes' => [
+                    'my' => [
+                        'fqcn' => MyController::class,
+                    ]
+                ]
             ],
         ], [
             SessionManager::class => new SessionManager([]),
@@ -43,17 +54,104 @@ final class HttpRequestHandlerTest extends TestCase
         }
     }
 
-    public function testWithNonExistingRoutes(): void
+    public function testWithExistingRoutes(): void
     {
         $paths = [
-            '/some/path',
-            '/my?path=1'
+            '/',
+            '',
+            'my',
+            'my/',
+            'my//',
+            'my//?',
+            'my//?fb_id',
+            'my//?fb_id=a',
+            'my//?fb_id=a&',
+            'my//?fb_id=a&b=',
+            'my//?fb_id=a&b=x',
+            '/my',
+            '/my/',
+            '/my//',
+            '/my//?',
+            '/my//?fb_id',
+            '/my//?fb_id=a',
+            '/my//?fb_id=a&',
+            '/my//?fb_id=a&b=',
+            '/my//?fb_id=a&b=x',
         ];
 
         foreach ($paths as $p) {
             $request = new ServerRequest('GET', $p);
             $response = $this->handler->generateResponse($request);
-            $this->assertEquals(404, $response->getStatusCode());
+            $this->assertEquals(200, $response->getStatusCode(), "Expected 200 for {$p}, got {$response->getStatusCode()}.");
         }
+    }
+
+    public function testWithNonExistingRoutes(): void
+    {
+        $paths = [
+            '/some/path',
+            '/my-bad?path=1'
+        ];
+
+        foreach ($paths as $p) {
+            $request = new ServerRequest('GET', $p);
+            $response = $this->handler->generateResponse($request);
+            $this->assertEquals(404, $response->getStatusCode(), "Expected 404 for {$p}, got {$response->getStatusCode()}.");
+        }
+    }
+}
+
+final class ResourceNotFoundController implements IController
+{
+    public function generateResponse(
+        ServerRequestInterface $request,
+        array $routeParams,
+        array $serverParams,
+    ): ResponseInterface {
+        return new Response(404);
+    }
+}
+
+final class MethodNotSupportedController implements IController
+{
+    public function generateResponse(
+        ServerRequestInterface $request,
+        array $routeParams,
+        array $serverParams,
+    ): ResponseInterface {
+        return new Response(501);
+    }
+}
+
+final class ServerErrorController implements IController
+{
+    public function generateResponse(
+        ServerRequestInterface $request,
+        array $routeParams,
+        array $serverParams,
+    ): ResponseInterface {
+        return new Response(500);
+    }
+}
+
+final class HomeController implements IController
+{
+    public function generateResponse(
+        ServerRequestInterface $request,
+        array $routeParams,
+        array $serverParams,
+    ): ResponseInterface {
+        return new Response(200);
+    }
+}
+
+final class MyController implements IController
+{
+    public function generateResponse(
+        ServerRequestInterface $request,
+        array $routeParams,
+        array $serverParams,
+    ): ResponseInterface {
+        return new Response(200);
     }
 }

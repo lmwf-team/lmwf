@@ -9,6 +9,7 @@ use LM\WebFramework\Configuration\Configuration;
 use LM\WebFramework\Http\HttpRequestHandler;
 use LM\WebFramework\Http\Model\RouteInfo;
 use LM\WebFramework\Http\Routing\Exception\RouteNotFoundException;
+use LM\WebFramework\Http\Routing\InstantiatedRoute;
 use LM\WebFramework\Http\Routing\ParameterizedRoute;
 use LM\WebFramework\Http\Routing\ParentRoute;
 use LM\WebFramework\Http\Routing\Route;
@@ -21,25 +22,26 @@ final class RouterTest extends TestCase
     {
         $route = new ParentRoute(self::class);
         $router = new Router($route);
-        $this->assertEquals($route, $router->getRouteFromUrl(''));
-        $this->assertEquals($route, $router->getRouteFromUrl('/'));
-        $this->assertEquals($route, $router->getRouteFromUrl('//'));
-        $this->assertEquals($route, $router->getRouteFromUrl('//'));
+        $this->assertEquals($route, $router->getRouteFromPath(''));
+        $this->assertEquals($route, $router->getRouteFromPath('/'));
+        $this->assertEquals($route, $router->getRouteFromPath('//'));
+        $this->assertEquals($route, $router->getRouteFromPath('//'));
     }
     
     public function testParameterizedRoute(): void
     {
         $route = new ParameterizedRoute(self::class, minArgs: 1, maxArgs: 1);
+        $expected = new InstantiatedRoute(self::class, nArgs: 1);
         $router = new Router($route);
-        $this->assertEquals($route, $router->getRouteFromUrl('test'));
-        $this->assertEquals($route, $router->getRouteFromUrl('/test'));
-        $this->assertEquals($route, $router->getRouteFromUrl('//test'));
-        $this->assertEquals($route, $router->getRouteFromUrl('test/'));
-        $this->assertEquals($route, $router->getRouteFromUrl('/test/'));
-        $this->assertEquals($route, $router->getRouteFromUrl('//test/'));
-        $this->assertEquals($route, $router->getRouteFromUrl('test//'));
-        $this->assertEquals($route, $router->getRouteFromUrl('/test//'));
-        $this->assertEquals($route, $router->getRouteFromUrl('//test//'));
+        $this->assertEquals($expected, $router->getRouteFromPath('test'));
+        $this->assertEquals($expected, $router->getRouteFromPath('/test'));
+        $this->assertEquals($expected, $router->getRouteFromPath('//test'));
+        $this->assertEquals($expected, $router->getRouteFromPath('test/'));
+        $this->assertEquals($expected, $router->getRouteFromPath('/test/'));
+        $this->assertEquals($expected, $router->getRouteFromPath('//test/'));
+        $this->assertEquals($expected, $router->getRouteFromPath('test//'));
+        $this->assertEquals($expected, $router->getRouteFromPath('/test//'));
+        $this->assertEquals($expected, $router->getRouteFromPath('//test//'));
     }
     
     public function testParameterizedRouteWithBadParams0(): void
@@ -48,7 +50,7 @@ final class RouterTest extends TestCase
         $router = new Router($route);
 
         $this->expectException(RouteNotFoundException::class);
-        $router->getRouteFromUrl('');
+        $router->getRouteFromPath('');
     }
     
     public function testParameterizedRouteWithBadParams1(): void
@@ -57,7 +59,7 @@ final class RouterTest extends TestCase
         $router = new Router($route);
 
         $this->expectException(RouteNotFoundException::class);
-        $router->getRouteFromUrl('/');
+        $router->getRouteFromPath('/');
     }
     
     public function testParameterizedRouteWithBadParams2(): void
@@ -66,7 +68,7 @@ final class RouterTest extends TestCase
         $router = new Router($route);
 
         $this->expectException(RouteNotFoundException::class);
-        $router->getRouteFromUrl('//');
+        $router->getRouteFromPath('//');
     }
     
     public function testParameterizedRouteWithBadParams3(): void
@@ -75,7 +77,7 @@ final class RouterTest extends TestCase
         $router = new Router($route);
 
         $this->expectException(RouteNotFoundException::class);
-        $router->getRouteFromUrl('test/prout');
+        $router->getRouteFromPath('test/prout');
     }
     
     public function testParameterizedRouteWithBadParams4(): void
@@ -84,7 +86,7 @@ final class RouterTest extends TestCase
         $router = new Router($route);
 
         $this->expectException(RouteNotFoundException::class);
-        $router->getRouteFromUrl('/test/prout');
+        $router->getRouteFromPath('/test/prout');
     }
     
     public function testParameterizedRouteWithBadParams5(): void
@@ -93,7 +95,7 @@ final class RouterTest extends TestCase
         $router = new Router($route);
 
         $this->expectException(RouteNotFoundException::class);
-        $router->getRouteFromUrl('//test/prout');
+        $router->getRouteFromPath('//test/prout');
     }
     
     public function testParameterizedRouteWithBadParams6(): void
@@ -102,7 +104,7 @@ final class RouterTest extends TestCase
         $router = new Router($route);
 
         $this->expectException(RouteNotFoundException::class);
-        $router->getRouteFromUrl('/test/prout/');
+        $router->getRouteFromPath('/test/prout/');
     }
     
     public function testParameterizedRouteWithBadParams7(): void
@@ -111,7 +113,7 @@ final class RouterTest extends TestCase
         $router = new Router($route);
 
         $this->expectException(RouteNotFoundException::class);
-        $router->getRouteFromUrl('/test/prout//');
+        $router->getRouteFromPath('/test/prout//');
     }
     
     public function testNonExistingRoute(): void
@@ -119,8 +121,8 @@ final class RouterTest extends TestCase
         $route = new ParentRoute(self::class, routes: []);
         $router = new Router($route);
         $this->expectException(RouteNotFoundException::class);
-        $router->getRouteFromUrl('test');
-        $router->getRouteFromUrl('/test');
+        $router->getRouteFromPath('test');
+        $router->getRouteFromPath('/test');
     }
 
     public function testSubRoute(): void
@@ -129,42 +131,42 @@ final class RouterTest extends TestCase
         $subRoute = new ParentRoute(self::class, routes: ['sub' => $subsubRoute]);
         $route = new ParentRoute(self::class, routes: ['test' => $subRoute]);
         $router = new Router($route);
-        $this->assertEquals($subRoute, $router->getRouteFromUrl('test'));
-        $this->assertEquals($subRoute, $router->getRouteFromUrl('test/'));
-        $this->assertEquals($subRoute, $router->getRouteFromUrl('test//'));
-        $this->assertEquals($subRoute, $router->getRouteFromUrl('/test'));
-        $this->assertEquals($subRoute, $router->getRouteFromUrl('/test/'));
-        $this->assertEquals($subRoute, $router->getRouteFromUrl('/test//'));
-        $this->assertEquals($subRoute, $router->getRouteFromUrl('//test'));
-        $this->assertEquals($subRoute, $router->getRouteFromUrl('//test/'));
-        $this->assertEquals($subRoute, $router->getRouteFromUrl('//test//'));
-        $this->assertEquals($subsubRoute, $router->getRouteFromUrl('test/sub'));
-        $this->assertEquals($subsubRoute, $router->getRouteFromUrl('test/sub/'));
-        $this->assertEquals($subsubRoute, $router->getRouteFromUrl('test/sub//'));
-        $this->assertEquals($subsubRoute, $router->getRouteFromUrl('/test/sub'));
-        $this->assertEquals($subsubRoute, $router->getRouteFromUrl('/test/sub/'));
-        $this->assertEquals($subsubRoute, $router->getRouteFromUrl('/test/sub//'));
-        $this->assertEquals($subsubRoute, $router->getRouteFromUrl('//test/sub'));
-        $this->assertEquals($subsubRoute, $router->getRouteFromUrl('//test/sub/'));
-        $this->assertEquals($subsubRoute, $router->getRouteFromUrl('//test/sub//'));
-        $this->assertEquals($subsubRoute, $router->getRouteFromUrl('test//sub'));
-        $this->assertEquals($subsubRoute, $router->getRouteFromUrl('test//sub/'));
-        $this->assertEquals($subsubRoute, $router->getRouteFromUrl('test//sub//'));
-        $this->assertEquals($subsubRoute, $router->getRouteFromUrl('/test//sub'));
-        $this->assertEquals($subsubRoute, $router->getRouteFromUrl('/test//sub/'));
-        $this->assertEquals($subsubRoute, $router->getRouteFromUrl('/test//sub//'));
-        $this->assertEquals($subsubRoute, $router->getRouteFromUrl('//test//sub'));
-        $this->assertEquals($subsubRoute, $router->getRouteFromUrl('//test//sub/'));
-        $this->assertEquals($subsubRoute, $router->getRouteFromUrl('//test//sub//'));
-        $this->assertEquals($subsubRoute, $router->getRouteFromUrl('test///sub'));
-        $this->assertEquals($subsubRoute, $router->getRouteFromUrl('test///sub/'));
-        $this->assertEquals($subsubRoute, $router->getRouteFromUrl('test///sub//'));
-        $this->assertEquals($subsubRoute, $router->getRouteFromUrl('/test///sub'));
-        $this->assertEquals($subsubRoute, $router->getRouteFromUrl('/test///sub/'));
-        $this->assertEquals($subsubRoute, $router->getRouteFromUrl('/test///sub//'));
-        $this->assertEquals($subsubRoute, $router->getRouteFromUrl('//test///sub'));
-        $this->assertEquals($subsubRoute, $router->getRouteFromUrl('//test///sub/'));
-        $this->assertEquals($subsubRoute, $router->getRouteFromUrl('//test///sub//'));
+        $this->assertEquals($subRoute, $router->getRouteFromPath('test'));
+        $this->assertEquals($subRoute, $router->getRouteFromPath('test/'));
+        $this->assertEquals($subRoute, $router->getRouteFromPath('test//'));
+        $this->assertEquals($subRoute, $router->getRouteFromPath('/test'));
+        $this->assertEquals($subRoute, $router->getRouteFromPath('/test/'));
+        $this->assertEquals($subRoute, $router->getRouteFromPath('/test//'));
+        $this->assertEquals($subRoute, $router->getRouteFromPath('//test'));
+        $this->assertEquals($subRoute, $router->getRouteFromPath('//test/'));
+        $this->assertEquals($subRoute, $router->getRouteFromPath('//test//'));
+        $this->assertEquals($subsubRoute, $router->getRouteFromPath('test/sub'));
+        $this->assertEquals($subsubRoute, $router->getRouteFromPath('test/sub/'));
+        $this->assertEquals($subsubRoute, $router->getRouteFromPath('test/sub//'));
+        $this->assertEquals($subsubRoute, $router->getRouteFromPath('/test/sub'));
+        $this->assertEquals($subsubRoute, $router->getRouteFromPath('/test/sub/'));
+        $this->assertEquals($subsubRoute, $router->getRouteFromPath('/test/sub//'));
+        $this->assertEquals($subsubRoute, $router->getRouteFromPath('//test/sub'));
+        $this->assertEquals($subsubRoute, $router->getRouteFromPath('//test/sub/'));
+        $this->assertEquals($subsubRoute, $router->getRouteFromPath('//test/sub//'));
+        $this->assertEquals($subsubRoute, $router->getRouteFromPath('test//sub'));
+        $this->assertEquals($subsubRoute, $router->getRouteFromPath('test//sub/'));
+        $this->assertEquals($subsubRoute, $router->getRouteFromPath('test//sub//'));
+        $this->assertEquals($subsubRoute, $router->getRouteFromPath('/test//sub'));
+        $this->assertEquals($subsubRoute, $router->getRouteFromPath('/test//sub/'));
+        $this->assertEquals($subsubRoute, $router->getRouteFromPath('/test//sub//'));
+        $this->assertEquals($subsubRoute, $router->getRouteFromPath('//test//sub'));
+        $this->assertEquals($subsubRoute, $router->getRouteFromPath('//test//sub/'));
+        $this->assertEquals($subsubRoute, $router->getRouteFromPath('//test//sub//'));
+        $this->assertEquals($subsubRoute, $router->getRouteFromPath('test///sub'));
+        $this->assertEquals($subsubRoute, $router->getRouteFromPath('test///sub/'));
+        $this->assertEquals($subsubRoute, $router->getRouteFromPath('test///sub//'));
+        $this->assertEquals($subsubRoute, $router->getRouteFromPath('/test///sub'));
+        $this->assertEquals($subsubRoute, $router->getRouteFromPath('/test///sub/'));
+        $this->assertEquals($subsubRoute, $router->getRouteFromPath('/test///sub//'));
+        $this->assertEquals($subsubRoute, $router->getRouteFromPath('//test///sub'));
+        $this->assertEquals($subsubRoute, $router->getRouteFromPath('//test///sub/'));
+        $this->assertEquals($subsubRoute, $router->getRouteFromPath('//test///sub//'));
     }
 
     // public function testFindController(): void

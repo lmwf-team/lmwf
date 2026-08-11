@@ -13,7 +13,11 @@ use LM\WebFramework\Controller\Exception\AlreadyAuthenticated;
 use LM\WebFramework\Controller\Exception\RequestedResourceNotFound;
 use LM\WebFramework\Controller\Exception\RequestedRouteNotFound;
 use LM\WebFramework\Http\Error\RoutingError;
-use LM\WebFramework\Kernel;
+use LM\WebFramework\Http\Exception\UnsupportedMethodException;
+use LM\WebFramework\Http\Routing\Exception\RouteNotFoundException;
+use LM\WebFramework\Http\Routing\InstantiatedRoute;
+use LM\WebFramework\Http\Routing\RouteParser;
+use LM\WebFramework\Http\Routing\Router;
 use LM\WebFramework\Session\SessionManager;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\RequestInterface;
@@ -26,12 +30,15 @@ final class HttpRequestHandler
     public const SUPPORTED_METHODS = ['GET', 'HEAD', 'POST', 'READ', 'PUT', 'PATCH', 'OPTIONS', 'DELETE'];
     public const UNEXISTING_ROUTE = 1000;
 
+    private Router $router;
+
     public function __construct(
-        private Configuration $configuration,
+        private Configuration $conf,
         private ContainerInterface $container,
-        private Router $router,
         private SessionManager $session,
+        RouteParser $routeParser,
     ) {
+        $this->router = new Router($routeParser->parse($conf->getRoutes()->toArray()));
     }
 
     public function sendResponse(ResponseInterface $response): void
@@ -50,41 +57,41 @@ final class HttpRequestHandler
     {
         $request = ServerRequest::fromGlobals();
 
-        set_error_handler(
-            function ($errNo, $errStr, $errFile, $errLine)
-            {
-                $exception = new LoggedException(
-                    $errStr,
-                    $errNo,
-                    $errFile,
-                    $errLine,
-                    time(),
-                );
-                throw $exception;
-            }
-        );
+        // set_error_handler(
+        //     function ($errNo, $errStr, $errFile, $errLine)
+        //     {
+        //         $exception = new LoggedException(
+        //             $errStr,
+        //             $errNo,
+        //             $errFile,
+        //             $errLine,
+        //             time(),
+        //         );
+        //         throw $exception;
+        //     }
+        // );
 
-        set_exception_handler(
-            function (Throwable $exception) use ($config, $container, $request)
-            {
-                if (null !== $config->getLoggerFqcn()) {
-                    $container->get($config->getLoggerFqcn())->info($exception->getMessage());
-                }
+        // set_exception_handler(
+        //     function (Throwable $exception) use ($config, $container, $request)
+        //     {
+        //         if (null !== $config->getLoggerFqcn()) {
+        //             $container->get($config->getLoggerFqcn())->info($exception->getMessage());
+        //         }
                 
-                if ($config->isDev()) {
-                    throw $exception;
-                } else {
-                    try {
-                        $response = $container->get(HttpRequestHandler::class)->generateErrorResponse($request, $exception);
-                        self::sendResponse($response);
-                    } catch (Throwable $t) {
-                        $container->get($config->getLoggerFqcn())->info($t->getMessage());
-                        throw $t;
-                    }
-                }
-                exit();
-            }
-        );
+        //         if ($config->isDev()) {
+        //             throw $exception;
+        //         } else {
+        //             try {
+        //                 $response = $container->get(HttpRequestHandler::class)->generateErrorResponse($request, $exception);
+        //                 self::sendResponse($response);
+        //             } catch (Throwable $t) {
+        //                 $container->get($config->getLoggerFqcn())->info($t->getMessage());
+        //                 throw $t;
+        //             }
+        //         }
+        //         exit();
+        //     }
+        // );
         $response = $this->generateResponse($request);
         $this->sendResponse($response);
     }
@@ -95,60 +102,68 @@ final class HttpRequestHandler
      */
     public function generateResponse(ServerRequestInterface $request): ResponseInterface
     {
-        if (!in_array($request->getMethod(), self::SUPPORTED_METHODS, true)) {
-            return new Response(501);
-        }
+        $path = $request->getUri()->getPath();
+        $segs = $this->getPathSegments($path);
+        $params = [];
     
-        $pathSegments = $this->getPathSegments($request->getRequestTarget());
-
-        $route = $this->router->getRouteInfo($pathSegments);
-        if ($route instanceof RoutingError) {
-            // @todo Customizable error page
-            return new Response(404);
-        } else {
-            $controller = $this->container->get($route['class']);
+        try {
+            return $this->generateResponseFromRoute($request);
+        } catch (RouteNotFoundException|RequestedResourceNotFound) {
+            $fqcn = $this->conf->getErrorNotFoundControllerFQCN();
+        } catch (AlreadyAuthenticated) {
+            $fqcn = $this->conf->getErrorLoggedInControllerFQCN();
+        } catch (AccessDenied) {
+            $fqcn = $this->conf->getErrorNotLoggedInControllerFQCN();
+        } catch (UnsupportedMethodException) {
+            $fqcn = $this->conf->getErrorMethodNotSupportedFQCN();
+        } catch (Throwable $t) {
+            $fqcn = $this->conf->getServerErrorControllerFQCN();
+            $params = [
+                'throwable_hash' => hash('sha256', $t->__toString()),
+            ];
         }
 
-        // @todo Check user is authorized
+        $controller = $this->container->get($fqcn);
+        $response = $controller->generateResponse($request, $segs, $params);
 
-        $response = $this->addCspSources($controller->generateResponse(
-            $request,
-            0 === $route->nArgs ? [] : array_slice($pathSegments, -$route->nArgs),
-            [],
-        ));
-
-        return $response;
+        return $this->addCspSources($response);
     }
 
-    /**
-     * @todo Create special interface for Error Response Generators
-     */
-    public function generateErrorResponse(RequestInterface $request, Throwable $t): ResponseInterface
+    public function generateResponseFromRoute(ServerRequestInterface $request): ResponseInterface
     {
-        $pathSegments = self::getPathSegments($request->getRequestTarget());
-        
-        if ($t instanceof RequestedRouteNotFound || $t instanceof RequestedResourceNotFound) {
-            $response = $this->container->get($this->configuration->getErrorNotFoundControllerFQCN())
-                ->generateResponse($request, $pathSegments, [])
-            ;
-        } elseif ($t instanceof AlreadyAuthenticated) {
-            $response = $this->container->get($this->configuration->getErrorLoggedInControllerFQCN())
-                ->generateResponse($request, $pathSegments, [])
-            ;
-        } elseif ($t instanceof AccessDenied) {
-            $response = $this->container->get($this->configuration->getErrorNotLoggedInControllerFQCN())
-                ->generateResponse($request, $pathSegments, [])
-            ;
+        $path = $request->getUri()->getPath();
+        $segs = $this->getPathSegments($path);
+
+        if (!in_array($request->getMethod(), self::SUPPORTED_METHODS, true)) {
+            throw new UnsupportedMethodException();
+        }
+        $route = $this->router->getRouteFromPath($path);
+        $controller = $this->container->get($route->fqcn);
+
+        // @todo Add real role system
+        $roles = $this->session->isUserLoggedIn() ? ['ADMIN'] : ['VISITOR'];
+
+        if (count($route->roles) > 0) {
+            $isAllowed = false;
+            foreach ($roles as $role) {
+                if (in_array($role, $route->roles, strict: true)) {
+                    $isAllowed = true;
+                    break;
+                }
+            }
+            if (!$isAllowed) {
+                throw new AccessDenied("User is not allowed.");
+            }
+        }
+
+        if ($route instanceof InstantiatedRoute) {
+            $response = $controller->generateResponse(
+                $request,
+                0 === $route->nArgs ? [] : array_slice($segs, -$route->nArgs),
+                [],
+            );
         } else {
-            $response = $this->container->get($this->configuration->getServerErrorControllerFQCN())
-                ->generateResponse(
-                    $request,
-                    $pathSegments,
-                    [
-                        'throwable_hash' => hash('sha256', $t->__toString()),
-                    ],
-                )
-            ;
+            $response = $controller->generateResponse($request, [], []);
         }
 
         return $this->addCspSources($response);
@@ -187,13 +202,19 @@ final class HttpRequestHandler
 
     private function addCspSources(ResponseInterface $response): ResponseInterface
     {
-         // @todo Don’t specify CSP sources if they are not set in configuration
-         $cspValues = [
-            "default-src {$this->configuration->getCSPDefaultSources()}",
-            "font-src {$this->configuration->getCSPFontSources()}",
-            "object-src {$this->configuration->getCSPObjectSources()}",
-            "style-src {$this->configuration->getCSPStyleSources()}",
-        ];
+        $cspValues = [];
+        if ($this->conf->hasSetting('cspDefaultSources')) {
+            $cspValues[] = "default-src {$this->conf->getCSPDefaultSources()}";
+        }
+        if ($this->conf->hasSetting('cspFontSources')) {
+            $cspValues[] = "font-src {$this->conf->getCSPFontSources()}";
+        }
+        if ($this->conf->hasSetting('cspObjectSources')) {
+            $cspValues[] = "object-src {$this->conf->getCSPObjectSources()}";
+        }
+        if ($this->conf->hasSetting('cspStyleSources')) {
+            $cspValues[] = "style-src {$this->conf->getCSPStyleSources()}";
+        }
         return $response->withAddedHeader('Content-Security-Policy', implode(';', $cspValues));
     }
 }

@@ -1,12 +1,12 @@
 {
     "rootRoute": {
-        "controller": "Controller",
+        "fqcn": "Controller",
         "roles": [
             "ADMIN"
         ],
         "routes": {
             "sub-page": {
-                "controller": "Controller",
+                "fqcn": "Controller",
                 "roles": [
                     "VISITOR"
                 ]

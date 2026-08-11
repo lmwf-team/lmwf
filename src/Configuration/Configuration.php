@@ -93,6 +93,11 @@ final class Configuration
         return $this->getSetting('routeErrorAlreadyLoggedInControllerFQCN');
     }
 
+    public function getErrorMethodNotSupportedFQCN(): string
+    {
+        return $this->getSetting('routeMethodNotSupportedFQCN');
+    }
+
     public function getErrorNotFoundControllerFQCN(): string
     {
         return $this->getSetting('routeError404ControllerFQCN');
@@ -165,6 +170,11 @@ final class Configuration
             $data = $data[$key];
         }
         return $data;
+    }
+
+    public function hasSetting(string $key): bool
+    {
+        return $this->confData->hasProperty($key);
     }
 
     public function isDev(): bool

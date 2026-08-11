@@ -8,6 +8,7 @@ use InvalidArgumentException;
 use LM\WebFramework\DataStructures\AppList;
 use OutOfBoundsException;
 use PHPUnit\Framework\TestCase;
+use TypeError;
 
 final class AppListTest extends TestCase
 {

@@ -1,10 +1,10 @@
 {
     "rootRoute": {
-        "controller": "Controller",
+        "fqcn": "Controller",
         "roles": [],
         "routes": {
             "sub": {
-                "controller": "Controller"
+                "fqcn": "Controller"
             },
             "machine": 0
         }
