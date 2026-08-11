@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Form\Transformer;
+namespace LMWF\Form\Transformer;
 
-use LM\WebFramework\Form\Exceptions\MissingInputException;
-use LM\WebFramework\Form\Exceptions\WrongCsrfException;
-use LM\WebFramework\Session\SessionManager;
+use LMWF\Form\Exceptions\MissingInputException;
+use LMWF\Form\Exceptions\WrongCsrfException;
+use LMWF\Session\SessionManager;
 
 final class CsrfTransformer implements IFormTransformer
 {

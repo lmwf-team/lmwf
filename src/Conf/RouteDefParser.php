@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Conf;
+namespace LMWF\Conf;
 
-use LM\WebFramework\Conf\Exception\SettingNotFoundException;
-use LM\WebFramework\Conf\Http\RouteDef;
-use LM\WebFramework\Conf\Http\SubrouteCannotAddRoleConfException;
-use LM\WebFramework\Conf\Http\UnauthorizedAttributeConfException;
+use LMWF\Conf\Exception\SettingNotFoundException;
+use LMWF\Conf\Http\RouteDef;
+use LMWF\Conf\Http\SubrouteCannotAddRoleConfException;
+use LMWF\Conf\Http\UnauthorizedAttributeConfException;
 
 final readonly class RouteDefParser
 {

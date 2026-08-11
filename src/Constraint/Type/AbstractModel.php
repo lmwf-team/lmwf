@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Constraint\Type;
+namespace LMWF\Constraint\Type;
 
-use LM\WebFramework\Constraint\Value\INotNullConstraint;
-use LM\WebFramework\Constraint\Value\NotNullConstraint;
+use LMWF\Constraint\Value\INotNullConstraint;
+use LMWF\Constraint\Value\NotNullConstraint;
 
 abstract class AbstractModel implements IModel
 {

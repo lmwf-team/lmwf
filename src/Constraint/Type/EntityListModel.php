@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Constraint\Type;
+namespace LMWF\Constraint\Type;
 
 use InvalidArgumentException;
-use LM\WebFramework\Constraint\Type\AbstractModel;
-use LM\WebFramework\Constraint\Type\ForeignEntityModel;
+use LMWF\Constraint\Type\AbstractModel;
+use LMWF\Constraint\Type\ForeignEntityModel;
 
 /**
  * @todo Create IListModel interface for lists, with certain constraints like

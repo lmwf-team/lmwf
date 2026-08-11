@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Conf\Exception;
+namespace LMWF\Conf\Exception;
 
 use RuntimeException;
 use Throwable;

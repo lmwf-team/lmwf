@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Constraint\Factory;
+namespace LMWF\Constraint\Factory;
 
-use LM\WebFramework\Constraint\Type\StringModel;
-use LM\WebFramework\DataStructures\Slug;
+use LMWF\Constraint\Type\StringModel;
+use LMWF\DataStructures\Slug;
 
 class SlugModelFactory
 {

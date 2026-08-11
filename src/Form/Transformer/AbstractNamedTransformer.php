@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Form\Transformer;
+namespace LMWF\Form\Transformer;
 
 abstract class AbstractNamedTransformer implements IFormTransformer
 {

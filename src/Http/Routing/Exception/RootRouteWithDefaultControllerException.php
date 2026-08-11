@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Http\Routing\Exception;
+namespace LMWF\Http\Routing\Exception;
 
 use DomainException;
-use LM\WebFramework\ErrorHandling\ExceptionCode;
+use LMWF\ErrorHandling\ExceptionCode;
 use Throwable;
 
 final class RootRouteWithDefaultControllerException extends DomainException

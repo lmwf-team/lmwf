@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Session;
+namespace LMWF\Session;
 
-use LM\WebFramework\Kernel;
+use LMWF\Kernel;
 
 /**
  * @todo Should be moved to Http.

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Form\Exceptions;
+namespace LMWF\Form\Exceptions;
 
 use InvalidArgumentException;
 use Throwable;

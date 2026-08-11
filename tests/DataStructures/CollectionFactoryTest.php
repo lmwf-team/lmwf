@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Tests\DataStructures;
+namespace LMWF\Tests\DataStructures;
 
-use LM\WebFramework\DataStructures\Factory\CollectionFactory;
+use LMWF\DataStructures\Factory\CollectionFactory;
 use PHPUnit\Framework\TestCase;
 
 final class CollectionFactoryTest extends TestCase

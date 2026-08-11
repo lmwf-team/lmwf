@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Constraint\Type;
+namespace LMWF\Constraint\Type;
 
 final class DateTimeModel extends AbstractModel implements IScalarModel
 {

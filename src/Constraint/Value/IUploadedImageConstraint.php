@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Constraint\Value;
+namespace LMWF\Constraint\Value;
 
 interface IUploadedImageConstraint extends IStringConstraint
 {

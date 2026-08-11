@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Form\Transformer;
+namespace LMWF\Form\Transformer;
 
 use DateTimeImmutable;
-use LM\WebFramework\Form\Exceptions\MissingInputException;
+use LMWF\Form\Exceptions\MissingInputException;
 
 final class DateTimeTransformer extends AbstractStringTransformer implements IFormTransformer
 {

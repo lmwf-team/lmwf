@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Tests\Validation;
+namespace LMWF\Tests\Validation;
 
-use LM\WebFramework\Constraint\Type\EntityModel;
-use LM\WebFramework\Constraint\Type\IntModel;
-use LM\WebFramework\Constraint\Type\StringModel;
+use LMWF\Constraint\Type\EntityModel;
+use LMWF\Constraint\Type\IntModel;
+use LMWF\Constraint\Type\StringModel;
 use PHPUnit\Framework\TestCase;
 
 final class ModelTest extends TestCase

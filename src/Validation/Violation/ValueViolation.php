@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Validation\Violation;
+namespace LMWF\Validation\Violation;
 
 interface ValueViolation extends IConstraintViolation
 {

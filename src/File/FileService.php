@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\File;
+namespace LMWF\File;
 
-use LM\WebFramework\Conf\AppConf;
-use LM\WebFramework\Constraint\Value\IUploadedImageConstraint;
+use LMWF\Conf\AppConf;
+use LMWF\Constraint\Value\IUploadedImageConstraint;
 
 final class FileService
 {

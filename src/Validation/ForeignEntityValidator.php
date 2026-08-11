@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Validation;
+namespace LMWF\Validation;
 
-use LM\WebFramework\Constraint\Type\ForeignEntityModel;
-use LM\WebFramework\Validation\Violation\TypeViolation;
-use LM\WebFramework\Validation\Violation\ValueViolation;
+use LMWF\Constraint\Type\ForeignEntityModel;
+use LMWF\Validation\Violation\TypeViolation;
+use LMWF\Validation\Violation\ValueViolation;
 use Override;
 
 final readonly class ForeignEntityValidator extends AbstractTypeValidator

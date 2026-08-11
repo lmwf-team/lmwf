@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Constraint;
+namespace LMWF\Constraint;
 
 /**
  * Instantiations of implementations correspond to a set of acceptable PHP

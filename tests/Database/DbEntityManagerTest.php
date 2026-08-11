@@ -2,21 +2,21 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Tests\Database;
+namespace LMWF\Tests\Database;
 
 use DateTimeImmutable;
-use LM\WebFramework\Database\DbEntityManager;
-use LM\WebFramework\Database\Exceptions\InvalidDbDataException;
-use LM\WebFramework\Database\Exceptions\NullDbDataNotAllowedException;
-use LM\WebFramework\DataStructures\Factory\CollectionFactory;
-use LM\WebFramework\Constraint\Type\BoolModel;
-use LM\WebFramework\Constraint\Type\DateTimeModel;
-use LM\WebFramework\Constraint\Type\EntityModel;
-use LM\WebFramework\Constraint\Type\ForeignEntityModel;
-use LM\WebFramework\Constraint\Type\IntModel;
-use LM\WebFramework\Constraint\Type\EntityListModel;
-use LM\WebFramework\Constraint\Type\ListModel;
-use LM\WebFramework\Constraint\Type\StringModel;
+use LMWF\Database\DbEntityManager;
+use LMWF\Database\Exceptions\InvalidDbDataException;
+use LMWF\Database\Exceptions\NullDbDataNotAllowedException;
+use LMWF\DataStructures\Factory\CollectionFactory;
+use LMWF\Constraint\Type\BoolModel;
+use LMWF\Constraint\Type\DateTimeModel;
+use LMWF\Constraint\Type\EntityModel;
+use LMWF\Constraint\Type\ForeignEntityModel;
+use LMWF\Constraint\Type\IntModel;
+use LMWF\Constraint\Type\EntityListModel;
+use LMWF\Constraint\Type\ListModel;
+use LMWF\Constraint\Type\StringModel;
 use PHPUnit\Framework\TestCase;
 
 final class DbEntityManagerTest extends TestCase

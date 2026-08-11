@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Validation\Violation;
+namespace LMWF\Validation\Violation;
 
-use LM\WebFramework\Constraint\Type\ArrayModel;
-use LM\WebFramework\Constraint\Type\EntityListModel;
-use LM\WebFramework\Constraint\Type\ListModel;
+use LMWF\Constraint\Type\ArrayModel;
+use LMWF\Constraint\Type\EntityListModel;
+use LMWF\Constraint\Type\ListModel;
 
 final class ListValueViolation implements ValueViolation
 {

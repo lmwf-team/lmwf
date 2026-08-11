@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Database\Exceptions;
+namespace LMWF\Database\Exceptions;
 
 use InvalidArgumentException;
-use LM\WebFramework\Constraint\Type\IModel;
+use LMWF\Constraint\Type\IModel;
 
 class InvalidDbDataException extends InvalidArgumentException
 {

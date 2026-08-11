@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Conf;
+namespace LMWF\Conf;
 
-use LM\WebFramework\Conf\Exception\CouldNotReadFileException;
-use LM\WebFramework\DataStructures\AppObject;
-use LM\WebFramework\DataStructures\Factory\CollectionFactory;
+use LMWF\Conf\Exception\CouldNotReadFileException;
+use LMWF\DataStructures\AppObject;
+use LMWF\DataStructures\Factory\CollectionFactory;
 
 /**
  * Creates and validates a configuration given the path to the project folder.

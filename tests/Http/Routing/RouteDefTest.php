@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Tests\Http\Routing;
+namespace LMWF\Tests\Http\Routing;
 
 use InvalidArgumentException;
-use LM\WebFramework\Conf\Http\RouteDef;
+use LMWF\Conf\Http\RouteDef;
 use PHPUnit\Framework\TestCase;
 
 final class RouteDefTest extends TestCase

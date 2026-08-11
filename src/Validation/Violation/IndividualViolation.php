@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Validation\Violation;
+namespace LMWF\Validation\Violation;
 
-use LM\WebFramework\Constraint\IConstraint;
-use LM\WebFramework\Constraint\Type\IModel;
+use LMWF\Constraint\IConstraint;
+use LMWF\Constraint\Type\IModel;
 use Override;
 use Stringable;
 

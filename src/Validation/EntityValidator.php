@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Validation;
+namespace LMWF\Validation;
 
-use LM\WebFramework\Constraint\Type\ArrayModel;
-use LM\WebFramework\Validation\Violation\DictValueViolation;
-use LM\WebFramework\Validation\Violation\MissingItemViolation;
-use LM\WebFramework\Validation\Violation\TypeViolation;
-use LM\WebFramework\Validation\Violation\ValueViolation;
+use LMWF\Constraint\Type\ArrayModel;
+use LMWF\Validation\Violation\DictValueViolation;
+use LMWF\Validation\Violation\MissingItemViolation;
+use LMWF\Validation\Violation\TypeViolation;
+use LMWF\Validation\Violation\ValueViolation;
 
 final readonly class EntityValidator extends AbstractTypeValidator
 {

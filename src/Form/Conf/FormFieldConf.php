@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Form\Conf;
+namespace LMWF\Form\Conf;
 
 use Closure;
-use LM\WebFramework\Constraint\Value\IRangeConstraint;
-use LM\WebFramework\Constraint\Type\IModel;
+use LMWF\Constraint\Value\IRangeConstraint;
+use LMWF\Constraint\Type\IModel;
 use Traversable;
 
 readonly class FormFieldConf

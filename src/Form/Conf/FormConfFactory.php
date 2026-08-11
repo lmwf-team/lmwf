@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Form\Conf;
+namespace LMWF\Form\Conf;
 
 use Closure;
 use DomainException;
 use InvalidArgumentException;
-use LM\WebFramework\DataStructures\Slug;
-use LM\WebFramework\ErrorHandling\Log;
-use LM\WebFramework\Constraint\Type\ArrayModel;
-use LM\WebFramework\Constraint\Type\BoolModel;
-use LM\WebFramework\Constraint\Type\DateTimeModel;
-use LM\WebFramework\Constraint\Type\ILengthModel;
-use LM\WebFramework\Constraint\Type\IModel;
-use LM\WebFramework\Constraint\Type\IntModel;
-use LM\WebFramework\Constraint\Type\StringModel;
+use LMWF\DataStructures\Slug;
+use LMWF\ErrorHandling\Log;
+use LMWF\Constraint\Type\ArrayModel;
+use LMWF\Constraint\Type\BoolModel;
+use LMWF\Constraint\Type\DateTimeModel;
+use LMWF\Constraint\Type\ILengthModel;
+use LMWF\Constraint\Type\IModel;
+use LMWF\Constraint\Type\IntModel;
+use LMWF\Constraint\Type\StringModel;
 use UnexpectedValueException;
 
 /**

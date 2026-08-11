@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Validation;
+namespace LMWF\Validation;
 
-use LM\WebFramework\Constraint\Type\EntityListModel;
-use LM\WebFramework\Constraint\Type\ListModel;
-use LM\WebFramework\Validation\Violation\ListValueViolation;
-use LM\WebFramework\Validation\Violation\TypeViolation;
-use LM\WebFramework\Validation\Violation\ValueViolation;
+use LMWF\Constraint\Type\EntityListModel;
+use LMWF\Constraint\Type\ListModel;
+use LMWF\Validation\Violation\ListValueViolation;
+use LMWF\Validation\Violation\TypeViolation;
+use LMWF\Validation\Violation\ValueViolation;
 use Override;
 
 final readonly class ListValidator extends AbstractTypeValidator

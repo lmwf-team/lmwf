@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Tests\Http\Routing;
+namespace LMWF\Tests\Http\Routing;
 
 use DomainException;
-use LM\WebFramework\Http\Routing\Router;
+use LMWF\Http\Routing\Router;
 use PHPUnit\Framework\TestCase;
 
 final class PathSegmenterTest extends TestCase

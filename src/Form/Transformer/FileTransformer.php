@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Form\Transformer;
+namespace LMWF\Form\Transformer;
 
 use InvalidArgumentException;
-use LM\WebFramework\DataStructures\Filename;
-use LM\WebFramework\DataStructures\Slug;
-use LM\WebFramework\ErrorHandling\Log;
-use LM\WebFramework\Form\Exceptions\IllegalUserInputException;
-use LM\WebFramework\Form\Exceptions\MissingInputException;
-use LM\WebFramework\Constraint\Value\IUploadedImageConstraint;
+use LMWF\DataStructures\Filename;
+use LMWF\DataStructures\Slug;
+use LMWF\ErrorHandling\Log;
+use LMWF\Form\Exceptions\IllegalUserInputException;
+use LMWF\Form\Exceptions\MissingInputException;
+use LMWF\Constraint\Value\IUploadedImageConstraint;
 use Psr\Http\Message\UploadedFileInterface;
 use UnexpectedValueException;
 

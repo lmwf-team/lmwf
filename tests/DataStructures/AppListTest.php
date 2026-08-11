@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Tests\DataStructures;
+namespace LMWF\Tests\DataStructures;
 
 use InvalidArgumentException;
-use LM\WebFramework\DataStructures\AppList;
+use LMWF\DataStructures\AppList;
 use OutOfBoundsException;
 use PHPUnit\Framework\TestCase;
 use TypeError;

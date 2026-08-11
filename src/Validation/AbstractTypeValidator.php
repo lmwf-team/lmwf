@@ -2,27 +2,27 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Validation;
+namespace LMWF\Validation;
 
 use BadMethodCallException;
 use InvalidArgumentException;
-use LM\WebFramework\Constraint\Value\INotNullConstraint;
-use LM\WebFramework\Constraint\Type\ArrayModel;
-use LM\WebFramework\Validation\Violation\IndividualViolation;
-use LM\WebFramework\Constraint\Type\IModel;
-use LM\WebFramework\Constraint\Type\BoolModel;
-use LM\WebFramework\Constraint\Type\DataArrayModel;
-use LM\WebFramework\Constraint\Type\DateTimeModel;
-use LM\WebFramework\Constraint\Type\EntityListModel;
-use LM\WebFramework\Constraint\Type\EntityModel;
-use LM\WebFramework\Constraint\Type\ForeignEntityModel;
-use LM\WebFramework\Constraint\Type\IntModel;
-use LM\WebFramework\Constraint\Type\IScalarModel;
-use LM\WebFramework\Constraint\Type\ListModel;
-use LM\WebFramework\Constraint\Type\StringModel;
-use LM\WebFramework\Validation\Violation\ConstraintViolationCode;
-use LM\WebFramework\Validation\Violation\TypeViolation;
-use LM\WebFramework\Validation\Violation\ValueViolation;
+use LMWF\Constraint\Value\INotNullConstraint;
+use LMWF\Constraint\Type\ArrayModel;
+use LMWF\Validation\Violation\IndividualViolation;
+use LMWF\Constraint\Type\IModel;
+use LMWF\Constraint\Type\BoolModel;
+use LMWF\Constraint\Type\DataArrayModel;
+use LMWF\Constraint\Type\DateTimeModel;
+use LMWF\Constraint\Type\EntityListModel;
+use LMWF\Constraint\Type\EntityModel;
+use LMWF\Constraint\Type\ForeignEntityModel;
+use LMWF\Constraint\Type\IntModel;
+use LMWF\Constraint\Type\IScalarModel;
+use LMWF\Constraint\Type\ListModel;
+use LMWF\Constraint\Type\StringModel;
+use LMWF\Validation\Violation\ConstraintViolationCode;
+use LMWF\Validation\Violation\TypeViolation;
+use LMWF\Validation\Violation\ValueViolation;
 
 /**
  * Abstract class that checks that the app data to validate is not null if the

@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Validation;
+namespace LMWF\Validation;
 
 use DomainException;
-use LM\WebFramework\Constraint\Type\ArrayModel;
-use LM\WebFramework\Constraint\Type\BoolModel;
-use LM\WebFramework\Constraint\Type\DataArrayModel;
-use LM\WebFramework\Constraint\Type\DateTimeModel;
-use LM\WebFramework\Constraint\Type\EntityListModel;
-use LM\WebFramework\Constraint\Type\EntityModel;
-use LM\WebFramework\Constraint\Type\ForeignEntityModel;
-use LM\WebFramework\Constraint\Type\IModel;
-use LM\WebFramework\Constraint\Type\IntModel;
-use LM\WebFramework\Constraint\Type\ListModel;
-use LM\WebFramework\Constraint\Type\StringModel;
+use LMWF\Constraint\Type\ArrayModel;
+use LMWF\Constraint\Type\BoolModel;
+use LMWF\Constraint\Type\DataArrayModel;
+use LMWF\Constraint\Type\DateTimeModel;
+use LMWF\Constraint\Type\EntityListModel;
+use LMWF\Constraint\Type\EntityModel;
+use LMWF\Constraint\Type\ForeignEntityModel;
+use LMWF\Constraint\Type\IModel;
+use LMWF\Constraint\Type\IntModel;
+use LMWF\Constraint\Type\ListModel;
+use LMWF\Constraint\Type\StringModel;
 
 final class ValidatorFactory
 {

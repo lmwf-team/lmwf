@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Constraint\Value;
+namespace LMWF\Constraint\Value;
 
 use InvalidArgumentException;
-use LM\WebFramework\Constraint\IConstraint;
+use LMWF\Constraint\IConstraint;
 
 final readonly class EnumConstraint implements IConstraint
 {

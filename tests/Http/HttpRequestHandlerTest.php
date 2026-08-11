@@ -2,21 +2,21 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Tests\Http;
+namespace LMWF\Tests\Http;
 
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\ServerRequest;
-use LM\WebFramework\Conf\HttpConf;
-use LM\WebFramework\Conf\ErrorControllerConf;
-use LM\WebFramework\Http\Controller\Exception\AlreadyAuthenticated;
-use LM\WebFramework\Http\Controller\IController;
-use LM\WebFramework\Http\Controller\IRoutedController;
-use LM\WebFramework\Http\Security\CspNonce;
-use LM\WebFramework\Http\HttpRequestHandler;
-use LM\WebFramework\Http\Routing\Route;
-use LM\WebFramework\Conf\Http\RouteDef;
-use LM\WebFramework\Kernel;
-use LM\WebFramework\Session\SessionManager;
+use LMWF\Conf\HttpConf;
+use LMWF\Conf\ErrorControllerConf;
+use LMWF\Http\Controller\Exception\AlreadyAuthenticated;
+use LMWF\Http\Controller\IController;
+use LMWF\Http\Controller\IRoutedController;
+use LMWF\Http\Security\CspNonce;
+use LMWF\Http\HttpRequestHandler;
+use LMWF\Http\Routing\Route;
+use LMWF\Conf\Http\RouteDef;
+use LMWF\Kernel;
+use LMWF\Session\SessionManager;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Form\Exceptions;
+namespace LMWF\Form\Exceptions;
 
 /**
  * Thrown by a submittable when no value could be extracted from the request.

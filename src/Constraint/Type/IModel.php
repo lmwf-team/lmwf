@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Constraint\Type;
+namespace LMWF\Constraint\Type;
 
-use LM\WebFramework\Constraint\IConstraint;
-use LM\WebFramework\Constraint\Value\INotNullConstraint;
+use LMWF\Constraint\IConstraint;
+use LMWF\Constraint\Value\INotNullConstraint;
 
 /**
  * Parent interface for all type models.

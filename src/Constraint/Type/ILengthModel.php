@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Constraint\Type;
+namespace LMWF\Constraint\Type;
 
-use LM\WebFramework\Constraint\Value\IRangeConstraint;
+use LMWF\Constraint\Value\IRangeConstraint;
 
 /**
  * Interface for models for which an IRangeConstraint makes sense.

@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Validation;
+namespace LMWF\Validation;
 
-use LM\WebFramework\Constraint\Value\IEnumConstraint;
-use LM\WebFramework\Constraint\Value\IRegexConstraint;
-use LM\WebFramework\Validation\Violation\IndividualViolation;
-use LM\WebFramework\Constraint\Type\StringModel;
-use LM\WebFramework\Validation\Violation\ScalarValueViolation;
-use LM\WebFramework\Validation\Violation\TypeViolation;
+use LMWF\Constraint\Value\IEnumConstraint;
+use LMWF\Constraint\Value\IRegexConstraint;
+use LMWF\Validation\Violation\IndividualViolation;
+use LMWF\Constraint\Type\StringModel;
+use LMWF\Validation\Violation\ScalarValueViolation;
+use LMWF\Validation\Violation\TypeViolation;
 use Override;
 
 final readonly class StringValidator extends AbstractTypeValidator

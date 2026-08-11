@@ -2,33 +2,33 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Form;
+namespace LMWF\Form;
 
 use DomainException;
 use InvalidArgumentException;
-use LM\WebFramework\Conf\AppConf;
-use LM\WebFramework\Form\Conf\FormConfFactory;
-use LM\WebFramework\Form\Conf\FormFieldConf;
-use LM\WebFramework\Form\Conf\FormFieldType;
-use LM\WebFramework\Form\Transformer\ArrayTransformer;
-use LM\WebFramework\Form\Transformer\CheckboxTransformer;
-use LM\WebFramework\Form\Transformer\CsrfTransformer;
-use LM\WebFramework\Form\Transformer\DateTimeTransformer;
-use LM\WebFramework\Form\Transformer\FileTransformer;
-use LM\WebFramework\Form\Transformer\IFormTransformer;
-use LM\WebFramework\Form\Transformer\IntTransformer;
-use LM\WebFramework\Form\Transformer\JsonTransformer;
-use LM\WebFramework\Form\Transformer\ListTransformer;
-use LM\WebFramework\Form\Transformer\StringTransformer;
-use LM\WebFramework\Constraint\Type\ArrayModel;
-use LM\WebFramework\Constraint\Type\BoolModel;
-use LM\WebFramework\Constraint\Type\DateTimeModel;
-use LM\WebFramework\Constraint\Type\EntityListModel;
-use LM\WebFramework\Constraint\Type\ForeignEntityModel;
-use LM\WebFramework\Constraint\Type\IModel;
-use LM\WebFramework\Constraint\Type\IntModel;
-use LM\WebFramework\Constraint\Type\ListModel;
-use LM\WebFramework\Constraint\Type\StringModel;
+use LMWF\Conf\AppConf;
+use LMWF\Form\Conf\FormConfFactory;
+use LMWF\Form\Conf\FormFieldConf;
+use LMWF\Form\Conf\FormFieldType;
+use LMWF\Form\Transformer\ArrayTransformer;
+use LMWF\Form\Transformer\CheckboxTransformer;
+use LMWF\Form\Transformer\CsrfTransformer;
+use LMWF\Form\Transformer\DateTimeTransformer;
+use LMWF\Form\Transformer\FileTransformer;
+use LMWF\Form\Transformer\IFormTransformer;
+use LMWF\Form\Transformer\IntTransformer;
+use LMWF\Form\Transformer\JsonTransformer;
+use LMWF\Form\Transformer\ListTransformer;
+use LMWF\Form\Transformer\StringTransformer;
+use LMWF\Constraint\Type\ArrayModel;
+use LMWF\Constraint\Type\BoolModel;
+use LMWF\Constraint\Type\DateTimeModel;
+use LMWF\Constraint\Type\EntityListModel;
+use LMWF\Constraint\Type\ForeignEntityModel;
+use LMWF\Constraint\Type\IModel;
+use LMWF\Constraint\Type\IntModel;
+use LMWF\Constraint\Type\ListModel;
+use LMWF\Constraint\Type\StringModel;
 
 /**
  * Creates a form transformer from a model.

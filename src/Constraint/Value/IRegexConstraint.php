@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Constraint\Value;
+namespace LMWF\Constraint\Value;
 
-use LM\WebFramework\Constraint\IConstraint;
+use LMWF\Constraint\IConstraint;
 
 interface IRegexConstraint extends IConstraint
 {

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\SearchEngine;
+namespace LMWF\SearchEngine;
 
 final readonly class SearchEngine
 {

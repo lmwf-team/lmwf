@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Validation;
+namespace LMWF\Validation;
 
-use LM\WebFramework\Constraint\Type\BoolModel;
-use LM\WebFramework\Validation\Violation\TypeViolation;
+use LMWF\Constraint\Type\BoolModel;
+use LMWF\Validation\Violation\TypeViolation;
 
 final readonly class BoolValidator extends AbstractTypeValidator
 {

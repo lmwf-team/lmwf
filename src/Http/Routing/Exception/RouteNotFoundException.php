@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Http\Routing\Exception;
+namespace LMWF\Http\Routing\Exception;
 
 use Exception;
 

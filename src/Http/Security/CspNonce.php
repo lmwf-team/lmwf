@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Http\Security;
+namespace LMWF\Http\Security;
 
 use Stringable;
 

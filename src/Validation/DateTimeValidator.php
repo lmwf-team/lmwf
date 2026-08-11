@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Validation;
+namespace LMWF\Validation;
 
 use DateTimeInterface;
-use LM\WebFramework\Constraint\Type\DateTimeModel;
-use LM\WebFramework\Validation\Violation\TypeViolation;
+use LMWF\Constraint\Type\DateTimeModel;
+use LMWF\Validation\Violation\TypeViolation;
 
 final readonly class DateTimeValidator extends AbstractTypeValidator
 {

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\DataStructures;
+namespace LMWF\DataStructures;
 
 /**
  * @todo Should go in web namespace.

@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework;
+namespace LMWF;
 
 use DI\ContainerBuilder;
-use LM\WebFramework\Conf\AppConf;
-use LM\WebFramework\Conf\HttpConf;
-use LM\WebFramework\ErrorHandling\Log;
+use LMWF\Conf\AppConf;
+use LMWF\Conf\HttpConf;
+use LMWF\ErrorHandling\Log;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use ErrorException;

@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Tests\Http\Routing;
+namespace LMWF\Tests\Http\Routing;
 
 use DomainException;
-use LM\WebFramework\Http\Routing\Exception\RootRouteWithDefaultControllerException;
-use LM\WebFramework\Http\Routing\Exception\RouteNotFoundException;
-use LM\WebFramework\Http\Routing\Route;
-use LM\WebFramework\Conf\Http\RouteDef;
-use LM\WebFramework\Http\Routing\Router;
+use LMWF\Http\Routing\Exception\RootRouteWithDefaultControllerException;
+use LMWF\Http\Routing\Exception\RouteNotFoundException;
+use LMWF\Http\Routing\Route;
+use LMWF\Conf\Http\RouteDef;
+use LMWF\Http\Routing\Router;
 use PHPUnit\Framework\TestCase;
 
 final class RouterTest extends TestCase

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Http\Controller\Exception;
+namespace LMWF\Http\Controller\Exception;
 
 use InvalidArgumentException;
 

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\DataStructures\Factory;
+namespace LMWF\DataStructures\Factory;
 
-use LM\WebFramework\DataStructures\AppList;
-use LM\WebFramework\DataStructures\AppObject;
+use LMWF\DataStructures\AppList;
+use LMWF\DataStructures\AppObject;
 
 class CollectionFactory
 {

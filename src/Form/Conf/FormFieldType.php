@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Form\Conf;
+namespace LMWF\Form\Conf;
 
 use OutOfBoundsException;
 

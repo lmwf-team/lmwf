@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Http\Routing;
+namespace LMWF\Http\Routing;
 
 use DomainException;
 use InvalidArgumentException;
-use LM\WebFramework\Conf\Http\RouteDef;
-use LM\WebFramework\Http\Routing\Exception\RootRouteWithDefaultControllerException;
+use LMWF\Conf\Http\RouteDef;
+use LMWF\Http\Routing\Exception\RootRouteWithDefaultControllerException;
 
 /**
  * Instantiation of a RouteDef, based on a given path.

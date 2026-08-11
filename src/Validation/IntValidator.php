@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Validation;
+namespace LMWF\Validation;
 
-use LM\WebFramework\Validation\Violation\IndividualViolation;
-use LM\WebFramework\Constraint\Type\IntModel;
-use LM\WebFramework\Validation\Violation\ScalarValueViolation;
-use LM\WebFramework\Validation\Violation\TypeViolation;
-use LM\WebFramework\Validation\Violation\ValueViolation;
+use LMWF\Validation\Violation\IndividualViolation;
+use LMWF\Constraint\Type\IntModel;
+use LMWF\Validation\Violation\ScalarValueViolation;
+use LMWF\Validation\Violation\TypeViolation;
+use LMWF\Validation\Violation\ValueViolation;
 use Override;
 
 final readonly class IntValidator extends AbstractTypeValidator

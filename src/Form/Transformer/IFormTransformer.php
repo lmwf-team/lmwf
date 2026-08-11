@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Form\Transformer;
+namespace LMWF\Form\Transformer;
 
 use Psr\Http\Message\UploadedFileInterface;
 
@@ -29,7 +29,7 @@ interface IFormTransformer
      * @param array<string, array<string, UploadedFileInterface>|UploadedFileInterface> $uploadedFiles
      * @return mixed The submitted value converted to the app data format, or
      * null if the user submitted a value evaluating to null.
-     * @throws \LM\WebFramework\Form\Exceptions\MissingInputException If no value was submitted for the field.
+     * @throws \LMWF\Form\Exceptions\MissingInputException If no value was submitted for the field.
      */
     public function transformSubmittedData(array $parsedPayload, array $uploadedFiles): mixed;
 }

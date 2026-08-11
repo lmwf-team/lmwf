@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Conf;
+namespace LMWF\Conf;
 
-use LM\WebFramework\Conf\Http\RouteDef;
+use LMWF\Conf\Http\RouteDef;
 
 final class HttpConf
 {

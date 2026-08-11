@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Http;
+namespace LMWF\Http;
 
 use GuzzleHttp\Psr7\ServerRequest;
-use LM\WebFramework\Conf\HttpConf;
-use LM\WebFramework\Http\Controller\Exception\AccessDenied;
-use LM\WebFramework\Http\Controller\Exception\AlreadyAuthenticated;
-use LM\WebFramework\Http\Controller\Exception\RequestedResourceNotFound;
-use LM\WebFramework\ErrorHandling\Log;
-use LM\WebFramework\Http\Exception\UnsupportedMethodException;
-use LM\WebFramework\Http\Routing\Exception\RouteNotFoundException;
-use LM\WebFramework\Http\Routing\Router;
-use LM\WebFramework\Http\Security\CspNonce;
-use LM\WebFramework\Session\SessionManager;
+use LMWF\Conf\HttpConf;
+use LMWF\Http\Controller\Exception\AccessDenied;
+use LMWF\Http\Controller\Exception\AlreadyAuthenticated;
+use LMWF\Http\Controller\Exception\RequestedResourceNotFound;
+use LMWF\ErrorHandling\Log;
+use LMWF\Http\Exception\UnsupportedMethodException;
+use LMWF\Http\Routing\Exception\RouteNotFoundException;
+use LMWF\Http\Routing\Router;
+use LMWF\Http\Security\CspNonce;
+use LMWF\Session\SessionManager;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;

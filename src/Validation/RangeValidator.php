@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Validation;
+namespace LMWF\Validation;
 
-use LM\WebFramework\Validation\Violation\IndividualViolation;
-use LM\WebFramework\Constraint\Value\IRangeConstraint;
+use LMWF\Validation\Violation\IndividualViolation;
+use LMWF\Constraint\Value\IRangeConstraint;
 
 final class RangeValidator
 {

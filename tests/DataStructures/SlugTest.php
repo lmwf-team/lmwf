@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Tests\DataStructures;
+namespace LMWF\Tests\DataStructures;
 
-use LM\WebFramework\DataStructures\Slug;
+use LMWF\DataStructures\Slug;
 use PHPUnit\Framework\TestCase;
 
 final class SlugTest extends TestCase

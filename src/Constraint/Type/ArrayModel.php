@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Constraint\Type;
+namespace LMWF\Constraint\Type;
 
 /**
  * Model for data consisting of properties identified with a key.
@@ -26,7 +26,7 @@ abstract class ArrayModel extends AbstractModel
     abstract public function addProperty(string $key, IModel $model): self;
 
     /**
-     * @return array<string, \LM\WebFramework\Constraint\Type\IModel> An
+     * @return array<string, \LMWF\Constraint\Type\IModel> An
      * associative array of properties.
      *
      * This guarantees each property has a unique key in the context of the

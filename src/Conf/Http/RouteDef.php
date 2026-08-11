@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Conf\Http;
+namespace LMWF\Conf\Http;
 
 use InvalidArgumentException;
 

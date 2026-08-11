@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Form\Transformer;
+namespace LMWF\Form\Transformer;
 
-use LM\WebFramework\Form\Exceptions\MissingInputException;
+use LMWF\Form\Exceptions\MissingInputException;
 
 final class IntTransformer extends AbstractStringTransformer implements IFormTransformer
 {

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\ErrorHandling;
+namespace LMWF\ErrorHandling;
 
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;

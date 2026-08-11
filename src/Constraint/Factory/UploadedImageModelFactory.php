@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Constraint\Factory;
+namespace LMWF\Constraint\Factory;
 
-use LM\WebFramework\Constraint\Value\IUploadedImageConstraint;
-use LM\WebFramework\Constraint\Value\UploadedImageConstraint;
-use LM\WebFramework\Constraint\Type\StringModel;
+use LMWF\Constraint\Value\IUploadedImageConstraint;
+use LMWF\Constraint\Value\UploadedImageConstraint;
+use LMWF\Constraint\Type\StringModel;
 
 class UploadedImageModelFactory
 {

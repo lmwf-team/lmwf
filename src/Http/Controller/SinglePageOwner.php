@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Http\Controller;
+namespace LMWF\Http\Controller;
 
-use LM\WebFramework\DataStructures\Page;
+use LMWF\DataStructures\Page;
 
 /**
  * @todo Delete?

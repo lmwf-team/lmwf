@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Database\Exceptions;
+namespace LMWF\Database\Exceptions;
 
 final class NullDbDataNotAllowedException extends InvalidDbDataException
 {

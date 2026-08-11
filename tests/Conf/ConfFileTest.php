@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use LM\WebFramework\Conf\AppConf;
+use LMWF\Conf\AppConf;
 use PHPUnit\Framework\Attributes\WithoutErrorHandler;
 use PHPUnit\Framework\TestCase;
 

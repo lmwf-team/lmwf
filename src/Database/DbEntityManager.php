@@ -2,25 +2,25 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Database;
+namespace LMWF\Database;
 
 use DateTimeImmutable;
 use InvalidArgumentException;
-use LM\WebFramework\Database\Exceptions\InvalidDbDataException;
-use LM\WebFramework\Database\Exceptions\NullDbDataNotAllowedException;
-use LM\WebFramework\DataStructures\AppList;
-use LM\WebFramework\DataStructures\AppObject;
-use LM\WebFramework\DataStructures\Factory\CollectionFactory;
-use LM\WebFramework\Constraint\Type\BoolModel;
-use LM\WebFramework\Constraint\Type\DateTimeModel;
-use LM\WebFramework\Constraint\Type\EntityModel;
-use LM\WebFramework\Constraint\Type\ForeignEntityModel;
-use LM\WebFramework\Constraint\Type\IntModel;
-use LM\WebFramework\Constraint\Type\IScalarModel;
-use LM\WebFramework\Constraint\Type\EntityListModel;
-use LM\WebFramework\Constraint\Type\ListModel;
-use LM\WebFramework\Constraint\Type\StringModel;
-use LM\WebFramework\Validation\EntityValidator;
+use LMWF\Database\Exceptions\InvalidDbDataException;
+use LMWF\Database\Exceptions\NullDbDataNotAllowedException;
+use LMWF\DataStructures\AppList;
+use LMWF\DataStructures\AppObject;
+use LMWF\DataStructures\Factory\CollectionFactory;
+use LMWF\Constraint\Type\BoolModel;
+use LMWF\Constraint\Type\DateTimeModel;
+use LMWF\Constraint\Type\EntityModel;
+use LMWF\Constraint\Type\ForeignEntityModel;
+use LMWF\Constraint\Type\IntModel;
+use LMWF\Constraint\Type\IScalarModel;
+use LMWF\Constraint\Type\EntityListModel;
+use LMWF\Constraint\Type\ListModel;
+use LMWF\Constraint\Type\StringModel;
+use LMWF\Validation\EntityValidator;
 use UnexpectedValueException;
 
 /**

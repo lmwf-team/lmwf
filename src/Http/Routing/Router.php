@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Http\Routing;
+namespace LMWF\Http\Routing;
 
 use DomainException;
-use LM\WebFramework\Conf\Http\RouteDef;
-use LM\WebFramework\ErrorHandling\Log;
-use LM\WebFramework\Http\Routing\Exception\RouteNotFoundException;
+use LMWF\Conf\Http\RouteDef;
+use LMWF\ErrorHandling\Log;
+use LMWF\Http\Routing\Exception\RouteNotFoundException;
 use LogicException;
 
 final readonly class Router
