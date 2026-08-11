@@ -1,5 +1,7 @@
 <?php
 
+session_start();
+
 // TODO: php doc
 // TODO: namespaces for autoLoadClass?
 // TODO: good html, semantics, AMP, open graph, schema, accessibility WAI
