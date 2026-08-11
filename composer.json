@@ -3,7 +3,7 @@
     "version": "2.0-BETA",
     "autoload": {
         "psr-4": {
-            "LM\\": "classes/"
+            "LM\\": "classes/LM/"
         }
     }
 }
