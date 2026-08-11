@@ -14,9 +14,11 @@ parameters:
             identifiers:
                 - expr.resultUnused
                 - argument.type
+                - property.uninitialized
             path: ../../tests
     checkMissingCallableSignature: true
     checkMissingOverrideMethodAttribute: true
+    checkUninitializedProperties: true
     reportUnsafeArrayStringKeyCasting: 'prevent'
     treatPhpDocTypesAsCertain: false
     stubFiles:
