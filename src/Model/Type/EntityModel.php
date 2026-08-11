@@ -52,7 +52,8 @@ final class EntityModel extends AbstractModel
         return $this->properties;
     }
 
-    public function addProperty(string $key, IModel $model): self {
+    public function addProperty(string $key, IModel $model): self
+    {
         if (key_exists($key, $this->getProperties())) {
             throw new InvalidArgumentException('A property already exists with that key.');
         }
@@ -64,7 +65,8 @@ final class EntityModel extends AbstractModel
         );
     }
 
-    public function removeProperty(string $keyToRemove): self {
+    public function removeProperty(string $keyToRemove): self
+    {
         if (key_exists($keyToRemove, $this->getProperties())) {
             return new self(
                 $this->getIdentifier(),
@@ -74,5 +76,15 @@ final class EntityModel extends AbstractModel
             );
         }
         throw new InvalidArgumentException('No property with that key exists.');
+    }
+
+    public function prune(array $propertiesToKeep): self
+    {
+        return new self(
+            $this->getIdentifier(),
+            array_filter($this->getProperties(), fn ($key) => in_array($key, $propertiesToKeep, strict: true), ARRAY_FILTER_USE_KEY),
+            $this->getIdKey(),
+            $this->isNullable(),
+        );
     }
 }
