@@ -7,13 +7,13 @@ namespace LM\WebFramework\Tests\Http;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\ServerRequest;
 use LM\WebFramework\Configuration\HttpConf;
-use LM\WebFramework\Configuration\IHttpConf;
 use LM\WebFramework\Controller\Exception\AlreadyAuthenticated;
 use LM\WebFramework\Controller\IController;
 use LM\WebFramework\Controller\IRoutedController;
-use LM\WebFramework\DataStructures\AppObject;
-use LM\WebFramework\DataStructures\Factory\CollectionFactory;
 use LM\WebFramework\Http\HttpRequestHandler;
+use LM\WebFramework\Http\Routing\OnlyChildParentRouteDef;
+use LM\WebFramework\Http\Routing\ParameterizedRoute;
+use LM\WebFramework\Http\Routing\ParentRoute;
 use LM\WebFramework\Http\Routing\Route;
 use LM\WebFramework\Kernel;
 use LM\WebFramework\Session\SessionManager;
@@ -29,29 +29,30 @@ final class HttpRequestHandlerTest extends TestCase
     {
         $container = Kernel::initBare([
             HttpConf::class => new HttpConf(
-                new AppObject([
-                    'fqcn' => HomeController::class,
-                    'roles' => [
+                new ParentRoute(
+                    HomeController::class,
+                    [
                         'ADMIN',
                         'VISITOR'
                     ],
-                    'routes' => [
-                        'my' => [
-                            'fqcn' => MyController::class,
-                            'roles' => [
+                    [
+                        'my' => new ParameterizedRoute(
+                            MyController::class,
+                            [
                                 'VISITOR'
                             ]
-                        ],
-                        'only-child-parent' => [
-                            'fqcn' => MyController::class,
-                            'route' => [
-                                'fqcn' => MyController::class,
-                                'minArgs' => 1,
-                                'maxArgs' => 1,
-                            ]
-                        ]
+                        ),
+                        'only-child-parent' => new OnlyChildParentRouteDef(
+                            MyController::class,
+                            new ParameterizedRoute(
+                                MyController::class,
+                                [],
+                                1,
+                                1,
+                            )
+                        )
                     ]
-                ]),
+                ),
                 true,
                 null,
                 null,

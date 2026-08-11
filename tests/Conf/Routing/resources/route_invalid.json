@@ -1,0 +1,10 @@
+{
+    "fqcn": "Controller",
+    "roles": [],
+    "minArgs": 0,
+    "routes": {
+        "sub": {
+            "fqcn": "Controller"
+        }
+    }
+}

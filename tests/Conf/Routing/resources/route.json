@@ -1,0 +1,12 @@
+{
+    "fqcn": "App.Controller.RouteController",
+    "roles": [
+        "ADMIN",
+        "VISITOR"
+    ],
+    "routes": {
+        "test": {
+            "fqcn": "App.Controller.TestController"
+        }
+    }
+}

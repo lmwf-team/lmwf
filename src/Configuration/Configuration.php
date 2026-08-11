@@ -110,7 +110,7 @@ final class Configuration
         $this->logLevel = self::parseLogLevel($confData[self::LOG_LEVEL_KEY]);
 
         $this->httpConf = new HttpConf(
-            CollectionFactory::createDeepAppObject($confData['rootRoute']),
+            new RouteDefParser()->parse($confData['rootRoute']),
             $this->handleExceptions,
             implode(' ', $confData['cspDefaultSources']),
             implode(' ', $confData['cspFontSources']),

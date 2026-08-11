@@ -9,7 +9,9 @@
     "loggerFqcn": "",
     "logLevel": "NOTICE",
     "publicPath": "",
-    "rootRoute": {},
+    "rootRoute": {
+        "fqcn": "App.Controller.HomeController"
+    },
     "routeError404ControllerFQCN": "",
     "routeErrorNotLoggedInControllerFQCN": "",
     "routeErrorAlreadyLoggedInControllerFQCN": "",

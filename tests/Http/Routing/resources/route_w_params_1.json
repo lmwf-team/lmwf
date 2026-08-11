@@ -1,6 +1,0 @@
-{
-    "rootRoute": {
-        "fqcn": "Controller",
-        "minArgs": 0
-    }
-}

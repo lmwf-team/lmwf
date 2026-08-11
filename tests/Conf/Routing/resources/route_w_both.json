@@ -1,0 +1,17 @@
+{
+    "fqcn": "Controller",
+    "roles": [
+        "ADMIN",
+        "VISITOR"
+    ],
+    "routes": {
+        "sub": {
+            "fqcn": "Controller",
+            "roles": [
+                "ADMIN"
+            ],
+            "minArgs": 0,
+            "maxArgs": 3
+        }
+    }
+}

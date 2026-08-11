@@ -1,0 +1,9 @@
+{
+    "fqcn": "App.Controller.RouteController",
+    "roles": [],
+    "route": {
+        "fqcn": "App.Controller.SubRouteController",
+        "minArgs": 1,
+        "maxArgs": 1
+    }
+}

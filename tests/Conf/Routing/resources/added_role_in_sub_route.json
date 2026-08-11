@@ -1,0 +1,14 @@
+{
+    "fqcn": "Controller",
+    "roles": [
+        "ADMIN"
+    ],
+    "routes": {
+        "sub-page": {
+            "fqcn": "Controller",
+            "roles": [
+                "VISITOR"
+            ]
+        }
+    }
+}

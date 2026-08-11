@@ -2,21 +2,19 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Http\Routing;
+namespace LM\WebFramework\Configuration;
 
 use LM\WebFramework\Http\Routing\Exception\InvalidRouteConfException;
 use LM\WebFramework\Http\Routing\Exception\OnlyChildCannotHaveSiblingsException;
 use LM\WebFramework\Http\Routing\Exception\SubRouteCannotAddRoleConfException;
 use LM\WebFramework\Http\Routing\Exception\UnauthorizedAttributeConfException;
+use LM\WebFramework\Http\Routing\OnlyChildParentRouteDef;
+use LM\WebFramework\Http\Routing\ParameterizedRoute;
+use LM\WebFramework\Http\Routing\ParentRoute;
+use LM\WebFramework\Http\Routing\RouteDef;
 
 final readonly class RouteDefParser
 {
-    public function parseJson(string $filename): RouteDef
-    {
-        $json_decoded = json_decode(file_get_contents($filename), associative: true, flags: JSON_THROW_ON_ERROR)["rootRoute"];
-        return $this->parse($json_decoded, allowOverridingParentRoles: true);
-    }
-
     /**
      * @param array<string, mixed> $route The JSON-decoded route as an associative array.
      * @param string[] $parentRoles The roles of the parent route, if any.

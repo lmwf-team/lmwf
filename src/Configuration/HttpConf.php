@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace LM\WebFramework\Configuration;
 
-use LM\WebFramework\DataStructures\AppObject;
+use LM\WebFramework\Http\Routing\RouteDef;
 
 final class HttpConf
 {
     public function __construct(
-        public readonly AppObject $rootRoute,
+        public readonly RouteDef $rootRoute,
         public readonly bool $handleExceptions,
         public readonly ?string $cspDefaultSources,
         public readonly ?string $cspFontSources,

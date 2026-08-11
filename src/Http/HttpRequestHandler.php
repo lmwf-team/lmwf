@@ -7,23 +7,17 @@ namespace LM\WebFramework\Http;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\ServerRequest;
 use InvalidArgumentException;
-use LM\WebFramework\Configuration\Configuration;
 use LM\WebFramework\Configuration\HttpConf;
-use LM\WebFramework\Configuration\IHttpConf;
 use LM\WebFramework\Controller\Exception\AccessDenied;
 use LM\WebFramework\Controller\Exception\AlreadyAuthenticated;
 use LM\WebFramework\Controller\Exception\RequestedResourceNotFound;
-use LM\WebFramework\Controller\Exception\RequestedRouteNotFound;
 use LM\WebFramework\ErrorHandling\Logger;
-use LM\WebFramework\Http\Error\RoutingError;
 use LM\WebFramework\Http\Exception\UnsupportedMethodException;
 use LM\WebFramework\Http\Routing\Exception\RouteNotFoundException;
 use LM\WebFramework\Http\Routing\RouteDef;
-use LM\WebFramework\Http\Routing\RouteDefParser;
 use LM\WebFramework\Http\Routing\Router;
 use LM\WebFramework\Session\SessionManager;
 use Psr\Container\ContainerInterface;
-use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
@@ -39,9 +33,8 @@ final class HttpRequestHandler
         private HttpConf $conf,
         private ContainerInterface $container,
         private SessionManager $session,
-        RouteDefParser $routeParser,
     ) {
-        $this->rootRoute = $routeParser->parse($conf->rootRoute->toArray(), allowOverridingParentRoles: true);
+        $this->rootRoute = $conf->rootRoute;
     }
 
     public function sendResponse(ResponseInterface $response): void
