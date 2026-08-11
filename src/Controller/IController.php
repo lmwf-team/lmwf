@@ -7,7 +7,7 @@ namespace LM\WebFramework\Controller;
 use LM\WebFramework\AccessControl\Clearance;
 
 
-interface ControllerInterface extends ResponseGenerator
+interface IController extends ResponseGenerator
 {
     public function getAccessControl(): Clearance;
 }
