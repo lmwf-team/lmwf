@@ -8,9 +8,9 @@ class MainController
 {
     public function processRequest()
     {
-        $isSessionStarted = session_start();
+        $is_session_started = session_start();
 
-        if (false === $isSessionStarted) {
+        if (false === $is_session_started) {
             throw new SessionStartFailureException();
         }
 
