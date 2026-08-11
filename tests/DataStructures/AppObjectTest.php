@@ -75,13 +75,6 @@ final class AppObjectTest extends TestCase
         $appArray['item'];
     }
 
-    public function testWithEmptyArray(): void
-    {
-        $this->expectException(InvalidArgumentException::class);
-        $appArray = new AppObject([
-        ]);
-    }
-
     public function testIsEqual(): void
     {
         $appObject1 = CollectionFactory::createDeepAppObject([

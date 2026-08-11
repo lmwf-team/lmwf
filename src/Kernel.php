@@ -20,6 +20,7 @@ final class Kernel
     ///
     /// @todo Rename config to conf or cfg
     /// @todo Rename projectRootPath to appRootPath or appFolderPath
+    /// @todo Rename to initFromConfFile?
     public static function initialize(
         string $projectRootPath,
         string $language,
@@ -31,7 +32,7 @@ final class Kernel
             set_error_handler(self::getFailProofExceptionHandler());
         }
 
-        $config = self::createConfiguration(
+        $config = Configuration::createFromEnvFile(
             $projectRootPath,
             $language,
             $runtimeConfig,
@@ -40,12 +41,31 @@ final class Kernel
         $cb = new ContainerBuilder();
         if (!$config->isDev()) {
             // @todo Put folder in config
-            $cb->enableCompilation("$projectRootPath/var/cache");
+            $cb->enableCompilation("{$config->getPathOfAppDirectory()}/var/cache");
         }
         $container = $cb
             ->addDefinitions([
                 Configuration::class => $config,
             ])
+            ->build()
+        ;
+
+        return $container;
+    }
+
+    public static function initWithRuntimeConf(
+        array $confData = [],
+        array $containerDefinitions = [],
+    ): ContainerInterface {
+        $conf = new Configuration($confData);
+
+        $containerDefinitions += [
+                Configuration::class => $conf,
+        ];
+
+        $cb = new ContainerBuilder();
+        $container = $cb
+            ->addDefinitions($containerDefinitions)
             ->build()
         ;
 

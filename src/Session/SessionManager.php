@@ -18,15 +18,27 @@ final class SessionManager
 
     public const DEBUG_VARIABLES_SK = 'lmwf_debug_variables';
 
+    private array $sessionData;
+
+    public function __construct(?array $sessionData = null)
+    {
+        if (null === $sessionData) {
+            session_start();
+            $this->sessionData =& $_SESSION;
+        } else {
+            $this->sessionData = $sessionData;
+        }
+    }
+
     public function getCsrf(): string
     {
-        return $_SESSION[self::CSRF] ?? $_SESSION[self::CSRF] = bin2hex(random_bytes(self::CSRF_N_BYTES));
+        return $this->sessionData[self::CSRF] ?? $this->sessionData[self::CSRF] = bin2hex(random_bytes(self::CSRF_N_BYTES));
     }
 
     public function getCurrentUsername(): ?string
     {
         if ($this->isUserLoggedIn()) {
-            return $_SESSION[self::CURRENT_USERNAME_KEY];
+            return $this->sessionData[self::CURRENT_USERNAME_KEY];
         } else {
             return null;
         }
@@ -34,12 +46,12 @@ final class SessionManager
 
     public function getCustom(string $key): string
     {
-        return $_SESSION[self::CUSTOM_PREFIX . $key];
+        return $this->sessionData[self::CUSTOM_PREFIX . $key];
     }
 
     public function isUserLoggedIn(): bool
     {
-        return key_exists(self::CURRENT_USERNAME_KEY, $_SESSION) && null !== $_SESSION[self::CURRENT_USERNAME_KEY];
+        return key_exists(self::CURRENT_USERNAME_KEY, $this->sessionData) && null !== $this->sessionData[self::CURRENT_USERNAME_KEY];
     }
 
     /**
@@ -47,12 +59,12 @@ final class SessionManager
      */
     public function setCurrentUsername(?string $username): void
     {
-        $_SESSION[self::CURRENT_USERNAME_KEY] = $username;
+        $this->sessionData[self::CURRENT_USERNAME_KEY] = $username;
     }
 
     public function setCustom(string $key, string $value): void
     {
-        $_SESSION[self::CUSTOM_PREFIX . $key] = $value;
+        $this->sessionData[self::CUSTOM_PREFIX . $key] = $value;
     }
 
     /**
@@ -60,10 +72,10 @@ final class SessionManager
      */
     public function addDebugVariable($variable): void
     {
-        if (key_exists(self::DEBUG_VARIABLES_SK, $_SESSION)) {
-            $_SESSION[self::DEBUG_VARIABLES_SK][] = $variable;
+        if (key_exists(self::DEBUG_VARIABLES_SK, $this->sessionData)) {
+            $this->sessionData[self::DEBUG_VARIABLES_SK][] = $variable;
         } else {
-            $_SESSION[self::DEBUG_VARIABLES_SK] = [
+            $this->sessionData[self::DEBUG_VARIABLES_SK] = [
                 $variable,
             ];
         }
@@ -71,10 +83,10 @@ final class SessionManager
 
     public function addMessage(string $message): void
     {
-        if (key_exists(self::MESSAGES, $_SESSION)) {
-            $_SESSION[self::MESSAGES][] = $message;
+        if (key_exists(self::MESSAGES, $this->sessionData)) {
+            $this->sessionData[self::MESSAGES][] = $message;
         } else {
-            $_SESSION[self::MESSAGES] = [
+            $this->sessionData[self::MESSAGES] = [
                 $message,
             ];
         }
@@ -85,15 +97,15 @@ final class SessionManager
      */
     public function getAndDeleteDebugVariables(): array
     {
-        $variables = $_SESSION[self::DEBUG_VARIABLES_SK] ?? [];
-        $_SESSION[self::DEBUG_VARIABLES_SK] = [];
+        $variables = $this->sessionData[self::DEBUG_VARIABLES_SK] ?? [];
+        $this->sessionData[self::DEBUG_VARIABLES_SK] = [];
         return $variables;
     }
 
     public function getAndDeleteMessages(): array
     {
-        $messages = $_SESSION[self::MESSAGES] ?? [];
-        $_SESSION[self::MESSAGES] = [];
+        $messages = $this->sessionData[self::MESSAGES] ?? [];
+        $this->sessionData[self::MESSAGES] = [];
         return $messages;
     }
 }

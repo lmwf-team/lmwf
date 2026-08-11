@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace LM\WebFramework\Http;
 
+use GuzzleHttp\Psr7\Response;
+use GuzzleHttp\Psr7\ServerRequest;
 use LM\WebFramework\Configuration\Configuration;
-use LM\WebFramework\Configuration\Exception\SettingNotFoundException;
 use LM\WebFramework\Controller\Exception\AccessDenied;
 use LM\WebFramework\Controller\Exception\AlreadyAuthenticated;
 use LM\WebFramework\Controller\Exception\RequestedResourceNotFound;
 use LM\WebFramework\Controller\Exception\RequestedRouteNotFound;
+use LM\WebFramework\Kernel;
 use LM\WebFramework\Session\SessionManager;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\RequestInterface;
@@ -19,7 +21,8 @@ use Throwable;
 
 final class HttpRequestHandler
 {
-    const UNEXISTING_ROUTE = 1000;
+    public const SUPPORTED_METHODS = ['GET', 'HEAD', 'POST', 'READ', 'PUT', 'PATCH', 'OPTIONS', 'DELETE'];
+    public const UNEXISTING_ROUTE = 1000;
 
     public function __construct(
         private Configuration $configuration,
@@ -40,20 +43,10 @@ final class HttpRequestHandler
         echo $response->getBody()->__toString();
     }
 
+    /// @todo Use pipe operator!
     public function respondToOngoingRequest(): void
     {
         $request = ServerRequest::fromGlobals();
-        $this->generateResponse($request);
-        $this->sendResponse($response);
-    }
-
-    /**
-     * Handles the entire process of responding to an HTTP request and return an
-     * HTTP response.
-     */
-    public function generateResponse(ServerRequestInterface $request): ResponseInterface
-    {
-        session_start();
 
         set_error_handler(
             function ($errNo, $errStr, $errFile, $errLine)
@@ -90,7 +83,20 @@ final class HttpRequestHandler
                 exit();
             }
         );
+        $response = $this->generateResponse($request);
+        $this->sendResponse($response);
+    }
 
+    /**
+     * Handles the entire process of responding to an HTTP request and return an
+     * HTTP response.
+     */
+    public function generateResponse(ServerRequestInterface $request): ResponseInterface
+    {
+        if (!in_array($request->getMethod(), self::SUPPORTED_METHODS, true)) {
+            return new Response(501);
+        }
+    
         $pathSegments = $this->getPathSegments($request->getRequestTarget());
 
         /// @todo Magic strings
@@ -108,7 +114,7 @@ final class HttpRequestHandler
             [],
         ));
 
-        return $repsonse;
+        return $response;
     }
 
     /**

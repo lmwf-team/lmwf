@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace LM\WebFramework\Tests\DataStructures;
 
+use GuzzleHttp\Psr7\Request;
 use LM\WebFramework\Configuration\Configuration;
-use LM\WebFramework\Configuration\Exception\SettingNotFoundException;
 use LM\WebFramework\Controller\Exception\RequestedResourceNotFound;
-use LM\WebFramework\DataStructures\Factory\CollectionFactory;
 use LM\WebFramework\Http\HttpRequestHandler;
 use LM\WebFramework\Http\Router;
 use PHPUnit\Framework\TestCase;
@@ -68,9 +67,9 @@ final class RouterTest extends TestCase
         ;
 
         $config = new Configuration(
-            (new CollectionFactory())->createDeepAppObject($configData),
-            '.',
-            'EN',
+            $configData,
+            // '.',
+            // 'EN',
         );
 
         $router = new Router($config);

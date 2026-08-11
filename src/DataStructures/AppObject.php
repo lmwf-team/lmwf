@@ -21,10 +21,9 @@ final class AppObject extends ImmutableArray
      */
     public function __construct(array $array)
     {
-        if (array_is_list($array)) {
+        if (array_is_list($array) && [] !== $array) {
             throw new InvalidArgumentException('App array must be an associative array with string keys, not a list.');
         }
-
         foreach ($array as $key => $value) {
             if (!is_string($key)) {
                 throw new InvalidArgumentException("Property keys of AppObjects MUST be strings, got key {$key} for {$value}.");
