@@ -6,7 +6,7 @@ namespace LM\WebFramework\Model\Factory;
 
 use LM\WebFramework\Model\Type\StringModel;
 
-class VarcharModelFactory
+final class VarcharModelFactory
 {
     public const MAX_LENGTH = 255;
 

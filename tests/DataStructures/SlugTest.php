@@ -7,7 +7,7 @@ namespace LM\WebFramework\Tests\DataStructures;
 use LM\WebFramework\DataStructures\Slug;
 use PHPUnit\Framework\TestCase;
 
-class SlugTest extends TestCase
+final class SlugTest extends TestCase
 {
     public function testSlugModel(): void
     {

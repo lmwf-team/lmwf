@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace LM\WebFramework\DataStructures\Factory;
 
 use LM\WebFramework\DataStructures\AppList;

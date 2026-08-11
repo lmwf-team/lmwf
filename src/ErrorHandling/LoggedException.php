@@ -11,7 +11,7 @@ use Throwable;
 /**
  * @todo To delete. (Absolutely useless.)
  */
-class LoggedException extends Exception implements IArrayable
+final class LoggedException extends Exception implements IArrayable
 {
     public function __construct(
         string $message,

@@ -26,6 +26,8 @@
     "require-dev": {
         "phpstan/phpstan": "^2.1",
         "phpunit/phpunit": "^13.0",
-        "squizlabs/php_codesniffer": "*"
+        "squizlabs/php_codesniffer": "*",
+        "spaze/phpstan-disallowed-calls": "^4.8",
+        "ergebnis/phpstan-rules": "^2.13"
     }
 }

@@ -1,6 +1,6 @@
 includes:
-#    - vendor/spaze/phpstan-disallowed-calls/extension.neon
-#    - vendor/ergebnis/phpstan-rules/rules.neon
+    - ../../vendor/spaze/phpstan-disallowed-calls/extension.neon
+    - ../../vendor/ergebnis/phpstan-rules/rules.neon
 parameters:
     level: 1
     paths:
@@ -8,6 +8,28 @@ parameters:
         - ../../tests
     bootstrapFiles:
         - ../../vendor/autoload.php
-#    ergebnis:
-#        declareStrictTypes:
-#            enabled: true
+    ergebnis:
+        declareStrictTypes:
+            enabled: true
+        noNamedArgument:
+            enabled: false
+        noExtends:
+            enabled: false
+        noSwitch:
+            enabled: false
+        noParameterWithNullDefaultValue:
+            enabled: false
+        noParameterWithNullableTypeDeclaration:
+            enabled: false
+        noNullableReturnTypeDeclaration:
+            enabled: false
+        noConstructorParameterWithDefaultValue:
+            enabled: false
+        finalInAbstractClass:
+            enabled: false
+        noAssignByReference:
+            enabled: false
+        final:
+            enabled: false
+        noParameterWithContainerTypeDeclaration:
+            enabled: false

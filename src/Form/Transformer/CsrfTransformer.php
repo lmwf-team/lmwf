@@ -19,7 +19,7 @@ final class CsrfTransformer implements IFormTransformer
 
     public function transformSubmittedData(array $formRawData, array $uploadedFiles): string
     {
-        if (!isset($formRawData[self::CSRF_FORM_ELEMENT_NAME])) {
+        if (!key_exists(self::CSRF_FORM_ELEMENT_NAME, $formRawData)) {
             throw new MissingInputException(self::CSRF_FORM_ELEMENT_NAME);
         }
         if ($this->session->getCsrf() !== $formRawData[self::CSRF_FORM_ELEMENT_NAME]) {
