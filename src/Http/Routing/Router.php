@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace LM\WebFramework\Http\Routing;
 
+use LM\WebFramework\ErrorHandling\Log;
 use LM\WebFramework\Http\Routing\Exception\RouteNotFoundException;
 use LogicException;
 
@@ -25,6 +26,8 @@ final readonly class Router
             // Normally, the empty path "" and absolute path "/" are considered
             // equal as defined in RFC 7230 Section 2.7.3.
             $path = '';
+        } elseif ('/' === substr($path, -1)) {
+            $path = substr($path, 0, -1);
         }
         return array_map(fn ($seg) => urldecode($seg), explode('/', $path));
     }
@@ -49,6 +52,7 @@ final readonly class Router
         string $currentSeg,
         array $nextSegs,
     ): Route {
+        Log::debug("Current seg is '{$currentSeg}', next segs are: [" . implode(', ', $nextSegs) . "].");
         if ($routeDef instanceof ParameterizedRoute) {
             $nArgs = count($nextSegs);
             if ($nArgs < $routeDef->minArgs || $nArgs > $routeDef->maxArgs) {
