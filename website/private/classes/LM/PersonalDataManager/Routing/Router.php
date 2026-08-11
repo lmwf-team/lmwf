@@ -5,6 +5,7 @@ namespace LM\PersonalDataManager\Routing;
 use LM\PersonalDataManager\Controller\HomeController;
 use LM\PersonalDataManager\Controller\LoginController;
 use LM\PersonalDataManager\Controller;
+use LM\WebFramework\Controller\IPageController;
 use LM\WebFramework\Routing\IRouter;
 
 class Router implements IRouter
