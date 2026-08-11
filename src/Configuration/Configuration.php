@@ -2,33 +2,26 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework;
+namespace LM\WebFramework\Configuration;
 
+use LengthException;
+use LM\WebFramework\Configuration\Exception\SettingNotFoundException;
 use LM\WebFramework\DataStructures\AppObject;
-use LM\WebFramework\DataStructures\Factory\CollectionFactory;
+use Psr\Http\Message\ServerRequestInterface;
+use RequestWrapper;
+use UnexpectedValueException;
 
 final class Configuration
 {
-    private AppObject $configData;
-
-    private string $configFolderPath;
-
-    private string $language;
-
     /**
-     * @todo Add JSON_THROW_ON_ERROR everywhere, and automatically check its presence.
      * @todo Create model for configuration, and check it is valid.
+     * @todo Accept an array and create a model from it?
      */
-    public function __construct(string $configFolderPath, string $language)
-    {
-        $this->configFolderPath = $configFolderPath;
-        $this->language = $language;
-
-        $env = file_get_contents("$configFolderPath/.env.json");
-        $envLocal = file_get_contents("$configFolderPath/.env.json.local");
-        $configData = false !== $envLocal ? json_decode($envLocal, true, flags: JSON_THROW_ON_ERROR) : [];
-        $configData += false !== $env ? json_decode($env, true, flags: JSON_THROW_ON_ERROR) : [];
-        $this->configData = (new CollectionFactory())->createDeepAppObject($configData);
+    public function __construct(
+        private AppObject $configData,
+        private string $configFolderPath,
+        private string $language,
+    ) {
     }
 
     public function getBoolSetting(string $key): bool
@@ -40,6 +33,42 @@ final class Configuration
     {
         return $this->configData;
     }
+
+    /**
+     * @todo Create class for the returned object.
+     * @return array Return the controller FQCN and the number of
+     * parameters it takes.
+     */
+    public function getControllerFqcn(array $pathSegments): array
+    {
+        if (0 === count($pathSegments)) {
+            throw new LengthException('There must be at least one Path Segment.');
+        }
+        $currentRoute = $this->configData->getAppObject('rootRoute');
+        $nPathSegments = count($pathSegments);
+        for ($i = 0; $i < count($pathSegments); $i++) {
+            if ($currentRoute->hasProperty('routes') && $currentRoute->getAppObject('routes')->hasProperty($pathSegments[$i])) {
+                $currentRoute = $currentRoute['routes'][$pathSegments[$i]];
+            } elseif ($currentRoute->hasProperty('controller')) {
+                $nRemainingPathSegments = $nPathSegments - ($i + 1);
+                $maxNArgs = $currentRoute['controller']['max_n_args'] ?? $currentRoute['controller']['n_args'];
+                $minNArgs = $currentRoute['controller']['min_n_args'] ?? $currentRoute['controller']['n_args'];
+                if ($nRemainingPathSegments <= $maxNArgs && $nRemainingPathSegments >= $minNArgs) {
+                    break;
+                } else {
+                    throw new SettingNotFoundException("Found a route but not the right number of arguments.");
+                }
+            } else {
+                throw new SettingNotFoundException("Requested route with path segment {$pathSegments[$i]} does not exist.");
+            }
+        }
+
+        if (!$currentRoute->hasProperty('controller')) {
+            throw new SettingNotFoundException("Requested route does not have an associated controller.");
+        }
+
+        return $currentRoute['controller']->toArray();
+    } 
 
     /**
      * @return string List of valid CSP origins

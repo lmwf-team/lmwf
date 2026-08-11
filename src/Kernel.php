@@ -5,13 +5,12 @@ declare(strict_types=1);
 namespace LM\WebFramework;
 
 use DI\ContainerBuilder;
-use Exception;
 use GuzzleHttp\Psr7\ServerRequest;
+use LM\WebFramework\Configuration\Configuration;
+use LM\WebFramework\DataStructures\Factory\CollectionFactory;
 use LM\WebFramework\ErrorHandling\LoggedException;
-use LM\WebFramework\ErrorHandling\LoggedThrowable;
 use LM\WebFramework\Http\HttpRequestHandler;
 use Psr\Container\ContainerInterface;
-use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Throwable;
 
@@ -30,7 +29,7 @@ final class Kernel
             set_error_handler(self::getFailProofExceptionHandler());
         }
 
-        $config = new Configuration($projectRootPath, $language);
+        $config = self::createConfiguration($projectRootPath, $language);
         
         $cb = (new ContainerBuilder());
         if (!$config->isDev()) {
@@ -109,6 +108,24 @@ final class Kernel
 
             return null;
         }
+    }
+
+    /**
+     * @todo Add JSON_THROW_ON_ERROR everywhere, and automatically check its presence.
+     */
+    public static function createConfiguration(string $configFolderPath, string $language): Configuration
+    {
+        $env = file_get_contents("$configFolderPath/.env.json");
+        $envLocal = file_get_contents("$configFolderPath/.env.json.local");
+        $configData = false !== $envLocal ? json_decode($envLocal, true, flags: JSON_THROW_ON_ERROR) : [];
+        $configData += false !== $env ? json_decode($env, true, flags: JSON_THROW_ON_ERROR) : [];
+        $configData = (new CollectionFactory())->createDeepAppObject($configData);
+
+        return new Configuration(
+            $configData,
+            $configFolderPath,
+            $language,
+        );
     }
 
     public static function getFailProofErrorHandler(): callable

@@ -6,7 +6,7 @@ namespace LM\WebFramework\Form;
 
 use DomainException;
 use InvalidArgumentException;
-use LM\WebFramework\Configuration;
+use LM\WebFramework\Configuration\Configuration;
 use LM\WebFramework\Form\Transformer\ArrayTransformer;
 use LM\WebFramework\Form\Transformer\CheckboxTransformer;
 use LM\WebFramework\Form\Transformer\CsrfTransformer;

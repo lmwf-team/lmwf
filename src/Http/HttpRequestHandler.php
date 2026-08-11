@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace LM\WebFramework\Http;
 
 use LM\WebFramework\AccessControl\Clearance;
-use LM\WebFramework\Configuration;
+use LM\WebFramework\Configuration\Configuration;
 use LM\WebFramework\Controller\Exception\AccessDenied;
 use LM\WebFramework\Controller\Exception\AlreadyAuthenticated;
 use LM\WebFramework\Controller\Exception\RequestedResourceNotFound;
@@ -16,6 +16,7 @@ use Psr\Container\ContainerInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use RequestWrapper;
 use Throwable;
 
 final class HttpRequestHandler
@@ -36,7 +37,7 @@ final class HttpRequestHandler
      */
     public function findController(ServerRequestInterface $request): IResponseGenerator
     {
-        $routeId = $this->extractRouteParams($request)[0];
+        $routeId = $this->getPathSegments($request->getRequestTarget())[0];
 
         if (!$this->configuration->getRoutes()->hasProperty($routeId)) {
             throw new RequestedRouteNotFound();
@@ -64,19 +65,19 @@ final class HttpRequestHandler
         try {
             $response = $this
                 ->findController($request)
-                ->generateResponse($request, $this->extractRouteParams($request), [])
+                ->generateResponse($request, RequestWrapper::getPathSegments($request->getRequestTarget()), [])
             ;
         } catch (RequestedRouteNotFound|RequestedResourceNotFound) {
             $response = $this->container->get($this->configuration->getErrorNotFoundControllerFQCN())
-                ->generateResponse($request, $this->extractRouteParams($request), [])
+                ->generateResponse($request, RequestWrapper::getPathSegments($request->getRequestTarget()), [])
             ;
         } catch (AlreadyAuthenticated) {
             $response = $this->container->get($this->configuration->getErrorLoggedInControllerFQCN())
-                ->generateResponse($request, $this->extractRouteParams($request), [])
+                ->generateResponse($request, RequestWrapper::getPathSegments($request->getRequestTarget()), [])
             ;
         } catch (AccessDenied) {
             $response = $this->container->get($this->configuration->getErrorNotLoggedInControllerFQCN())
-                ->generateResponse($request, $this->extractRouteParams($request), [])
+                ->generateResponse($request, RequestWrapper::getPathSegments($request->getRequestTarget()), [])
             ;
         }
 
@@ -88,7 +89,7 @@ final class HttpRequestHandler
         $response = $this->container->get($this->configuration->getServerErrorControllerFQCN())
             ->generateResponse(
                 $request,
-                $this->extractRouteParams($request),
+                RequestWrapper::getPathSegments($request->getRequestTarget()),
                 [
                     'throwable_hash' => hash('sha256', $t->__toString()),
                 ],
@@ -96,19 +97,6 @@ final class HttpRequestHandler
         ;
 
         return $this->addCspSources($response);
-    }
-
-    /**
-     * @return array<string>
-     */
-    public function extractRouteParams(ServerRequestInterface $request): array
-    {
-        $parts = array_map(fn ($e) => urldecode($e), explode('/', $request->getRequestTarget()));
-        if (1 === count($parts) && '' === $parts[0]) {
-            return $parts;
-        } else {
-            return array_slice($parts, 1);
-        }
     }
 
     private function addCspSources(ResponseInterface $response): ResponseInterface

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace LM\WebFramework\File;
 
-use LM\WebFramework\Configuration;
+use LM\WebFramework\Configuration\Configuration;
 use LM\WebFramework\Model\Constraints\IUploadedImageConstraint;
 
 final class FileService
