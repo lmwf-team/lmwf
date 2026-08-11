@@ -46,6 +46,11 @@ jobs:
         run: |
           cp dev/phpdoc/phpdoc.dist.xml .
           phpdoc
+      - uses: actions/download-artifact@v5
+        with:
+          name: coverage
+      - name: Generate JSON file for coverage badge
+        run: ./dev/phpunit/coverage.php
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact

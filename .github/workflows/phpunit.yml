@@ -17,3 +17,8 @@ jobs:
 
       - name: Run test suite
         run: ./dev/phpunit/phpunit.sh
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: xml-coverage/index.xml

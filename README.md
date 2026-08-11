@@ -1,14 +1,17 @@
 [![PSR-12](https://github.com/lmwf-team/lmwf/actions/workflows/phpcs.yml/badge.svg)](https://github.com/lmwf-team/lmwf/actions/workflows/phpcs.yml)
 [![PHPUnit](https://github.com/lmwf-team/lmwf/actions/workflows/phpunit.yml/badge.svg)](https://github.com/lmwf-team/lmwf/actions/workflows/phpunit.yml)
 [![PHPStan](https://github.com/lmwf-team/lmwf/actions/workflows/phpstan.yml/badge.svg)](https://github.com/lmwf-team/lmwf/actions/workflows/phpstan.yml)
+![Code Coverage Badge](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/lmwf-team/lmwf/refs/heads/coverage_badge_test/example.json)
 
 # LMWF
-
-![LMWF](logo.png)
 
 **[Documentation](https://lmwf-team.github.io/lmwf/phpdoc/)**
 
 Lightweight web framework that doesn’t require tons of dependencies and keeps you in control.
+
+<p align="center">
+<img width="256px" height="auto" src="./logo.png">
+</p>
 
 ## Overview
 
@@ -18,12 +21,4 @@ LMWF is composed of multiple modules. The following image is an overview of its 
 
 # Security
 
- - Deactivate `display_errors` and `display_warnings`. LMWF does not take care of that for you.
-
-## TODO
-
- - Check test coverage
- - Add mutation testing
- - Make PHPStan test pass and increase rule level
- - Add back functional constraints
- - Add documentation
+ - Deactivate `display_errors` and `display_warnings` in PHP settings. LMWF does not take care of that for you.
