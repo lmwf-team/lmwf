@@ -31,7 +31,7 @@ final class Configuration
 
     /**
      * Gives access to the raw configuration data.
-     * 
+     *
      * Stored as AppObject to ensure it cannot be mutated.
      */
     public readonly AppObject $confData;

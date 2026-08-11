@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace LM\WebFramework\Configuration;
 
+use LM\WebFramework\Configuration\Exception\SettingNotFoundException;
 use LM\WebFramework\Http\Routing\Exception\InvalidRouteConfException;
 use LM\WebFramework\Http\Routing\Exception\OnlyChildCannotHaveSiblingsException;
 use LM\WebFramework\Http\Routing\Exception\SubRouteCannotAddRoleConfException;
@@ -15,43 +16,80 @@ use LM\WebFramework\Http\Routing\RouteDef;
 
 final readonly class RouteDefParser
 {
+    const string ARGS_MAX_KN = 'maxArgs';
+    const string ARGS_MIN_KN = 'minArgs';
+    const string FQCN_KN = 'fqcn';
+    const string ROLES_KN = 'roles';
+    const string ROUTE_KN = 'route';
+    const string ROUTES_KN = 'routes';
+    const array ALL_KNS = [
+        self::ARGS_MAX_KN,
+        self::ARGS_MAX_KN,
+        self::ARGS_MIN_KN,
+        self::FQCN_KN,
+        self::ROLES_KN,
+        self::ROUTE_KN,
+        self::ROUTES_KN,
+    ];
+
+    const string AMBIGUOUS_DEF_MSG_FMT = 'A route definition cannot both defines ' . self::ROUTES_KN . ' and ' . self::ARGS_MIN_KN . ' or ' . self::ARGS_MAX_KN . '.';
+    const string AMBIGUOUS_SUB_ROUTES_MSG_FMT = 'A route definition cannot both defines ' . self::ROUTES_KN . ' and ' . self::ROUTE_KN . '.';
+
     /**
      * @param array<string, mixed> $route The JSON-decoded route as an associative array.
-     * @param string[] $parentRoles The roles of the parent route, if any.
+     * @param null|string[] $parentRoles The parent roles if defined, null if the current route is the root route.
      * @param bool $allowOverridingParentRoles If true, a sub-route can add role its parent does not have.
      */
-    public function parse(array $route, array $parentRoles = [], bool $allowOverridingParentRoles = false): RouteDef
-    {
+    public function parse(
+        array $route,
+        ?array $parentRoles = null,
+        bool $allowOverridingParentRoles = false,
+    ): RouteDef {
+        // Check there are no unknown keys.
         foreach ($route as $key => $_) {
-            if (!in_array($key, ['roles', 'fqcn', 'minArgs', 'maxArgs', 'route', 'routes'])) {
-                throw new UnauthorizedAttributeConfException("Attribute '{$key}' is unknown and not allowed in a route definition.");
+            if (!in_array($key, self::ALL_KNS)) {
+                throw new UnauthorizedAttributeConfException($key);
             }
         }
-        $roles = $route['roles'] ?? $parentRoles;
-        foreach ($roles as $role) {
-            if (!in_array($role, $parentRoles, strict: true) && !$allowOverridingParentRoles) {
-                throw new SubRouteCannotAddRoleConfException("Unless explicitely authorized, a sub-route cannot add roles its parent does not have. Child node requires role '{$role}'.");
+
+        // Verify and set roles.
+        if (key_exists(self::ROLES_KN, $route)) {
+            $roles = $route[self::ROLES_KN];
+            if (!$allowOverridingParentRoles && null !== $parentRoles) {
+                foreach ($roles as $role) {
+                    if (!in_array($role, $parentRoles, strict: true)) {
+                        throw new SubRouteCannotAddRoleConfException($route, $role);
+                    }
+                }
             }
+        } elseif (null === $parentRoles) {
+            throw new SettingNotFoundException("The root route must define its roles.");
+        } else {
+            $roles = $parentRoles;
         }
-        $fqcn = str_replace('.', '\\', $route['fqcn']);
-        if (key_exists('minArgs', $route) || key_exists('maxArgs', $route)) {
-            if (key_exists('routes', $route)) {
-                throw new InvalidRouteConfException("A route definition cannot both defines 'routes' and 'minArgs' or 'maxArgs'.");
+
+        // Parse FQCN.
+        $fqcn = str_replace('.', '\\', $route[self::FQCN_KN]);
+
+        if (key_exists(self::ARGS_MIN_KN, $route) || key_exists(self::ARGS_MAX_KN, $route)) {
+            if (key_exists(self::ROUTES_KN, $route)) {
+                throw new InvalidRouteConfException(self::AMBIGUOUS_DEF_MSG_FMT);
             }
-            if (key_exists('route', $route)) {
-                throw new InvalidRouteConfException("A route definition cannot both defines 'route' and 'minArgs' or 'maxArgs'.");
+            if (key_exists(self::ROUTE_KN, $route)) {
+                throw new InvalidRouteConfException(self::AMBIGUOUS_DEF_MSG_FMT);
             }
-            return new ParameterizedRoute($fqcn, $roles, $route['minArgs'] ?? 0, $route['maxArgs'] ?? 0);
+            return new ParameterizedRoute($fqcn, $roles, $route[self::ARGS_MIN_KN] ?? 0, $route[self::ARGS_MAX_KN] ?? 0);
         }
-        if (key_exists('route', $route)) {
-            if (key_exists('routes', $route)) {
-                throw new OnlyChildCannotHaveSiblingsException("A route definition cannot both defines 'routes' and 'route'.");
+
+        if (key_exists(self::ROUTE_KN, $route)) {
+            if (key_exists(self::ROUTES_KN, $route)) {
+                throw new OnlyChildCannotHaveSiblingsException(self::AMBIGUOUS_SUB_ROUTES_MSG_FMT);
             }
-            $onlyChildRouteDef = $this->parse($route['route'], $roles);
+            $onlyChildRouteDef = $this->parse($route[self::ROUTE_KN], $roles);
             return new OnlyChildParentRouteDef($fqcn, $onlyChildRouteDef, $roles);
         }
         $routes = [];
-        foreach ($route['routes'] ?? [] as $subRouteId => $subRoute) {
+        foreach ($route[self::ROUTES_KN] ?? [] as $subRouteId => $subRoute) {
             $routes[$subRouteId] = $this->parse($subRoute, $roles);
         }
         return new ParentRoute($fqcn, $roles, $routes);

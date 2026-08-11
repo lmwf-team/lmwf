@@ -1,4 +1,5 @@
 {
     "fqcn": "Controller",
-    "minArgs": 0
+    "minArgs": 0,
+    "roles": []
 }

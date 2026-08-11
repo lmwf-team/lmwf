@@ -22,7 +22,6 @@ final class RouteParserTest extends TestCase
     public function testAddingRoles(): void
     {
         $this->expectException(SubRouteCannotAddRoleConfException::class);
-        $parser = new RouteDefParser();
         $this->parseJson(__DIR__ . "/resources/added_role_in_sub_route.json");
     }
 
@@ -38,7 +37,6 @@ final class RouteParserTest extends TestCase
                 ),
             ],
         );
-        $parser = new RouteDefParser();
         $actualRoute = $this->parseJson(__DIR__ . "/resources/route.json");
         $this->assertEquals($expected, $actualRoute);
     }
@@ -46,7 +44,6 @@ final class RouteParserTest extends TestCase
     public function testParsingWithParams(): void
     {
         $expected = new ParameterizedRoute("Controller");
-        $parser = new RouteDefParser();
         $this->assertEquals($expected, $this->parseJson(__DIR__ . "/resources/route_w_params_0.json"));
         $this->assertEquals($expected, $this->parseJson(__DIR__ . "/resources/route_w_params_1.json"));
         $this->assertEquals($expected, $this->parseJson(__DIR__ . "/resources/route_w_params_2.json"));
@@ -64,48 +61,41 @@ final class RouteParserTest extends TestCase
                 'sub' => new ParameterizedRoute("Controller", roles: ["ADMIN"], minArgs: 0, maxArgs: 3),
             ],
         );
-        $parser = new RouteDefParser();
         $this->assertEquals($expected, $this->parseJson(__DIR__ . "/resources/route_w_both.json"));
     }
 
     public function testParsingInvalidOnlyChild0(): void
     {
-        $parser = new RouteDefParser();
         $this->expectException(OnlyChildCannotHaveSiblingsException::class);
         $this->parseJson(__DIR__ . "/resources/invalid_only_child_0.json");
     }
 
     public function testParsingInvalidOnlyChild1(): void
     {
-        $parser = new RouteDefParser();
         $this->expectException(OnlyChildMustTakeAtLeastOneArgument::class);
         $this->parseJson(__DIR__ . "/resources/invalid_only_child_1.json");
     }
 
     public function testParsingInvalidRoute(): void
     {
-        $parser = new RouteDefParser();
         $this->expectException(InvalidRouteConfException::class);
         $this->parseJson(__DIR__ . "/resources/route_invalid.json");
     }
 
     public function testParsingRouteWithExtra0(): void
     {
-        $parser = new RouteDefParser();
         $this->expectException(UnauthorizedAttributeConfException::class);
         $this->parseJson(__DIR__ . "/resources/route_w_extra_0.json");
     }
 
     public function testParsingRouteWithExtra1(): void
     {
-        $parser = new RouteDefParser();
         $this->expectException(TypeError::class);
         $this->parseJson(__DIR__ . "/resources/route_w_extra_1.json");
     }
 
     public function testParsingRouteWithExtra2(): void
     {
-        $parser = new RouteDefParser();
         $this->expectException(UnauthorizedAttributeConfException::class);
         $this->parseJson(__DIR__ . "/resources/route_w_extra_2.json");
     }
@@ -120,7 +110,7 @@ final class RouteParserTest extends TestCase
         $this->assertEquals($expected, $routeDef);
     }
 
-    public function parseJson(string $filePath): RouteDef
+    public function parseJson(string $filePath, bool $allowOverridingRoles = false): RouteDef
     {
         $jsonDecoded = json_decode(
             file_get_contents($filePath),
@@ -128,6 +118,6 @@ final class RouteParserTest extends TestCase
             flags: JSON_THROW_ON_ERROR,
         );
         $parser = new RouteDefParser();
-        return $parser->parse($jsonDecoded, allowOverridingParentRoles: true);
+        return $parser->parse($jsonDecoded, allowOverridingParentRoles: $allowOverridingRoles);
     }
 }

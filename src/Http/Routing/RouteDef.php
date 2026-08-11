@@ -16,7 +16,8 @@ abstract readonly class RouteDef
     /**
      * @param string[] $roles
      * @todo Constructors in abstract classes are discouraged. I'm not even sure
-     * this one is used. Delete?
+     * this one is used. Delete? But it does check that roles is an array of strings,
+     * but it’s easily bypassed so…
      */
     public function __construct(
         public string $fqcn,
