@@ -65,6 +65,23 @@ final class EntityModel extends AbstractModel
         );
     }
 
+    public function addItselfAsProperty(
+        string $key,
+        string $referenceKeyInChild,
+        string $referenceKeyInParent,
+        bool $isNullable,
+    ): self
+    {
+        $m = new self(
+            $this->getIdentifier(),
+            $this->getProperties(),
+            $this->getIdKey(),
+            $this->isNullable(),
+        );
+        $m->properties[$key] = new ForeignEntityModel($m, $referenceKeyInChild, $referenceKeyInParent, $isNullable);
+        return $m;
+    }
+
     public function removeProperty(string $keyToRemove): self
     {
         if (key_exists($keyToRemove, $this->getProperties())) {

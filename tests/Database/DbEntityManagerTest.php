@@ -17,7 +17,10 @@ use LM\WebFramework\Model\Type\IntModel;
 use LM\WebFramework\Model\Type\EntityListModel;
 use LM\WebFramework\Model\Type\ListModel;
 use LM\WebFramework\Model\Type\StringModel;
+use PhpParser\Node\Expr\Cast\String_;
 use PHPUnit\Framework\TestCase;
+
+use function PHPUnit\Framework\isNan;
 
 final class DbEntityManagerTest extends TestCase
 {
@@ -207,5 +210,45 @@ final class DbEntityManagerTest extends TestCase
         $model = new ListModel(new IntModel(0, 10));
         $appData = $this->em->convertDbList($dbRows, $model);
         $this->assertEquals($appData, $expectedList);
+    }
+
+    public function testSelfReferencingEntity(): void
+    {
+        $dbRows = [
+            [
+                'entity_id' => '1',
+                'entity_parent_id' => '2',
+            ],
+            [
+                'entity_id' => '2',
+                'entity_parent_id' => '3',
+            ],
+            [
+                'entity_id' => '3',
+                'entity_parent_id' => null,
+            ],
+        ];
+        $model = (new EntityModel(
+            'entity',
+            [
+                'id' => new StringModel(),
+                'parent_id' => new StringModel(isNullable: true),
+            ],
+        ))->addItselfAsProperty('parent', 'id', 'parent_id', true);
+        $expected = new AppObject([
+            'id' => '1',
+            'parent_id' => '2',
+            'parent' => [
+                'id' => '2',
+                'parent_id' => '3',
+                'parent' => [
+                    'id' => '3',
+                    'parent_id' => null,
+                    'parent' => null,
+                ],
+            ],
+        ]);
+        $actual = $this->em->convertDbRowsToAppObject($dbRows, $model);
+        $this->assertEquals($expected, $actual);
     }
 }

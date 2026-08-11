@@ -70,6 +70,7 @@ final class DbEntityManager
     }
 
     /**
+     * @todo Create type for dbRows, as a list of associative arrays?
      * @param array[] $dbRows A list of associative arrays each storing a
      * different row.
      * @param AbstractEntityModel $model The model of each row.
@@ -87,22 +88,21 @@ final class DbEntityManager
             $value = null;
 
             if ($property instanceof ForeignEntityModel) {
-                $parentId = $dbRows[$index][$model->getIdentifier() . self::SEP . $property->getReferenceKeyInParent()];
-                $linkedRowsKeys = array_filter(
-                    array_keys($dbRows),
-                    function ($rowKey) use ($dbRows, $parentId, $property) {
-                        return $dbRows[$rowKey][$property->getEntityModel()->getIdentifier() . self::SEP . $property->getReferencedKeyInChild()] === $parentId;
-                    },
-                );
-                if (count($linkedRowsKeys) > 0) {
-                    $value = $this->convertDbRowsToAppObject($dbRows, $property->getEntityModel(), $linkedRowsKeys[0]);
+                $referenceId = $dbRows[$index][$model->getIdentifier() . self::SEP . $property->getReferenceKeyInParent()];
+                if (null !== $referenceId) {
+                    $referencedRowNos = $this->getReferencedRowNos($dbRows, $property, $referenceId);
+                    if (1 !== count($referencedRowNos)) {
+                        throw new UnexpectedValueException('Could not find specifed foreign entity.');
+                    }
+                    $value = $this->convertDbRowsToAppObject($dbRows, $property->getEntityModel(), $referencedRowNos[0]);
                 }
+
             } elseif ($property instanceof EntityModel) {
                 $value = $this->convertDbRowsToAppObject($dbRows, $property, $index);
             } elseif ($property instanceof EntityListModel) {
                 $itemModel = $property->getItemModel();
-                $parentId = $dbRows[$index][$model->getIdentifier() . self::SEP . $itemModel->getReferenceKeyInParent()];
-                $value = $this->convertDbEntityList($dbRows, $property, $parentId);
+                $referenceId = $dbRows[$index][$model->getIdentifier() . self::SEP . $itemModel->getReferenceKeyInParent()];
+                $value = $this->convertDbEntityList($dbRows, $property, $referenceId);
             } else {
                 $value = $this->convertDbScalar($dbRows[$index][$model->getIdentifier() . self::SEP . $key], $property);
             }
@@ -113,7 +113,7 @@ final class DbEntityManager
         return new AppObject($transientAppObject);
     }
 
-    public function convertDbEntityList(array $dbRows, EntityListModel $entityListModel, ?string $parentId) : array
+    public function convertDbEntityList(array $dbRows, EntityListModel $entityListModel, ?string $referenceId) : array
     {
         $itemModel = $entityListModel->getItemModel();
         $appItems = [];
@@ -121,7 +121,7 @@ final class DbEntityManager
         
         foreach ($dbRows as $rowIndex => $row) {
             $rowId = $row[$itemModel->getEntityModel()->getIdentifier() . self::SEP . $itemModel->getReferencedKeyInChild()];
-            if ((null === $parentId || $rowId === $parentId) && !in_array($rowId, $ids)) {
+            if ((null === $referenceId || $rowId === $referenceId) && !in_array($rowId, $ids)) {
                 $appItems[] = $this->convertDbRowsToAppObject($dbRows, $itemModel->getEntityModel(), $rowIndex);
             }
         }
@@ -196,5 +196,18 @@ final class DbEntityManager
         } else {
             return $appData;
         }
+    }
+
+    private function getReferencedRowNos(
+        array $dbRows,
+        ForeignEntityModel $property,
+        string $referenceId,
+    ): array {
+        $prunedDbRows = array_filter(
+            $dbRows,
+            fn ($row) => $row[$property->getEntityModel()->getIdentifier() . self::SEP . $property->getReferencedKeyInChild()] === $referenceId,
+        );
+
+        return array_keys($prunedDbRows);
     }
 }
