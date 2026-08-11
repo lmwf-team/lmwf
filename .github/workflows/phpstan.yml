@@ -40,4 +40,4 @@ jobs:
           repo-token: ${{ secrets.envPAT }}
           
       - name: Run PHPStan
-        run: vendor/bin/phpstan src tests
+        run: vendor/bin/phpstan analyse src/ tests/ --no-progress
