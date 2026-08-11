@@ -1,0 +1,6 @@
+{
+    "rootRoute": {
+        "controller": "Controller",
+        "minArgs": 0
+    }
+}

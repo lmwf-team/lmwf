@@ -4,19 +4,21 @@ declare(strict_types=1);
 
 namespace LM\WebFramework\Http\Routing;
 
-use LM\WebFramework\DataStructures\AppObject;
-use UnexpectedValueException;
+use InvalidArgumentException;
 
-final readonly class Route
+abstract readonly class Route
 {
     /**
      * @param string[] $roles
-     * @param array<string, self> $routes
      */
     public function __construct(
         public string $fqcn,
         public array $roles = [],
-        public array $routes = [],
     ) {
+        foreach ($roles as $role) {
+            if (!is_string($role)) {
+                throw new InvalidArgumentException("A role must be a string.");
+            }
+        }
     }
 }

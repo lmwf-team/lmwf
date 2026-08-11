@@ -1,0 +1,6 @@
+{
+    "rootRoute": {
+        "controller": "Controller",
+        "maxArgs": 0
+    }
+}

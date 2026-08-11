@@ -1,0 +1,18 @@
+{
+    "rootRoute": {
+        "controller": "Controller",
+        "roles": [
+            "VISITOR"
+        ],
+        "routes": {
+            "sub": {
+                "controller": "Controller",
+                "roles": [
+                    "ADMIN"
+                ],
+                "minArgs": 0,
+                "maxArgs": 3
+            }
+        }
+    }
+}

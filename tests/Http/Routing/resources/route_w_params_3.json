@@ -1,0 +1,10 @@
+{
+    "rootRoute": {
+        "controller": "Controller",
+        "roles": [
+            "VISITOR"
+        ],
+        "minArgs": 1,
+        "maxArgs": 5
+    }
+}
