@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace LM\WebFramework\Tests\Http\Routing;
 
 use LM\WebFramework\Http\Routing\Exception\InvalidRouteConfException;
+use LM\WebFramework\Http\Routing\Exception\UnauthorizedAttributeConfException;
 use LM\WebFramework\Http\Routing\ParameterizedRoute;
 use LM\WebFramework\Http\Routing\ParentRoute;
 use LM\WebFramework\Http\Routing\Route;
 use LM\WebFramework\Http\Routing\RouteParser;
 use PHPUnit\Framework\TestCase;
+use TypeError;
 
 final class RouteParserTest extends TestCase
 {
@@ -60,5 +62,26 @@ final class RouteParserTest extends TestCase
         $parser = new RouteParser;
         $this->expectException(InvalidRouteConfException::class);
         $parser->parseJson(__DIR__ . "/resources/route_invalid.json");
+    }
+
+    public function testParsingRouteWithExtra0(): void
+    {
+        $parser = new RouteParser;
+        $this->expectException(UnauthorizedAttributeConfException::class);
+        $parser->parseJson(__DIR__ . "/resources/route_w_extra_0.json");
+    }
+
+    public function testParsingRouteWithExtra1(): void
+    {
+        $parser = new RouteParser;
+        $this->expectException(TypeError::class);
+        $parser->parseJson(__DIR__ . "/resources/route_w_extra_1.json");
+    }
+
+    public function testParsingRouteWithExtra2(): void
+    {
+        $parser = new RouteParser;
+        $this->expectException(UnauthorizedAttributeConfException::class);
+        $parser->parseJson(__DIR__ . "/resources/route_w_extra_2.json");
     }
 }

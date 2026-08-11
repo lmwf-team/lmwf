@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace LM\WebFramework\Http\Routing;
 
 use LM\WebFramework\Http\Routing\Exception\InvalidRouteConfException;
+use LM\WebFramework\Http\Routing\Exception\UnauthorizedAttributeConfException;
 
 final readonly class RouteParser
 {
@@ -20,6 +21,11 @@ final readonly class RouteParser
      */
     public function parse(array $route, array $parentRoles = []): Route
     {
+        foreach ($route as $key => $_) {
+            if (!in_array($key, ['roles', 'controller', 'minArgs', 'maxArgs', 'routes'])) {
+                throw new UnauthorizedAttributeConfException("Attribute '{$key}' is unknown and not allowed in a route definition.");
+            }
+        }
         $roles = $route['roles'] ?? $parentRoles;
         $controller = str_replace('.', '\\', $route['controller']);
         if (key_exists('minArgs', $route) || key_exists('maxArgs', $route)) {

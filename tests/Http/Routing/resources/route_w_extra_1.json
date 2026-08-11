@@ -1,0 +1,12 @@
+{
+    "rootRoute": {
+        "controller": "Controller",
+        "roles": [],
+        "routes": {
+            "sub": {
+                "controller": "Controller"
+            },
+            "machine": 0
+        }
+    }
+}
