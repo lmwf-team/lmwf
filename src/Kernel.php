@@ -73,7 +73,7 @@ final class Kernel
                 function (Throwable $exception) use ($config, $container, $request)
                 {
                     if (null !== $config->getLoggerFqcn()) {
-                        $container->get($config->getLoggerFqcn())->log($exception);
+                        $container->get($config->getLoggerFqcn())->info($exception->getMessage());
                     }
                     
                     if ($config->isDev()) {
@@ -83,7 +83,7 @@ final class Kernel
                             $response = $container->get(HttpRequestHandler::class)->generateErrorResponse($request, $exception);
                             self::sendResponse($response);
                         } catch (Throwable $t) {
-                            $container->get($config->getLoggerFqcn())->log($t);
+                            $container->get($config->getLoggerFqcn())->info($t->getMessage());
                             throw $t;
                         }
                     }
