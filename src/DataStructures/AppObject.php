@@ -6,7 +6,6 @@ use ArrayAccess;
 use ArrayIterator;
 use BadMethodCallException;
 use IteratorAggregate;
-use LM\WebFramework\Model\KeyName;
 use Traversable;
 
 /**

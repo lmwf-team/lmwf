@@ -1,6 +1,6 @@
 <?php
 
-namespace LM\WebFramework\Model;
+namespace LM\WebFramework\DataStructures;
 
 use InvalidArgumentException;
 use Stringable;

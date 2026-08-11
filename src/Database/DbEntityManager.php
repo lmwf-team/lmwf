@@ -99,55 +99,49 @@ class DbEntityManager
         }
     }
 
-    private function convertListToAppObject(array $dbList, IModel $model, ?string $prefix = null): ?AppObject
+    /**
+     * @param $dbRows array A list of database rows mapped by column.
+     */
+    private function convertListToAppObject(array $dbRows, IModel $model, ?string $prefix = null, int $index = 0): ?AppObject
     {
-        if (!array_is_list($dbList)) {
-            throw new InvalidArgumentException('Given data MUST be a list.');
+        if (!array_is_list($dbRows)) {
+            throw new InvalidArgumentException('Expected list argument.');
         }
 
-        if (null !== $model->getListNodeModel()) {
-            $appArray = [];
-            foreach ($dbList as $row) {
-                $appArray[] = $this->toAppData($row, $model->getListNodeModel(), $prefix);
+        if (null !== $listNodeModel = $model->getListNodeModel()) {
+            // Make convertListToAppObject return a list of whatever the list node model is.
+            $appDataList = [];
+            // To prevent adding the same item twice
+            $ids = [];
+            
+            // For each list property, we will check each row of $dbRows
+            foreach ($dbRows as $rowIndex => $row) {
+                if (null !== $row["{$prefix}_id"] & !in_array($row["{$prefix}_id"], $ids, true)) {
+                    $appDataList[] = $this->convertListToAppObject($dbRows, $listNodeModel, $prefix, $rowIndex);
+                    $ids[] = $row["{$prefix}_id"];
+                }
             }
-            return new AppObject($appArray);
-        } elseif (null !== $model->getArrayDefinition()) {
-
-            // 1. Separate, in the array definition, the list properties from the non-list properties
-            $nonListProperties = [];
-            $listProperties = [];
-            foreach ($model->getArrayDefinition() as $key => $property) {
-                if ($property->getListNodeModel()) {
-                    $listProperties[$key] = $property;
+            return new AppObject($appDataList);
+        }
+        elseif (null !== $arrayModel = $model->getArrayDefinition()) {
+            $transientAppObject = [];
+            foreach ($arrayModel as $pKey => $pModel) {
+                if (null !== $pModel->getArrayDefinition() || null !== $pModel->getListNodeModel()) {
+                    $subPrefix = 's' === substr($pKey, strlen($pKey) - 1) ? $subPrefix = substr($pKey, 0, strlen($pKey) - 1) : $pKey;
+                    $parentEntityId = $dbRows[$index][$prefix . self::SEP . 'id'];
+                    $relatedDbRows = array_values(array_filter($dbRows, function ($row) use ($prefix, $parentEntityId){
+                        return $row[$prefix . self::SEP . 'id'] === $parentEntityId;
+                    }));
+                    $transientAppObject[$pKey] = $this->convertListToAppObject($relatedDbRows, $pModel, $subPrefix, $index);
                 } else {
-                    $nonListProperties[$key] = $property;
+                    $transientAppObject[$pKey] = $this->toAppData($dbRows[$index][$prefix . self::SEP . $pKey], $pModel);
                 }
             }
 
-            // 2. Convert to an app object the model formed by the non-list properties
-            $appObject = $this->toAppData($dbList[0], new AbstractEntity($nonListProperties), $prefix);
-
-            // 3. Add to the app object the missing list properties
-            foreach ($listProperties as $key => $property) {
-                $subPrefix = 's' === substr($key, strlen($key) - 1) ? $subPrefix = substr($key, 0, strlen($key) - 1) : $key;
-
-                // List of items matching the current property
-                $items = [];
-                $ids = [];
-                
-                // For each list property, we will check each row of $dbList
-                foreach ($dbList as $row) {
-                    if (null !== $row["{$subPrefix}_id"] & !in_array($row["{$subPrefix}_id"], $ids, true)) {
-                        $items[] = $this->toAppData($row, $property->getListNodeModel(), $subPrefix);
-                    }
-                }
-
-                $appObject = $appObject->set($key, $items);
-            }
-
-            return $appObject;
-        } else {
-            throw new InvalidDbDataException($dbList, $model, $prefix);
+            return new AppObject($transientAppObject);
+        }
+        else {
+            throw new InvalidArgumentException('$dbRows is not valid.');
         }
     }
 
