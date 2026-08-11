@@ -42,6 +42,7 @@ ambiguous and avoids confusion between a page controller and the main
 controller.
  * The Router class could be moved to a specific namespace and implement an
 interface, e.g. IRouter.
+ * The Router needs to read the routes from something like a JSON file.
  * The main controller, index.php, poses a number of issues. It does not have
  a namespace yet it is part of the framework. The URLs of the requests it can
  handle show get parameters in their native form, which is not desirable.
