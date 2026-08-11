@@ -9,6 +9,4 @@ use LM\WebFramework\DataStructures\Page;
 interface ControllerInterface extends ResponseGenerator
 {
     public function getAccessControl(): Clearance;
-
-    public function getPage(array $pageParams): Page;
 }
