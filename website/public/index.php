@@ -3,14 +3,45 @@
 session_start();
 
 require_once(private_root().'lib/f_currentlyconnecteduser/f_currentlyconnecteduser.php');
+require_once(private_root().'views/I_Controller.php');
 
 // TODO: check coding style
 
-$method_prefix = strtolower($_SERVER['REQUEST_METHOD']).'_';
+$controllerName = isset($_GET['page']) ? $_GET['page'] : 'index';
 
-$view = getPage($_GET) !== null ? getPage($_GET).'.php' : 'index.php';
+$controller = getController($controllerName);
 
-require(views().$method_prefix.$view);
+switch ($_SERVER['REQUEST_METHOD']) {
+    case 'GET':
+        $controller->get();
+        break;
+    
+    case 'POST':
+        $controller->post();
+        break;
+}
+
+function getController(string $controllerName): I_Controller
+{
+    $controller;
+    switch ($controllerName) {
+        case 'index':
+            require_once(views().'Index.php');
+            $controller = new Index();
+            break;
+
+        case 'login':
+            require_once(views().'Login.php');
+            $controller = new Controller();
+            break;
+        
+        case 'logout':
+            require_once(views().'Logout.php');
+            $controller = new Logout();
+            break;
+    }
+    return $controller;
+}
 
 function views(): string
 {
