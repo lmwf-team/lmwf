@@ -16,6 +16,7 @@ readonly class FormConfFactory
     public const LABEL_KN = 'label';
     public const REQUIRED_KN = 'required';
     public const TYPE_KN = 'type';
+    public const VALUES_KN = 'values';
 
     public function createConf(EntityModel $model, array $fieldConfs): array
     {
@@ -24,10 +25,10 @@ readonly class FormConfFactory
             $formConf[$pId] = new FormFieldConf(
                 $property,
                 $fieldConfs[$pId][self::LABEL_KN],
-                $fieldConfs[$pId][self::ACCEPT_KN] ?? null,
                 $fieldConfs[$pId][self::AUTOCOMPLETE_KN] ?? null,
                 $fieldConfs[$pId][self::REQUIRED_KN] ?? null,
                 $fieldConfs[$pId][self::TYPE_KN] ?? null,
+                $fieldConfs[$pId][self::VALUES_KN] ?? null,
             );
         }
         return $formConf;

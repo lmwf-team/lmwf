@@ -4,41 +4,32 @@ declare(strict_types=1);
 
 namespace LM\WebFramework\Form\Transformer;
 
-use LM\WebFramework\Model\Constraints\IUploadedImageConstraint;
 use LM\WebFramework\DataStructures\Filename;
+use LM\WebFramework\DataStructures\Slug;
+use LM\WebFramework\ErrorHandling\Log;
 use LM\WebFramework\Form\Exceptions\IllegalUserInputException;
 use LM\WebFramework\Form\Exceptions\MissingInputException;
-use LM\WebFramework\DataStructures\Slug;
+use LM\WebFramework\Model\Constraints\IUploadedImageConstraint;
 use Psr\Http\Message\UploadedFileInterface;
 
-final class FileTransformer implements IFormTransformer
+final readonly class FileTransformer implements IFormTransformer
 {
     public const PREVIOUS_SUFFIX = '_previous';
 
-    private bool $createThumbnails;
-
-    private string $name;
-
-    private string $destinationFolder;
-
     public function __construct(
-        string $destinationFolder,
-        string $name,
-        bool $createThumbnails = true,
+        private string $destinationFolder,
+        private string $name,
+        private bool $createThumbnails = true,
     ) {
-        $this->name = $name;
-        $this->destinationFolder = $destinationFolder;
-        $this->createThumbnails = $createThumbnails;
     }
 
     /**
      * @throws MissingInputException If no file was uploaded.
-     * @todo Do not save the image here, just extract the a UploadedFileInterface or an array of it.
      */
-    public function transformSubmittedData(array $formRawData, array $uploadedFiles): null|array|string
+    public function transformSubmittedData(array $postedData, array $uploadedFiles): null|array|string
     {
         if (!key_exists($this->name, $uploadedFiles)) {
-            return $this->extractPreviousFilename($formRawData);
+            return $this->extractPreviousFilename($postedData);
         }
 
         $uploaded = $uploadedFiles[$this->name];
@@ -46,18 +37,19 @@ final class FileTransformer implements IFormTransformer
         if (is_array($uploaded)) {
             $filenames = [];
             foreach ($uploaded as $img) {
-                $filenames[] = $this->saveUploadedImage($img) ?? $this->extractPreviousFilename($formRawData);
+                $filenames[] = $this->saveUploadedImage($img) ?? $this->extractPreviousFilename($postedData);
             }
             return $filenames;
         } else {
-            return $this->saveUploadedImage($uploaded) ?? $this->extractPreviousFilename($formRawData);
+            return $this->saveUploadedImage($uploaded) ?? $this->extractPreviousFilename($postedData);
         }
     }
 
-    private function extractPreviousFilename(array $formRawData): null|string
+    private function extractPreviousFilename(array $postedData): null|string
     {
-        if (key_exists($this->name . self::PREVIOUS_SUFFIX, $formRawData)) {
-            $oldFilename = pathinfo($formRawData[$this->name . self::PREVIOUS_SUFFIX]);
+        if (key_exists($this->name . self::PREVIOUS_SUFFIX, $postedData)) {
+            Log::info("Extracting previously uploaded file for {$this->name}.");
+            $oldFilename = pathinfo($postedData[$this->name . self::PREVIOUS_SUFFIX]);
             if ('.' !== $oldFilename['dirname']) {
                 throw new IllegalUserInputException();
             }

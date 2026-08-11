@@ -16,12 +16,12 @@ final class StringTransformer implements IFormTransformer
     /**
      * @return string|null The submitted, non-empty string, or null if the string is empty.
      */
-    public function transformSubmittedData(array $formRawData, array $uploadedFiles): ?string
+    public function transformSubmittedData(array $postedData, array $uploadedFiles): ?string
     {
-        if (!key_exists($this->name, $formRawData)) {
+        if (!key_exists($this->name, $postedData)) {
             throw new MissingInputException($this->name);
         }
-        $submittedString = $formRawData[$this->name];
+        $submittedString = $postedData[$this->name];
         return '' !== $submittedString ? $submittedString : null;
     }
 }

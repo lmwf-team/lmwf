@@ -11,11 +11,11 @@ final class CheckboxTransformer implements IFormTransformer
     ) {
     }
 
-    public function transformSubmittedData(array $formRawData, array $uploadedFiles): bool
+    public function transformSubmittedData(array $postedData, array $uploadedFiles): bool
     {
-        if (!key_exists($this->name, $formRawData)) {
+        if (!key_exists($this->name, $postedData)) {
             return false;
         }
-        return 'on' === $formRawData[$this->name] ? true : false;
+        return 'on' === $postedData[$this->name] ? true : false;
     }
 }

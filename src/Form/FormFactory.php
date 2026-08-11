@@ -50,6 +50,9 @@ final class FormFactory
         return $this->createFormTransformer($formConf, null, true);
     }
 
+    /**
+     * @todo To delete probably.
+     */
     public function createTransformer(
         array|FormFieldConf $conf,
         ?string $name = null,

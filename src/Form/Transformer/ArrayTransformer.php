@@ -9,10 +9,10 @@ use LM\WebFramework\Form\Exceptions\ExtractionException;
 final class ArrayTransformer implements IFormTransformer
 {
     /**
-     * @param array<IFormTransformer> $formElements
+     * @param array<IFormTransformer> $fieldTransformers
      */
     public function __construct(
-        private array $formElements,
+        private array $fieldTransformers,
         private ?CsrfTransformer $csrf = null,
         private ?string $name = null,
         private array $defaultCallbacks = [],
@@ -20,7 +20,7 @@ final class ArrayTransformer implements IFormTransformer
     }
 
     /**
-     * @return mixed[] An empty array if no data was submitted, or an associate arrays of transformed submitted data mapped by $formElements keys.
+     * @return mixed[] An empty array if no data was submitted, or an associate arrays of transformed submitted data mapped by $fieldTransformers keys.
      */
     public function transformSubmittedData(array $requestParsedBody, array $uploadedFiles): array
     {
@@ -33,7 +33,7 @@ final class ArrayTransformer implements IFormTransformer
         }
 
         $values = [];
-        foreach ($this->formElements as $key => $transformer) {
+        foreach ($this->fieldTransformers as $key => $transformer) {
             $values[$key] = $transformer->transformSubmittedData($data, $uploadedFiles);
         }
         foreach ($values as $key => $v) {
