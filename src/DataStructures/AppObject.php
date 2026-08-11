@@ -11,6 +11,8 @@ use OutOfBoundsException;
  * Immutable array consisting of key-value pairs named properties. Keys are
  * necessarily string, and values can be any data type (except associative
  * arrays as they are turned into AppObject).
+ * 
+ * @todo Force a certain naming style for property keys?
  */
 final class AppObject extends ImmutableArray
 {
@@ -30,18 +32,6 @@ final class AppObject extends ImmutableArray
         }
 
         parent::__construct($array);
-    }
-
-    public function offsetGet(mixed $offset): mixed
-    {
-        if (!is_string($offset)) {
-            throw new InvalidArgumentException('Property key of an AppObject must be a string.');
-        }
-        $keyName = (new KeyName($offset))->__toString();
-        if (!key_exists($keyName, $this->data)) {
-            throw new OutOfBoundsException('The given property does not belong to this AppObject.');
-        }
-        return $this->data[$keyName];
     }
 
     /**

@@ -7,28 +7,28 @@ use LM\WebFramework\DataStructures\AppObject;
 
 class CollectionFactory
 {
-    public function createDeepAppList(array $list): AppList
+    public static function createDeepAppList(array $list): AppList
     {
-        return new AppList($this->convertProperties($list));
+        return new AppList(self::convertProperties($list));
     }
 
-    public function createDeepAppObject(array $object): AppObject
+    public static function createDeepAppObject(array $object): AppObject
     {
-        return new AppObject($this->convertProperties($object));
+        return new AppObject(self::convertProperties($object));
     }
 
     /**
      * Used by the class to convert properties into objects of corresponding
      * DataStructures class.
      */
-    private function convertProperties(array $array): array
+    private static function convertProperties(array $array): array
     {
         foreach ($array as $key => $value) {
             if (is_array($value)) {
                 if (array_is_list($value)) {
-                    $array[$key] = $this->createDeepAppList($value);
+                    $array[$key] = self::createDeepAppList($value);
                 } else {
-                    $array[$key] = $this->createDeepAppObject($value);
+                    $array[$key] = self::createDeepAppObject($value);
                 }
             }
         }

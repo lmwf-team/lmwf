@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace LM\WebFramework;
 
 use LM\WebFramework\DataStructures\AppObject;
+use LM\WebFramework\DataStructures\Factory\CollectionFactory;
 
 final class Configuration
 {
@@ -23,7 +24,7 @@ final class Configuration
         $envLocal = file_get_contents("$configFolderPath/.env.json.local");
         $configData = false !== $envLocal ? json_decode($envLocal, true) : [];
         $configData += false !== $env ? json_decode($env, true) : [];
-        $this->configData = new AppObject($configData);
+        $this->configData = (new CollectionFactory())->createDeepAppObject($configData);
     }
 
     public function getBoolSetting(string $key): bool
@@ -41,7 +42,7 @@ final class Configuration
      */
     public function getCSPDefaultSources(): string
     {
-        return implode(' ', $this->configData['cspDefaultSources']);
+        return $this->configData->getAppList('cspDefaultSources')->implode(' ');
     }
 
     /**
@@ -49,7 +50,7 @@ final class Configuration
      */
     public function getCSPObjectSources(): string
     {
-        return implode(' ', $this->configData['cspObjectSources']);
+        return $this->configData->getAppList('cspObjectSources')->implode(' ');
     }
 
     public function getErrorLoggedInControllerFQCN(): string

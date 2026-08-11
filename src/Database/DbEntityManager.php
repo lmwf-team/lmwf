@@ -10,6 +10,7 @@ use InvalidArgumentException;
 use LM\WebFramework\Database\Exceptions\InvalidDbDataException;
 use LM\WebFramework\Database\Exceptions\NullDbDataNotAllowedException;
 use LM\WebFramework\DataStructures\AppObject;
+use LM\WebFramework\DataStructures\Factory\CollectionFactory;
 use LM\WebFramework\Model\Type\AbstractEntityModel;
 use LM\WebFramework\Model\Type\BoolModel;
 use LM\WebFramework\Model\Type\DateTimeModel;
@@ -125,7 +126,7 @@ final class DbEntityManager
             $transientAppObject[$key] = $value;
         }
 
-        return new AppObject($transientAppObject);
+        return (new CollectionFactory())->createDeepAppObject($transientAppObject);
     }
 
     public function convertDbEntityList(array $dbRows, EntityListModel $entityListModel, int|string|null $referenceId) : array
@@ -220,7 +221,7 @@ final class DbEntityManager
                 $data[$key] = $appObject[$key];
             }
         }
-        return new AppObject($data);
+        return (new CollectionFactory())->createDeepAppObject($data);
     }
 
     /**

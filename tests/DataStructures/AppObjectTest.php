@@ -84,13 +84,13 @@ final class AppObjectTest extends TestCase
 
     public function testIsEqual(): void
     {
-        $appObject1 = new AppObject([
+        $appObject1 = CollectionFactory::createDeepAppList([
             'id' => 3,
         ]);
-        $appObject1Copy = new AppObject([
+        $appObject1Copy = CollectionFactory::createDeepAppList([
             'id' => 3,
         ]);
-        $appObject2 = new AppObject([
+        $appObject2 = CollectionFactory::createDeepAppList([
             'name' => 'Georges',
         ]);
         $this->assertFalse($appObject1->isEqual($appObject2));

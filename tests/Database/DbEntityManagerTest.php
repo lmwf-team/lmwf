@@ -9,6 +9,7 @@ use LM\WebFramework\Database\DbEntityManager;
 use LM\WebFramework\Database\Exceptions\InvalidDbDataException;
 use LM\WebFramework\Database\Exceptions\NullDbDataNotAllowedException;
 use LM\WebFramework\DataStructures\AppObject;
+use LM\WebFramework\DataStructures\Factory\CollectionFactory;
 use LM\WebFramework\Model\Type\BoolModel;
 use LM\WebFramework\Model\Type\DateTimeModel;
 use LM\WebFramework\Model\Type\EntityModel;
@@ -42,7 +43,7 @@ final class DbEntityManagerTest extends TestCase
 
     public function testConversionToDbValue(): void
     {
-        $appObject = new AppObject([
+        $appObject = CollectionFactory::createDeepAppList([
             'id' => 0,
             'name' => 'Georges',
         ]);
@@ -77,7 +78,7 @@ final class DbEntityManagerTest extends TestCase
             ],
         ];
 
-        $expectedAppObject = new AppObject([
+        $expectedAppObject = (new CollectionFactory())->createDeepAppObject([
             'id' => 'test',
             'child_id' => 'prout',
             'child' => [
@@ -132,7 +133,7 @@ final class DbEntityManagerTest extends TestCase
             ],
         ];
 
-        $expectedAppObject = new AppObject([
+        $expectedAppObject = (new CollectionFactory())->createDeepAppObject([
             'id' => 'some-specific-articles',
             'parent' => [
                 'id' => 'all-articles',
@@ -182,17 +183,17 @@ final class DbEntityManagerTest extends TestCase
             ],
         );
 
-        $expectedParent = new AppObject([
+        $expectedParent = (new CollectionFactory())->createDeepAppObject([
             'id' => 'all-articles',
             'children' => [
-                new AppObject([
+                [
                     'id' => 'some-specific-articles',
                     'parent_id' => 'all-articles',
-                ]),
-                new AppObject([
+                ],
+                [
                     'id' => 'some-even-more-specific-articles',
                     'parent_id' => 'all-articles',
-                ]),
+                ],
             ],
         ]);
 
@@ -242,7 +243,7 @@ final class DbEntityManagerTest extends TestCase
                 'parent_id' => new StringModel(isNullable: true),
             ],
         ))->addItselfAsProperty('parent', 'id', 'parent_id', true);
-        $expected = new AppObject([
+        $expected = (new CollectionFactory())->createDeepAppObject([
             'id' => '1',
             'parent_id' => '2',
             'parent' => [
@@ -288,7 +289,7 @@ final class DbEntityManagerTest extends TestCase
                 ),
             ],
         );
-        $expected = new AppObject([
+        $expected = (new CollectionFactory())->createDeepAppObject([
             'id' => '1',
             'parent_id' => null,
             'parent' => null,
@@ -392,8 +393,8 @@ final class DbEntityManagerTest extends TestCase
                 'article_author_id' => 2,
             ],
         ];
-        $expected = [
-            new AppObject([
+        $expected = CollectionFactory::createDeepAppList([
+            [
                 'id' => 0,
                 'name' => 'Martin',
                 'articles' => [
@@ -406,8 +407,8 @@ final class DbEntityManagerTest extends TestCase
                         'author_id' => 0,
                     ],
                 ],
-            ]),
-            new AppObject([
+            ],
+            [
                 'id' => 2,
                 'name' => 'George',
                 'articles' => [
@@ -416,8 +417,8 @@ final class DbEntityManagerTest extends TestCase
                         'author_id' => 2,
                     ],
                 ],
-            ]),
-        ];
+            ],
+        ]);
 
         $this->assertEquals($expected, $this->em->convertDbRowsToList($dbRows, $personModel));
     }
@@ -432,7 +433,7 @@ final class DbEntityManagerTest extends TestCase
             ],
         ))->addItselfAsProperty('sub_entity', 'id', 'sub_entity_id', true);
 
-        $appObject = new AppObject([
+        $appObject = CollectionFactory::createDeepAppList([
             'id' => 'entity-00',
             'sub_entity_id' => 'entity-01',
             'sub_entity' => [
@@ -443,7 +444,7 @@ final class DbEntityManagerTest extends TestCase
             ],
             'extra' => false,
         ]);
-        $expected = new AppObject([
+        $expected = CollectionFactory::createDeepAppList([
             'id' => 'entity-00',
             'sub_entity_id' => 'entity-01',
             'sub_entity' => [

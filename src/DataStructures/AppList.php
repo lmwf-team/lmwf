@@ -19,4 +19,9 @@ class AppList extends ImmutableArray
 
         parent::__construct($data);
     }
+
+    public function implode(string $separator): string
+    {
+        return implode($separator, $this->data);
+    }
 }
