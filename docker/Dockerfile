@@ -1,9 +1,7 @@
-FROM php:8.3-cli
+FROM php:8.3
 
-RUN apt update -y
-RUN apt upgrade -y
-RUN apt install git unzip zip -y
 COPY --from=composer/composer:latest-bin /composer /usr/local/bin/composer
+COPY init.sh /usr/local
 
 WORKDIR /usr/src/myapp
 CMD bash

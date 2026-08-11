@@ -1,7 +1,9 @@
 services:
-    php_dsn:
-        build:
-            context: ./docker
-        volumes:
-            - .:/usr/src/myapp
-        tty: true
+  php_dsn:
+    build:
+      context: ./docker
+    volumes:
+      - .:/usr/src/myapp
+    tty: true
+    post_start:
+      - command: /usr/local/init.sh
