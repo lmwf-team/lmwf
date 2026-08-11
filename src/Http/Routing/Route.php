@@ -77,7 +77,7 @@ final readonly class Route
     /**
      * The FQCN of the controller associated with this route.
      */
-    public function getFqcn(): string
+    public function getFqcn(): ?string
     {
         if ($this->routeDef->conf instanceof ParamRouteConf && null !== $this->routeDef->conf->fqcnIfParams) {
             return $this->routeDef->conf->fqcnIfParams;

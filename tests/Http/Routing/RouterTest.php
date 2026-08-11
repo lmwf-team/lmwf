@@ -14,24 +14,32 @@ final class RouterTest extends TestCase
 {
     public function testHomeUrl(): void
     {
-        $routeDef = new RouteDef(self::class);
-        $route = new Route($routeDef, '', []);
         $router = new Router();
-        $this->assertEquals($route, $router->getRouteFromPath($routeDef, ''));
-        $this->assertEquals($route, $router->getRouteFromPath($routeDef, '/'));
+
+        $homeRouteDef = new RouteDef(self::class);
+        $rootRoute = Route::createRootRoute([
+            '' => $homeRouteDef,
+        ]);
+
+        $homeRoute = new Route($homeRouteDef, '', [], parent: $rootRoute);
+
+        $this->assertEquals($homeRoute, $router->getRouteFromPath($rootRoute->routeDef, ''));
+        $this->assertEquals($homeRoute, $router->getRouteFromPath($rootRoute->routeDef, '/'));
     }
 
     public function testRouteIdWithSpecialChars(): void
     {
+        $router = new Router();
+
         $subRouteId = 'c’est mon idée de route !';
-        $subRouteDef = new ParentRoute(self::class);
-        $routeDef = new ParentRoute(self::class, routes: [
+        $subRouteDef = new RouteDef(self::class);
+
+        $rootRoute = Route::createRootRoute([
             $subRouteId => $subRouteDef,
         ]);
-        $route = new Route($routeDef, ['']);
-        $subRoute = new Route($subRouteDef, [$subRouteId], $route);
-        $router = new Router();
-        $this->assertEquals($subRoute, $router->getRouteFromPath($routeDef, "/{$subRouteId}"));
+        $subRoute = new Route($subRouteDef, $subRouteId, parent: $rootRoute);
+
+        $this->assertEquals($subRoute, $router->getRouteFromPath($rootRoute->routeDef, "/{$subRouteId}"));
     }
 
     public function testParameterizedRoute(): void

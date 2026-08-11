@@ -25,12 +25,11 @@ final readonly class Router
      */
     public function getSegs(string $absPath): array
     {
-        if (0 === strpos($absPath, '/')) {
-            if (1 === strlen($absPath) || 1 === strpos($absPath, '/', 1)) {
-                $absPath = substr($absPath, 1);
+        if (0 !== strpos($absPath, '/')) {
+            if ('' !== $absPath) {
+                throw new DomainException('Passed path is not absolute.');
             }
-        } elseif ('' !== $absPath) {
-            throw new DomainException('Passed path is not absolute.');
+            $absPath = '/';
         }
 
         return array_map(fn ($seg) => urldecode($seg), explode('/', $absPath));
@@ -39,10 +38,10 @@ final readonly class Router
     /**
      * @param string $path An arbitrary string made of segments separated by one or more forward slashes.
      */
-    public function getRouteFromPath(RouteDef $route, string $path): Route
+    public function getRouteFromPath(RouteDef $routeDef, string $path): Route
     {
         $segs = self::getSegs($path);
-        return $this->getRouteFromSegs($route, null, $segs[0], array_slice($segs, 1));
+        return $this->getRouteFromSegs($routeDef, null, $segs[0], array_slice($segs, 1));
     }
 
     /**
