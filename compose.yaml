@@ -15,3 +15,11 @@ services:
     volumes:
       - ./src:/usr/src/lmwf/src
       - ./tests:/usr/src/lmwf/tests
+  phpunit_dsn:
+    image: jitesoft/phpunit:8.4
+    command: sleep infinity
+    volumes:
+      - "./phpunit:/app/phpunit"
+      - "./src:/app/src"
+      - "./tests:/app/tests"
+      - "./vendor:/app/vendor"
