@@ -15,7 +15,12 @@ $autoloader = new LM\Autoloader\PhpFigAutoloader;
 spl_autoload_register(array($autoloader, 'autoLoadClass'));
 
 // Request processing
-$router = new LM\WebFramework\Router;
+$routes = array(
+    '' => new LM\PersonalDataManager\Controller\HomeController,
+    'login' => new LM\PersonalDataManager\Controller\LoginController,
+    'testsp' => new LM\PersonalDataManager\Controller\TestSpController,
+);
+$router = new LM\WebFramework\Router($routes);
 $controller = $router->getControllerFromRequest();
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {

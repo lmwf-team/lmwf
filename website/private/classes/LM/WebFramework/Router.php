@@ -3,22 +3,37 @@
 namespace LM\WebFramework;
 
 use LM\WebFramework\Controller\IPageController;
-use LM\PersonalDataManager\Controller\HomeController;
-use LM\PersonalDataManager\Controller\LoginController;
-use LM\PersonalDataManager\Controller\TestSpController;
 
 class Router
 {
+    private $routes;
+
+    public function __construct(array $routes)
+    {
+        foreach ($routes as $route_name => $route_controller) {
+
+            $correct_name = is_string($route_name);
+
+            $correct_controller = $route_controller instanceof IPageController;
+
+            if (!$correct_name || !$correct_controller) {
+                throw new \exception; // TODO: custom exception
+            }
+        }
+
+        $this->routes = $routes;
+    }
+
     public function getControllerFromRequest(): IPageController
     {
+        $controller = null;
+
         if (!isset($_GET[PDM_PAGE])) {
-            return new HomeController;
-        } elseif($_GET[PDM_PAGE] === 'login') {
-            return new LoginController;
-        } elseif($_GET[PDM_PAGE] === 'testsp') {
-            return new TestSpController;
+            $controller = $this->routes[null];
         } else {
-            throw new \exception;
+            $controller = $this->routes[$_GET[PDM_PAGE]];
         }
+
+        return $controller;
     }
 }
