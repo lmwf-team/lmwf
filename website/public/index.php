@@ -2,6 +2,8 @@
 
 session_start();
 
+require_once(private_root().'lib/f_currentlyconnecteduser/f_currentlyconnecteduser.php');
+
 // TODO: check coding style
 
 $method_prefix = strtolower($_SERVER['REQUEST_METHOD']).'_';
@@ -32,19 +34,4 @@ function translate(string $string): string
 function private_root(): string
 {
     return '../private/';
-}
-
-function setUsername (string $username)
-{
-    $_SESSION['username'] = $username;
-}
-
-function getUsername(): ?string
-{
-    return isset($_SESSION['username']) ? $_SESSION['username'] : null;
-}
-
-function isConnected(): bool
-{
-    return isset($_SESSION['username']) && $_SESSION['username'] !== null;
 }
