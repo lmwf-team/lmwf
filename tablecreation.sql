@@ -9,3 +9,15 @@ CREATE TABLE person (
     ENGINE InnoDB,
     CHARACTER SET utf8
 ;
+
+CREATE TABLE run (
+        id MEDIUMINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+        runnerid TINYINT UNSIGNED NOT NULL,
+        starttimestamp TIMESTAMP(0) NOT NULL,
+        durationseconds MEDIUMINT UNSIGNED NOT NULL,
+        distancemeters MEDIUMINT UNSIGNED NOT NULL,
+        FOREIGN KEY (runnerid) REFERENCES person (id) ON DELETE CASCADE ON UPDATE CASCADE
+    )
+    ENGINE InnoDB,
+    CHARACTER SET utf8
+;
