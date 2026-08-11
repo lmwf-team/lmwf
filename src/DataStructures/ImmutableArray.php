@@ -17,7 +17,8 @@ use UnexpectedValueException;
  * Immutable array.
  *
  * An immutable array consists of key-value pairs named properties. Keys are
- * either integers or strings, and values can be any data type.
+ * either integers or strings (the only admissible key types in PHP), and values
+ * can be any data type.
  */
 abstract readonly class ImmutableArray implements ArrayAccess, Countable, IArrayable, IteratorAggregate
 {
@@ -40,6 +41,14 @@ abstract readonly class ImmutableArray implements ArrayAccess, Countable, IArray
     public function count(): int
     {
         return count($this->data);
+    }
+
+    /**
+     * @return array<int|string, mixed>
+     */
+    public function keys(): array
+    {
+        return array_keys($this->data);
     }
 
     public function getIterator(): Traversable
