@@ -7,6 +7,8 @@ namespace LM\WebFramework\Http\Routing;
 use DomainException;
 use LM\WebFramework\ErrorHandling\Log;
 use LM\WebFramework\Http\Routing\Exception\RouteNotFoundException;
+use LM\WebFramework\Http\Routing\RouteParam\ParameterizedRouteParam;
+use LM\WebFramework\Http\Routing\RouteParam\ParentRouteParam;
 use LogicException;
 
 final readonly class Router
@@ -59,30 +61,23 @@ final readonly class Router
         array $nextSegs,
     ): Route {
         Log::debug("Current seg is '{$currentSeg}', next segs are: [" . implode(', ', $nextSegs) . "].");
-        if ($routeDef instanceof ParameterizedRoute) {
+
+        if ($routeDef->params instanceof ParameterizedRouteParam) {
             $nArgs = count($nextSegs);
-            if ($nArgs < $routeDef->minArgs || $nArgs > $routeDef->maxArgs) {
-                throw new RouteNotFoundException("No route could be found for segment. It does not have the correct number of arguments. ({$nArgs} when it should be between {$routeDef->minArgs} and {$routeDef->maxArgs}.)");
+            if ($nArgs < $routeDef->params->nArgsLowerLimit || $nArgs > $routeDef->params->nArgsUpperLimit) {
+                throw new RouteNotFoundException("No route could be found for segment. It does not have the correct number of arguments. ({$nArgs} when it should be between {$routeDef->params->nArgsLowerLimit} and {$routeDef->params->nArgsUpperLimit}.)");
             }
-            return new Route($routeDef, $nextSegs, $parentRoute, $nArgs);
-        } elseif ($routeDef instanceof ParentRoute) {
-            $route = new Route($routeDef, [$currentSeg], $parentRoute);
+            return new Route($routeDef, $currentSeg, $nextSegs, $parentRoute);
+        } elseif ($routeDef->params instanceof ParentRouteParam) {
+            $route = new Route($routeDef, $currentSeg, $nextSegs, $parentRoute);
             if ([] === $nextSegs) {
                 return $route;
             }
-            $seg = $nextSegs[0];
-            if (!key_exists($seg, $routeDef->routes)) {
-                throw new RouteNotFoundException("No child route could be found for segment: {$seg}.");
+            $nextSeg = $nextSegs[0];
+            if (!key_exists($nextSeg, $routeDef->routes)) {
+                throw new RouteNotFoundException("No child route could be found for segment: {$nextSeg}.");
             }
-            return $this->getRouteFromSegs($routeDef->routes[$seg], $route, $seg, array_slice($nextSegs, 1));
-        } elseif ($routeDef instanceof OnlyChildParentRouteDef) {
-            $relevantSegs = [$currentSeg];
-            $route = new Route($routeDef, $relevantSegs, $parentRoute);
-            if ([] === $nextSegs) {
-                return $route;
-            } else {
-                return $this->getRouteFromSegs($routeDef->onlyChild, $route, $currentSeg, $nextSegs);
-            }
+            return $this->getRouteFromSegs($routeDef->params->routes[$nextSeg], $route, $nextSeg, array_slice($nextSegs, 1));
         }
         throw new LogicException("Route type is not known.");
     }

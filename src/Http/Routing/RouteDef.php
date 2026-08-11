@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace LM\WebFramework\Http\Routing;
 
 use InvalidArgumentException;
+use LM\WebFramework\Http\Routing\RouteParam\ParameterizedRouteParam;
+use LM\WebFramework\Http\Routing\RouteParam\ParentRouteParam;
 
 /**
  * Base class for route definitions.
@@ -12,22 +14,23 @@ use InvalidArgumentException;
  * It was necessary to introduce the dual concept of a route and of a route
  * definition. This is because some parts of the application are only concerned
  * with defining an exclusive set of URLs that are treated the same way (a route
- * definiton) from the actual route that matches certain specific requests (a
+ * definition) from the actual route that matches certain specific requests (a
  * route).
+ * In the future, these classes could be deleted for a more simple array that
+ * would contain all the route definitions.
  */
-abstract readonly class RouteDef
+final readonly class RouteDef
 {
     /**
      * @param $fqcn The FQCN of the controller responsible for this particular
      * partition of paths.
      * @param string[] $roles Required roles to access this route.
-     * @todo Constructors in abstract classes are discouraged. I'm not even sure
-     * this one is used. Delete? But it does check that roles is an array of strings,
-     * but it’s easily bypassed so…
+     * @todo What happens when an object argument has a default???
      */
     public function __construct(
         public string $fqcn,
         public array $roles = [],
+        public ParentRouteParam|ParameterizedRouteParam $params = new ParameterizedRouteParam(),
     ) {
         foreach ($roles as $role) {
             if (!is_string($role)) {

@@ -5,10 +5,8 @@ declare(strict_types=1);
 namespace LM\WebFramework\Tests\Http\Routing;
 
 use LM\WebFramework\Http\Routing\Exception\RouteNotFoundException;
-use LM\WebFramework\Http\Routing\OnlyChildParentRouteDef;
 use LM\WebFramework\Http\Routing\Route;
-use LM\WebFramework\Http\Routing\ParameterizedRoute;
-use LM\WebFramework\Http\Routing\ParentRoute;
+use LM\WebFramework\Http\Routing\RouteDef;
 use LM\WebFramework\Http\Routing\Router;
 use PHPUnit\Framework\TestCase;
 
@@ -16,25 +14,11 @@ final class RouterTest extends TestCase
 {
     public function testHomeUrl(): void
     {
-        $routeDef = new ParentRoute(self::class);
-        $route = new Route($routeDef, ['']);
+        $routeDef = new RouteDef(self::class);
+        $route = new Route($routeDef, '', []);
         $router = new Router();
         $this->assertEquals($route, $router->getRouteFromPath($routeDef, ''));
         $this->assertEquals($route, $router->getRouteFromPath($routeDef, '/'));
-        // $this->assertEquals($route, $router->getRouteFromPath($routeDef, '//'));
-        // $this->assertEquals($route, $router->getRouteFromPath($routeDef, '//'));
-    }
-
-    public function testRouteWithOnlyChild(): void
-    {
-        $childRoute = new ParameterizedRoute("App\Controller\SubRouteController", minArgs: 1, maxArgs: 1);
-        $routeDef = new OnlyChildParentRouteDef(
-            "App\Controller\RouteController",
-            $childRoute,
-        );
-        $router = new Router();
-        $this->assertNotNull($router->getRouteFromPath($routeDef, '/argument/'));
-        $this->assertNotNull($router->getRouteFromPath($routeDef, '/argument'));
     }
 
     public function testRouteIdWithSpecialChars(): void
