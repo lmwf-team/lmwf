@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace LM\WebFramework\Session;
 
+use LM\WebFramework\Kernel;
+
 final class SessionManager
 {
     public const CSRF = 'csrf';
@@ -22,11 +24,11 @@ final class SessionManager
 
     public function __construct(?array $sessionData = null)
     {
-        if (null === $sessionData) {
+        if (null !== $sessionData || Kernel::CLI_ID === php_sapi_name()) {
+            $this->sessionData = $sessionData ?? [];
+        } else {
             session_start();
             $this->sessionData =& $_SESSION;
-        } else {
-            $this->sessionData = $sessionData;
         }
     }
 
