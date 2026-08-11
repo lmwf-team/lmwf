@@ -14,7 +14,7 @@ use LMWF\Form\Transformer\ArrayTransformer;
 use LMWF\Form\Transformer\CheckboxTransformer;
 use LMWF\Form\Transformer\CsrfTransformer;
 use LMWF\Form\Transformer\DateTimeTransformer;
-use LMWF\Form\Transformer\FileTransformer;
+use LMWF\Form\Transformer\ImgFileTransformer;
 use LMWF\Form\Transformer\IFormTransformer;
 use LMWF\Form\Transformer\IntTransformer;
 use LMWF\Form\Transformer\JsonTransformer;
@@ -29,6 +29,7 @@ use LMWF\Constraint\Type\IModel;
 use LMWF\Constraint\Type\IntModel;
 use LMWF\Constraint\Type\ListModel;
 use LMWF\Constraint\Type\StringModel;
+use LMWF\File\FileService;
 
 /**
  * Creates a form transformer from a model.
@@ -38,8 +39,8 @@ final class FormFactory
     public const CSRF_FORM_ELEMENT_NAME = '_csrf';
 
     public function __construct(
-        private AppConf $conf,
         private CsrfTransformer $csrfTransformer,
+        private FileService $fileService,
         private FormConfFactory $formConfFactory,
     ) {
     }
@@ -81,7 +82,7 @@ final class FormFactory
         } elseif (in_array($fieldConf->type, [FormFieldType::Text, FormFieldType::Textarea, FormFieldType::Pwd], strict: true)) {
             return new StringTransformer($name);
         } elseif (FormFieldType::Img === $fieldConf->type) {
-            return new FileTransformer($this->conf->getPathOfUploadedFiles(), $name);
+            return new ImgFileTransformer($this->fileService, $name);
         } elseif (FormFieldType::Checkbox === $fieldConf->type) {
             return new CheckboxTransformer($name);
         } elseif (FormFieldType::Date === $fieldConf->type) {

@@ -13,12 +13,12 @@ use OutOfBoundsException;
  *
  * @todo Force a certain naming style for property keys?
  *
- * @extends ImmutableArray<non-decimal-int-string>
+ * @extends ImmutableArray<string, array<string, mixed>>
  */
 final readonly class AppObject extends ImmutableArray
 {
     /**
-     * @param array<non-decimal-int-string, mixed> $array
+     * @param array<string, mixed> $array
      */
     public function __construct(array $array)
     {
@@ -66,7 +66,7 @@ final readonly class AppObject extends ImmutableArray
     }
 
     /**
-     * @param string $offset The key of the property to set.
+     * @param non-decimal-int-string $offset The key of the property to set.
      * @param mixed $value The new value of the specified property.
      * @return AppObject An identical AppObject with the requested change executed.
      */

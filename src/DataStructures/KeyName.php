@@ -22,7 +22,7 @@ final class KeyName implements Stringable
 
     public function __construct(string $stringInput)
     {
-        if (preg_match(self::CAMEL_BACK_ATTRIBUTE_REGEX, $stringInput)) {
+        if (1 === preg_match(self::CAMEL_BACK_ATTRIBUTE_REGEX, $stringInput)) {
             $this->value = $this->convert(preg_replace('/[A-Z]/', '_$0', $stringInput));
         } else {
             $this->value = $this->convert($stringInput);

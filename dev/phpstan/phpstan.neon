@@ -3,7 +3,7 @@ includes:
     - ../../vendor/phpstan/phpstan-strict-rules/rules.neon
     - ../../vendor/spaze/phpstan-disallowed-calls/extension.neon
 parameters:
-    level: 6
+    level: 7
     paths:
         - ../../src
         - ../../tests
@@ -16,6 +16,7 @@ parameters:
                 - method.resultUnused
                 - argument.type
             path: ../../tests
+    reportUnsafeArrayStringKeyCasting: 'prevent'
     treatPhpDocTypesAsCertain: false
     ergebnis:
         noPhpstanIgnore:

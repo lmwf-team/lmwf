@@ -26,7 +26,7 @@ final class Slug implements Stringable
     public function __construct(string $value, bool $transform = false, bool $allowEmpty = false)
     {
         if ($transform) {
-            $this->value = substr(ASCII::to_slugify($value, language: 'fr'), 0, self::SLUG_MAX_LENGTH);
+            $this->value = self::transform($value);
         } else {
             $this->value = $value;
         }
@@ -38,5 +38,10 @@ final class Slug implements Stringable
     public function __toString(): string
     {
         return $this->value;
+    }
+
+    public static function transform(string $value): string
+    {
+        return substr(ASCII::to_slugify($value, language: 'fr'), 0, self::SLUG_MAX_LENGTH);
     }
 }

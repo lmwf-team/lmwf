@@ -7,6 +7,7 @@ namespace LMWF\Conf;
 use LMWF\Conf\Exception\CouldNotReadFileException;
 use LMWF\DataStructures\AppObject;
 use LMWF\DataStructures\Factory\CollectionFactory;
+use LMWF\DataStructures\ImgFormat;
 
 /**
  * Creates and validates a configuration given the path to the project folder.
@@ -18,7 +19,7 @@ use LMWF\DataStructures\Factory\CollectionFactory;
  *
  * @todo Add appName setting.
  */
-final class AppConf
+final readonly class AppConf
 {
     public const string DIST_FN = "lmwf_app.json";
     public const string LOCAL_FN = ".lmwf_app.local.json";
@@ -27,24 +28,28 @@ final class AppConf
     public const string HANLDE_EXCEPTIONS = "handleExceptions";
     public const string LANGUAGE_KEY = "language";
 
-    public readonly HttpConf $httpConf;
+    public HttpConf $httpConf;
 
     /**
      * Gives access to the raw configuration data.
      *
      * Stored as AppObject to ensure it cannot be mutated.
      */
-    public readonly AppObject $confData;
+    public AppObject $confData;
 
-    public readonly bool $handleExceptions;
-    public readonly bool $isDev;
+    public bool $handleExceptions;
+    public bool $isDev;
 
-    public readonly string $homeUrl;
-    public readonly string $language;
-    public readonly string $appRootPath;
-    public readonly string $uploadRelPath;
-    public readonly string $publicRelPath;
+    public string $homeUrl;
+    public string $language;
+    public string $appRootPath;
+    public string $uploadRelPath;
+    public string $publicRelPath;
 
+    /**
+     * @var array<string, ImgFormat>
+     */
+    public array $thumbnailFormats;
 
     /**
      * The dist file must exists. The local file might not exist, but if it
@@ -107,6 +112,12 @@ final class AppConf
         $this->appRootPath = $confData['appRootPath'];
         $this->uploadRelPath = $confData['uploadRelPath'];
         $this->publicRelPath = $confData['publicRelPath'];
+
+        $this->thumbnailFormats = array_map(fn ($formatConf) => new ImgFormat(
+            $formatConf['minSizeX'],
+            $formatConf['minSizeY'],
+            $formatConf['webpQuality'],
+        ), $confData['thumbnailFormats']);
 
         $this->httpConf = new HttpConf(
             (new RouteDefParser())->parse($confData['rootRoute']),

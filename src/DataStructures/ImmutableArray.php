@@ -9,6 +9,7 @@ use ArrayIterator;
 use BadMethodCallException;
 use Countable;
 use IteratorAggregate;
+use IteratorIterator;
 use OutOfBoundsException;
 use Traversable;
 use UnexpectedValueException;
@@ -21,6 +22,7 @@ use UnexpectedValueException;
  * can be any data type.
  *
  * @template TKey
+ * @template TArray of array<TKey, mixed>
  * @implements ArrayAccess<TKey, mixed>
  * @implements IArrayable<TKey, mixed>
  * @implements IteratorAggregate<TKey, mixed>
@@ -28,7 +30,7 @@ use UnexpectedValueException;
 abstract readonly class ImmutableArray implements ArrayAccess, Countable, IArrayable, IteratorAggregate
 {
     /**
-     * @param array<TKey, mixed> $data
+     * @param TArray $data
      */
     public function __construct(
         protected array $data,
@@ -50,7 +52,7 @@ abstract readonly class ImmutableArray implements ArrayAccess, Countable, IArray
     }
 
     /**
-     * @return positive-int
+     * @return int<0, max>
      */
     public function count(): int
     {
@@ -67,6 +69,11 @@ abstract readonly class ImmutableArray implements ArrayAccess, Countable, IArray
 
     public function getIterator(): Traversable
     {
+
+        /**
+         * @todo Open issue in phpstan.
+         * @phpstan-ignore return.type
+         */
         return new ArrayIterator($this->data);
     }
 

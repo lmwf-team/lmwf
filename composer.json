@@ -28,7 +28,7 @@
         "phpstan/phpstan": "^2.2",
         "phpunit/phpunit": "^13.2",
         "squizlabs/php_codesniffer": "^4.0",
-        "spaze/phpstan-disallowed-calls": "^4.13",
+        "spaze/phpstan-disallowed-calls": "^4.14",
         "ergebnis/phpstan-rules": "^2.13",
         "phpstan/phpstan-strict-rules": "^2.0",
         "deptrac/deptrac": "^4.7"

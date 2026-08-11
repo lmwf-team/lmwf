@@ -10,39 +10,44 @@ use LMWF\DataStructures\AppObject;
 class CollectionFactory
 {
     /**
-     * @param list<mixed> $list
+     * @param list<array<mixed>> $list
      */
     public static function createDeepAppList(array $list): AppList
     {
-        return new AppList(self::convertProperties($list));
-    }
-
-    /**
-     * @param array<non-decimal-int-string, mixed> $object
-     */
-    public static function createDeepAppObject(array $object): AppObject
-    {
-        return new AppObject(self::convertProperties($object));
-    }
-
-    /**
-     * Used by the class to convert properties into objects of corresponding
-     * DataStructures class.
-     * @param mixed[] $array
-     * @return array<AppList|AppObject>
-     */
-    private static function convertProperties(array $array): array
-    {
-        foreach ($array as $key => $value) {
-            if (is_array($value)) {
-                if (array_is_list($value)) {
-                    $array[$key] = self::createDeepAppList($value);
+        $data = [];
+        foreach ($list as $row) {
+            if (is_array($row)) {
+                if (array_is_list($row)) {
+                    $data[] = self::createDeepAppList($row);
                 } else {
-                    $array[$key] = self::createDeepAppObject($value);
+                    $data[] = self::createDeepAppObject($row);
                 }
+            } else {
+                $data[] = $row;
             }
         }
 
-        return $array;
+        return new AppList($data);
+    }
+
+    /**
+     * @param array<string, mixed> $arrayEntity
+     */
+    public static function createDeepAppObject(array $arrayEntity): AppObject
+    {
+
+        $data = [];
+        foreach ($arrayEntity as $property => $value) {
+            if (is_array($value)) {
+                if (array_is_list($value)) {
+                    $data[$property] = self::createDeepAppList($value);
+                } else {
+                    $data[$property] = self::createDeepAppObject($value);
+                }
+            } else {
+                $data[$property] = $value;
+            }
+        }
+        return new AppObject($data);
     }
 }

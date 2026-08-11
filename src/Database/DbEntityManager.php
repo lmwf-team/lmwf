@@ -26,7 +26,8 @@ use UnexpectedValueException;
 /**
  * @todo Could be renamed to DbEntityFactory / DbArrayFactory.
  *
- * @phpstan-type dbrow array<string, null|scalar>
+ * @phpstan-type dbscalar int|float|null|string
+ * @phpstan-type dbrow array<string, dbscalar>
  */
 final class DbEntityManager
 {
@@ -38,12 +39,12 @@ final class DbEntityManager
      * The following order of priority applies when converting the DB data into
      * app data: bool, int, DateTime, and finally string.
      *
-     * @param int|string|null $dbData DB Data.
+     * @param dbscalar $dbData The data as returned by PDO.
      * @param IScalarModel $model The model of the DB Data.
      * @return mixed A PHP scalar type or base class object.
      * @throws InvalidArgumentException If $dbData is not of any DB Data variable type.
      */
-    public function convertDbScalar(bool|int|string|null $dbData, IScalarModel $model): mixed
+    public function convertDbScalar(int|float|null|string $dbData, IScalarModel $model): mixed
     {
         if ($model instanceof BoolModel && (0 === $dbData || 1 === $dbData)) {
             return 1 === $dbData;
@@ -93,6 +94,9 @@ final class DbEntityManager
                  * @todo Should return null?
                  */
                 $referenceId = $dbRows[$index][$model->getIdentifier() . self::SEP . $property->getReferenceKeyInParent()];
+                if (null !== $referenceId && !is_string($referenceId) && !is_int($referenceId)) {
+                    throw new InvalidDbDataException($referenceId, $property, $property->getReferenceKeyInParent());
+                }
                 if (null !== $referenceId) {
                     $referencedRowNos = $this->getReferencedRowNos($dbRows, $property, $referenceId);
                     if (count($referencedRowNos) > 0) {
@@ -109,6 +113,9 @@ final class DbEntityManager
             } elseif ($property instanceof EntityListModel) {
                 $itemModel = $property->getItemModel();
                 $referenceId = $dbRows[$index][$model->getIdentifier() . self::SEP . $itemModel->getReferenceKeyInParent()];
+                if (null !== $referenceId && !is_string($referenceId) && !is_int($referenceId)) {
+                    throw new InvalidDbDataException($referenceId, $itemModel, $itemModel->getReferenceKeyInParent());
+                }
                 $value = $this->convertDbEntityList($dbRows, $property, $referenceId);
             } elseif ($property instanceof IScalarModel) {
                 $value = $this->convertDbScalar($dbRows[$index][$model->getIdentifier() . self::SEP . $key], $property);
@@ -149,7 +156,7 @@ final class DbEntityManager
      * why the type of getItemModel() is not checked yet, look at commit
      * 6f25edc4af219c2f9753d9e4586f4dea843b4f70 to see how it was done.
      *
-     * @param list<null|scalar> $dbDataList
+     * @param list<null|dbscalar> $dbDataList
      * @return list<mixed>
      */
     public function convertDbList(array $dbDataList, ListModel $listModel): array
@@ -235,15 +242,15 @@ final class DbEntityManager
             return $dbRowsLeft;
         }
 
-        $emptyRow = array_map(fn () => null, $dbRowsLeft[0] + $dbRowsRight[0]);
+        $rowWithNullValues = array_map(fn () => null, $dbRowsLeft[0] + $dbRowsRight[0]);
 
         $dbRows = [];
 
         for ($i = 0; $i < max(count($dbRowsLeft), count($dbRowsRight)); $i++) {
             if ($i < count($dbRowsLeft)) {
-                $dbRows[$i] = $dbRowsLeft[$i] + ($dbRowsRight[$i] ?? $emptyRow);
+                $dbRows[] = $dbRowsLeft[$i] + ($dbRowsRight[$i] ?? $rowWithNullValues);
             } else {
-                $dbRows[$i] = array_merge($emptyRow, $dbRowsRight[$i]);
+                $dbRows[] = array_merge($rowWithNullValues, $dbRowsRight[$i]);
             }
         }
 

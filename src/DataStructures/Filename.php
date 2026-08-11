@@ -8,45 +8,71 @@ use InvalidArgumentException;
 use Stringable;
 use UnexpectedValueException;
 
+/**
+ * Valid filename with a restrictive set of caracters allowed.
+ */
 final readonly class Filename implements Stringable
 {
-    public string $extension;
-    public string $filename;
-    public string $filenameNoExt;
+    const string ALLOWED_SEPS = '-';
+    const string ALLOWED_LETTERS = 'abcdefghijklmnopqrstuvwxyz';
 
-    public function __construct(string $filename)
-    {
-        // Check the given string is UTF-8
-        if (false === mb_check_encoding($filename, 'UTF-8')) {
-            throw new InvalidArgumentException("Filename '{$filename}' must be UTF-8 encoded.");
+    public function __construct(
+        public string $basename,
+        public string $ext,
+    ) {
+        if (false === $this->isPartCorrect($ext, allowSep: false)) {
+            throw new InvalidArgumentException("Extension is not valid.");
         }
-
-        // Normalize directory separators
-        $filename = str_replace('\\', '/', $filename);
-
-        // Makes sure the filename contains no directory sepaerators
-        if (str_contains($filename, '/')) {
-            throw new UnexpectedValueException('Filename must not contain directory separators.');
+        if (false === $this->isPartCorrect($basename, allowSep: true)) {
+            throw new InvalidArgumentException("Filename is not valid.");
         }
-
-        // Check the path is not only dots or is not empty
-        if ('' === str_replace('.', '', $filename)) {
-            throw new InvalidArgumentException('Filename must not be an empty string or only contain dots.');
-        }
-
-        $parts = explode('.', $filename);
-        $nParts = count($parts);
-        if ($nParts < 2) {
-            throw new UnexpectedValueException('There should be at least one dot in the filename (preceding the extension).');
-        }
-
-        $this->filename = $filename;
-        $this->extension = $parts[$nParts - 1];
-        $this->filenameNoExt = substr($filename, 0, strlen($filename) - strlen($this->extension) - 1);
     }
 
     public function __toString(): string
     {
-        return $this->filename;
+        return $this->getFilename();
+    }
+
+    public static function fromString(string $filename, bool $transform = false): self
+    {
+        $parts = explode('.', $filename);
+        $nParts = count($parts);
+        if ($nParts !== 2) {
+            throw new UnexpectedValueException('There should be exactly one dot in the filename (preceding the extension).');
+        }
+        if ($transform) {
+            $parts = array_map(fn ($value) => Slug::transform($value), $parts);
+        }
+
+        return new self($parts[0], $parts[1]);
+    }
+
+    public function getFilename(): string
+    {
+        return "{$this->basename}.{$this->ext}";
+    }
+
+    public function isPartCorrect(string $part, bool $allowSep): bool
+    {
+        if ($allowSep) {
+            if (1 === strspn($part, self::ALLOWED_SEPS, length: 1) || 1 === strspn($part, self::ALLOWED_SEPS, offset: -1)) {
+                return false;
+            }
+        }
+        return true === mb_check_encoding($part, 'ascii') && strlen($part) === strspn($part, $allowSep ? self::ALLOWED_LETTERS . self::ALLOWED_SEPS : self::ALLOWED_LETTERS);
+    }
+
+    public function withBasename(string $basename): self
+    {
+        return clone($this, [
+            'basename' => $basename,
+        ]);
+    }
+
+    public function withExt(string $ext): self
+    {
+        return clone($this, [
+            'ext' => $ext,
+        ]);
     }
 }

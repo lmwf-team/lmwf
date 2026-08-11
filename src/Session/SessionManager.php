@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace LMWF\Session;
 
+use InvalidArgumentException;
 use LMWF\Kernel;
+use UnexpectedValueException;
 
 /**
  * @todo Should be moved to Http.
@@ -72,8 +74,11 @@ final class SessionManager
         $this->sessionData[self::CURRENT_USERNAME_KEY] = $username;
     }
 
-    public function setCustom(string $key, string $value): void
+    public function setCustom(string $key, mixed $value): void
     {
+        $absKey = self::CUSTOM_PREFIX . $key;
+
+		/** @phpstan-ignore assign.propertyType */
         $this->sessionData[self::CUSTOM_PREFIX . $key] = $value;
     }
 
