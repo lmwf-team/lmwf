@@ -76,9 +76,8 @@ final readonly class Route
     {
         if (null !== $this->def->fqcnIfParams && count($this->params) > 0) {
             return $this->def->fqcnIfParams;
-        } else {
-            return $this->def->fqcn;
         }
+        return $this->def->fqcn;
     }
 
     /**

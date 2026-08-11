@@ -80,7 +80,7 @@ final class Validator
      * model.
      *
      * @param mixed $value The app value to validate.
-     * @return ConstraintViolation[] A list of ConstraintViolations, one for
+     * @return array<string, ConstraintViolation[]> A list of ConstraintViolations, one for
      * each constraint violation.
      */
     public function validate(mixed $value): array
