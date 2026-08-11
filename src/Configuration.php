@@ -61,6 +61,11 @@ final class Configuration
         return $this->language;
     }
 
+    public function getLoggingPrefix(): string
+    {
+        return $this->getSetting('loggingPrefix');
+    }
+
     public function getPathOfAppDirectory(): string
     {
         return $this->configFolderPath;

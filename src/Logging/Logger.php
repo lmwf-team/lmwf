@@ -4,10 +4,14 @@ declare(strict_types=1);
 
 namespace LM\WebFramework\Logging;
 
+use LM\WebFramework\Configuration;
+
 final class Logger
 {
+    private string $prefix;
+
     public function __construct(
-        private string $prefix,
+        private Configuration $configuration,
     ) {
     }
 
