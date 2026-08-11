@@ -4,9 +4,13 @@ declare(strict_types=1);
 
 namespace LMWF\Conf;
 
+use LMWF\DataStructures\AppList;
 use LMWF\DataStructures\AppObject;
+use LMWF\DataStructures\Exceptions\UnexpectedPropertyType;
 use LMWF\DataStructures\Factory\CollectionFactory;
 use LMWF\DataStructures\ImgFormat;
+use LMWF\Http\Controller\IController;
+use UnexpectedValueException;
 
 /**
  * Creates and validates a configuration given the path to the project folder.
@@ -33,8 +37,10 @@ final readonly class AppConf
      * Gives access to the raw configuration data.
      *
      * Stored as AppObject to ensure it cannot be mutated.
+     * 
+     * @var AppObject<mixed>
      */
-    public AppObject $confData;
+    public AppObject $data;
 
     public bool $handleExceptions;
     public bool $isDev;
@@ -88,49 +94,62 @@ final readonly class AppConf
      */
     public function __construct(AppObject $confParams)
     {
-        $this->handleExceptions = $confParams->getBool('handleExceptions');
-        $this->isDev = $confParams->getBool('isDev');
+        $this->data = $confParams;
 
-        $this->homeUrl = $confParams->getString('homeUrl');
-        $this->language = $confParams->getString('language');
-        $this->appRootPath = $confParams->getString('appRootPath');
-        $this->uploadRelPath = $confParams->getString('uploadRelPath');
-        $this->publicRelPath = $confParams->getString('publicRelPath');
+        $this->handleExceptions = $this->data->getBool('handleExceptions');
+        $this->isDev = $this->data->getBool('isDev');
 
-        $this->thumbnailFormats = $confParams
-            ->getAppObject('thumbnailFormats')
+        $this->homeUrl = $this->data->getString('homeUrl');
+        $this->language = $this->data->getString('language');
+        $this->appRootPath = $this->data->getString('appRootPath');
+        $this->uploadRelPath = $this->data->getString('uploadRelPath');
+        $this->publicRelPath = $this->data->getString('publicRelPath');
+
+        $this->thumbnailFormats = $this->data
+            ->getAppObjectWithItemClass('thumbnailFormats', AppObject::class)
             ->map(fn ($formatConf) => new ImgFormat(
-                $formatConf->getInt('minSizeX'),
-                $formatConf->getInt('minSizeY'),
-                $formatConf->getInt('webpQuality'),
+                $formatConf->getIntStrictlyPositive('minSizeX'),
+                $formatConf->getIntStrictlyPositive('minSizeY'),
+                $formatConf->getIntStrictlyPositive('webpQuality') <= 100 ? $webpQuality = $formatConf->getIntStrictlyPositive('webpQuality') : throw new UnexpectedValueException(),
             ))
             ->toArray()
         ;
 
+        
+        $csps = $this->readCsps($this->data);
+
         $this->httpConf = new HttpConf(
-            (new RouteDefParser())->parse($confParams->getAppObject('rootRoute')),
+            (new RouteDefParser())->parse($this->data->getAppObject('rootRoute')),
             $this->handleExceptions,
-            $confParams['csp'],
+            $csps,
             new ErrorControllerConf(
-                str_replace('.', '\\', $confParams['errorControllers']['alreadyLoggedInFqcn']),
-                str_replace('.', '\\', $confParams['errorControllers']['defaultErrorFqcn']),
-                str_replace('.', '\\', $confParams['errorControllers']['methodNotSupportedFqcn']),
-                str_replace('.', '\\', $confParams['errorControllers']['notFoundFqcn']),
-                str_replace('.', '\\', $confParams['errorControllers']['notLoggedInFqcn']),
+                $this->readErrorControllerFqcn($this->data, 'alreadyLoggedInFqcn'),
+                $this->readErrorControllerFqcn($this->data, 'defaultErrorFqcn'),
+                $this->readErrorControllerFqcn($this->data, 'methodNotSupportedFqcn'),
+                $this->readErrorControllerFqcn($this->data, 'notFoundFqcn'),
+                $this->readErrorControllerFqcn($this->data, 'notLoggedInFqcn'),
             ),
         );
-
-        $this->confData = CollectionFactory::createDeepAppObject($confParams);
     }
 
+    /**
+     * @param non-decimal-int-string $key
+     */
     public function getBoolSetting(string $key): bool
     {
-        return $this->confData[$key];
+        return $this->data->getBool($key);
     }
 
+    /**
+     * @param non-decimal-int-string $key
+     */
     public function getNullableSetting(string $key): ?string
     {
-        return $this->confData[$key];
+        $value = $this->data->get($key);
+        if (!is_string($value) && null !== $value) {
+            throw new UnexpectedPropertyType($key, 'null|string');
+        }
+        return $value;
     }
 
     public function getPathOfUploadedFiles(): string
@@ -139,20 +158,52 @@ final readonly class AppConf
     }
 
     /**
-     * @todo Add test.
+     * @param list<non-decimal-int-string> $keys
      */
-    public function getSetting(string $keyPath): string
+    public function getSetting(array $keys): string
     {
-        $keys = explode('.', $keyPath);
-        $data = $this->confData;
-        foreach ($keys as $key) {
-            $data = $data[$key];
+        $length = count($keys);
+        $data = $this->data;
+        for ($i = 0; $i < $length - 1; $i++) {
+            $data = $data->getAppObject($keys[$i]);
         }
-        return $data;
+        return $data->getString($keys[$length - 1]);
     }
 
+    /**
+     * @param non-decimal-int-string $key
+     */
     public function hasSetting(string $key): bool
     {
-        return $this->confData->hasProperty($key);
+        return $this->data->hasProperty($key);
+    }
+
+    /**
+     * @param AppObject<mixed> $confParams
+     * @return array<string, list<string>>
+     */
+    private function readCsps(AppObject $confParams): array
+    {
+        $csps = $confParams->getAppObject('csp')->toArray();
+        if (!array_all($csps, fn ($csp) => is_array($csp) && array_is_list($csp) && array_all($csp, 'is_string'))) {
+            throw new UnexpectedValueException('CSP configuration is not correct.');
+        }
+        // @todo Remove that when PHPStan fixes the issue
+        // @phpstan-ignore return.type
+        return $csps;
+    }
+
+    /**
+     * @param AppObject<mixed> $confParams
+     * @param non-decimal-int-string $error
+     * @return class-string<IController>
+     */
+    private function readErrorControllerFqcn(AppObject $confParams, string $error): string
+    {
+        $fqcn = $confParams->getAppObject('errorControllers')->getString($error);
+        if (!class_exists($fqcn) || !is_subclass_of($fqcn, IController::class)) {
+            throw new UnexpectedValueException('The error controller FQCN is either not a valid FQCN, refers to a non-exsiting class, or to a class that does not implement IController.');
+        }
+        return $fqcn;
     }
 }

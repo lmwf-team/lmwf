@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace LMWF\Conf;
 
 use LMWF\Conf\Http\RouteDef;
+use LMWF\DataStructures\AppObject;
 
 final class HttpConf
 {

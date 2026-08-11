@@ -43,10 +43,14 @@ class CollectionFactory
 
     /**
      * @param array<string, mixed> $arrayEntity
+     * @return AppObject<mixed>
+     * @todo Delete this method, make AppObject (and AppList) handle it, this
+     * would result in less imports (CollectionFactory), more predictable
+     * (AppObjects and AppArrays never store arrays), stronger typing
+     * (null|scalar|object instead of mixed).
      */
     public static function createDeepAppObject(array $arrayEntity): AppObject
     {
-
         $data = [];
         foreach ($arrayEntity as $property => $value) {
             if (is_array($value)) {

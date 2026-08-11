@@ -9,7 +9,7 @@ use LMWF\Conf\Http\RouteDef;
 use LMWF\Conf\Http\SubrouteCannotAddRoleConfException;
 use LMWF\Conf\Http\UnauthorizedAttributeConfException;
 use LMWF\DataStructures\AppObject;
-use Symfony\Component\DependencyInjection\Loader\Configurator\App;
+use LMWF\Http\Controller\IRoutedController;
 use UnexpectedValueException;
 
 final readonly class RouteDefParser
@@ -33,12 +33,12 @@ final readonly class RouteDefParser
 
     /**
      * @param AppObject<mixed> $route The JSON-decoded route as an associative array.
-     * @param null|list<string> $parentRoles The parent roles if defined, null if the current route is the root route.
+     * @param list<string> $parentRoles The parent roles if defined, null if the current route is the root route.
      * @param bool $allowOverridingParentRoles If true, a subroute can add role its parent does not have.
      */
     public function parse(
         AppObject $route,
-        ?array $parentRoles = null,
+        array $parentRoles = [],
         bool $allowOverridingParentRoles = false,
     ): RouteDef {
         // Check there are no unknown keys.
@@ -59,15 +59,18 @@ final readonly class RouteDefParser
             if (!array_is_list($roles)) {
                 throw new UnexpectedValueException();
             }
-            if (!$allowOverridingParentRoles && null !== $parentRoles) {
+            foreach ($roles as $role) {
+                if (!is_string($role)) {
+                    throw new UnexpectedValueException("Route definition with FQCN '$fqcn' adds a role which is not a valid string.");
+                }
+            }
+            if (!$allowOverridingParentRoles) {
                 foreach ($roles as $role) {
                     if (!in_array($role, $parentRoles, strict: true)) {
                         throw new SubrouteCannotAddRoleConfException($fqcn);
                     }
                 }
             }
-        } elseif (null === $parentRoles) {
-            throw new SettingNotFoundException("The root route must define its roles.");
         }
 
         // Set subroutes.
@@ -85,21 +88,26 @@ final readonly class RouteDefParser
             $fqcn,
             $roles,
             $subroutes,
-            $route[self::ARGS_MIN_KN] ?? 0,
-            $route[self::ARGS_MAX_KN] ?? 0,
+            $route->hasProperty(self::ARGS_MIN_KN) ? $route->getInt(self::ARGS_MIN_KN) : 0,
+            $route->hasProperty(self::ARGS_MAX_KN) ? $route->getInt(self::ARGS_MAX_KN) : 0,
             $fqcnIfParams,
         );
     }
 
     /**
+     * @param AppObject<mixed> $parsedRouteDefConf
      * @param non-decimal-int-string $key
+     * @return ?class-string<IRoutedController>
      */
     private function parseFqcn(AppObject $parsedRouteDefConf, string $key): ?string
     {
         if ($parsedRouteDefConf->hasProperty($key)) {
-            return str_replace('.', '\\', $parsedRouteDefConf->getString($key));
-        } else {
-            return null;
+            $fqcn = str_replace('.', '\\', $parsedRouteDefConf->getString($key));
+            if (!class_exists($fqcn) || !is_subclass_of($fqcn, IRoutedController::class)) {
+                throw new UnexpectedValueException("The route definition defined a FQCN with key '$key' but it is either not a FQCN of an existing class, not a FQCN at all, or the FQCN of a class that does not implement IRoutedController.");
+            }
+            return $fqcn;
         }
+        return null;
     }
 }

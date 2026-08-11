@@ -9,7 +9,6 @@ use ArrayIterator;
 use BadMethodCallException;
 use Countable;
 use IteratorAggregate;
-use IteratorIterator;
 use LMWF\DataStructures\Exceptions\UnexpectedPropertyType;
 use OutOfBoundsException;
 use Traversable;
@@ -23,11 +22,11 @@ use UnexpectedValueException;
  * can be any data type.
  *
  * @template TKey of int|non-decimal-int-string
- * @template TArray of array<TKey, mixed>
- * @implements ArrayAccess<TKey, mixed>
- * @implements IArrayable<TKey, mixed>
- * @implements IteratorAggregate<TKey, mixed>
- * @phpstan-consistent-constructor
+ * @template TValue of mixed
+ * @template TArray of array<TKey, TValue>
+ * @implements ArrayAccess<TKey, TValue>
+ * @implements IArrayable<TKey, TValue>
+ * @implements IteratorAggregate<TKey, TValue>
  */
 abstract readonly class ImmutableArray implements ArrayAccess, Countable, IArrayable, IteratorAggregate
 {
@@ -81,29 +80,57 @@ abstract readonly class ImmutableArray implements ArrayAccess, Countable, IArray
 
     /**
      * @param TKey $key
+     * @return TValue
+     */
+    public function get(int|string $key): mixed
+    {
+        return $this->data[$key];
+    }
+
+    /**
+     * @param TKey $key
      */
     public function getAppList(int|string $key): AppList
     {
-        $value = $this[$key];
+        $value = $this->data[$key];
         if ($value instanceof AppList) {
             return $value;
         }
         throw new UnexpectedPropertyType($key, AppList::class);
     }
 
-
     /**
      * @param TKey $key
+     * @return AppObject<mixed>
      */
     public function getAppObject(int|string $key): AppObject
     {
-        $value = $this[$key];
+        $value = $this->data[$key];
         if ($value instanceof AppObject) {
             return $value;
         }
         throw new UnexpectedPropertyType($key, AppObject::class);
     }
 
+    /**
+     * @template T
+     * @param TKey $key
+     * @param class-string<T> $itemFqcn
+     * @return AppObject<T>
+     */
+    public function getAppObjectWithItemClass(int|string $key, string $itemFqcn): AppObject
+    {
+        $value = $this->data[$key];
+        if ($value instanceof AppObject) {
+            foreach ($value as $subkey => $item) {
+                if (!$item instanceof $itemFqcn) {
+                    throw new UnexpectedPropertyType("$key.$subkey", AppObject::class);
+                }
+            }
+            return $value;
+        }
+        throw new UnexpectedPropertyType($key, AppObject::class);
+    }
 
     /**
      * @param TKey $key
@@ -111,7 +138,7 @@ abstract readonly class ImmutableArray implements ArrayAccess, Countable, IArray
      */
     public function getArray(int|string $key): array
     {
-        $value = $this[$key];
+        $value = $this->data[$key];
         if (is_array($value)) {
             return $value;
         }
@@ -125,7 +152,7 @@ abstract readonly class ImmutableArray implements ArrayAccess, Countable, IArray
      */
     public function getArrayable(int|string $key): IArrayable
     {
-        $value = $this[$key];
+        $value = $this->data[$key];
         if ($value instanceof IArrayable) {
             return $value;
         }
@@ -138,7 +165,7 @@ abstract readonly class ImmutableArray implements ArrayAccess, Countable, IArray
      */
     public function getBool(int|string $key): bool
     {
-        $value = $this[$key];
+        $value = $this->data[$key];
         if (is_bool($value)) {
             return $value;
         }
@@ -151,21 +178,37 @@ abstract readonly class ImmutableArray implements ArrayAccess, Countable, IArray
      */
     public function getFloat(int|string $key): float
     {
-        $value = $this[$key];
+        $value = $this->data[$key];
         if (is_float($value)) {
             return $value;
         }
         throw new UnexpectedPropertyType($key, 'float');
     }
 
-
     /**
      * @param TKey $key
+     * @return int
      */
     public function getInt(int|string $key): int
     {
-        $value = $this[$key];
+        $value = $this->data[$key];
         if (is_int($value)) {
+            return $value;
+        }
+        throw new UnexpectedPropertyType($key, 'int');
+    }
+
+    /**
+     * @param TKey $key
+     * @return positive-int
+     */
+    public function getIntStrictlyPositive(int|string $key): int
+    {
+        $value = $this->data[$key];
+        if (is_int($value)) {
+            if ($value < 1) {
+                throw new UnexpectedValueException("Property with key '$key' has a value of '$value', which is not strictly positive.");
+            }
             return $value;
         }
         throw new UnexpectedPropertyType($key, 'int');
@@ -176,7 +219,7 @@ abstract readonly class ImmutableArray implements ArrayAccess, Countable, IArray
      */
     public function getNullableObject(int|string $key, string $fqcn): mixed
     {
-        $value = $this[$key];
+        $value = $this->data[$key];
 
         if (null === $value || (is_object($value) && get_class($value) === $fqcn)) {
             return $value;
@@ -190,7 +233,7 @@ abstract readonly class ImmutableArray implements ArrayAccess, Countable, IArray
      */
     public function getNullableScalar(int|string $key, string $type): mixed
     {
-        $value = $this[$key];
+        $value = $this->data[$key];
 
         if (null === $value || gettype($value) === $type) {
             return $value;
@@ -204,7 +247,7 @@ abstract readonly class ImmutableArray implements ArrayAccess, Countable, IArray
      */
     public function getString(int|string $key): string
     {
-        $value = $this[$key];
+        $value = $this->data[$key];
 
         if (is_string($value)) {
             return $value;
@@ -212,11 +255,6 @@ abstract readonly class ImmutableArray implements ArrayAccess, Countable, IArray
     
         throw new UnexpectedPropertyType($key, "string");
     }
-
-    /**
-     * @param callable(mixed): mixed $callback
-     */
-    public abstract function map(callable $callback): static;
 
     /**
      * @param TKey $offset
@@ -263,15 +301,11 @@ abstract readonly class ImmutableArray implements ArrayAccess, Countable, IArray
     }
 
     /**
-     * @return array<TKey, mixed>
+     * @return TArray
      * @todo Delete?
      */
     public function toArray(): array
     {
-        $data = [];
-        foreach ($this->data as $pName => $pValue) {
-            $data[$pName] = $pValue instanceof IArrayable ? $pValue->toArray() : $pValue;
-        }
-        return $data;
+        return $this->data;
     }
 }

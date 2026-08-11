@@ -129,6 +129,7 @@ final class DbEntityManager
      * different row.
      * @param EntityModel $model The model of each row.
      * @param int $index The row identifier of the main entity.
+     * @return AppObject<mixed>
      */
     public function convertDbRowsToAppObject(array $dbRows, EntityModel $model, int $index = 0): AppObject
     {
@@ -185,7 +186,7 @@ final class DbEntityManager
 
     /**
      * @param list<dbrow> $dbRows
-     * @return list<AppObject>
+     * @return list<AppObject<mixed>>
      */
     public function convertDbEntityList(array $dbRows, EntityListModel $entityListModel, int|string|null $referenceId): array
     {

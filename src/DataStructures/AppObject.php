@@ -13,19 +13,20 @@ use OutOfBoundsException;
  *
  * @todo Force a certain naming style for property keys?
  *
- * @extends ImmutableArray<non-decimal-int-string, array<non-decimal-int-string, mixed>>
+ * @template TValue
+ * @extends ImmutableArray<non-decimal-int-string, TValue, array<string, TValue>>
  */
 final readonly class AppObject extends ImmutableArray
 {
     /**
-     * @param array<string, mixed> $array
+     * @param array<string, TValue> $array
      */
     public function __construct(array $array)
     {
         if (array_is_list($array) && [] !== $array) {
             throw new InvalidArgumentException('App array must be an associative array with string keys, not a list.');
         }
-        foreach ($array as $key => $value) {
+        foreach ($array as $key => $_) {
             if (!is_string($key)) {
                 throw new InvalidArgumentException("Property keys of AppObjects MUST be strings, which is not the case of the key '{$key}'.");
             }
@@ -34,8 +35,14 @@ final readonly class AppObject extends ImmutableArray
         parent::__construct($array);
     }
 
-    public function map(callable $callback): static
+    /**
+     * @template TReturn of mixed
+     * @param callable(TValue): TReturn $callback
+     * @return self<TReturn>
+     */
+    public function map(callable $callback): self
     {
+        new self(array_map($callback, $this->data));
         return new self(array_map($callback, $this->data));
     }
 
@@ -52,7 +59,7 @@ final readonly class AppObject extends ImmutableArray
      * Create a new AppObject with the specified property removed.
      *
      * @param non-decimal-int-string $keyToRemove The key of the property to remove.
-     * @return AppObject Another AppObject with the same data as this one, but
+     * @return self<TValue> Another AppObject with the same data as this one, but
      * with the specified key removed.
      */
     public function removeProperty(string $keyToRemove): self
@@ -72,8 +79,8 @@ final readonly class AppObject extends ImmutableArray
 
     /**
      * @param non-decimal-int-string $offset The key of the property to set.
-     * @param mixed $value The new value of the specified property.
-     * @return AppObject An identical AppObject with the requested change executed.
+     * @param TValue $value The new value of the specified property.
+     * @return self<TValue> An identical AppObject with the requested change executed.
      */
     public function set(string $offset, mixed $value): self
     {
@@ -83,22 +90,23 @@ final readonly class AppObject extends ImmutableArray
     /**
      * @todo Could return true even if two objects are not of the same class but
      * both inherit from AppObject.
+     * @todo Do we need this method?
      * 
-     * @param self $value
+     * @param self<mixed> $appObject
      */
-    public function isEqual(self $value): bool
+    public function isEqual(self $appObject): bool
     {
-        if (count($value) !== count($this)) {
+        if (count($appObject) !== count($this)) {
             return false;
         }
 
-        foreach ($value as $key => $item) {
-            if (!$this->offsetExists($key)) {
+        foreach ($appObject as $pName => $value) {
+            if (!$this->offsetExists($pName)) {
                 return false;
             }
-            if ($item instanceof self && !$item->isEqual($this->getAppObject($key))) {
+            if ($value instanceof self && !$value->isEqual($this->getAppObject($pName))) {
                 return false;
-            } elseif ($this->data[$key] !== $item) {
+            } elseif ($this->data[$pName] !== $value) {
                 return false;
             }
         }

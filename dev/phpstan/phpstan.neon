@@ -13,7 +13,6 @@ parameters:
         -
             identifiers:
                 - expr.resultUnused
-                - method.resultUnused
                 - argument.type
             path: ../../tests
     reportUnsafeArrayStringKeyCasting: 'prevent'
