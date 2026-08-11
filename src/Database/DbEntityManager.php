@@ -135,9 +135,11 @@ final class DbEntityManager
         $ids = [];
         
         foreach ($dbRows as $rowIndex => $row) {
-            $rowId = $row[$itemModel->getEntityModel()->getIdentifier() . self::SEP . $itemModel->getReferencedKeyInChild()];
-            if ((null === $referenceId || $rowId === $referenceId) && !in_array($rowId, $ids)) {
+            $rowReferenceId = $row[$itemModel->getEntityModel()->getIdentifier() . self::SEP . $itemModel->getReferencedKeyInChild()];
+            $rowId = $row[$itemModel->getEntityModel()->getIdentifier() . self::SEP . $itemModel->getEntityModel()->getIdKey()];
+            if ((null === $referenceId || $rowReferenceId === $referenceId) && !in_array($rowId, $ids)) {
                 $appItems[] = $this->convertDbRowsToAppObject($dbRows, $itemModel->getEntityModel(), $rowIndex);
+                $ids[] = $rowId;
             }
         }
 
