@@ -139,7 +139,7 @@ final class HttpRequestHandler
         if (!in_array($request->getMethod(), self::SUPPORTED_METHODS, true)) {
             throw new UnsupportedMethodException();
         }
-        $route = new Router()->getRouteFromPath($this->rootRoute, $path);
+        $route = (new Router())->getRouteFromPath($this->rootRoute, $path);
         $controller = $this->container->get($route->getFqcn());
 
         // @todo Add real role system
