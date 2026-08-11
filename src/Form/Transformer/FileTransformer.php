@@ -76,10 +76,10 @@ class FileTransformer implements IFormTransformer
                 $i++;
             }
 
-            $streamGdImg = imagecreatefromstring($file->getStream());
-            $toWebp = imagewebp($streamGdImg, $destinationPath, 95);
-
-            if (!$toWebp) {
+            if('image/webp' !== $file->getClientMediaType()) {
+                $streamGdImg = imagecreatefromstring($file->getStream());
+                imagewebp($streamGdImg, $destinationPath, 95);
+            } else {
                 $file->moveTo($destinationPath);
             }
 
