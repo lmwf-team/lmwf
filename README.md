@@ -1,16 +1,7 @@
-# Personal Data Manager
+# lmwf
 
-## General description
-
-This is the source code of a website and of a very simple web framework it uses
-which was made specifically for it because of a very limited space constraint.
-
-## LM Web Framework
-
-The web framework used, LM Web Framework, was created specifically for this
-project and is very simple. It is developed along the website, at least for now,
-and is part of its Git repository. It is designed to be very small in size and
-simple to use.
+lmwf is a web framework used for my personal projects. It is 
+designed to be simple to use and very small in size.
 
 In regards to server configuration, the only requirement is to prevent public
 access to the private folder at the root of the framework folder.
@@ -21,15 +12,11 @@ The framework files are organised as below:
  directly.
      * classes/: contains the classes of the project
          * LM/
-             * PersonalDataManager/: classes specifically associated with the
-         Personal Data Manager project
-                 * Controller/: the request controllers implementing 
-                 LM\WebFramework\Controller\IController
-                 * View/: the views implemeting LM\WebFramework\View\IView
              * WebFramework/: classes part of the framework
                  * Controller/: the IController interface
                  * View/: the IView interface
                  * Router.php: the Router class
+             * Other utility classes…
  * public/:
     * index.php: the main controller of the framework. It's a script and its 
     specific name and path makes it able to handle all requests related to the
@@ -52,5 +39,4 @@ interface, e.g. IRouter.
  * PHP documentation needs to be applied and package names need to be
  determined.
 
-All the code, both of the Personal Data Manager project and of the 
-LM Web Framework project meet the PSR-1, PSR-2 and PSR-4.
+All the code the PSR-1, PSR-2 and PSR-4.
