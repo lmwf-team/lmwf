@@ -11,9 +11,7 @@ final class EnumConstraint implements IEnumConstraint
     /**
      * @param enum[] $enumCases List of permitted values.
      */
-    public function __construct(
-        private array $enumCases,
-    ) {
+    public function __construct(array $enumCases) {
         $this->values = [];
         foreach ($enumCases as $c) {
             $this->values[] = $c->value;

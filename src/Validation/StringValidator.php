@@ -35,6 +35,12 @@ final class StringValidator implements ITypeValidator
             $regexValidator = new RegexValidator($this->model->getRegexConstraint());
             $cvs += $regexValidator->validateString($value);
         }
+
+        if (null !== $this->model->getEnumConstraint()) {
+            $enumValidator = new EnumValidator($this->model->getEnumConstraint());
+            $cvs += $enumValidator->validate($value);
+        }
+        
         return $cvs;
     }
 }

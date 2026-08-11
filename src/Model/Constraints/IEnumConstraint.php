@@ -7,7 +7,7 @@ namespace LM\WebFramework\Model\Constraints;
 interface IEnumConstraint extends IStringConstraint
 {
     /**
-     * @return enum[] $enumCases List of permitted string values.
+     * @return string[] $allowedValues List of permitted string values.
      */
     public function getValues(): array;
 }
