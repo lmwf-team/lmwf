@@ -17,7 +17,6 @@ use LMWF\Form\Transformer\DateTimeTransformer;
 use LMWF\Form\Transformer\ImgFileTransformer;
 use LMWF\Form\Transformer\IFormTransformer;
 use LMWF\Form\Transformer\IntTransformer;
-use LMWF\Form\Transformer\JsonTransformer;
 use LMWF\Form\Transformer\ListTransformer;
 use LMWF\Form\Transformer\StringTransformer;
 use LMWF\Constraint\Type\ArrayModel;
