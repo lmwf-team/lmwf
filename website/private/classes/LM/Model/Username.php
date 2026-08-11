@@ -19,4 +19,9 @@ class Username
             throw new \InvalidArgumentException;
         }
 	}
+
+    public function getString(): string
+    {
+        return $this->usernameString;
+    }
 }

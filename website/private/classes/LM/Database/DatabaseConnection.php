@@ -11,6 +11,7 @@ namespace LM\Database;
  */
 class DatabaseConnection {
 	private $pdo;
+    private static $instance = null;
 	/**
 	* Gets the database name, host and the root's username and password from ini files.
 	*/
@@ -22,16 +23,21 @@ class DatabaseConnection {
 		$charsetLine = 'charset=utf8';
 		$userLine = $username;
 		$passwordLine = $password;
-		$additionalParameters = array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION);
-		$this->pdo = new PDO(
-			$hostLine,
-			$databaseNameline,
-			$charsetLine,
-			$userLine,
-			$passwordLine,
-			$additionalParameters);
+		$additionalParameters = array(\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION);
+		$this->pdo = new \PDO($hostLine.$databaseNameline.$charsetLine,
+			                 $userLine,
+			                 $passwordLine,
+			                 $additionalParameters);
 		// TODO: remove array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION)
 	}
+
+    public static function getInstance(): DatabaseConnection
+    {
+        if (null === self::$instance) {
+            self::$instance = new Databaseconnection('mysql-example.org', 'shift-two_pdm', 'shift-two_pdm', 'pompompidou'); // TODO: hard-coded values
+        }
+        return self::$instance;
+    }
 
 	public function __destruct()
 	{
@@ -49,4 +55,9 @@ class DatabaseConnection {
 		$success = $request->execute( $values );
 		return $request;
 	}
+
+    public function getPdo(): \PDO
+    {
+        return $this->pdo;
+    }
 }

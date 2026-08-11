@@ -18,4 +18,9 @@ class Password
             throw new \InvalidArgumentException;
         }
     }
+
+    public function getString(): string
+    {
+        return $this->passwordString;
+    }
 }

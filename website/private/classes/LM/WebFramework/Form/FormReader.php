@@ -47,7 +47,7 @@ class FormReader
 
 	public function getPassword(string $fieldName): Password
 	{
-		return $passwords[$fieldName];
+		return $this->passwords[$fieldName];
 	}
 
 	public function getUsername(string $fieldName): Username
