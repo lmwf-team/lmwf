@@ -9,31 +9,28 @@ use LM\WebFramework\Http\Routing\Exception\InvalidRouteConfException;
 use LM\WebFramework\Http\Routing\Exception\OnlyChildCannotHaveSiblingsException;
 use LM\WebFramework\Http\Routing\Exception\SubRouteCannotAddRoleConfException;
 use LM\WebFramework\Http\Routing\Exception\UnauthorizedAttributeConfException;
-use LM\WebFramework\Http\Routing\OnlyChildParentRouteDef;
-use LM\WebFramework\Http\Routing\ParameterizedRoute;
-use LM\WebFramework\Http\Routing\ParentRoute;
+use LM\WebFramework\Http\Routing\RouteParam\ParameterizedRouteParam;
+use LM\WebFramework\Http\Routing\RouteParam\ParentRouteParam;
 use LM\WebFramework\Http\Routing\RouteDef;
 
 final readonly class RouteDefParser
 {
     const string ARGS_MAX_KN = 'maxArgs';
     const string ARGS_MIN_KN = 'minArgs';
+    const string FQCN_IF_PARAMS_KN = 'fqcnIfParams';
     const string FQCN_KN = 'fqcn';
     const string ROLES_KN = 'roles';
-    const string ROUTE_KN = 'route';
     const string ROUTES_KN = 'routes';
     const array ALL_KNS = [
         self::ARGS_MAX_KN,
-        self::ARGS_MAX_KN,
         self::ARGS_MIN_KN,
+        self::FQCN_IF_PARAMS_KN,
         self::FQCN_KN,
         self::ROLES_KN,
-        self::ROUTE_KN,
         self::ROUTES_KN,
     ];
 
     const string AMBIGUOUS_DEF_MSG_FMT = 'A route definition cannot both defines ' . self::ROUTES_KN . ' and ' . self::ARGS_MIN_KN . ' or ' . self::ARGS_MAX_KN . '.';
-    const string AMBIGUOUS_SUB_ROUTES_MSG_FMT = 'A route definition cannot both defines ' . self::ROUTES_KN . ' and ' . self::ROUTE_KN . '.';
 
     /**
      * @param array<string, mixed> $route The JSON-decoded route as an associative array.
@@ -69,29 +66,37 @@ final readonly class RouteDefParser
         }
 
         // Parse FQCN.
-        $fqcn = str_replace('.', '\\', $route[self::FQCN_KN]);
+        $fqcn = $this->parseFqcn($route[self::FQCN_KN]);
 
         if (key_exists(self::ARGS_MIN_KN, $route) || key_exists(self::ARGS_MAX_KN, $route)) {
             if (key_exists(self::ROUTES_KN, $route)) {
                 throw new InvalidRouteConfException(self::AMBIGUOUS_DEF_MSG_FMT);
             }
-            if (key_exists(self::ROUTE_KN, $route)) {
-                throw new InvalidRouteConfException(self::AMBIGUOUS_DEF_MSG_FMT);
-            }
-            return new ParameterizedRoute($fqcn, $roles, $route[self::ARGS_MIN_KN] ?? 0, $route[self::ARGS_MAX_KN] ?? 0);
+            $fqcnIfParams = key_exists(self::FQCN_IF_PARAMS_KN, $route) ? $this->parseFqcn($route[self::FQCN_IF_PARAMS_KN]) : null;
+            return new RouteDef(
+                $fqcn,
+                $roles,
+                new ParameterizedRouteParam(
+                    $route[self::ARGS_MIN_KN] ?? 0,
+                    $route[self::ARGS_MAX_KN] ?? 0,
+                    $fqcnIfParams,
+                ),
+            );
         }
 
-        if (key_exists(self::ROUTE_KN, $route)) {
-            if (key_exists(self::ROUTES_KN, $route)) {
-                throw new OnlyChildCannotHaveSiblingsException(self::AMBIGUOUS_SUB_ROUTES_MSG_FMT);
-            }
-            $onlyChildRouteDef = $this->parse($route[self::ROUTE_KN], $roles);
-            return new OnlyChildParentRouteDef($fqcn, $onlyChildRouteDef, $roles);
-        }
         $routes = [];
         foreach ($route[self::ROUTES_KN] ?? [] as $subRouteId => $subRoute) {
             $routes[$subRouteId] = $this->parse($subRoute, $roles);
         }
-        return new ParentRoute($fqcn, $roles, $routes);
+        return new RouteDef(
+            $fqcn,
+            $roles,
+            new ParentRouteParam($routes),
+        );
+    }
+
+    private function parseFqcn(string $fqcn): string
+    {
+        return str_replace('.', '\\', $fqcn);
     }
 }

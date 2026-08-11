@@ -11,7 +11,6 @@ use LM\WebFramework\Controller\Exception\AlreadyAuthenticated;
 use LM\WebFramework\Controller\IController;
 use LM\WebFramework\Controller\IRoutedController;
 use LM\WebFramework\Http\HttpRequestHandler;
-use LM\WebFramework\Http\Routing\OnlyChildParentRouteDef;
 use LM\WebFramework\Http\Routing\ParameterizedRoute;
 use LM\WebFramework\Http\Routing\ParentRoute;
 use LM\WebFramework\Http\Routing\Route;
@@ -42,15 +41,6 @@ final class HttpRequestHandlerTest extends TestCase
                                 'VISITOR'
                             ]
                         ),
-                        'only-child-parent' => new OnlyChildParentRouteDef(
-                            MyController::class,
-                            new ParameterizedRoute(
-                                MyController::class,
-                                [],
-                                1,
-                                1,
-                            )
-                        )
                     ]
                 ),
                 true,

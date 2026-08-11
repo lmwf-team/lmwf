@@ -10,7 +10,6 @@ use LM\WebFramework\Http\Routing\Exception\OnlyChildCannotHaveSiblingsException;
 use LM\WebFramework\Http\Routing\Exception\OnlyChildMustTakeAtLeastOneArgument;
 use LM\WebFramework\Http\Routing\Exception\SubRouteCannotAddRoleConfException;
 use LM\WebFramework\Http\Routing\Exception\UnauthorizedAttributeConfException;
-use LM\WebFramework\Http\Routing\OnlyChildParentRouteDef;
 use LM\WebFramework\Http\Routing\ParameterizedRoute;
 use LM\WebFramework\Http\Routing\ParentRoute;
 use LM\WebFramework\Http\Routing\RouteDef;
@@ -98,16 +97,6 @@ final class RouteParserTest extends TestCase
     {
         $this->expectException(UnauthorizedAttributeConfException::class);
         $this->parseJson(__DIR__ . "/resources/route_w_extra_2.json");
-    }
-
-    public function testParsingOnlyChildParent(): void
-    {
-        $expected = new OnlyChildParentRouteDef(
-            "App\Controller\RouteController",
-            new ParameterizedRoute("App\Controller\SubRouteController", minArgs: 1, maxArgs: 1),
-        );
-        $routeDef = $this->parseJson(__DIR__ . "/resources/route_w_only_child.json");
-        $this->assertEquals($expected, $routeDef);
     }
 
     public function parseJson(string $filePath, bool $allowOverridingRoles = false): RouteDef

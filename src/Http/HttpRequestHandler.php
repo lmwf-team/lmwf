@@ -158,7 +158,7 @@ final class HttpRequestHandler
         $response = $controller->generateResponse(
             $route,
             $request,
-            $route->relevantSegs,
+            $route->parameters,
             [],
         );
 

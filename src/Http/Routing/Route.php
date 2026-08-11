@@ -23,7 +23,7 @@ final readonly class Route
 {
     /**
      * @param RouteDef $routeDef The associated route definition.
-     * @param string[] $remainingSegs the associated path segments of the path
+     * @param string[] $parameters the associated path segments of the path
      * that instantiated the current route. For a parameterised route, only the
      * segments corresponding to the arguments are passed.
      * @todo PathSegList?
@@ -31,10 +31,10 @@ final readonly class Route
     public function __construct(
         public RouteDef $routeDef,
         public string $seg,
-        public array $remainingSegs,
+        public array $parameters,
         public ?Route $parent = null,
     ) {
-        $nArgs = count($remainingSegs);
+        $nArgs = count($parameters);
         if ($routeDef->params instanceof ParentRouteParam && $nArgs > 0) {
             throw new InvalidArgumentException("A route with child routes cannot have parameters.");
         }
@@ -46,7 +46,7 @@ final readonly class Route
             }
         }
 
-        foreach ($remainingSegs as $seg) {
+        foreach ($parameters as $seg) {
             if (!is_string($seg)) {
                 throw new InvalidArgumentException("A path segment must be a string.");
             }
@@ -58,7 +58,11 @@ final readonly class Route
      */
     public function getFqcn(): string
     {
-        return $this->routeDef->fqcn;
+        if ($this->routeDef->params instanceof ParameterizedRouteParam && null !== $this->routeDef->params->fqcnIfParams) {
+            return $this->routeDef->params->fqcnIfParams;
+        } else {
+            return $this->routeDef->fqcn;
+        }
     }
 
     /**
@@ -71,9 +75,9 @@ final readonly class Route
         if (null === $this->parent) {
             return '/';
         } elseif ('/' === $this->parent->getPath()) {
-            return '/' . implode('/', $this->remainingSegs);
+            return '/' . implode('/', $this->parameters);
         } else {
-            return $this->parent->getPath() . '/' . implode('/', $this->remainingSegs);
+            return $this->parent->getPath() . '/' . implode('/', $this->parameters);
         }
     }
 
