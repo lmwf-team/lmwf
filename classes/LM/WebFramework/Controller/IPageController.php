@@ -2,8 +2,11 @@
 
 namespace LM\WebFramework\Controller;
 
+use LM\WebFramework\Request\IPostRequest;
+use LM\WebFramework\Request\IRequest;
+
 interface IPageController
 {
-	public function doGet(): void;
-	public function doPost(array $postData): void;
+	public function doGet(IRequest $request): void;
+	public function doPost(IPostRequest $request): void;
 }
