@@ -9,6 +9,7 @@ use Stringable;
 
 /**
  * @todo Should be moved to Validator namespace.
+ * @todo A code or enum should be added.
  */
 final readonly class ConstraintViolation implements Stringable
 {

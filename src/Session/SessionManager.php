@@ -18,8 +18,6 @@ final class SessionManager
 
     public const MESSAGES = 'messages';
 
-    public const DEBUG_VARIABLES_SK = 'lmwf_debug_variables';
-
     private array $sessionData;
 
     public function __construct(?array $sessionData = null)
@@ -69,20 +67,6 @@ final class SessionManager
         $this->sessionData[self::CUSTOM_PREFIX . $key] = $value;
     }
 
-    /**
-     * @todo Throw exception if not in dev mode.
-     */
-    public function addDebugVariable($variable): void
-    {
-        if (key_exists(self::DEBUG_VARIABLES_SK, $this->sessionData)) {
-            $this->sessionData[self::DEBUG_VARIABLES_SK][] = $variable;
-        } else {
-            $this->sessionData[self::DEBUG_VARIABLES_SK] = [
-                $variable,
-            ];
-        }
-    }
-
     public function addMessage(string $message): void
     {
         if (key_exists(self::MESSAGES, $this->sessionData)) {
@@ -92,16 +76,6 @@ final class SessionManager
                 $message,
             ];
         }
-    }
-
-    /**
-     * @todo Throw exception if not in dev mode.
-     */
-    public function getAndDeleteDebugVariables(): array
-    {
-        $variables = $this->sessionData[self::DEBUG_VARIABLES_SK] ?? [];
-        $this->sessionData[self::DEBUG_VARIABLES_SK] = [];
-        return $variables;
     }
 
     public function getAndDeleteMessages(): array
