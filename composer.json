@@ -1,6 +1,6 @@
 {
     "name": "lmwf-team/lmwf",
-    "version": "2.0-BETA",
+    "version": "master",
     "autoload": {
         "psr-4": {
             "LM\\": "classes/LM/"
