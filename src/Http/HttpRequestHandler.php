@@ -7,11 +7,11 @@ namespace LM\WebFramework\Http;
 use GuzzleHttp\Psr7\ServerRequest;
 use LM\WebFramework\AccessControl\Clearance;
 use LM\WebFramework\Configuration;
-use LM\WebFramework\Controller\IController;
 use LM\WebFramework\Controller\Exception\AccessDenied;
 use LM\WebFramework\Controller\Exception\AlreadyAuthenticated;
 use LM\WebFramework\Controller\Exception\RequestedResourceNotFound;
 use LM\WebFramework\Controller\Exception\RequestedRouteNotFound;
+use LM\WebFramework\Controller\IResponseGenerator;
 use LM\WebFramework\Logging\Logger;
 use LM\WebFramework\Session\SessionManager;
 use Psr\Container\ContainerInterface;
@@ -46,6 +46,8 @@ final class HttpRequestHandler
 
         $response = $controller->generateResponse($request, $this->extractRouteParams($request));
 
+        header("Content-Security-Policy: default-src {$this->configuration->getCSPDefaultSources()}; object-src {$this->configuration->getCSPObjectSources()}");
+
         if (302 === $response->getStatusCode()) {
             header('Location: ' . $response->getHeaderLine('Location'));
         } else {
@@ -74,9 +76,9 @@ final class HttpRequestHandler
      * 
      * @todo Access control should be defined in configuration.
      * @param ServerRequestInterface The HTTP request.
-     * @return IController The Controller associated with the specified
+     * @return IResponseGenerator The Controller associated with the specified
      */
-    public function findController(ServerRequestInterface $request): IController
+    public function findController(ServerRequestInterface $request): IResponseGenerator
     {
         try {
             $routeId = $this->extractRouteParams($request)[0];
@@ -100,7 +102,7 @@ final class HttpRequestHandler
         } catch (AccessDenied) {
             return $this->container->get($this->configuration->getErrorNotLoggedInControllerFQCN());
         } catch (Throwable $t) {
-            $this->logger->log(var_export($t, true));
+            $this->logger->log($t->__toString());
             return $this->container->get($this->configuration->getServerErrorControllerFQCN());
         }
     }

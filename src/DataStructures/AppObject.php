@@ -37,7 +37,6 @@ final class AppObject implements ArrayAccess, Countable, IteratorAggregate
         foreach ($appArray as $key => $value) {
             $this->data[(string) $key] = $this->convertPropertyValue($value);
         }
-            
     }
 
     /**
