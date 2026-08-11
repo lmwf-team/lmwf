@@ -31,69 +31,6 @@ final class Configuration
     }
 
     /**
-     * @todo Create class for the returned object.
-     * @return array Return the controller FQCN and the number of
-     * parameters it takes.
-     */
-    public function getControllerFqcn(array $pathSegments): array
-    {
-        $currentRoute = $this->configData->getAppObject('rootRoute');
-        $nPathSegments = count($pathSegments);
-        $i = 0;
-        $roles = [
-            'admins' => true,
-            'visitors' => true,
-        ];
-        if ($currentRoute->hasProperty('roles')) {
-            foreach ($currentRoute['roles'] as $roleId => $isAuthorized) {
-                if (false === $isAuthorized && key_exists($roleId, $roles)) {
-                    $roles[$roleId] = false;
-                }
-            }
-        }
-        while ($i < $nPathSegments) {
-            if ($currentRoute->hasProperty('routes') && $currentRoute->getAppObject('routes')->hasProperty($pathSegments[$i])) {
-                $currentRoute = $currentRoute['routes'][$pathSegments[$i]];
-                if ($currentRoute->hasProperty('roles')) {
-                    foreach ($currentRoute['roles'] as $roleId => $isAuthorized) {
-                        if (false === $isAuthorized && key_exists($roleId, $roles)) {
-                            $roles[$roleId] = false;
-                        }
-                    }
-                }
-            } elseif ($currentRoute->hasProperty('controller')) {
-                $nRemainingPathSegments = $nPathSegments - $i;
-                $maxNArgs = $currentRoute['controller']['max_n_args'] ?? $currentRoute['controller']['n_args'] ?? 0;
-                $minNArgs = $currentRoute['controller']['min_n_args'] ?? $currentRoute['controller']['n_args'] ?? 0;
-                if ($nRemainingPathSegments <= $maxNArgs && $nRemainingPathSegments >= $minNArgs) {
-                    break;
-                } else {
-                    throw new SettingNotFoundException("Found a route but not the right number of arguments ($nRemainingPathSegments not between $minNArgs and $maxNArgs.");
-                }
-            } else {
-                throw new SettingNotFoundException("Requested route with path segment {$pathSegments[$i]} does not exist.");
-            }
-            $i++;
-        }
-        if ($currentRoute->hasProperty('roles')) {
-            foreach ($currentRoute['roles'] as $roleId => $isAuthorized) {
-                if (false === $isAuthorized && key_exists($roleId, $roles)) {
-                    $roles[$roleId] = false;
-                }
-            }
-        }
-
-        if (!$currentRoute->hasProperty('controller')) {
-            throw new SettingNotFoundException("Requested route does not have an associated controller.");
-        }
-
-        $controllerRoute = $currentRoute['controller']->toArray();
-        $controllerRoute['n_args'] = $nPathSegments - $i;
-        $controllerRoute['roles'] = $roles;
-        return $controllerRoute;
-    } 
-
-    /**
      * @return string List of valid CSP origins
      */
     public function getCSPDefaultSources(): string
@@ -180,7 +117,7 @@ final class Configuration
 
     public function getRoutes(): AppObject
     {
-        return $this->configData['rootRoute'];
+        return $this->configData->getAppObject('rootRoute');
     }
 
     public function getServerErrorControllerFQCN(): string

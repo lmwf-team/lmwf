@@ -24,6 +24,7 @@ final class HttpRequestHandler
     public function __construct(
         private Configuration $configuration,
         private ContainerInterface $container,
+        private Router $router,
         private SessionManager $session,
     ) {
     }
@@ -31,37 +32,24 @@ final class HttpRequestHandler
     /**
      * Handles the entire process of responding to an HTTP request and return an
      * HTTP response.
-     * 
-     * @todo Define access control in config.
      */
     public function generateResponse(ServerRequestInterface $request): ResponseInterface
     {
         $pathSegments = $this->getPathSegments($request->getRequestTarget());
 
-        try {
-            $route = $this->configuration->getControllerFqcn($pathSegments);
+        $route = $this->router->getControllerFqcn(
+            $pathSegments,
+            $this->session->isUserLoggedIn() ? 'admins' : 'visitors',
+        );
 
-            if (false === $route['roles']['admins'] && $this->session->isUserLoggedIn()) {
-                throw new AlreadyAuthenticated();
-            } elseif (false === $route['roles']['visitors'] && !$this->session->isUserLoggedIn()) {
-                throw new AccessDenied();
-            }
+        $controller = $this->container->get($route['class']);
 
-            $controller = $this->container->get($route['class']);
 
-    
-            return $this->addCspSources($controller->generateResponse(
-                $request,
-                0 === $route['n_args'] ? [] : array_slice($pathSegments, -$route['n_args']),
-                [],
-            ));
-        } catch (SettingNotFoundException $e) {
-            throw new RequestedRouteNotFound(
-                'The requested route does not exist.',
-                self::UNEXISTING_ROUTE,
-                $e,
-            );
-        }
+        return $this->addCspSources($controller->generateResponse(
+            $request,
+            0 === $route['n_args'] ? [] : array_slice($pathSegments, -$route['n_args']),
+            [],
+        ));
     }
 
     /**

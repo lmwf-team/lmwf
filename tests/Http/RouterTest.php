@@ -6,11 +6,13 @@ namespace LM\WebFramework\Tests\DataStructures;
 
 use LM\WebFramework\Configuration\Configuration;
 use LM\WebFramework\Configuration\Exception\SettingNotFoundException;
+use LM\WebFramework\Controller\Exception\RequestedResourceNotFound;
 use LM\WebFramework\DataStructures\Factory\CollectionFactory;
 use LM\WebFramework\Http\HttpRequestHandler;
+use LM\WebFramework\Http\Router;
 use PHPUnit\Framework\TestCase;
 
-final class HttpRequestHandlerTest extends TestCase
+final class RouterTest extends TestCase
 {
     public function testFindController(): void
     {
@@ -71,6 +73,8 @@ final class HttpRequestHandlerTest extends TestCase
             'EN',
         );
 
+        $router = new Router($config);
+
         $this->assertEquals(
             [
                 'class' => 'LoginController',
@@ -80,11 +84,11 @@ final class HttpRequestHandlerTest extends TestCase
                     'visitors' => true,
                 ],
             ],
-            $config->getControllerFqcn(['login']),
+            $router->getControllerFqcn(['login']),
         );
 
-        $this->expectException(SettingNotFoundException::class);
-        $config->getControllerFqcn(['admin']);
+        $this->expectException(RequestedResourceNotFound::class);
+        $router->getControllerFqcn(['admin']);
 
         $this->assertEquals(
             [
@@ -95,7 +99,7 @@ final class HttpRequestHandlerTest extends TestCase
                     'visitors' => false,
                 ],
             ],
-            $config->getControllerFqcn(['articles', 'edit']),
+            $router->getControllerFqcn(['articles', 'edit']),
         );
 
         $this->assertEquals(
@@ -107,7 +111,7 @@ final class HttpRequestHandlerTest extends TestCase
                     'visitors' => true,
                 ],
             ],
-            $config->getControllerFqcn(['articles', 'foo']),
+            $router->getControllerFqcn(['articles', 'foo']),
         );
 
         $this->assertEquals(
@@ -119,7 +123,7 @@ final class HttpRequestHandlerTest extends TestCase
                     'visitors' => true,
                 ],
             ],
-            $config->getControllerFqcn(['articles']),
+            $router->getControllerFqcn(['articles']),
         );
 
         $this->assertEquals(
@@ -131,7 +135,7 @@ final class HttpRequestHandlerTest extends TestCase
                     'visitors' => true,
                 ],
             ],
-            $config->getControllerFqcn(['article', 'mon-article']),
+            $router->getControllerFqcn(['article', 'mon-article']),
         );
     }
 
