@@ -26,6 +26,7 @@
     ],
     "license": "MIT",
     "require": {
+        "php": ">=8.5",
         "php-di/php-di": "^7.1",
         "guzzlehttp/guzzle": "^7.14",
         "voku/portable-ascii": "^2.1",
