@@ -15,7 +15,7 @@ class MainController
             throw new SessionStartFailureException();
         }
         
-        $controller = $router->getControllerFromRequest();
+        $controller = $router->getControllerFromRequest($_GET['page']);
 
         if ($_SERVER['REQUEST_METHOD'] === 'GET') {
             $controller->doGet();
