@@ -1,5 +1,7 @@
 <?php
 
+namespace LM\WebFramework\Controller;
+
 class MainController
 {
     public function processRequest()
