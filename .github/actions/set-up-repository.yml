@@ -1,0 +1,29 @@
+name: 'Set up repository'
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/checkout@v4
+        
+    - uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.3'
+
+    - run: composer validate --strict
+
+    - name: Get Composer Cache Directory
+      id: composer-cache-directory
+      run: |
+        echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+    - name: Cache Composer dependencies
+      id: composer-cache
+      uses: actions/cache@v4
+      with:
+        path: ${{ steps.composer-cache-directory.outputs.dir }}
+        key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-composer-
+
+    - name: Install Composer dependencies
+            if: steps.composer-cache.outputs.cache-hit != 'true'
+            run: composer install --prefer-dist --no-progress
