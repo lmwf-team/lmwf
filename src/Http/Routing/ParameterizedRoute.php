@@ -7,9 +7,9 @@ namespace LM\WebFramework\Http\Routing;
 use InvalidArgumentException;
 
 /**
- * Route that can take arguments. It cannot have children.
+ * RouteDef that can take arguments. It cannot have children.
  */
-final readonly class ParameterizedRoute extends Route
+final readonly class ParameterizedRoute extends RouteDef
 {
     /**
      * @param string[] $roles

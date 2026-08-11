@@ -6,7 +6,7 @@ namespace LM\WebFramework\Http\Routing;
 
 use InvalidArgumentException;
 
-final readonly class ParentRoute extends Route
+final readonly class ParentRoute extends RouteDef
 {
     /**
      * @param string[] $roles

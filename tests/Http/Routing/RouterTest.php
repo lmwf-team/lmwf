@@ -9,10 +9,10 @@ use LM\WebFramework\Configuration\Configuration;
 use LM\WebFramework\Http\HttpRequestHandler;
 use LM\WebFramework\Http\Model\RouteInfo;
 use LM\WebFramework\Http\Routing\Exception\RouteNotFoundException;
-use LM\WebFramework\Http\Routing\InstantiatedRoute;
+use LM\WebFramework\Http\Routing\Route;
 use LM\WebFramework\Http\Routing\ParameterizedRoute;
 use LM\WebFramework\Http\Routing\ParentRoute;
-use LM\WebFramework\Http\Routing\Route;
+use LM\WebFramework\Http\Routing\RouteDef;
 use LM\WebFramework\Http\Routing\Router;
 use PHPUnit\Framework\TestCase;
 
@@ -20,8 +20,9 @@ final class RouterTest extends TestCase
 {
     public function testHomeUrl(): void
     {
-        $route = new ParentRoute(self::class);
-        $router = new Router($route);
+        $routeDef = new ParentRoute(self::class);
+        $route = new Route($routeDef);
+        $router = new Router($routeDef);
         $this->assertEquals($route, $router->getRouteFromPath(''));
         $this->assertEquals($route, $router->getRouteFromPath('/'));
         $this->assertEquals($route, $router->getRouteFromPath('//'));
@@ -31,7 +32,7 @@ final class RouterTest extends TestCase
     public function testParameterizedRoute(): void
     {
         $route = new ParameterizedRoute(self::class, minArgs: 1, maxArgs: 1);
-        $expected = new InstantiatedRoute(self::class, nArgs: 1);
+        $expected = new Route($route, nArgs: 1);
         $router = new Router($route);
         $this->assertEquals($expected, $router->getRouteFromPath('test'));
         $this->assertEquals($expected, $router->getRouteFromPath('/test'));
@@ -127,9 +128,11 @@ final class RouterTest extends TestCase
 
     public function testSubRoute(): void
     {
-        $subsubRoute = new ParentRoute(self::class);
-        $subRoute = new ParentRoute(self::class, routes: ['sub' => $subsubRoute]);
-        $route = new ParentRoute(self::class, routes: ['test' => $subRoute]);
+        $subsubRouteDef = new ParentRoute(self::class);
+        $subsubRoute = new Route($subsubRouteDef);
+        $subRouteDef = new ParentRoute(self::class, routes: ['sub' => $subsubRouteDef]);
+        $subRoute = new Route($subRouteDef);
+        $route = new ParentRoute(self::class, routes: ['test' => $subRouteDef]);
         $router = new Router($route);
         $this->assertEquals($subRoute, $router->getRouteFromPath('test'));
         $this->assertEquals($subRoute, $router->getRouteFromPath('test/'));

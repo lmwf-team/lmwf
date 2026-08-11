@@ -8,9 +8,9 @@ use LM\WebFramework\Http\Routing\Exception\InvalidRouteConfException;
 use LM\WebFramework\Http\Routing\Exception\SubRouteCannotAddRoleConfException;
 use LM\WebFramework\Http\Routing\Exception\UnauthorizedAttributeConfException;
 
-final readonly class RouteParser
+final readonly class RouteDefParser
 {
-    public function parseJson(string $filename): Route
+    public function parseJson(string $filename): RouteDef
     {
         $json_decoded = json_decode(file_get_contents($filename), associative: true, flags: JSON_THROW_ON_ERROR)["rootRoute"];
         return $this->parse($json_decoded, allowOverridingParentRoles: true);
@@ -21,7 +21,7 @@ final readonly class RouteParser
      * @param string[] $parentRoles The roles of the parent route, if any.
      * @param bool $allowOverridingParentRoles If true, a sub-route can add role its parent does not have.
      */
-    public function parse(array $route, array $parentRoles = [], bool $allowOverridingParentRoles = false): Route
+    public function parse(array $route, array $parentRoles = [], bool $allowOverridingParentRoles = false): RouteDef
     {
         foreach ($route as $key => $_) {
             if (!in_array($key, ['roles', 'fqcn', 'minArgs', 'maxArgs', 'routes'])) {

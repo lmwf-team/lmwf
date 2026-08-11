@@ -15,8 +15,8 @@ use LM\WebFramework\Controller\Exception\RequestedRouteNotFound;
 use LM\WebFramework\Http\Error\RoutingError;
 use LM\WebFramework\Http\Exception\UnsupportedMethodException;
 use LM\WebFramework\Http\Routing\Exception\RouteNotFoundException;
-use LM\WebFramework\Http\Routing\InstantiatedRoute;
-use LM\WebFramework\Http\Routing\RouteParser;
+use LM\WebFramework\Http\Routing\Route;
+use LM\WebFramework\Http\Routing\RouteDefParser;
 use LM\WebFramework\Http\Routing\Router;
 use LM\WebFramework\Session\SessionManager;
 use Psr\Container\ContainerInterface;
@@ -36,7 +36,7 @@ final class HttpRequestHandler
         private Configuration $conf,
         private ContainerInterface $container,
         private SessionManager $session,
-        RouteParser $routeParser,
+        RouteDefParser $routeParser,
     ) {
         $this->router = new Router($routeParser->parse($conf->getRoutes()->toArray(), allowOverridingParentRoles: true));
     }
@@ -138,15 +138,15 @@ final class HttpRequestHandler
             throw new UnsupportedMethodException();
         }
         $route = $this->router->getRouteFromPath($path);
-        $controller = $this->container->get($route->fqcn);
+        $controller = $this->container->get($route->getFqcn());
 
         // @todo Add real role system
         $roles = $this->session->isUserLoggedIn() ? ['ADMIN'] : ['VISITOR'];
 
-        if (count($route->roles) > 0) {
+        if (count($route->getRoles()) > 0) {
             $isAllowed = false;
             foreach ($roles as $role) {
-                if (in_array($role, $route->roles, strict: true)) {
+                if (in_array($role, $route->getRoles(), strict: true)) {
                     $isAllowed = true;
                     break;
                 }
@@ -156,7 +156,7 @@ final class HttpRequestHandler
             }
         }
 
-        if ($route instanceof InstantiatedRoute) {
+        if ($route instanceof Route) {
             $response = $controller->generateResponse(
                 $request,
                 0 === $route->nArgs ? [] : array_slice($segs, -$route->nArgs),

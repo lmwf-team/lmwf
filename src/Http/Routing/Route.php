@@ -6,19 +6,41 @@ namespace LM\WebFramework\Http\Routing;
 
 use InvalidArgumentException;
 
-abstract readonly class Route
+final readonly class Route
 {
     /**
      * @param string[] $roles
+     * @param array<string, self> $routes
      */
     public function __construct(
-        public string $fqcn,
-        public array $roles = [],
+        public ParameterizedRoute|ParentRoute $routeDef,
+        public int $nArgs = 0,
     ) {
-        foreach ($roles as $role) {
-            if (!is_string($role)) {
-                throw new InvalidArgumentException("A role must be a string.");
+        if ($nArgs < 0) {
+            throw new InvalidArgumentException("A Route's number of arguments cannot be negative, received {$nArgs}.");
+        }
+        if ($routeDef instanceof ParentRoute && $nArgs > 0) {
+            throw new InvalidArgumentException("A instantiation of a ParentRoute cannot have arguments.");
+        }
+        if ($routeDef instanceof ParameterizedRoute) {
+            if ($nArgs < $routeDef->minArgs) {
+                throw new InvalidArgumentException("Instantiation of ParameterizedRoute has a number of arguments below the minimum ({$nArgs} < {$routeDef->minArgs}).");
+            } elseif ($nArgs > $routeDef->maxArgs) {
+                throw new InvalidArgumentException("Instantiation of ParameterizedRoute has a number of arguments abvoe the maximum ({$nArgs} > {$routeDef->maxArgs}).");
             }
         }
+    }
+
+    public function getFqcn(): string
+    {
+        return $this->routeDef->fqcn;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getRoles(): array
+    {
+        return $this->routeDef->roles;
     }
 }
