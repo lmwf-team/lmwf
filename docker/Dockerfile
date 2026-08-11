@@ -6,3 +6,4 @@ RUN apt install git -y
 COPY --from=composer/composer:latest-bin /composer /usr/local/bin/composer
 
 WORKDIR /usr/src/myapp
+CMD bash

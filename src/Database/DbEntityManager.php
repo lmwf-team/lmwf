@@ -7,7 +7,6 @@ use InvalidArgumentException;
 use LM\WebFramework\Database\Exceptions\InvalidDbDataException;
 use LM\WebFramework\Database\Exceptions\NullDbDataNotAllowedException;
 use LM\WebFramework\DataStructures\AppObject;
-use LM\WebFramework\Model\AbstractEntity;
 use LM\WebFramework\Model\IModel;
 use UnexpectedValueException;
 

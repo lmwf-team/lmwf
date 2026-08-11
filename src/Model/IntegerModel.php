@@ -15,13 +15,13 @@ class IntegerModel implements IModel
     private bool $isNullable;
 
     /**
-     * @param \LM\WebFramework\Constraints\INumberConstraint[] $constraints
+     * @param LM\WebFramework\Constraints\INumberConstraint[] $constraints
      */
     public function __construct(
         ?array $constraints = null,
         bool $isNullable = false,
     ) {
-        $this->constraints = null !== $constraints ? $constraints : new RangeConstraint(self::MIN, self::MAX);
+        $this->constraints = null !== $constraints ? $constraints : [new RangeConstraint(self::MIN, self::MAX)];
         $this->isNullable = $isNullable;
     }
 
