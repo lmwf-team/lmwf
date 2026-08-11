@@ -9,7 +9,7 @@ use InvalidArgumentException;
 /**
  * An ArrayModel where there must be a property identifying the entity amongst
  * others entities of the same model, as well as the model among other models.
- * 
+ *
  * @todo Disallow sub EntityModel sub properties that are not contained within
  * a ForeignEntityModel?
  */

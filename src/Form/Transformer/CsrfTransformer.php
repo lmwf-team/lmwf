@@ -17,7 +17,7 @@ final class CsrfTransformer implements IFormTransformer
     ) {
     }
 
-    #[Override]
+    #[\Override]
     public function transformSubmittedData(array $parsedPayload, array $uploadedFiles): string
     {
         if (!key_exists(self::CSRF_FORM_ELEMENT_NAME, $parsedPayload)) {

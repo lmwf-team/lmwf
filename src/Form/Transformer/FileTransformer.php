@@ -43,7 +43,7 @@ final readonly class FileTransformer implements IFormTransformer
      * Save and convert the submitted file and return its path, or return the
      * previously submitted file.
      */
-    #[Override]
+    #[\Override]
     public function transformSubmittedData(array $parsedPayload, array $uploadedFiles): null|array|string
     {
         if (!key_exists($this->name, $uploadedFiles)) {
@@ -76,7 +76,7 @@ final readonly class FileTransformer implements IFormTransformer
 
     private function createThumbnails(Filename $filename): void
     {
-        $imgFileContent = file_get_contents("{$this->$destinationFolder}/{$filename->__toString()}");
+        $imgFileContent = file_get_contents("{$this->destinationFolder}/{$filename->__toString()}");
         if (false === $imgFileContent) {
             throw new UnexpectedValueException("Failed to read the destination image '{$filename->__toString()}' to create thumbnail.");
         }
@@ -90,11 +90,11 @@ final readonly class FileTransformer implements IFormTransformer
             $scale = max($format['min_width'] / $width, $format['min_height'] / $height);
 
             list($newWidth, $newHeight) = [(int) round($width * $scale), (int) round($height * $scale)];
-    
+
             $thumbnail = imagecreatetruecolor($newWidth, $newHeight);
-    
+
             imagecopyresized($thumbnail, $originalImg, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
-    
+
             imagewebp(
                 $thumbnail,
                 $filename->filenameNoExt . '.' . $key . '.' . $filename->extension,
@@ -120,28 +120,30 @@ final readonly class FileTransformer implements IFormTransformer
                     $destinationPath = "{$this->destinationFolder}/$destinationFilename";
                     $i++;
                 }
-        
+
                 $streamGdImg = imagecreatefromstring($uploadedFile->getStream()->getContents());
                 imagewebp($streamGdImg, $destinationPath, self::WEBP_QUALITY_HIGH);
-        
-        
+
+
                 if ($this->createThumbnails) {
                     $this->createThumbnails(new Filename($destinationFilename));
                 }
 
                 return $destinationFilename;
-                
+
             case UPLOAD_ERR_FORM_SIZE:
             case UPLOAD_ERR_INI_SIZE:
                 return IUploadedImageConstraint::FILE_TOO_BIG_ERROR;
-                        
+
             case UPLOAD_ERR_NO_FILE:
             case UPLOAD_ERR_CANT_WRITE:
             case UPLOAD_ERR_EXTENSION:
             case UPLOAD_ERR_NO_TMP_DIR:
             case UPLOAD_ERR_PARTIAL:
+                throw new UnexpectedValueException("Got an unexpected error (code is {$uploadedFile->getError()}) when trying to process uploaded file.");
+
             default:
-                throw new UnexpectedValueException('Got an unexpected error when trying to process uploaded file.');
+                throw new UnexpectedValueException("Got an unknown error (code is {$uploadedFile->getError()}) when trying to process uploaded file.");
         }
     }
 }

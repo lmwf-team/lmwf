@@ -76,7 +76,7 @@ final class DbEntityManager
     /**
      * Convert the result of a database query as a list of rows into app data
      * format.
-     * 
+     *
      * @todo Create type for dbRows, as a list of associative arrays?
      * @todo Throw exception is passed array is empty.
      * @param array[] $dbRows A list of associative arrays each storing a

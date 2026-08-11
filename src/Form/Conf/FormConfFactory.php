@@ -14,6 +14,7 @@ readonly class FormConfFactory
     public const ACCEPT_KN = 'accept';
     public const AUTOCOMPLETE_KN = 'autocomplete';
     public const DEFAULT_KN = 'default';
+    public const IGNORE_KN = 'ignore';
     public const LABEL_KN = 'label';
     public const REQUIRED_KN = 'required';
     public const TYPE_KN = 'type';
@@ -23,6 +24,9 @@ readonly class FormConfFactory
     {
         $formConf = [];
         foreach ($model->getProperties() as $pId => $property) {
+            if (key_exists(self::IGNORE_KN, $fieldConfs[$pId]) && true === $fieldConfs[$pId][self::IGNORE_KN]) {
+                continue;
+            }
             $formConf[$pId] = new FormFieldConf(
                 $property,
                 $fieldConfs[$pId][self::LABEL_KN],

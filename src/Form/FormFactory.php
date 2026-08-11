@@ -72,7 +72,7 @@ final class FormFactory
             throw new InvalidArgumentException('A name must be provided for non-array transformers.');
         }
         if ($conf->model instanceof ListModel || $conf->model instanceof EntityListModel) {
-            return new ListTransformer($conf->model->getItemModel(), $conf, $this, $name);
+            return new ListTransformer($conf, $this, $name);
         }
         if ($conf->model instanceof StringModel) {
             if (null !== $conf->model->getUploadedImageConstraint()) {

@@ -9,11 +9,11 @@ use LM\WebFramework\Form\Exceptions\MissingInputException;
 
 final class DateTimeTransformer extends AbstractStringTransformer implements IFormTransformer
 {
-    #[Override]
+    #[\Override]
     public function transformSubmittedData(array $parsedPayload, array $uploadedFiles): ?DateTimeImmutable
     {
         $tmpFormData = parent::extractTextInput($parsedPayload);
 
-        return null !== $tmpFormData ? new DateTimeImmutable($submittedString) : null;
+        return null !== $tmpFormData ? new DateTimeImmutable($tmpFormData) : null;
     }
 }

@@ -6,7 +6,7 @@ namespace LM\WebFramework\Model\Type;
 
 /**
  * Model for data consisting of properties identified with a key.
- * 
+ *
  * The model specifies the keys, and the model for each of its properties.
  */
 abstract class ArrayModel extends AbstractModel

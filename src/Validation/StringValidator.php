@@ -40,7 +40,7 @@ final class StringValidator implements ITypeValidator
             $enumValidator = new EnumValidator($this->model->getEnumConstraint());
             $cvs += $enumValidator->validate($value);
         }
-        
+
         return $cvs;
     }
 }

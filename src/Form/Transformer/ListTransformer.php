@@ -19,7 +19,7 @@ final class ListTransformer implements IFormTransformer
     ) {
     }
 
-    #[Override]
+    #[\Override]
     public function transformSubmittedData(array $parsedPayload, array $uploadedFiles): array
     {
         $data = $parsedPayload[$this->name] ?? null;
@@ -30,16 +30,11 @@ final class ListTransformer implements IFormTransformer
             throw new ExtractionException('Une erreur s’est produite.');
         }
         $value = [];
-        foreach ($data as $name => $element) {
-            if ($this->nodeModel instanceof IScalarModel) {
+        foreach (array_keys($data) as $fieldId) {
+            if ($this->nodeConf->model instanceof IScalarModel) {
                 $value[] = $this->formFactory
-                    ->createTransformer($this->nodeConf, name: $name)
-                    ->transformSubmittedData($element, $uploadedFiles)
-                ;
-            } else {
-                $value[] = $this->formFactory
-                    ->createTransformer($this->nodeConf, withCsrf: false)
-                    ->transformSubmittedData($element, $uploadedFiles)
+                    ->createTransformer($this->nodeConf, $fieldId, withCsrf: false)
+                    ->transformSubmittedData($data, $uploadedFiles)
                 ;
             }
         }

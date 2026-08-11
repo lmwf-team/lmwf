@@ -29,7 +29,7 @@ final class ArrayTransformer implements IFormTransformer
      * @return mixed[] An empty array if no data was submitted, or an associate
      * arrays of transformed submitted data mapped by $fieldTransformers keys.
      */
-    #[Override]
+    #[\Override]
     public function transformSubmittedData(array $parsedPayload, array $uploadedFiles): ?array
     {
         // Even if this transformer has a name, $parsedPayload[$this->name] might

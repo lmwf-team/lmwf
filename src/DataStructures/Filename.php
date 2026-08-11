@@ -39,7 +39,7 @@ final readonly class Filename implements Stringable
         if ($nParts < 2) {
             throw new UnexpectedValueException('There should be at least one dot in the filename (preceding the extension).');
         }
-        
+
         $this->filename = $filename;
         $this->extension = $parts[$nParts - 1];
         $this->filenameNoExt = substr($filename, 0, strlen($filename) - strlen($this->extension) - 1);

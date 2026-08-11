@@ -13,7 +13,7 @@ final class CheckboxTransformer implements IFormTransformer
     ) {
     }
 
-    #[Override]
+    #[\Override]
     public function transformSubmittedData(array $parsedPayload, array $uploadedFiles): bool
     {
         if (!key_exists($this->name, $parsedPayload)) {

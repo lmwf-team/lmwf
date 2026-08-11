@@ -14,7 +14,7 @@ interface IFormTransformer
     /**
      * Extract the submitted value for the given field and convert it to the app
      * data format.
-     * 
+     *
      * It is not always possible to decide whether a value evaluating to null or
      * false was submitted or if no value was submitted because of a malformed
      * or non-valid request for instance.

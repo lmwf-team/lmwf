@@ -8,7 +8,7 @@ use LM\WebFramework\Form\Exceptions\MissingInputException;
 
 final class IntTransformer extends AbstractStringTransformer implements IFormTransformer
 {
-    #[Override]
+    #[\Override]
     public function transformSubmittedData(array $parsedPayload, array $uploadedFiles): ?int
     {
         $appString = parent::extractTextInput($parsedPayload);

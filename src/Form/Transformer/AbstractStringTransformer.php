@@ -28,7 +28,7 @@ abstract class AbstractStringTransformer
         if (!is_string($value)) {
             throw new UnexpectedValueException('Submitted value is expected to be string.');
         }
-        
+
         return '' !== $value ? $value : null;
     }
 }

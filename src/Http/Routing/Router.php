@@ -71,10 +71,10 @@ final readonly class Router
             if (!key_exists($nextSeg, $routeDef->subroutes)) {
                 throw new RouteNotFoundException("No child route could be found for segment: {$nextSeg}.");
             }
-        
+
             return $this->getRouteFromSegs($routeDef->subroutes[$nextSeg], $route, $nextSeg, array_slice($nextSegs, $routeDef->nArgsUpperLimit + 1));
         }
-        
+
         return $route;
     }
 }
