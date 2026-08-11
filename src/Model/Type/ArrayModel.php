@@ -19,7 +19,7 @@ abstract class ArrayModel extends AbstractModel
         parent::__construct($isNullable);
     }
 
-    public function addProperty(string $key, IModel $model): self;
+    abstract public function addProperty(string $key, IModel $model): self;
     // {
     //     if (key_exists($key, $this->getProperties())) {
     //         throw new InvalidArgumentException('A property already exists with that key.');
@@ -42,7 +42,7 @@ abstract class ArrayModel extends AbstractModel
         return $this->properties;
     }
 
-    public function prune(array $propertiesToKeep): self;
+    abstract public function prune(array $propertiesToKeep): self;
     // {
     //     return new self(
     //         array_filter($this->getProperties(), fn ($key) => in_array($key, $propertiesToKeep, strict: true), ARRAY_FILTER_USE_KEY),
@@ -50,7 +50,7 @@ abstract class ArrayModel extends AbstractModel
     //     );
     // }
 
-    public function removeProperty(string $keyToRemove): self;
+    abstract public function removeProperty(string $keyToRemove): self;
     // {
     //     if (key_exists($keyToRemove, $this->getProperties())) {
     //         return new self(
