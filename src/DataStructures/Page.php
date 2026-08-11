@@ -7,7 +7,7 @@ namespace LM\WebFramework\DataStructures;
 /**
  * @todo Should go in web namespace.
  */
-final class Page
+final readonly class Page
 {
     public function __construct(
         private ?Page $parent,
