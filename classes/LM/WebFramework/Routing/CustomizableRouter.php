@@ -2,20 +2,26 @@
 
 namespace LM\WebFramework\Routing;
 
+use LM\Exception\UnfoundRouteException;
 use LM\WebFramework\Controller\IPageController;
 use LM\WebFramework\Routing\IRouter;
 
 class CustomizableRouter implements IRouter
 {
-    private $config;
+    private $routes;
 
-    public function __construct(array $config)
+    public function __construct(array $routes)
     {
-        $this->config = $config;
+        $this->routes = $routes;
     }
 
-    public function getControllerFromRequest(string $route): IPageController
+    public function getControllerFromRequest(string $url): IPageController
     {
-        return $this->config[$route];
+        foreach ($this->routes as $current_route => $controller) {
+            if (1 === preg_match($current_route, $url)) {
+                return $controller;
+            }
+        }
+        throw new UnfoundRouteException();
     }
 }
