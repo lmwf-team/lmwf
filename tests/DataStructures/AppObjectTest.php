@@ -52,4 +52,23 @@ final class AppObjectTest extends TestCase
         ]);
         $appArray['bro'];
     }
+
+    public function testWithEmptyArray(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $appArray = new AppObject([
+        ]);
+    }
+
+    public function testIsEqual(): void
+    {
+        $appObject1 = new AppObject([
+            'id' => 3,
+        ]);
+        $appObject2 = new AppObject([
+            'name' => 'Georges',
+        ]);
+        $this->assertFalse($appObject1->isEqualTo($appObject2));
+        $this->assertFalse($appObject2->isEqualTo($appObject1));
+    }
 }

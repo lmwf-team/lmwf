@@ -199,6 +199,9 @@ final class AppObject implements ArrayAccess, Countable, IteratorAggregate
         }
         foreach ($this->data as $key => $value) {
             $isEqual = null;
+            if (!key_exists($key, $mixed->toArray())) {
+                return false;
+            }
             if ($value instanceof AppObject) {
                 $isEqual = $value->isEqualTo($mixed[$key]);
             } elseif (gettype($value) === 'object') {
