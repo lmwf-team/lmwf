@@ -31,7 +31,7 @@ final readonly class RouteParser
         $roles = $route['roles'] ?? $parentRoles;
         foreach ($roles as $role) {
             if (!in_array($role, $parentRoles, strict: true) && !$allowOverridingParentRoles) {
-                throw new SubRouteCannotAddRoleConfException("Unless explicitely authorized, a sub-route cannot add roles its parent does not have.");
+                throw new SubRouteCannotAddRoleConfException("Unless explicitely authorized, a sub-route cannot add roles its parent does not have. Child node requires role '{$role}'.");
             }
         }
         $fqcn = str_replace('.', '\\', $route['fqcn']);
