@@ -19,16 +19,6 @@ class UriBuilder implements IUriBuilder
 
     private function getProtocol(): string
     {
-        return $this->isSecure() ? 'https://' : 'http://';
-    }
-
-    /**
-     * @link https://stackoverflow.com/a/2886224/7089212
-     */
-    private function isSecure()
-    {
-        return
-            (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
-            || $_SERVER['SERVER_PORT'] == 443;
+        return $config['protocol'];
     }
 }
