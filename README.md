@@ -10,7 +10,7 @@ Lightweight web framework that doesn’t require tons of dependencies and keeps 
 
 # Security
 
- - Deactivate `display_errors` and `display_warnings`. `LMWF` does not take care of that for you.
+ - Deactivate `display_errors` and `display_warnings`. LMWF does not take care of that for you.
 
 ## TODO
 
