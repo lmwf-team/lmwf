@@ -8,6 +8,10 @@
 
 Lightweight web framework that doesn’t require tons of dependencies and keeps you in control.
 
+## Overview
+
+LMWF is composed of multiple modules. The following image is an overview of its modules. As it is dynamically generated, it is guaranteed to be up-to-date.
+
 ![Modules of LMWF](https://lmwf-team.github.io/lmwf/diagram.png)
 
 # Security
