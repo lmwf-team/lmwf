@@ -11,6 +11,11 @@ use LM\WebFramework\DataStructures\Factory\CollectionFactory;
 
 /**
  * Creates and validates a configuration given the path to the project folder.
+ * 
+ * It creates a configuration file that merges the distributed configuration
+ * file, lmwf_app.json, with the local file, .lmwf_app.local.json. If the two
+ * define the same key, the latter overrides the former. *Note that the entire
+ * value for the key is overriden, even if the value is a dictionnary.*
  *
  * @todo Add appName setting.
  */
@@ -101,11 +106,13 @@ final class Configuration
             (new RouteDefParser())->parse($confData['rootRoute']),
             $this->handleExceptions,
             $confData['csp'],
-            $confData['routeError404ControllerFQCN'],
-            $confData['routeErrorAlreadyLoggedInControllerFQCN'],
-            $confData['routeErrorNotLoggedInControllerFQCN'],
-            $confData['routeErrorMethodNotSupportedFQCN'],
-            $confData['serverErrorControllerFQCN'],
+            new ErrorControllerConf(
+                str_replace('.', '\\', $confData['errorControllers']['alreadyLoggedInFqcn']),
+                str_replace('.', '\\', $confData['errorControllers']['defaultErrorFqcn']),
+                str_replace('.', '\\', $confData['errorControllers']['methodNotSupportedFqcn']),
+                str_replace('.', '\\', $confData['errorControllers']['notFoundFqcn']),
+                str_replace('.', '\\', $confData['errorControllers']['notLoggedInFqcn']),
+            ),
         );
 
         $this->confData = CollectionFactory::createDeepAppObject($confData);

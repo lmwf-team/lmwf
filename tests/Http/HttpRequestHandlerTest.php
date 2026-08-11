@@ -7,6 +7,7 @@ namespace LM\WebFramework\Tests\Http;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\ServerRequest;
 use LM\WebFramework\Configuration\HttpConf;
+use LM\WebFramework\Configuration\ErrorControllerConf;
 use LM\WebFramework\Controller\Exception\AlreadyAuthenticated;
 use LM\WebFramework\Controller\IController;
 use LM\WebFramework\Controller\IRoutedController;
@@ -49,11 +50,13 @@ final class HttpRequestHandlerTest extends TestCase
                         "{NONCE}"
                     ],
                 ],
-                ResourceNotFoundController::class,
-                AlreadyAuthenticated::class,
-                ResourceNotFoundController::class,
-                MethodNotSupportedController::class,
-                ServerErrorController::class,
+                new ErrorControllerConf(
+                    AlreadyAuthenticated::class,
+                    ServerErrorController::class,
+                    MethodNotSupportedController::class,
+                    ResourceNotFoundController::class,
+                    NotAuthenticatedController::class,
+                ),
             ),
             SessionManager::class => new SessionManager([]),
         ],);
@@ -74,7 +77,7 @@ final class HttpRequestHandlerTest extends TestCase
         foreach ($absPaths as $p) {
             $request = new ServerRequest('GET', $p);
             $response = $this->handler->generateResponse($request);
-            $this->assertEquals("default-src 'self' example.com nonce-{$this->cspNonce};", $response->getHeaderLine('Content-Security-Policy'));
+            $this->assertEquals("default-src 'self' example.com 'nonce-{$this->cspNonce}';", $response->getHeaderLine('Content-Security-Policy'));
         }
     }
 
@@ -141,6 +144,16 @@ final class MethodNotSupportedController implements IController
         array $serverParams,
     ): ResponseInterface {
         return new Response(501);
+    }
+}
+
+final class NotAuthenticatedController implements IController
+{
+    public function generateResponse(
+        ServerRequestInterface $request,
+        array $serverParams,
+    ): ResponseInterface {
+        return new Response(403);
     }
 }
 

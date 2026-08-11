@@ -28,7 +28,7 @@ final class HttpRequestHandler
 
     public function __construct(
         private ContainerInterface $container,
-        private HttpConf $conf,
+        private HttpConf $httpConf,
         private Router $router,
         private SessionManager $session,
         private CspNonce $cspNonce,
@@ -53,7 +53,7 @@ final class HttpRequestHandler
      */
     public function generateResponse(ServerRequestInterface $request): ResponseInterface
     {
-        if (!$this->conf->handleExceptions) {
+        if (!$this->httpConf->handleExceptions) {
             Log::info("Exceptions are not handled by the app.");
             return $this->addCspSources($this->generateResponseFromRoute($request));
         }
@@ -73,7 +73,7 @@ final class HttpRequestHandler
             throw new UnsupportedMethodException();
         }
 
-        $route = $this->router->getRouteFromPath($this->conf->rootRoute, $request->getUri()->getPath());
+        $route = $this->router->getRouteFromPath($this->httpConf->rootRoute, $request->getUri()->getPath());
         Log::info("Request matches controller \"{$route->getFqcn()}\".");
         if (null === $route->getFqcn()) {
             throw new RequestedResourceNotFound();
@@ -115,19 +115,19 @@ final class HttpRequestHandler
             throw $t;
         } catch (RouteNotFoundException | RequestedResourceNotFound) {
             Log::info("Resource requested by user was not found.");
-            $fqcn = $this->conf->routeError404ControllerFQCN;
+            $fqcn = $this->httpConf->errorControllers->notFoundFqcn;
         } catch (AlreadyAuthenticated) {
             Log::info("User cannot access this route, already authenticated.");
-            $fqcn = $this->conf->routeErrorAlreadyLoggedInControllerFQCN;
+            $fqcn = $this->httpConf->errorControllers->alreadyLoggedInFqcn;
         } catch (AccessDenied) {
             Log::info("User is not authorized.");
-            $fqcn = $this->conf->routeErrorNotLoggedInControllerFQCN;
+            $fqcn = $this->httpConf->errorControllers->notLoggedInFqcn;
         } catch (UnsupportedMethodException) {
             Log::info("HTTP method is not supported.");
-            $fqcn = $this->conf->routeErrorMethodNotSupportedFQCN;
+            $fqcn = $this->httpConf->errorControllers->methodNotSupportedFqcn;
         } catch (Throwable) {
             Log::error($t->__toString());
-            $fqcn = $this->conf->serverErrorControllerFQCN;
+            $fqcn = $this->httpConf->errorControllers->defaultErrorFqcn;
         }
 
         Log::info("Exception controller FQCN is \"{$fqcn}\".");
@@ -144,12 +144,12 @@ final class HttpRequestHandler
 
     private function addCspSources(ResponseInterface $response): ResponseInterface
     {
-        if (0 === count($this->conf->csp)) {
+        if (0 === count($this->httpConf->csp)) {
             return $response;
         }
 
         $cspHeaderValue = '';
-        foreach ($this->conf->csp as $directive => $values) {
+        foreach ($this->httpConf->csp as $directive => $values) {
             if (in_array(HttpConf::NONCE_SPECIFIER, $values)) {
                 $values = array_map(fn ($value) => HttpConf::NONCE_SPECIFIER === $value ? "'nonce-{$this->cspNonce}'" : $value, $values);
             }

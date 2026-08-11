@@ -1,5 +1,11 @@
 {
     "isDev": true,
     "language": "fr",
-    "routeError404ControllerFQCN": "Test"
+    "errorControllers": {
+        "alreadyLoggedInFqcn": "",
+        "defaultErrorFqcn": "",
+        "methodNotSupportedFqcn": "",
+        "notFoundFqcn": "Controllers.NotFoundController",
+        "notLoggedInFqcn": ""
+    }
 }

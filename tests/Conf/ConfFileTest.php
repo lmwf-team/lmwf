@@ -46,13 +46,33 @@ final class ConfFileTest extends TestCase
             __DIR__ . "/resources/valid_conf",
             [
                 'handleExceptions' => true,
-                'routeError404ControllerFQCN' => self::class . '2',
+                'errorControllers' => [
+                    'alreadyLoggedInFqcn' => self::class . '2',
+                    'defaultErrorFqcn' => self::class . '2',
+                    'methodNotSupportedFqcn' => self::class . '2',
+                    'notFoundFqcn' => self::class . '2',
+                    'notLoggedInFqcn' => self::class . '2',
+                    'notFoundFqcn' => self::class . '2',
+                ]
             ],
         );
         $this->assertEquals($conf->uploadRelPath, $jsonDist['uploadRelPath']);
         $this->assertEquals($conf->language, $jsonLocal['language']);
-        $this->assertEquals($conf->httpConf->routeError404ControllerFQCN, self::class . '2');
+        $this->assertEquals($conf->httpConf->errorControllers->notFoundFqcn, self::class . '2');
         $this->assertEquals($conf->handleExceptions, true);
+    }
+
+    #[WithoutErrorHandler]
+    public function testValidConf2(): void
+    {
+        $jsonLocal = json_decode(file_get_contents(__DIR__ . "/resources/valid_conf/.lmwf_app.local.json"), true, flags: JSON_THROW_ON_ERROR);
+        $conf = Configuration::createFromEnvFile(
+            __DIR__ . "/resources/valid_conf",
+            [
+                'handleExceptions' => true,
+            ]
+        );
+        $this->assertEquals($conf->httpConf->errorControllers->notFoundFqcn, 'Controllers\NotFoundController');
     }
 
     public function tearDown(): void

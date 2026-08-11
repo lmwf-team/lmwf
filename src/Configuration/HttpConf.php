@@ -14,11 +14,7 @@ final class HttpConf
         public readonly RouteDef $rootRoute,
         public readonly bool $handleExceptions,
         public readonly array $csp,
-        public readonly string $routeError404ControllerFQCN,
-        public readonly string $routeErrorAlreadyLoggedInControllerFQCN,
-        public readonly string $routeErrorNotLoggedInControllerFQCN,
-        public readonly string $routeErrorMethodNotSupportedFQCN,
-        public readonly string $serverErrorControllerFQCN,
+        public readonly ErrorControllerConf $errorControllers,
     ) {
     }
 }

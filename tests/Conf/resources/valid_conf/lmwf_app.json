@@ -8,10 +8,12 @@
         "fqcn": "App.Controller.HomeController",
         "roles": []
     },
-    "routeError404ControllerFQCN": "",
-    "routeErrorNotLoggedInControllerFQCN": "",
-    "routeErrorAlreadyLoggedInControllerFQCN": "",
-    "routeErrorMethodNotSupportedFQCN": "",
-    "serverErrorControllerFQCN": "",
+    "errorControllers": {
+        "alreadyLoggedInFqcn": "",
+        "defaultErrorFqcn": "",
+        "methodNotSupportedFqcn": "",
+        "notFoundFqcn": "",
+        "notLoggedInFqcn": ""
+    },
     "uploadRelPath": "/upload"
 }
