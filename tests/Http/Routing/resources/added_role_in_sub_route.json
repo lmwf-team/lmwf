@@ -2,17 +2,14 @@
     "rootRoute": {
         "controller": "Controller",
         "roles": [
-            "ADMIN",
-            "VISITOR"
+            "ADMIN"
         ],
         "routes": {
-            "sub": {
+            "sub-page": {
                 "controller": "Controller",
                 "roles": [
-                    "ADMIN"
-                ],
-                "minArgs": 0,
-                "maxArgs": 3
+                    "VISITOR"
+                ]
             }
         }
     }

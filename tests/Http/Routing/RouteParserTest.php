@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace LM\WebFramework\Tests\Http\Routing;
 
 use LM\WebFramework\Http\Routing\Exception\InvalidRouteConfException;
+use LM\WebFramework\Http\Routing\Exception\SubRouteCannotAddRoleConfException;
 use LM\WebFramework\Http\Routing\Exception\UnauthorizedAttributeConfException;
 use LM\WebFramework\Http\Routing\ParameterizedRoute;
 use LM\WebFramework\Http\Routing\ParentRoute;
@@ -15,6 +16,13 @@ use TypeError;
 
 final class RouteParserTest extends TestCase
 {
+    public function testAddingRoles(): void
+    {
+        $this->expectException(SubRouteCannotAddRoleConfException::class);
+        $parser = new RouteParser;
+        $actualRoute = $parser->parseJson(__DIR__ . "/resources/added_role_in_sub_route.json");
+    }
+
     public function testParsing(): void
     {
         $expected = new ParentRoute(
@@ -48,7 +56,7 @@ final class RouteParserTest extends TestCase
     {
         $expected = new ParentRoute(
             "Controller",
-            ["VISITOR"],
+            ["ADMIN", "VISITOR"],
             routes: [
                 'sub' => new ParameterizedRoute("Controller", roles: ["ADMIN"], minArgs: 0, maxArgs: 3),
             ],
