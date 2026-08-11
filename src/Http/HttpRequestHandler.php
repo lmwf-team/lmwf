@@ -13,6 +13,7 @@ use LM\WebFramework\Controller\Exception\RequestedRouteNotFound;
 use LM\WebFramework\Controller\IResponseGenerator;
 use LM\WebFramework\Session\SessionManager;
 use Psr\Container\ContainerInterface;
+use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
@@ -25,63 +26,6 @@ final class HttpRequestHandler
         private SessionManager $session,
     ) {
     }
-
-    /**
-     * Handles the entire process of responding to an HTTP request and return an
-     * HTTP response.
-     */
-    public function generateResponse(ServerRequestInterface $request): ResponseInterface
-    {
-        $response = null;
-        try {
-            $response = $this
-                ->findController($request)
-                ->generateResponse($request, $this->extractRouteParams($request))
-            ;
-        } catch (RequestedRouteNotFound|RequestedResourceNotFound) {
-            $response = $this->container->get($this->configuration->getErrorNotFoundControllerFQCN())
-                ->generateResponse($request, $this->extractRouteParams($request))
-            ;
-        } catch (AlreadyAuthenticated) {
-            $response = $this->container->get($this->configuration->getErrorLoggedInControllerFQCN())
-                ->generateResponse($request, $this->extractRouteParams($request))
-            ;
-        } catch (AccessDenied) {
-            $response = $this->container->get($this->configuration->getErrorNotLoggedInControllerFQCN())
-                ->generateResponse($request, $this->extractRouteParams($request))
-            ;
-        } catch (Throwable $t) {
-            if (null !== $this->configuration->getLoggerFqcn()) {
-                $this->container->get($this->configuration->getLoggerFqcn())->log($t->__toString());
-            }
-            $response = $this->container->get($this->configuration->getServerErrorControllerFQCN())
-                ->generateResponse($request, $this->extractRouteParams($request))
-            ;
-        }
-
-        // @todo Don’t specify CSP sources if they are not set in configuration
-        $cspValues = [
-            "default-src {$this->configuration->getCSPDefaultSources()}",
-            "font-src {$this->configuration->getCSPFontSources()}",
-            "object-src {$this->configuration->getCSPObjectSources()}",
-            "style-src {$this->configuration->getCSPStyleSources()}",
-        ];
-        return $response->withAddedHeader('Content-Security-Policy', implode(';', $cspValues));
-    }
-
-    /**
-     * @return array<string>
-     */
-    public function extractRouteParams(ServerRequestInterface $request): array
-    {
-        $parts = array_map(fn ($e) => urldecode($e), explode('/', $request->getRequestTarget()));
-        if (1 === count($parts) && '' === $parts[0]) {
-            return $parts;
-        } else {
-            return array_slice($parts, 1);
-        }
-    }
-
 
     /**
      * Return a controller corresponding to the given HTTP request.
@@ -106,5 +50,76 @@ final class HttpRequestHandler
         }
 
         return $controller;
+    }
+
+
+    /**
+     * Handles the entire process of responding to an HTTP request and return an
+     * HTTP response.
+     */
+    public function generateResponse(ServerRequestInterface $request): ResponseInterface
+    {
+        $response = null;
+
+        try {
+            $response = $this
+                ->findController($request)
+                ->generateResponse($request, $this->extractRouteParams($request), [])
+            ;
+        } catch (RequestedRouteNotFound|RequestedResourceNotFound) {
+            $response = $this->container->get($this->configuration->getErrorNotFoundControllerFQCN())
+                ->generateResponse($request, $this->extractRouteParams($request), [])
+            ;
+        } catch (AlreadyAuthenticated) {
+            $response = $this->container->get($this->configuration->getErrorLoggedInControllerFQCN())
+                ->generateResponse($request, $this->extractRouteParams($request), [])
+            ;
+        } catch (AccessDenied) {
+            $response = $this->container->get($this->configuration->getErrorNotLoggedInControllerFQCN())
+                ->generateResponse($request, $this->extractRouteParams($request), [])
+            ;
+        }
+
+        return $this->addCspSources($response);
+    }
+
+    public function generateErrorResponse(RequestInterface $request, Throwable $t): ResponseInterface
+    {
+        $response = $this->container->get($this->configuration->getServerErrorControllerFQCN())
+            ->generateResponse(
+                $request,
+                $this->extractRouteParams($request),
+                [
+                    'throwable_hash' => hash('sha256', $t->__toString()),
+                ],
+            )
+        ;
+
+        return $this->addCspSources($response);
+    }
+
+    /**
+     * @return array<string>
+     */
+    public function extractRouteParams(ServerRequestInterface $request): array
+    {
+        $parts = array_map(fn ($e) => urldecode($e), explode('/', $request->getRequestTarget()));
+        if (1 === count($parts) && '' === $parts[0]) {
+            return $parts;
+        } else {
+            return array_slice($parts, 1);
+        }
+    }
+
+    private function addCspSources(ResponseInterface $response): ResponseInterface
+    {
+         // @todo Don’t specify CSP sources if they are not set in configuration
+         $cspValues = [
+            "default-src {$this->configuration->getCSPDefaultSources()}",
+            "font-src {$this->configuration->getCSPFontSources()}",
+            "object-src {$this->configuration->getCSPObjectSources()}",
+            "style-src {$this->configuration->getCSPStyleSources()}",
+        ];
+        return $response->withAddedHeader('Content-Security-Policy', implode(';', $cspValues));
     }
 }

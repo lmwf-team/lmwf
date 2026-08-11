@@ -15,6 +15,10 @@ final class Configuration
 
     private string $language;
 
+    /**
+     * @todo Add JSON_THROW_ON_ERROR everywhere, and automatically check its presence.
+     * @todo Create model for configuration, and check it is valid.
+     */
     public function __construct(string $configFolderPath, string $language)
     {
         $this->configFolderPath = $configFolderPath;
@@ -22,8 +26,8 @@ final class Configuration
 
         $env = file_get_contents("$configFolderPath/.env.json");
         $envLocal = file_get_contents("$configFolderPath/.env.json.local");
-        $configData = false !== $envLocal ? json_decode($envLocal, true) : [];
-        $configData += false !== $env ? json_decode($env, true) : [];
+        $configData = false !== $envLocal ? json_decode($envLocal, true, flags: JSON_THROW_ON_ERROR) : [];
+        $configData += false !== $env ? json_decode($env, true, flags: JSON_THROW_ON_ERROR) : [];
         $this->configData = (new CollectionFactory())->createDeepAppObject($configData);
     }
 
@@ -132,9 +136,17 @@ final class Configuration
         return $this->getSetting('serverErrorControllerFQCN');
     }
 
+    /**
+     * @todo Add test.
+     */
     public function getSetting(string $key): string
     {
-        return $this->configData[$key];
+        $path = explode('.', $key);
+        $data = $this->configData;
+        foreach ($path as $key) {
+            $data = $data[$key];
+        }
+        return $data;
     }
 
     public function isDev(): bool
