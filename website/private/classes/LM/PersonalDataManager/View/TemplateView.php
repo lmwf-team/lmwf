@@ -38,7 +38,9 @@ abstract class TemplateView implements IView
 	<header>
 		<h1 class="website-title">
 			<div class="website-title-content-container">
-				<?= $pageHeader ?>
+				<a class="website-title-anchor" href="index.php">
+					<?= $pageHeader ?>
+				</a>
 			</div>
 		</h1>
 		<div class="breadcrumb-content-container">

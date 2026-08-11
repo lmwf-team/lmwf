@@ -6,8 +6,13 @@ body {
     font-family: Caladea;
 }
 
-a:hover {
+a {
+    font-style: italic;
     text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
 }
 
 /*
@@ -37,15 +42,23 @@ body {
     background-repeat: no-repeat;
 }
 
-
 .website-title {
     background: #282828;
     margin-top: 0;
     margin-bottom: 0;
-    color: #ffffff;
     border-bottom: 0.5rem #600000 solid;
     box-sizing: border-box;
     padding-top: 1rem;
+}
+
+.website-title-anchor {
+    color: #ffffff;
+    text-decoration: none;
+    font-style: normal;
+}
+
+.website-title-anchor:hover {
+    text-decoration: underline;
 }
 
 .breadcrumb-content-container,
