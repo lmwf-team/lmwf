@@ -29,4 +29,9 @@ class AppList extends ImmutableArray
     {
         return new self(array_map($callback, $this->data));
     }
+
+    public function filter(callable $callback): self
+    {
+        return new self(array_filter($this->data, $callback));
+    }
 }
