@@ -28,11 +28,6 @@ class MainController
         define('PDM_PASSWORD_MAX_LENGTH', 255);
         define('PDM_MAX_LENGTH', 255);
 
-        // Autoloader's registration
-        require_once(PDM_CLASSES . 'LM/Autoloader/PhpFigAutoloader.php');
-        $autoloader = new LM\Autoloader\PhpFigAutoloader;
-        spl_autoload_register(array($autoloader, 'autoLoadClass'));
-
         // Request processing
         // TODO: maybe the main controller could get these things, such as the project
         // specific router, from an interface implemented by the project? Quite useless
