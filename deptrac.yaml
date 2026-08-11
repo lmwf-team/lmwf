@@ -105,3 +105,5 @@ deptrac:
       - Conf
       - DataStructures
       - ErrorHandling
+    Session:
+      - DataStructures
