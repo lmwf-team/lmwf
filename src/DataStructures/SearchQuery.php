@@ -2,8 +2,6 @@
 
 namespace LM\WebFramework\DataStructures;
 
-use UnexpectedValueException;
-
 class SearchQuery
 {
     CONST ACCEPTED_DELIMITERS = [

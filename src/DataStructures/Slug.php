@@ -1,6 +1,6 @@
 <?php
 
-namespace MF\Model;
+namespace LM\WebFramework\DataStructures;
 
 use LM\WebFramework\Constraints\StringConstraint;
 use Stringable;

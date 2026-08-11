@@ -2,13 +2,12 @@
 
 namespace LM\WebFramework\Form\Transformer;
 
-use GdImage;
+use LM\WebFramework\Constraints\IUploadedImageConstraint;
 use LM\WebFramework\DataStructures\Filename;
 use LM\WebFramework\Form\Exceptions\IllegalUserInputException;
 use LM\WebFramework\Form\Exceptions\MissingInputException;
-use MF\Model\Slug;
+use LM\WebFramework\DataStructures\Slug;
 use Psr\Http\Message\UploadedFileInterface;
-use UnexpectedValueException;
 
 class FileTransformer implements IFormTransformer
 {
@@ -65,6 +64,7 @@ class FileTransformer implements IFormTransformer
     }
 
     private function saveUploadedImage(UploadedFileInterface $file): null|string {
+
         if (0 === $file->getError()) {
             $extension = 'webp';
             $uploadedFileName = pathinfo($file->getClientFilename(), PATHINFO_FILENAME);
@@ -91,10 +91,12 @@ class FileTransformer implements IFormTransformer
             }
 
             return pathinfo($destinationPath)['basename'];
+        } elseif (1 == $file->getError()) {
+            return IUploadedImageConstraint::FILE_TOO_BIG;
         } elseif (4 === $file->getError()) {
             return null;
         } else {
-            throw new UnexpectedValueException();
+            return IUploadedImageConstraint::MISC_ERROR;
         }
     }
 
