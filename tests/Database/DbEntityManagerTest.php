@@ -43,7 +43,7 @@ final class DbEntityManagerTest extends TestCase
 
     public function testConversionToDbValue(): void
     {
-        $appObject = CollectionFactory::createDeepAppList([
+        $appObject = CollectionFactory::createDeepAppObject([
             'id' => 0,
             'name' => 'Georges',
         ]);
@@ -433,7 +433,7 @@ final class DbEntityManagerTest extends TestCase
             ],
         ))->addItselfAsProperty('sub_entity', 'id', 'sub_entity_id', true);
 
-        $appObject = CollectionFactory::createDeepAppList([
+        $appObject = CollectionFactory::createDeepAppObject([
             'id' => 'entity-00',
             'sub_entity_id' => 'entity-01',
             'sub_entity' => [
@@ -444,7 +444,7 @@ final class DbEntityManagerTest extends TestCase
             ],
             'extra' => false,
         ]);
-        $expected = CollectionFactory::createDeepAppList([
+        $expected = CollectionFactory::createDeepAppObject([
             'id' => 'entity-00',
             'sub_entity_id' => 'entity-01',
             'sub_entity' => [

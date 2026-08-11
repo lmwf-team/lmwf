@@ -20,6 +20,7 @@ class CollectionFactory
     /**
      * Used by the class to convert properties into objects of corresponding
      * DataStructures class.
+     * @return array<AppList|AppObject>
      */
     private static function convertProperties(array $array): array
     {

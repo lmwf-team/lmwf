@@ -52,7 +52,7 @@ final class HttpRequestHandler
             ;
         } catch (Throwable $t) {
             if (null !== $this->configuration->getLoggerFqcn()) {
-                $this->container->get( $this->configuration->getLoggerFqcn())->log($t->__toString());
+                $this->container->get($this->configuration->getLoggerFqcn())->log($t->__toString());
             }
             $response = $this->container->get($this->configuration->getServerErrorControllerFQCN())
                 ->generateResponse($request, $this->extractRouteParams($request))
@@ -70,12 +70,11 @@ final class HttpRequestHandler
     }
 
     /**
-     * @todo Should not include the route name?
      * @return array<string>
      */
-    public function extractRouteParams(ServerRequestInterface $request): array
+    public function extractRouteParams(string $uri): array
     {
-        $parts = array_map(fn ($e) => urldecode($e), explode('/', $request->getUri()->getPath()));
+        $parts = array_map(fn ($e) => urldecode($e), explode('/', $uri));
         if (1 === count($parts) && '' === $parts[0]) {
             return $parts;
         } else {
@@ -94,6 +93,8 @@ final class HttpRequestHandler
     public function findController(ServerRequestInterface $request): IResponseGenerator
     {
         $routeId = $this->extractRouteParams($request)[0];
+
+
 
         if (!$this->configuration->getRoutes()->hasProperty($routeId)) {
             throw new RequestedRouteNotFound();

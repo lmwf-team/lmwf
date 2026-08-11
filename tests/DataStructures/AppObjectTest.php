@@ -72,6 +72,7 @@ final class AppObjectTest extends TestCase
                 ],
             ],
         ]);
+        $appArray['item'];
     }
 
     public function testWithEmptyArray(): void
@@ -83,13 +84,13 @@ final class AppObjectTest extends TestCase
 
     public function testIsEqual(): void
     {
-        $appObject1 = CollectionFactory::createDeepAppList([
+        $appObject1 = CollectionFactory::createDeepAppObject([
             'id' => 3,
         ]);
-        $appObject1Copy = CollectionFactory::createDeepAppList([
+        $appObject1Copy = CollectionFactory::createDeepAppObject([
             'id' => 3,
         ]);
-        $appObject2 = CollectionFactory::createDeepAppList([
+        $appObject2 = CollectionFactory::createDeepAppObject([
             'name' => 'Georges',
         ]);
         $this->assertFalse($appObject1->isEqual($appObject2));

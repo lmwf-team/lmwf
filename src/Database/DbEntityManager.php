@@ -9,6 +9,7 @@ use DateTimeImmutable;
 use InvalidArgumentException;
 use LM\WebFramework\Database\Exceptions\InvalidDbDataException;
 use LM\WebFramework\Database\Exceptions\NullDbDataNotAllowedException;
+use LM\WebFramework\DataStructures\AppList;
 use LM\WebFramework\DataStructures\AppObject;
 use LM\WebFramework\DataStructures\Factory\CollectionFactory;
 use LM\WebFramework\Model\Type\AbstractEntityModel;
@@ -77,6 +78,7 @@ final class DbEntityManager
 
     /**
      * @todo Create type for dbRows, as a list of associative arrays?
+     * @todo Throw exception is passed array is empty.
      * @param array[] $dbRows A list of associative arrays each storing a
      * different row.
      * @param AbstractEntityModel $model The model of each row.
@@ -165,7 +167,7 @@ final class DbEntityManager
         return $appData;
     }
 
-    public function convertDbRowsToList(array $dbRows, IModel $itemModel): array
+    public function convertDbRowsToList(array $dbRows, IModel $itemModel): AppList
     {
         if ($itemModel instanceof EntityModel) {
             return $this->convertDbRowsToEntityList($dbRows, $itemModel);
@@ -182,10 +184,10 @@ final class DbEntityManager
                 $appData[] = $this->convertDbList($row, $itemModel);
             }
         }
-        return $appData;
+        return new AppList($appData);
     }
 
-    public function convertDbRowsToEntityList(array $dbRows, EntityModel $itemModel): array
+    public function convertDbRowsToEntityList(array $dbRows, EntityModel $itemModel): AppList
     {
         $appData = [];
         $ids = [];
@@ -196,7 +198,7 @@ final class DbEntityManager
                 $ids[] = $rowEntityId;
             }
         }
-        return $appData;
+        return new AppList($appData);
     }
 
     /**

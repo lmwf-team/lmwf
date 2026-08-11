@@ -5,9 +5,8 @@ namespace LM\WebFramework\DataStructures;
 use InvalidArgumentException;
 
 /**
- * Immutable list.
+ * Immutable list guaranteed to have zero-indexed sequential property keys.
  * 
- * All property keys are sequential integers.
  */
 class AppList extends ImmutableArray
 {
