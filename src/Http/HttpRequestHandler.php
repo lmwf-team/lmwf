@@ -6,9 +6,9 @@ namespace LM\WebFramework\Http;
 
 use GuzzleHttp\Psr7\ServerRequest;
 use LM\WebFramework\Conf\HttpConf;
-use LM\WebFramework\Controller\Exception\AccessDenied;
-use LM\WebFramework\Controller\Exception\AlreadyAuthenticated;
-use LM\WebFramework\Controller\Exception\RequestedResourceNotFound;
+use LM\WebFramework\Http\Controller\Exception\AccessDenied;
+use LM\WebFramework\Http\Controller\Exception\AlreadyAuthenticated;
+use LM\WebFramework\Http\Controller\Exception\RequestedResourceNotFound;
 use LM\WebFramework\ErrorHandling\Log;
 use LM\WebFramework\Http\Exception\UnsupportedMethodException;
 use LM\WebFramework\Http\Routing\Exception\RouteNotFoundException;

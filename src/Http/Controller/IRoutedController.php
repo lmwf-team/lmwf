@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Controller;
+namespace LM\WebFramework\Http\Controller;
 
 use LM\WebFramework\Http\Routing\Route;
 use Psr\Http\Message\ResponseInterface;

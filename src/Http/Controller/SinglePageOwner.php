@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Controller;
+namespace LM\WebFramework\Http\Controller;
 
 use LM\WebFramework\DataStructures\Page;
 

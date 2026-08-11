@@ -16,12 +16,6 @@ deptrac:
           type: directory
           value: ./src/Constraint
     -
-      name: Controller
-      collectors:
-        -
-          type: directory
-          value: ./src/Controller
-    -
       name: Database
       collectors:
         -
@@ -86,18 +80,14 @@ deptrac:
       - DataStructures
     Constraint:
       - DataStructures
-    Controller:
-      - DataStructures
-      - Http
     Database:
       - Constraint
       - DataStructures
-      - Validator
     Validation:
       - Constraint
     Http:
       - Conf
-      - Controller
+      - DataStructures
       - ErrorHandling
       - Session
     File:
@@ -110,5 +100,5 @@ deptrac:
       - ErrorHandling
       - Session
     Kernel:
-      - ErrorHandling
       - Conf
+      - ErrorHandling
