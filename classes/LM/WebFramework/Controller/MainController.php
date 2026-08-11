@@ -2,7 +2,7 @@
 
 namespace LM\WebFramework\Controller;
 
-use LM\Exception\SessionStartFailureException();
+use LM\Exception\SessionStartFailureException;
 
 class MainController
 {
