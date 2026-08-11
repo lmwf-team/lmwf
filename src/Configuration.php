@@ -20,7 +20,7 @@ final class Configuration
         $this->language = $language;
 
         $env = file_get_contents("$configFolderPath/.env.json");
-        $envLocal = file_get_contents("$configFolderPath/.env.local.json");
+        $envLocal = file_get_contents("$configFolderPath/.env.json.local");
         $configData = false !== $envLocal ? json_decode($envLocal, true) : [];
         $configData += false !== $env ? json_decode($env, true) : [];
         $this->configData = new AppObject($configData);
