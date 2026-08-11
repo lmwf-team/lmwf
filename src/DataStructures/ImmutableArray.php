@@ -180,13 +180,13 @@ abstract readonly class ImmutableArray implements ArrayAccess, Countable, IArray
             return false;
         }
 
-        foreach ($value as $key => $value) {
+        foreach ($value as $key => $item) {
             if (!$this->offsetExists($key)) {
                 return false;
             }
-            if ($value instanceof IDistinguishable && !$value->isEqual($this->data[$key])) {
+            if ($item instanceof IDistinguishable && !$item->isEqual($this->data[$key])) {
                 return false;
-            } elseif ($this->data[$key] !== $value) {
+            } elseif ($this->data[$key] !== $item) {
                 return false;
             }
         }

@@ -52,10 +52,10 @@ final class AppObjectTest extends TestCase
                 ],
             ],
         ];
-        $appObject = (new CollectionFactory())->createDeepAppObject($appArray);
-        $this->assertInstanceOf(AppList::class, $appObject['items']);
-        $this->assertInstanceOf(AppObject::class, $appObject['items'][0]);
-        $this->assertInstanceOf(AppObject::class, $appObject['items'][1]);
+        $appObject = CollectionFactory::createDeepAppObject($appArray);
+        self::assertInstanceOf(AppList::class, $appObject['items']);
+        self::assertInstanceOf(AppObject::class, $appObject['items'][0]);
+        self::assertInstanceOf(AppObject::class, $appObject['items'][1]);
     }
 
     public function testNonExistingProperty(): void
@@ -86,9 +86,9 @@ final class AppObjectTest extends TestCase
         $appObject2 = CollectionFactory::createDeepAppObject([
             'name' => 'Georges',
         ]);
-        $this->assertFalse($appObject1->isEqual($appObject2));
-        $this->assertFalse($appObject2->isEqual($appObject1));
-        $this->assertTrue($appObject1->isEqual($appObject1));
-        $this->assertTrue($appObject1->isEqual($appObject1Copy));
+        self::assertFalse($appObject1->isEqual($appObject2));
+        self::assertFalse($appObject2->isEqual($appObject1));
+        self::assertTrue($appObject1->isEqual($appObject1));
+        self::assertTrue($appObject1->isEqual($appObject1Copy));
     }
 }

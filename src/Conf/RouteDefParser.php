@@ -41,7 +41,7 @@ final readonly class RouteDefParser
     ): RouteDef {
         // Check there are no unknown keys.
         foreach ($route as $key => $_) {
-            if (!in_array($key, self::ALL_KNS)) {
+            if (!in_array($key, self::ALL_KNS, strict: true)) {
                 throw new UnauthorizedAttributeConfException($key);
             }
         }

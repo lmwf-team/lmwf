@@ -30,14 +30,14 @@ final class DbEntityManagerTest extends TestCase
 
     public function testScalarTypes(): void
     {
-        $this->assertTrue($this->em->convertDbScalar(1, new BoolModel()));
-        $this->assertFalse($this->em->convertDbScalar(0, new BoolModel()));
-        $this->assertNull($this->em->convertDbScalar(null, new BoolModel(isNullable: true)));
+        self::assertTrue($this->em->convertDbScalar(1, new BoolModel()));
+        self::assertFalse($this->em->convertDbScalar(0, new BoolModel()));
+        self::assertNull($this->em->convertDbScalar(null, new BoolModel(isNullable: true)));
 
-        $this->assertEquals(47, $this->em->convertDbScalar(47, new IntModel()));
+        self::assertEquals(47, $this->em->convertDbScalar(47, new IntModel()));
 
         $date = '2024-07-13';
-        $this->assertEquals(new DateTimeImmutable($date), $this->em->convertDbScalar($date, new DateTimeModel()));
+        self::assertEquals(new DateTimeImmutable($date), $this->em->convertDbScalar($date, new DateTimeModel()));
     }
 
     public function testConversionToDbValue(): void
@@ -49,7 +49,7 @@ final class DbEntityManagerTest extends TestCase
         $expected = [
             'name' => 'Georges',
         ];
-        $this->assertEquals($expected, $this->em->toDbValue($appObject, ignoreProperties: ['id']));
+        self::assertEquals($expected, $this->em->toDbValue($appObject, ignoreProperties: ['id']));
     }
 
     public function testInvalidDbDataException(): void
@@ -77,7 +77,7 @@ final class DbEntityManagerTest extends TestCase
             ],
         ];
 
-        $expectedAppObject = (new CollectionFactory())->createDeepAppObject([
+        $expectedAppObject = CollectionFactory::createDeepAppObject([
             'id' => 'test',
             'child_id' => 'prout',
             'child' => [
@@ -105,7 +105,7 @@ final class DbEntityManagerTest extends TestCase
             ],
         );
 
-        $this->assertEquals(
+        self::assertEquals(
             $expectedAppObject,
             $this->em->convertDbRowsToAppObject($dbRows, $entity),
         );
@@ -132,7 +132,7 @@ final class DbEntityManagerTest extends TestCase
             ],
         ];
 
-        $expectedAppObject = (new CollectionFactory())->createDeepAppObject([
+        $expectedAppObject = CollectionFactory::createDeepAppObject([
             'id' => 'some-specific-articles',
             'parent' => [
                 'id' => 'all-articles',
@@ -157,7 +157,7 @@ final class DbEntityManagerTest extends TestCase
             ],
         );
 
-        $this->assertEquals(
+        self::assertEquals(
             $expectedAppObject,
             $this->em->convertDbRowsToAppObject($dbRows, $model, 1),
         );
@@ -182,7 +182,7 @@ final class DbEntityManagerTest extends TestCase
             ],
         );
 
-        $expectedParent = (new CollectionFactory())->createDeepAppObject([
+        $expectedParent = CollectionFactory::createDeepAppObject([
             'id' => 'all-articles',
             'children' => [
                 [
@@ -196,7 +196,7 @@ final class DbEntityManagerTest extends TestCase
             ],
         ]);
 
-        $this->assertEquals(
+        self::assertEquals(
             $expectedParent,
             $this->em->convertDbRowsToAppObject($dbRows, $parentModel, 0),
         );
@@ -216,7 +216,7 @@ final class DbEntityManagerTest extends TestCase
         ];
         $model = new ListModel(new IntModel(0, 10));
         $appData = $this->em->convertDbList($dbRows, $model);
-        $this->assertEquals($appData, $expectedList);
+        self::assertEquals($appData, $expectedList);
     }
 
     public function testSelfReferencingEntity(): void
@@ -242,7 +242,7 @@ final class DbEntityManagerTest extends TestCase
                 'parent_id' => new StringModel(isNullable: true),
             ],
         ))->addItselfAsProperty('parent', 'id', 'parent_id', true);
-        $expected = (new CollectionFactory())->createDeepAppObject([
+        $expected = CollectionFactory::createDeepAppObject([
             'id' => '1',
             'parent_id' => '2',
             'parent' => [
@@ -256,7 +256,7 @@ final class DbEntityManagerTest extends TestCase
             ],
         ]);
         $actual = $this->em->convertDbRowsToAppObject($dbRows, $model);
-        $this->assertEquals($expected, $actual);
+        self::assertEquals($expected, $actual);
     }
 
     public function testNullSubEntity(): void
@@ -288,13 +288,13 @@ final class DbEntityManagerTest extends TestCase
                 ),
             ],
         );
-        $expected = (new CollectionFactory())->createDeepAppObject([
+        $expected = CollectionFactory::createDeepAppObject([
             'id' => '1',
             'parent_id' => null,
             'parent' => null,
         ]);
         $actual = $this->em->convertDbRowsToAppObject($dbRows, $model);
-        $this->assertEquals($expected, $actual);
+        self::assertEquals($expected, $actual);
     }
 
     public function testOuterJoin(): void
@@ -344,7 +344,7 @@ final class DbEntityManagerTest extends TestCase
             ],
         ];
 
-        $this->assertSame($expected, $this->em->outerJoinDbRows($dbRowsLeft, $dbRowsRight));
+        self::assertSame($expected, $this->em->outerJoinDbRows($dbRowsLeft, $dbRowsRight));
     }
 
     public function testConversionToList(): void
@@ -419,7 +419,7 @@ final class DbEntityManagerTest extends TestCase
             ],
         ]);
 
-        $this->assertEquals($expected, $this->em->convertDbRowsToList($dbRows, $personModel));
+        self::assertEquals($expected, $this->em->convertDbRowsToList($dbRows, $personModel));
     }
 
     public function testPruning(): void
@@ -452,6 +452,6 @@ final class DbEntityManagerTest extends TestCase
                 'sub_entity' => null,
             ],
         ]);
-        $this->assertEquals($expected, $this->em->pruneAppObject($appObject, $model));
+        self::assertEquals($expected, $this->em->pruneAppObject($appObject, $model));
     }
 }

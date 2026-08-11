@@ -11,7 +11,7 @@ final class CollectionFactoryTest extends TestCase
 {
     public function testWithEmptyArray(): void
     {
-        $this->assertEquals([], CollectionFactory::createDeepAppList([])->toArray());
-        $this->assertEquals([], CollectionFactory::createDeepAppObject([])->toArray());
+        self::assertEquals([], CollectionFactory::createDeepAppList([])->toArray());
+        self::assertEquals([], CollectionFactory::createDeepAppObject([])->toArray());
     }
 }

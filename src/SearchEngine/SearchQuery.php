@@ -32,11 +32,11 @@ final readonly class SearchQuery
         $modifiedQuery = explode(self::MODIFIER, $convertedModifiers);
         $keywords = [];
         for ($i = 0; $i < count($modifiedQuery); $i++) {
-            if ($i % 2 == 0) {
+            if ($i % 2 === 0) {
                 $lowerStr = mb_strtolower($modifiedQuery[$i]);
                 $convertedQuery = str_replace(self::ACCEPTED_DELIMITERS, self::SEPARATOR, $lowerStr);
                 $convertedQuery = preg_replace("#[[:punct:]]#", self::SEPARATOR, $convertedQuery);
-                $keywords = array_merge($keywords, array_filter(explode(self::SEPARATOR, $convertedQuery)));
+                $keywords = array_merge($keywords, array_filter(explode(self::SEPARATOR, $convertedQuery), fn ($keyword) => '' !== $keyword));
             } elseif ('' !== $modifiedQuery[$i]) {
                 $keywords[] = mb_strtolower($modifiedQuery[$i]);
             }

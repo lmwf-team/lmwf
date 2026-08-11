@@ -13,9 +13,4 @@ class MissingInputException extends ExtractionException
     {
         parent::__construct(null !== $inputName ? $inputName . ' is missing ' : null, previous: $previous);
     }
-
-    public function getUserErrorMessage(): string
-    {
-        return 'Une erreur s’est produite. ' . self::class;
-    }
 }

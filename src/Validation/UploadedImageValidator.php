@@ -22,9 +22,9 @@ final class UploadedImageValidator implements ITypeValidator
     {
         $violations = [];
         if (is_array($data)) {
-        } elseif ($data == IUploadedImageConstraint::FILE_TOO_BIG_ERROR) {
+        } elseif ($data === IUploadedImageConstraint::FILE_TOO_BIG_ERROR) {
             $violations[] = new ConstraintViolation($this->constraint, 'Le fichier est trop gros.');
-        } elseif ($data == IUploadedImageConstraint::MISC_ERROR) {
+        } elseif ($data === IUploadedImageConstraint::MISC_ERROR) {
             $violations[] = new ConstraintViolation($this->constraint, 'Il y a un problème avec le fichier.');
         } else {
             if (strlen($data) > IUploadedImageConstraint::FILENAME_MAX_LENGTH) {

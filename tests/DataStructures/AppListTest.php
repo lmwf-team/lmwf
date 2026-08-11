@@ -48,14 +48,14 @@ final class AppListTest extends TestCase
             ],
         ];
         $appList = new AppList($list);
-        $this->assertEquals($list[0], $appList->getString(0));
-        $this->assertEquals($list[1], $appList->getFloat(1));
-        $this->assertEquals($list[2], $appList[2]);
-        $this->assertEquals($list[3], $appList->getBool(3));
-        $this->assertEquals($list[4], $appList->getBool(4));
-        $this->assertEquals($list[5], $appList->getInt(5));
-        $this->assertEquals($list[6], $appList->getArray(6));
-        $this->assertEquals($list[5], $appList->getNullableScalar(5, 'integer'));
+        self::assertEquals($list[0], $appList->getString(0));
+        self::assertEquals($list[1], $appList->getFloat(1));
+        self::assertEquals($list[2], $appList[2]);
+        self::assertEquals($list[3], $appList->getBool(3));
+        self::assertEquals($list[4], $appList->getBool(4));
+        self::assertEquals($list[5], $appList->getInt(5));
+        self::assertEquals($list[6], $appList->getArray(6));
+        self::assertEquals($list[5], $appList->getNullableScalar(5, 'integer'));
 
         $this->expectException(TypeError::class);
         $appList->getInt(1);

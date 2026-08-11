@@ -11,7 +11,7 @@ final class SlugTest extends TestCase
 {
     public function testSlugModel(): void
     {
-        $this->assertEquals(
+        self::assertEquals(
             'mise-a-jour-15-pour-the-crystal-mission',
             (new Slug('Mise à jour 1.5 pour The Crystal Mission', true))->__toString(),
         );

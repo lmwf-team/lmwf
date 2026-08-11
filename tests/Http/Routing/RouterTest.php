@@ -25,8 +25,8 @@ final class RouterTest extends TestCase
 
         $homeRoute = new Route($homeRouteDef, '', [], parent: $rootRoute);
 
-        $this->assertEquals($homeRoute, $router->getRouteFromPath($rootRoute->def, ''));
-        $this->assertEquals($homeRoute, $router->getRouteFromPath($rootRoute->def, '/'));
+        self::assertEquals($homeRoute, $router->getRouteFromPath($rootRoute->def, ''));
+        self::assertEquals($homeRoute, $router->getRouteFromPath($rootRoute->def, '/'));
     }
 
     public function testRouteIdWithSpecialChars(): void
@@ -41,7 +41,7 @@ final class RouterTest extends TestCase
         ]);
         $subroute = new Route($subrouteDef, $subrouteId, parent: $rootRoute);
 
-        $this->assertEquals($subroute, $router->getRouteFromPath($rootRoute->def, "/{$subrouteId}"));
+        self::assertEquals($subroute, $router->getRouteFromPath($rootRoute->def, "/{$subrouteId}"));
     }
 
     public function testParameterizedRouteWithBadParams0(): void
@@ -60,8 +60,8 @@ final class RouterTest extends TestCase
 
         $routeDef = new RouteDef(null, nArgsLowerLimit: 1, nArgsUpperLimit: 2);
 
-        $this->assertEquals(new Route($routeDef, '', ['', '']), $router->getRouteFromPath($routeDef, '//'));
-        $this->assertEquals(new Route($routeDef, '', ['test']), $router->getRouteFromPath($routeDef, '/test'));
+        self::assertEquals(new Route($routeDef, '', ['', '']), $router->getRouteFromPath($routeDef, '//'));
+        self::assertEquals(new Route($routeDef, '', ['test']), $router->getRouteFromPath($routeDef, '/test'));
         $this->expectException(RouteNotFoundException::class);
         $router->getRouteFromPath($routeDef, '///');
     }
@@ -141,8 +141,8 @@ final class RouterTest extends TestCase
         $sub2Route = new Route($sub2SubrouteDef, 'sub2', ['param1', 'param2'], $rootRoute);
         $sub2RouteNoParams = new Route($sub2SubrouteDef, 'sub2', [], $rootRoute);
 
-        $this->assertEquals($sub1Route, $router->getRouteFromPath($rootRoute->def, '/sub1'));
-        $this->assertEquals($sub2Route, $router->getRouteFromPath($rootRoute->def, '/sub2/param1/param2'));
-        $this->assertEquals($sub2RouteNoParams, $router->getRouteFromPath($rootRoute->def, '/sub2'));
+        self::assertEquals($sub1Route, $router->getRouteFromPath($rootRoute->def, '/sub1'));
+        self::assertEquals($sub2Route, $router->getRouteFromPath($rootRoute->def, '/sub2/param1/param2'));
+        self::assertEquals($sub2RouteNoParams, $router->getRouteFromPath($rootRoute->def, '/sub2'));
     }
 }

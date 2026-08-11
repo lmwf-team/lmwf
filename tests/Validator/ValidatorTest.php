@@ -19,9 +19,9 @@ final class ValidatorTest extends TestCase
 {
     public function testNullable(): void
     {
-        $this->assertEmpty((new Validator(new BoolModel(true)))->validate(null), 'Null should be allowed.');
-        $this->assertNotEmpty((new Validator(new BoolModel()))->validate(null), 'Null should NOT be allowed.');
-        $this->assertNotEmpty((new Validator(new BoolModel()))->validate(null), 'Null should NOT be allowed.');
+        self::assertEmpty((new Validator(new BoolModel(true)))->validate(null), 'Null should be allowed.');
+        self::assertNotEmpty((new Validator(new BoolModel()))->validate(null), 'Null should NOT be allowed.');
+        self::assertNotEmpty((new Validator(new BoolModel()))->validate(null), 'Null should NOT be allowed.');
     }
 
     public function testUnsupportedModel(): void
@@ -34,10 +34,10 @@ final class ValidatorTest extends TestCase
     public function testStringValidator(): void
     {
         $myString = 'Hello';
-        $this->assertEmpty((new Validator(new StringModel()))->validate($myString));
-        $this->assertNotEmpty((new Validator(new StringModel(7, 10)))->validate($myString));
-        $this->assertEmpty((new Validator(new StringModel(regex: '[a-zA-Z]+')))->validate($myString));
-        $this->assertNotEmpty((new Validator(new StringModel(regex: '[0-9]+')))->validate($myString));
+        self::assertEmpty((new Validator(new StringModel()))->validate($myString));
+        self::assertNotEmpty((new Validator(new StringModel(7, 10)))->validate($myString));
+        self::assertEmpty((new Validator(new StringModel(regex: '[a-zA-Z]+')))->validate($myString));
+        self::assertNotEmpty((new Validator(new StringModel(regex: '[0-9]+')))->validate($myString));
 
         $this->expectException(InvalidArgumentException::class);
         new RangeConstraint(10, 5);
@@ -73,8 +73,8 @@ final class ValidatorTest extends TestCase
             ],
             'id',
         );
-        $this->assertNotEmpty((new Validator($model))->validate($entity));
+        self::assertNotEmpty((new Validator($model))->validate($entity));
         $entity['sub_entity_id'] = 'hi';
-        $this->assertEmpty((new Validator($model))->validate($entity));
+        self::assertEmpty((new Validator($model))->validate($entity));
     }
 }

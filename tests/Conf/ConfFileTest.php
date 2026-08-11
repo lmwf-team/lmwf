@@ -55,10 +55,10 @@ final class ConfFileTest extends TestCase
                 ]
             ],
         );
-        $this->assertEquals($conf->uploadRelPath, $jsonDist['uploadRelPath']);
-        $this->assertEquals($conf->language, $jsonLocal['language']);
-        $this->assertEquals($conf->httpConf->errorControllers->notFoundFqcn, self::class . '2');
-        $this->assertEquals($conf->handleExceptions, true);
+        self::assertEquals($conf->uploadRelPath, $jsonDist['uploadRelPath']);
+        self::assertEquals($conf->language, $jsonLocal['language']);
+        self::assertEquals($conf->httpConf->errorControllers->notFoundFqcn, self::class . '2');
+        self::assertEquals($conf->handleExceptions, true);
     }
 
     #[WithoutErrorHandler]
@@ -71,7 +71,7 @@ final class ConfFileTest extends TestCase
                 'handleExceptions' => true,
             ]
         );
-        $this->assertEquals($conf->httpConf->errorControllers->notFoundFqcn, 'Controllers\NotFoundController');
+        self::assertEquals($conf->httpConf->errorControllers->notFoundFqcn, 'Controllers\NotFoundController');
     }
 
     public function tearDown(): void

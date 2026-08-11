@@ -57,7 +57,13 @@ readonly class FormConfFactory
     private function createFormFieldConf(?IModel $model, array $fieldConfParams): FormFieldConf
     {
         $defaultFn = key_exists(self::DEFAULT_KN, $fieldConfParams) ? $this->getCallback($fieldConfParams[self::DEFAULT_KN]) : null;
-        $isRequired = null !== $defaultFn ? false : $fieldConfParams[self::REQUIRED_KN] ?? !$model?->isNullable() ?? true;
+        $isRequired = null === $defaultFn ?
+            (
+                key_exists(self::REQUIRED_KN, $fieldConfParams) ?
+                    $fieldConfParams[self::REQUIRED_KN] :
+                    (null === $model ? true : !$model->isNullable())
+            ) :
+            false;
 
         $rangeConstraint = null;
         if ($model instanceof ILengthModel and null !== $model->getRangeConstraint()) {
@@ -98,7 +104,7 @@ readonly class FormConfFactory
             return FormFieldType::Date;
         } elseif ($model instanceof IntModel) {
             return FormFieldType::Int;
-        } elseif ($model instanceof StringModel and $model->getUploadedImageConstraint()) {
+        } elseif ($model instanceof StringModel and null !== $model->getUploadedImageConstraint()) {
             return FormFieldType::Img;
         } elseif ($model instanceof StringModel) {
             return FormFieldType::Text;

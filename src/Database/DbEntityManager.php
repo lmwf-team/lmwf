@@ -126,7 +126,7 @@ final class DbEntityManager
             $transientAppObject[$key] = $value;
         }
 
-        return (new CollectionFactory())->createDeepAppObject($transientAppObject);
+        return CollectionFactory::createDeepAppObject($transientAppObject);
     }
 
     public function convertDbEntityList(array $dbRows, EntityListModel $entityListModel, int|string|null $referenceId): array
@@ -138,7 +138,7 @@ final class DbEntityManager
         foreach ($dbRows as $rowIndex => $row) {
             $rowReferenceId = $row[$itemModel->getEntityModel()->getIdentifier() . self::SEP . $itemModel->getReferencedKeyInChild()];
             $rowId = $row[$itemModel->getEntityModel()->getIdentifier() . self::SEP . $itemModel->getEntityModel()->getIdKey()];
-            if ((null === $referenceId || $rowReferenceId === $referenceId) && !in_array($rowId, $ids)) {
+            if ((null === $referenceId || $rowReferenceId === $referenceId) && !in_array($rowId, $ids, strict: true)) {
                 $appItems[] = $this->convertDbRowsToAppObject($dbRows, $itemModel->getEntityModel(), $rowIndex);
                 $ids[] = $rowId;
             }
@@ -147,20 +147,17 @@ final class DbEntityManager
         return $appItems;
     }
 
+    /**
+     * For now, ListModel objects can only have an scalar item model. Hence
+     * why the type of getItemModel() is not checked yet, look at commit
+     * 6f25edc4af219c2f9753d9e4586f4dea843b4f70 to see how it was done.
+     */
     public function convertDbList(array $dbRows, ListModel $listModel): array
     {
         $itemModel = $listModel->getItemModel();
         $appData = [];
-        foreach ($dbRows as $key => $row) {
-            if ($itemModel instanceof IScalarModel) {
-                $appData[] = $this->convertDbScalar($row, $itemModel);
-            } elseif ($itemModel instanceof EntityModel) {
-                $appData[] = $this->convertDbRowsToAppObject($dbRows, $itemModel, $key);
-            } elseif ($itemModel instanceof ForeignEntityModel) {
-                $appData[] = $this->convertDbRowsToAppObject($dbRows, $itemModel->getEntityModel(), $key);
-            } elseif ($itemModel instanceof ListModel) {
-                $appData[] = $this->convertDbList($row, $itemModel);
-            }
+        foreach ($dbRows as $row) {
+            $appData[] = $this->convertDbScalar($row, $itemModel);
         }
         return $appData;
     }
@@ -174,8 +171,6 @@ final class DbEntityManager
         foreach ($dbRows as $rowNo => $row) {
             if ($itemModel instanceof IScalarModel) {
                 $appData[] = $this->convertDbScalar($row, $itemModel);
-            } elseif ($itemModel instanceof EntityModel) {
-                $appData[] = $this->convertDbRowsToAppObject($dbRows, $itemModel, $rowNo);
             } elseif ($itemModel instanceof ForeignEntityModel) {
                 $appData[] = $this->convertDbRowsToAppObject($dbRows, $itemModel->getEntityModel(), $rowNo);
             } elseif ($itemModel instanceof ListModel) {
@@ -221,7 +216,7 @@ final class DbEntityManager
                 $data[$key] = $appObject[$key];
             }
         }
-        return (new CollectionFactory())->createDeepAppObject($data);
+        return CollectionFactory::createDeepAppObject($data);
     }
 
     /**

@@ -22,6 +22,6 @@ final class ModelTest extends TestCase
             ],
         );
         $model = $model->prune(['id', 'name']);
-        $this->assertEquals(2, count($model->getProperties()));
+        self::assertEquals(2, count($model->getProperties()));
     }
 }

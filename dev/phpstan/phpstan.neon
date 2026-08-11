@@ -1,13 +1,20 @@
 includes:
-    - ../../vendor/spaze/phpstan-disallowed-calls/extension.neon
     - ../../vendor/ergebnis/phpstan-rules/rules.neon
+    - ../../vendor/phpstan/phpstan-strict-rules/rules.neon
+    - ../../vendor/spaze/phpstan-disallowed-calls/extension.neon
 parameters:
-    level: 3
+    level: 4
     paths:
         - ../../src
         - ../../tests
     bootstrapFiles:
         - ../../vendor/autoload.php
+    ignoreErrors:
+        -
+            identifiers:
+                - expr.resultUnused
+                - method.resultUnused
+            path: ../../tests
     treatPhpDocTypesAsCertain: false
     ergebnis:
         declareStrictTypes:

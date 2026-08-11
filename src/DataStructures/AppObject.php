@@ -17,7 +17,8 @@ use OutOfBoundsException;
 final readonly class AppObject extends ImmutableArray
 {
     /**
-     * @param array<string, mixed> $array An associative array.
+     * @todo Add back @param array<string, mixed> and report to PHPStan that
+     * `treatPhpDocTypesAsCertain: false` is ignored in that case.
      */
     public function __construct(array $array)
     {

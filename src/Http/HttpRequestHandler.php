@@ -12,7 +12,6 @@ use LM\WebFramework\Controller\Exception\RequestedResourceNotFound;
 use LM\WebFramework\ErrorHandling\Log;
 use LM\WebFramework\Http\Exception\UnsupportedMethodException;
 use LM\WebFramework\Http\Routing\Exception\RouteNotFoundException;
-use LM\WebFramework\Http\Routing\RouteDef;
 use LM\WebFramework\Http\Routing\Router;
 use LM\WebFramework\Http\Security\CspNonce;
 use LM\WebFramework\Session\SessionManager;
@@ -150,7 +149,7 @@ final class HttpRequestHandler
 
         $cspHeaderValue = '';
         foreach ($this->httpConf->csp as $directive => $values) {
-            if (in_array(HttpConf::NONCE_SPECIFIER, $values)) {
+            if (in_array(HttpConf::NONCE_SPECIFIER, $values, strict: true)) {
                 $values = array_map(fn ($value) => HttpConf::NONCE_SPECIFIER === $value ? "'nonce-{$this->cspNonce}'" : $value, $values);
             }
             $cspHeaderValue .= $directive . ' ' . implode(' ', $values) . ';';

@@ -52,8 +52,8 @@ final readonly class Route
             throw new DomainException("Instantiation of a route has a number of arguments above the maximum in the route definition ({$nArgs} > {$def->nArgsUpperLimit}).");
         }
 
-        foreach ($params as $seg) {
-            if (!is_string($seg)) {
+        foreach ($params as $param) {
+            if (!is_string($param)) {
                 throw new InvalidArgumentException("A path segment must be a string.");
             }
         }

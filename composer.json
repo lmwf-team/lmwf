@@ -29,6 +29,7 @@
         "phpunit/phpunit": "^13.2",
         "squizlabs/php_codesniffer": "^4.0",
         "spaze/phpstan-disallowed-calls": "^4.13",
-        "ergebnis/phpstan-rules": "^2.13"
+        "ergebnis/phpstan-rules": "^2.13",
+        "phpstan/phpstan-strict-rules": "^2.0"
     }
 }

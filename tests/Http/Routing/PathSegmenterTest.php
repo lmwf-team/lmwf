@@ -14,13 +14,13 @@ final class PathSegmenterTest extends TestCase
     {
         $router = new Router();
 
-        $this->assertSame(['', '', ], $router->getSegs('/'));
-        $this->assertSame(['', '', ], $router->getSegs(''));
-        $this->assertSame(['', '', ''], $router->getSegs('//'));
-        $this->assertSame(['', '', '', ''], $router->getSegs('///'));
-        $this->assertSame(['', 'test'], $router->getSegs('/test'));
-        $this->assertSame(['', 'test', 'sub'], $router->getSegs('/test/sub'));
-        $this->assertSame(['', 'test', 'sub', ''], $router->getSegs('/test/sub/'));
+        self::assertSame(['', '', ], $router->getSegs('/'));
+        self::assertSame(['', '', ], $router->getSegs(''));
+        self::assertSame(['', '', ''], $router->getSegs('//'));
+        self::assertSame(['', '', '', ''], $router->getSegs('///'));
+        self::assertSame(['', 'test'], $router->getSegs('/test'));
+        self::assertSame(['', 'test', 'sub'], $router->getSegs('/test/sub'));
+        self::assertSame(['', 'test', 'sub', ''], $router->getSegs('/test/sub/'));
     }
 
     public function testRelativePaths(): void

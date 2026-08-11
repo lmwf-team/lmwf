@@ -42,8 +42,8 @@ final class RouteTest extends TestCase
         $homeRouteDef = new RouteDef(self::class);
         $rootRoute = Route::createRootRouteDef(['' => $homeRouteDef]);
         $homeRoute = new Route($homeRouteDef, '', parent: $rootRoute);
-        $this->assertSame('', $rootRoute->getPath());
-        $this->assertSame('/', $homeRoute->getPath());
+        self::assertSame('', $rootRoute->getPath());
+        self::assertSame('/', $homeRoute->getPath());
     }
 
     public function testRootRouteWithParams(): void
@@ -52,9 +52,9 @@ final class RouteTest extends TestCase
         $rootRouteArgs1 = new Route($rootRouteDef, '', ['']);
         $rootRouteArgs2 = new Route($rootRouteDef, '', ['args2']);
         $rootRouteArgs3 = new Route($rootRouteDef, '', ['args3a', 'args3b']);
-        $this->assertSame('/', $rootRouteArgs1->getPath());
-        $this->assertSame('/args2', $rootRouteArgs2->getPath());
-        $this->assertSame('/args3a/args3b', $rootRouteArgs3->getPath());
+        self::assertSame('/', $rootRouteArgs1->getPath());
+        self::assertSame('/args2', $rootRouteArgs2->getPath());
+        self::assertSame('/args3a/args3b', $rootRouteArgs3->getPath());
     }
 
     public function testHomeRouteWithParams(): void
@@ -66,7 +66,7 @@ final class RouteTest extends TestCase
         );
         $rootRoute = Route::createRootRouteDef(['' => $homeRouteDef]);
         $homeRoute = new Route($homeRouteDef, '', ['test-param'], parent: $rootRoute);
-        $this->assertSame('//test-param', $homeRoute->getPath());
+        self::assertSame('//test-param', $homeRoute->getPath());
     }
 
     public function testParentRoute(): void
@@ -75,7 +75,7 @@ final class RouteTest extends TestCase
         $rootRoute = Route::createRootRouteDef(['sub' => $subrouteDef]);
 
         $subroute = new Route($subrouteDef, 'sub', parent: $rootRoute);
-        $this->assertSame('/sub', $subroute->getPath());
+        self::assertSame('/sub', $subroute->getPath());
     }
 
     public function testNestedRoutes(): void
@@ -93,7 +93,7 @@ final class RouteTest extends TestCase
 
         $subroute = new Route($subrouteDef, 'sub1', parent: $rootRoute);
         $subSubroute = new Route($subSubrouteDef, 'sub2', parent: $subroute);
-        $this->assertSame('/sub1/sub2', $subSubroute->getPath());
+        self::assertSame('/sub1/sub2', $subSubroute->getPath());
     }
 
     public function testComplexParentRoute(): void
@@ -116,9 +116,9 @@ final class RouteTest extends TestCase
         $sub1Route = new Route($sub1RouteDef, '', parent: $rootRoute);
         $sub2Route = new Route($sub2RouteDef, 'sub2', parent: $rootRoute);
         $subSub2Route = new Route($subSub2RouteDef, '', parent: $sub2Route);
-        $this->assertSame('', $rootRoute->getPath());
-        $this->assertSame('/', $sub1Route->getPath());
-        $this->assertSame('/sub2', $sub2Route->getPath());
-        $this->assertSame('/sub2/', $subSub2Route->getPath());
+        self::assertSame('', $rootRoute->getPath());
+        self::assertSame('/', $sub1Route->getPath());
+        self::assertSame('/sub2', $sub2Route->getPath());
+        self::assertSame('/sub2/', $subSub2Route->getPath());
     }
 }

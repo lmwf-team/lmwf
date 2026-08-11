@@ -29,18 +29,18 @@ final class RouteDefParserTest extends TestCase
             'test' => $testRouteDef,
         ]);
         $actualRouteDef = $this->parseJson(__DIR__ . "/resources/route.json");
-        $this->assertEquals($rootRouteDef, $actualRouteDef);
+        self::assertEquals($rootRouteDef, $actualRouteDef);
     }
 
     public function testParsingWithParams(): void
     {
         $expected = new RouteDef('Controller');
-        $this->assertEquals($expected, $this->parseJson(__DIR__ . "/resources/route_w_params_0.json"));
-        $this->assertEquals($expected, $this->parseJson(__DIR__ . "/resources/route_w_params_1.json"));
-        $this->assertEquals($expected, $this->parseJson(__DIR__ . "/resources/route_w_params_2.json"));
+        self::assertEquals($expected, $this->parseJson(__DIR__ . "/resources/route_w_params_0.json"));
+        self::assertEquals($expected, $this->parseJson(__DIR__ . "/resources/route_w_params_1.json"));
+        self::assertEquals($expected, $this->parseJson(__DIR__ . "/resources/route_w_params_2.json"));
 
         $expected2 = new RouteDef("Controller", ["VISITOR"], nArgsLowerLimit: 1, nArgsUpperLimit: 5);
-        $this->assertEquals($expected2, $this->parseJson(__DIR__ . "/resources/route_w_params_3.json"));
+        self::assertEquals($expected2, $this->parseJson(__DIR__ . "/resources/route_w_params_3.json"));
     }
 
     public function testParsingWithBoth(): void
@@ -52,7 +52,7 @@ final class RouteDefParserTest extends TestCase
                 'sub' => new RouteDef("Controller", ["ADMIN"], nArgsLowerLimit: 0, nArgsUpperLimit: 3),
             ],
         );
-        $this->assertEquals($expected, $this->parseJson(__DIR__ . "/resources/route_w_both.json"));
+        self::assertEquals($expected, $this->parseJson(__DIR__ . "/resources/route_w_both.json"));
     }
 
     public function testParsingRouteWithExtra0(): void

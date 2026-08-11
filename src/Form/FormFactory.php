@@ -88,9 +88,6 @@ final class FormFactory
         } elseif (FormFieldType::Int === $fieldConf->type) {
             return new IntTransformer($name);
         }
-
-        // Could be removed with PHPStan set to level 4.
-        throw new DomainException("No transformer found for field with name {$name} of type {$fieldConf->type->value}.");
     }
 
     public function createFormTransformer(
