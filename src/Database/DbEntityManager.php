@@ -18,6 +18,7 @@ use LM\WebFramework\Model\Type\ForeignEntityModel;
 use LM\WebFramework\Model\Type\IntModel;
 use LM\WebFramework\Model\Type\IScalarModel;
 use LM\WebFramework\Model\Type\EntityListModel;
+use LM\WebFramework\Model\Type\IModel;
 use LM\WebFramework\Model\Type\ListModel;
 use LM\WebFramework\Model\Type\StringModel;
 use UnexpectedValueException;
@@ -100,7 +101,6 @@ final class DbEntityManager
                 $value = $this->convertDbRowsToAppObject($dbRows, $property, $index);
             } elseif ($property instanceof EntityListModel) {
                 $itemModel = $property->getItemModel();
-                var_dump($itemModel);
                 $parentId = $dbRows[$index][$model->getIdentifier() . self::SEP . $itemModel->getReferenceKeyInParent()];
                 $value = $this->convertDbEntityList($dbRows, $property, $parentId);
             } else {
@@ -140,6 +140,23 @@ final class DbEntityManager
                 $appData[] = $this->convertDbRowsToAppObject($dbRows, $itemModel, $key);
             } elseif ($itemModel instanceof ForeignEntityModel) {
                 $appData[] = $this->convertDbRowsToAppObject($dbRows, $itemModel->getEntityModel(), $key);
+            } elseif ($itemModel instanceof ListModel) {
+                $appData[] = $this->convertDbList($row, $itemModel);
+            }
+        }
+        return $appData;
+    }
+
+    public function convertDbRowsToList(array $dbRows, IModel $itemModel): array
+    {
+        $appData = [];
+        foreach ($dbRows as $rowNo => $row) {
+            if ($itemModel instanceof IScalarModel) {
+                $appData[] = $this->convertDbScalar($row, $itemModel);
+            } elseif ($itemModel instanceof EntityModel) {
+                $appData[] = $this->convertDbRowsToAppObject($dbRows, $itemModel, $rowNo);
+            } elseif ($itemModel instanceof ForeignEntityModel) {
+                $appData[] = $this->convertDbRowsToAppObject($dbRows, $itemModel->getEntityModel(), $rowNo);
             } elseif ($itemModel instanceof ListModel) {
                 $appData[] = $this->convertDbList($row, $itemModel);
             }
