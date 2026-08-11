@@ -10,7 +10,7 @@ final class SessionManager
 
     public const CSRF_N_BYTES = 32;
 
-    public const CURRENT_MEMBER_USERNAME = "cmu";
+    public const CURRENT_USERNAME_KEY = "cmu";
 
     public const CUSTOM_PREFIX = 'custom_';
 
@@ -21,10 +21,10 @@ final class SessionManager
         return $_SESSION[self::CSRF] ?? $_SESSION[self::CSRF] = bin2hex(random_bytes(self::CSRF_N_BYTES));
     }
 
-    public function getCurrentMemberUsername(): ?string
+    public function getCurrentUsername(): ?string
     {
         if ($this->isUserLoggedIn()) {
-            return $_SESSION[self::CURRENT_MEMBER_USERNAME];
+            return $_SESSION[self::CURRENT_USERNAME_KEY];
         } else {
             return null;
         }
@@ -37,15 +37,15 @@ final class SessionManager
 
     public function isUserLoggedIn(): bool
     {
-        return key_exists(self::CURRENT_MEMBER_USERNAME, $_SESSION) && null !== $_SESSION[self::CURRENT_MEMBER_USERNAME];
+        return key_exists(self::CURRENT_USERNAME_KEY, $_SESSION) && null !== $_SESSION[self::CURRENT_USERNAME_KEY];
     }
 
     /**
      * @todo Should not accept null.
      */
-    public function setCurrentMemberUsername(?string $username): void
+    public function setCurrentUsername(?string $username): void
     {
-        $_SESSION[self::CURRENT_MEMBER_USERNAME] = $username;
+        $_SESSION[self::CURRENT_USERNAME_KEY] = $username;
     }
 
     public function setCustom(string $key, string $value): void
