@@ -254,7 +254,7 @@ abstract readonly class ImmutableArray implements ArrayAccess, Countable, IArray
         if (is_string($value)) {
             return $value;
         }
-    
+
         throw new UnexpectedPropertyType($key, "string");
     }
 

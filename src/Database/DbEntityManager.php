@@ -25,7 +25,7 @@ use UnexpectedValueException;
 
 /**
  * @todo Could be renamed to DbEntityFactory / DbArrayFactory.
- 
+
  * @phpstan-type dbscalar int|float|null|string
  * @phpstan-type dbrow array<string, dbscalar>
  */
@@ -34,12 +34,12 @@ final class DbEntityManager
     public const SEP = '_';
 
     /**
-     * Converts array with App Data format into array ready to be passed to 
+     * Converts array with App Data format into array ready to be passed to
      * PDO::execute.
-     * 
+     *
      * @todo Wait for PHPStan to support recursive types to define apparray type.
      * @todo Wait for PHPStan to understand that concatenation of non-decimal-int-string is non-decimal-int-string.
-     * 
+     *
      * @param array<string, mixed> $appArray
      * @param non-decimal-int-string $prefix
      * @param list<non-decimal-int-string> $propertiesToIgnore
@@ -59,7 +59,7 @@ final class DbEntityManager
                 if (array_is_list($pValue) && [] !== $pValue) {
                     throw new UnexpectedValueException('Cannot convert an app data list into DB data.');
                 }
-                
+
                 // @phpstan-ignore argument.type, argument.type
                 $dbArray += $this->convertAppArrayIntoDbArray($pValue, prefix: $prefix . $pName);
             } else {
@@ -73,7 +73,7 @@ final class DbEntityManager
     /**
      * Converts a scalar under app data format into a scalar ready to be bound
      * to a PDOStatement parameter.
-     * 
+     *
      * For instance, it will convert boolens into 0 and 1.
      */
     public function convertAppVarToDbScalar(mixed $appVar): int|float|null|string

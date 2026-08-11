@@ -37,7 +37,7 @@ final readonly class AppConf
      * Gives access to the raw configuration data.
      *
      * Stored as AppObject to ensure it cannot be mutated.
-     * 
+     *
      * @var AppObject<mixed>
      */
     public AppObject $data;
@@ -115,7 +115,7 @@ final readonly class AppConf
             ->toArray()
         ;
 
-        
+
         $csps = $this->readCsps($this->data);
 
         $this->httpConf = new HttpConf(

@@ -7,7 +7,7 @@ namespace LMWF\Form\Defaults;
 /**
  * Generates a value for a given field, if the value resulting from its form
  * transformation is null.
- * 
+ *
  * @template TReturn
  */
 interface IDefaultCallable

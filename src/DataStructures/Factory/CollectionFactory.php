@@ -81,7 +81,7 @@ class CollectionFactory
 
     /**
      * Parse the given JSON file as an associative array.
-     * 
+     *
      * @param string $filePath Path to the JSON file.
      * @return array<string, mixed>
      * @todo Return AppObject instead?

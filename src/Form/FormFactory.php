@@ -32,7 +32,7 @@ use LMWF\File\FileService;
 
 /**
  * Creates a form transformer from a model.
- * 
+ *
  * @phpstan-import-type fieldconfparams from FormConfFactory
  */
 final class FormFactory

@@ -91,7 +91,7 @@ final readonly class AppObject extends ImmutableArray
      * @todo Could return true even if two objects are not of the same class but
      * both inherit from AppObject.
      * @todo Do we need this method?
-     * 
+     *
      * @param self<mixed> $appObject
      */
     public function isEqual(self $appObject): bool
