@@ -27,13 +27,17 @@ final class HttpRequestHandler
     ) {
     }
 
-    public function processRequest(): void {   
+    /**
+     * Create and send back an HTTP response to the global HTTP request.
+     */
+    public function processRequest(): void
+    {   
         session_start();
 
         $request = ServerRequest::fromGlobals();
-    
+
         $response = $this->generateResponse($request);
-        
+
         if (302 === $response->getStatusCode()) {
             header('Location: ' . $response->getHeaderLine('Location'));
         } else {
@@ -46,7 +50,8 @@ final class HttpRequestHandler
      * @todo Should not include the route name?
      * @return array<string>
      */
-    public function extractRouteParams(ServerRequestInterface $request): array {
+    public function extractRouteParams(ServerRequestInterface $request): array
+    {
         $parts = array_map(fn ($e) => urldecode($e), explode('/', $request->getUri()->getPath()));
         if (1 === count($parts) && '' === $parts[0]) {
             return $parts;
@@ -56,11 +61,16 @@ final class HttpRequestHandler
     }
 
     /**
+     * Generates a response from an HTTP request.
+     * 
+     * @param ServerRequestInterface $request The HTTP request.
+     * @return ResponseInterface The HTTP response.
      * @todo Make sure HTTP response is valid and complete.
      */
-    public function generateResponse(ServerRequestInterface $request): ResponseInterface {
+    public function generateResponse(ServerRequestInterface $request): ResponseInterface
+    {
         try {
-            $controller = $this->getController($request);
+            $controller = $this->findController($request);
             return $controller->generateResponse($request, $this->extractRouteParams($request));
         } catch (RequestedRouteNotFound|RequestedResourceNotFound) {
             return $this->container
@@ -86,19 +96,33 @@ final class HttpRequestHandler
     }
 
     /**
+     * Find the controller associated with the request.
+     * 
      * @todo Access control should be defined in configuration.
+     * @param ServerRequestInterface The HTTP request.
+     * @return ControllerInterface The Controller associated with the specified
+     * @throws RequestedRouteNotFound If no controller matching the request were
+     * found.
+     * @throws AlreadyAuthenticated If the controller requires the user to be
+     * authenticated, yet the user is.
+     * @throws AccessDenied If the user is not authenticated, but the controller
+     * requires authentication.
+     * request.
      */
-    public function getController(ServerRequestInterface $request): ControllerInterface {
+    public function findController(ServerRequestInterface $request): ControllerInterface
+    {
         $routeId = $this->extractRouteParams($request)[0];
-        if (!key_exists($routeId, $this->configuration->getRoutes())) {
+        if (!$this->configuration->getRoutes()->hasProperty($routeId)) {
             throw new RequestedRouteNotFound();
         }
+
         $controller = $this->container->get($this->configuration->getRoutes()[$routeId]);
         if (Clearance::VISITORS === $controller->getAccessControl() && $this->session->isUserLoggedIn()) {
             throw new AlreadyAuthenticated();
         } elseif (Clearance::ADMINS === $controller->getAccessControl() && !$this->session->isUserLoggedIn()) {
             throw new AccessDenied();
         }
+
         return $controller;
     }
 }

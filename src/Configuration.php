@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace LM\WebFramework;
 
+use LM\WebFramework\DataStructures\AppObject;
+
 final class Configuration
 {
-    private array $env;
+    private AppObject $configData;
 
     private string $configFolderPath;
 
@@ -19,14 +21,19 @@ final class Configuration
 
         $env = file_get_contents("$configFolderPath/.env.json");
         $envLocal = file_get_contents("$configFolderPath/.env.local.json");
-        $this->env = (false !== $envLocal ? json_decode($envLocal, true) : []) +
-            (false !== $env ? json_decode($env, true) : [])
-        ;
+        $configData = false !== $envLocal ? json_decode($envLocal, true) : [];
+        $configData += false !== $env ? json_decode($env, true) : [];
+        $this->configData = new AppObject($configData);
     }
 
     public function getBoolSetting(string $key): bool
     {
-        return $this->env[$key];
+        return $this->configData[$key];
+    }
+    
+    public function getConfigAppData(): AppObject
+    {
+        return $this->configData;
     }
 
     public function getErrorLoggedInControllerFQCN(): string
@@ -61,7 +68,7 @@ final class Configuration
 
     public function getPathOfUploadedFiles(): string
     {
-        return $this->configFolderPath . '/' . $this->env['pathOfUploadedFiles'];
+        return $this->configFolderPath . '/' . $this->configData['pathOfUploadedFiles'];
     }
 
     public function getPublicUrl(): string
@@ -69,18 +76,19 @@ final class Configuration
         return $this->getSetting('publicUrl');
     }
 
-    public function getRoutes(): array
+    public function getRoutes(): AppObject
     {
-        return $this->env['routes'];
+        return $this->configData['routes'];
     }
 
-    public function getServerErrorControllerFQCN(): string {
+    public function getServerErrorControllerFQCN(): string
+    {
         return $this->getSetting('serverErrorControllerFQCN');
     }
 
     public function getSetting(string $key): string
     {
-        return $this->env[$key];
+        return $this->configData[$key];
     }
 
     public function isDev(): bool

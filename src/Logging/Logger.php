@@ -11,7 +11,8 @@ final class Logger
     ) {
     }
 
-    public function log(string $message): void {
-        echo $this->prefix . ': ' . $message . "\n";
+    public function log(string $message): void
+    {
+        echo "{$this->prefix}: {$message}\n";
     }
 }

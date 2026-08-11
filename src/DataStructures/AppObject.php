@@ -14,14 +14,19 @@ use OutOfBoundsException;
 use Traversable;
 
 /**
- * Immutable array whose values can be accessed as properties.
+ * Immutable array consisting of key-value pairs named properties. Keys are
+ * necessarily string, and values can be any data type (except associative
+ * arrays as they are turned into AppObject).
  */
 final class AppObject implements ArrayAccess, Countable, IteratorAggregate
 {
+    /**
+     * array $data The associative array storing the object’s properties.
+     */
     private array $data;
 
     /**
-     * @param array<string, array|bool|int|string|null> $appArray An app array.
+     * @param array<string, mixed> $appArray An associative array.
      */
     public function __construct(array $appArray)
     {
@@ -30,22 +35,25 @@ final class AppObject implements ArrayAccess, Countable, IteratorAggregate
         }
         $this->data = [];
         foreach ($appArray as $key => $value) {
-            $this->data[$key] = $this->toAppObject($value);
+            $this->data[(string) $key] = $this->convertPropertyValue($value);
         }
             
     }
 
-    private function toAppObject(mixed $appValue): mixed
+    /**
+     * Convert properties in an associative array used to create an AppObject
+     * instance.
+     * @param mixed $appValue The value of one of the array’s properties.
+     * @return mixed The converted value to use in the AppObject instance being
+     * created.
+     */
+    private function convertPropertyValue(mixed $appValue): mixed
     {
         if ($appValue instanceof AppObject) {
             return $appValue;
         } elseif (is_array($appValue)) {
             if (array_is_list($appValue)) {
-                $list = [];
-                foreach ($appValue as $value) {
-                    $list[] = $this->toAppObject($value);
-                }
-                return $list;
+                return array_map(fn ($item) => $this->convertPropertyValue($item), $appValue);
             } else {
                 return new self($appValue);
             }
@@ -75,6 +83,42 @@ final class AppObject implements ArrayAccess, Countable, IteratorAggregate
         return new ArrayIterator($this->data);
     }
 
+    /**
+     * @param string $key The key of the requested property.
+     * @return AppObject The requested property value.
+     */
+    public function getValueAsAppObject(string $key): self
+    {
+        return $this->data[$key];
+    }
+
+    /**
+     * @param string $key The key of the requested property.
+     * @return int The requested property value.
+     */
+    public function getValueAsInt(string $key): int
+    {
+        return $this->data[$key];
+    }
+
+    /**
+     * @param string $key The key of the requested property.
+     * @return string The requested property value.
+     */
+    public function getValueAsString(string $key): string
+    {
+        return $this->data[$key];
+    }
+
+    /**
+     * @param string $key The key of the property.
+     * @return bool Whether the AppObject instance has the specified property.
+     */
+    public function hasProperty(string $key): bool
+    {
+        return key_exists($key, $this->data);
+    }
+
     public function offsetExists(mixed $offset): bool
     {
         return array_key_exists($offset, $this->data);
@@ -99,7 +143,7 @@ final class AppObject implements ArrayAccess, Countable, IteratorAggregate
      * Create a new AppObject with the specified property removed.
      * 
      * @param string $keyToRemove The key of the property to remove.
-     * @return Another Another AppObject with the same data as this one, but
+     * @return AppObject Another AppObject with the same data as this one, but
      * with the specified key removed.
      */
     public function removeProperty(string $keyToRemove): self
@@ -117,11 +161,20 @@ final class AppObject implements ArrayAccess, Countable, IteratorAggregate
         return new self($newData);
     }
 
+    /**
+     * @param string $offset The key of the property to set.
+     * @param mixed $value The new value of the specified property.
+     * @return AppObject An identical AppObject with the requested change executed.
+     */
     public function set(string $offet, mixed $value): self
     {
         return new self([$offet => $value] + $this->data);
     }
 
+    /**
+     * @return array The AppObject instance’s underlying associative array, with
+     * AppObject instances also turned into associative arrays.
+     */
     public function toArray(): array
     {
         $appArray = [];
@@ -131,19 +184,24 @@ final class AppObject implements ArrayAccess, Countable, IteratorAggregate
         return $appArray;
     }
 
-    public function isEqualTo(mixed $appObject): bool
+    /**
+     * @param mixed $mixed The value to compare the AppObject with.
+     * @return bool Whether the given value is another AppObject with an
+     * identical content.
+     */
+    public function isEqualTo(mixed $mixed): bool
     {
-        if (!($appObject instanceof AppObject)) {
+        if (!($mixed instanceof AppObject)) {
             return false;
         }
         foreach ($this->data as $key => $value) {
             $isEqual = null;
             if ($value instanceof AppObject) {
-                $isEqual = $value->isEqualTo($appObject[$key]);
+                $isEqual = $value->isEqualTo($mixed[$key]);
             } elseif (gettype($value) === 'object') {
-                $isEqual = $value == $appObject[$key];
+                $isEqual = $value == $mixed[$key];
             } else {
-                $isEqual = $value === $appObject[$key];
+                $isEqual = $value === $mixed[$key];
             }
             if (!$isEqual) {
                 return false;
