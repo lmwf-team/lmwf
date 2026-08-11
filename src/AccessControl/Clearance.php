@@ -1,6 +1,6 @@
 <?php
 
-namespace LM\WebFramework;
+namespace LM\WebFramework\AccessControl;
 
 enum Clearance
 {
