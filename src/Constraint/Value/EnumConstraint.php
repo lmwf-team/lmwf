@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace LMWF\Constraint\Value;
 
 use InvalidArgumentException;
-use LMWF\Constraint\IConstraint;
 
-final readonly class EnumConstraint implements IConstraint
+/**
+ * @todo For now, it only works with string-backed enums.
+ */
+final readonly class EnumConstraint implements IEnumConstraint
 {
     /**
      * @var list<string>
