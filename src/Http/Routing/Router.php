@@ -17,9 +17,8 @@ final readonly class Router
      * A "path segment" is defined in the context of lmwf as the
      * URL-decoded part of each path segment of the given absolute path.
      *
-     * @param string $path An *ABSOLUTE*, valid HTTP path.
-     * @todo Use pipe operator!
-     * @return array<string>
+     * @param string $absPath An *ABSOLUTE*, valid HTTP path.
+     * @return string[]
      */
     public function getSegs(string $absPath): array
     {
@@ -44,8 +43,6 @@ final readonly class Router
     }
 
     /**
-     * @param string[] $nextSegs
-     * @param int $i The index of the next path segment.
      * @todo Create SegsList type?
      */
     public function getRouteFromSegs(

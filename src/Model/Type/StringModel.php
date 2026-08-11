@@ -21,9 +21,6 @@ final class StringModel extends AbstractModel implements ILengthModel, IScalarMo
 
     private ?RegexConstraint $regexConstraint;
 
-    /**
-     * @param \LM\WebFramework\Model\Constraints\IConstraint[] $constraints
-     */
     public function __construct(
         ?int $lowerLimit = null,
         ?int $upperLimit = null,

@@ -52,7 +52,6 @@ final class ConfFileTest extends TestCase
                     'methodNotSupportedFqcn' => self::class . '2',
                     'notFoundFqcn' => self::class . '2',
                     'notLoggedInFqcn' => self::class . '2',
-                    'notFoundFqcn' => self::class . '2',
                 ]
             ],
         );

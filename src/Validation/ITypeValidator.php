@@ -16,7 +16,7 @@ namespace LM\WebFramework\Validation;
 interface ITypeValidator
 {
     /**
-     * @return \LM\WebFramework\DataStructures\ConstraintViolation[]
+     * @return \LM\WebFramework\Validation\ConstraintViolation\ConstraintViolation[]
      */
     public function validate(mixed $data): array;
 }

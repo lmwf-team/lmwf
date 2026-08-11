@@ -4,19 +4,20 @@ declare(strict_types=1);
 
 namespace LM\WebFramework\Model\Constraints;
 
-final class EnumConstraint implements IEnumConstraint
+final readonly class EnumConstraint implements IEnumConstraint
 {
     private array $values;
 
     /**
-     * @param enum[] $enumCases List of permitted values.
+     * @param \BackedEnum[] $enumCases List of permitted values.
      */
     public function __construct(array $enumCases)
     {
-        $this->values = [];
+        $values = [];
         foreach ($enumCases as $c) {
-            $this->values[] = $c->value;
+            $values[] = $c->value;
         }
+        $this->values = $values;
     }
 
     public function getValues(): array

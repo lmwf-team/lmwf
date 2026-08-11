@@ -23,9 +23,9 @@ use LM\WebFramework\Http\Routing\Exception\RootRouteWithDefaultControllerExcepti
 final readonly class Route
 {
     /**
-     * @param array<string, RouteDef>
+     * @param array<string, RouteDef> $routes
      */
-    public static function createRootRoute(array $routes): self
+    public static function createRootRouteDef(array $routes): self
     {
         $rootRouteDef = new RouteDef(null, subroutes: $routes);
         return new self($rootRouteDef, '');

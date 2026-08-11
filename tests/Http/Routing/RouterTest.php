@@ -19,7 +19,7 @@ final class RouterTest extends TestCase
         $router = new Router();
 
         $homeRouteDef = new RouteDef(self::class);
-        $rootRoute = Route::createRootRoute([
+        $rootRoute = Route::createRootRouteDef([
             '' => $homeRouteDef,
         ]);
 
@@ -36,7 +36,7 @@ final class RouterTest extends TestCase
         $subrouteId = 'c’est mon idée de route !';
         $subrouteDef = new RouteDef(self::class);
 
-        $rootRoute = Route::createRootRoute([
+        $rootRoute = Route::createRootRouteDef([
             $subrouteId => $subrouteDef,
         ]);
         $subroute = new Route($subrouteDef, $subrouteId, parent: $rootRoute);
@@ -110,7 +110,7 @@ final class RouterTest extends TestCase
     {
         $router = new Router();
 
-        $rootRoute = Route::createRootRoute([]);
+        $rootRoute = Route::createRootRouteDef([]);
 
         $this->expectException(DomainException::class);
         $router->getRouteFromPath($rootRoute->def, 'test');
@@ -120,7 +120,7 @@ final class RouterTest extends TestCase
     {
         $router = new Router();
 
-        $rootRoute = Route::createRootRoute([]);
+        $rootRoute = Route::createRootRouteDef([]);
 
         $this->expectException(RouteNotFoundException::class);
         $router->getRouteFromPath($rootRoute->def, '/test');
@@ -133,7 +133,7 @@ final class RouterTest extends TestCase
 
         $router = new Router();
 
-        $rootRoute = Route::createRootRoute([
+        $rootRoute = Route::createRootRouteDef([
             'sub1' => $sub1SubrouteDef,
             'sub2' => $sub2SubrouteDef,
         ]);

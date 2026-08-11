@@ -7,7 +7,7 @@ namespace LM\WebFramework\Validation;
 interface IStringValidator
 {
     /**
-     * @return \LM\WebFramework\DataStructures\ConstraintViolation[]
+     * @return \LM\WebFramework\Validation\ConstraintViolation\ConstraintViolation[]
      */
     public function validateString(string $data): array;
 }

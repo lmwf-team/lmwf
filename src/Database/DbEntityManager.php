@@ -81,7 +81,7 @@ final class DbEntityManager
      * @todo Throw exception is passed array is empty.
      * @param array[] $dbRows A list of associative arrays each storing a
      * different row.
-     * @param AbstractEntityModel $model The model of each row.
+     * @param EntityModel $model The model of each row.
      * @param int $index The row identifier of the main entity.
      */
     public function convertDbRowsToAppObject(array $dbRows, EntityModel $model, int $index = 0): AppObject

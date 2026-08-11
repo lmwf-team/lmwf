@@ -7,7 +7,7 @@ namespace LM\WebFramework\Validation;
 interface IIntValidator
 {
     /**
-     * @return \LM\WebFramework\DataStructures\ConstraintViolation[]
+     * @return \LM\WebFramework\Validation\ConstraintViolation\ConstraintViolation[]
      */
     public function validateInt(int $data): array;
 }
