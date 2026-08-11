@@ -1,7 +1,5 @@
 #!/bin/bash
-
-# Used for local development, not for CI. For CI, check /dev/phpcs/phpcs.sh.
-
+# Used for local development, not for CI. For CI, check /dev/psr12.sh.
 set -euo pipefail
 
 docker compose exec lmwf_dsn phpcs -n src

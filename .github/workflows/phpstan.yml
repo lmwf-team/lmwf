@@ -16,4 +16,4 @@ jobs:
       - uses: ./.github/actions/set-up-repository
 
       - name: Run PHPStan
-        run: ./dev/phpstan/phpstan.sh -qn --no-progress
+        run: ./dev/stan.sh -qn --no-progress

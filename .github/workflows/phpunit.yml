@@ -16,7 +16,7 @@ jobs:
       - uses: ./.github/actions/set-up-repository
 
       - name: Run test suite
-        run: ./dev/phpunit/phpunit.sh
+        run: ./dev/test.sh
 
       - uses: actions/upload-artifact@v7
         if: ${{ !cancelled() }}
