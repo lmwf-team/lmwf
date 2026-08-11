@@ -9,7 +9,7 @@ use LM\WebFramework\Http\HttpRequestHandler;
 use Psr\Container\ContainerInterface;
 use RuntimeException;
 
-class Kernel
+final class Kernel
 {
     const CLI_ID = 'cli';
 

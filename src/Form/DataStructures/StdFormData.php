@@ -8,7 +8,7 @@ namespace LM\WebFramework\Form\DataStructures;
  * @todo Create a separate class for form array and form value?
  * @todo Remove unused methods?
  */
-class StdFormData implements IFormData
+final class StdFormData implements IFormData
 {
     public function __construct(
         private mixed $content,

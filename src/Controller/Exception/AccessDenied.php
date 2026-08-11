@@ -4,6 +4,6 @@ declare(strict_types=1);
 
 namespace LM\WebFramework\Controller\Exception;
 
-class AccessDenied extends InvalidAuthentication
+final class AccessDenied extends InvalidAuthentication
 {
 }

@@ -19,7 +19,7 @@ use UnexpectedValueException;
 /**
  * @todo Could be renamed to DbEntityFactory / DbArrayFactory.
  */
-class DbEntityManager
+final class DbEntityManager
 {
     const SEP = '_';
 

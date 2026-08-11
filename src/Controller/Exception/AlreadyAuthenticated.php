@@ -4,6 +4,6 @@ declare(strict_types=1);
 
 namespace LM\WebFramework\Controller\Exception;
 
-class AlreadyAuthenticated extends InvalidAuthentication
+final class AlreadyAuthenticated extends InvalidAuthentication
 {
 }

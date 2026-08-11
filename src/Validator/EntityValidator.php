@@ -8,7 +8,7 @@ use LM\WebFramework\Constraints\EntityConstraint;
 use LM\WebFramework\DataStructures\ConstraintViolation;
 use LM\WebFramework\Type\ModelValidator;
 
-class EntityValidator implements IValidator
+final class EntityValidator implements IValidator
 {
     public function __construct(
         private EntityConstraint $constraint,

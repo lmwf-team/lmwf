@@ -21,7 +21,7 @@ use LM\WebFramework\Model\IModel;
 /**
  * Automatically creates a Form object from a model definition.
  */
-class FormFactory
+final class FormFactory
 {
     const CSRF_FORM_ELEMENT_NAME = '_csrf';
 

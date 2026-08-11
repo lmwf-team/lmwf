@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace LM\WebFramework\DataStructures;
 
-class SearchQuery
+final class SearchQuery
 {
     CONST ACCEPTED_DELIMITERS = [
         ',',

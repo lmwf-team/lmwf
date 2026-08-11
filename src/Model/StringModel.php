@@ -6,7 +6,7 @@ namespace LM\WebFramework\Model;
 
 use LM\WebFramework\Constraints\StringConstraint;
 
-class StringModel extends AbstractScalar
+final class StringModel extends AbstractScalar
 {
     private array $constraints;
 

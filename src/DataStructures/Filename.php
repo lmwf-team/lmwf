@@ -7,7 +7,7 @@ namespace LM\WebFramework\DataStructures;
 use Stringable;
 use UnexpectedValueException;
 
-class Filename implements Stringable
+final class Filename implements Stringable
 {
     private string $extension;
 

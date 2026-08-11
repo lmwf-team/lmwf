@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace LM\WebFramework;
 
-class Configuration
+final class Configuration
 {
     private array $env;
 

@@ -11,7 +11,7 @@ use LM\WebFramework\Form\Exceptions\MissingInputException;
 use LM\WebFramework\DataStructures\Slug;
 use Psr\Http\Message\UploadedFileInterface;
 
-class FileTransformer implements IFormTransformer
+final class FileTransformer implements IFormTransformer
 {
     const PREVIOUS_SUFFIX = '_previous';
 

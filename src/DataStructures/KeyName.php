@@ -7,7 +7,7 @@ namespace LM\WebFramework\DataStructures;
 use InvalidArgumentException;
 use Stringable;
 
-class KeyName implements Stringable
+final class KeyName implements Stringable
 {
     const INPUT_SEPARATORS = [
         ' ',

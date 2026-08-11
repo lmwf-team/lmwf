@@ -6,7 +6,7 @@ namespace LM\WebFramework\Model;
 
 use Closure;
 
-class SubModelDefinition
+final class SubModelDefinition
 {
     public function __construct(
         private IModel $model,

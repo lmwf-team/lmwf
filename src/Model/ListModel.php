@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace LM\WebFramework\Model;
 
-class ListModel implements IModel
+final class ListModel implements IModel
 {
     public function __construct(
         private IModel $nodeModel,

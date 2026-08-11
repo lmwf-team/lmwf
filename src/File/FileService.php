@@ -6,7 +6,7 @@ namespace LM\WebFramework\File;
 use LM\WebFramework\Configuration;
 use LM\WebFramework\Constraints\IUploadedImageConstraint;
 
-class FileService
+final class FileService
 {
     public function __construct(
         private Configuration $configuration,

@@ -6,7 +6,7 @@ namespace LM\WebFramework\Form\Transformer;
 
 use LM\WebFramework\Form\Exceptions\MissingInputException;
 
-class StringTransformer implements IFormTransformer
+final class StringTransformer implements IFormTransformer
 {
     public function __construct(
         private string $name,

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace LM\WebFramework\DataStructures;
 
-class Page
+final class Page
 {
     public function __construct(
         private ?Page $parent,

@@ -8,7 +8,7 @@ use LM\WebFramework\Form\Exceptions\ExtractionException;
 use LM\WebFramework\Form\FormFactory;
 use LM\WebFramework\Model\IModel;
 
-class ListTransformer implements IFormTransformer
+final class ListTransformer implements IFormTransformer
 {
     public function __construct(
         private IModel $nodeModel,

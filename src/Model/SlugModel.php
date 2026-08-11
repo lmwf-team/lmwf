@@ -6,7 +6,7 @@ namespace LM\WebFramework\Model;
 
 use LM\WebFramework\Constraints\StringConstraint;
 
-class SlugModel extends StringModel
+final class SlugModel extends StringModel
 {
     public function __construct(bool $isNullable = false) {
         parent::__construct(

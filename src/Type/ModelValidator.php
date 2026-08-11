@@ -12,7 +12,7 @@ use LM\WebFramework\DataStructures\ConstraintViolation;
 use LM\WebFramework\Model\IModel;
 use LM\WebFramework\Validator\ValidatorFactory;
 
-class ModelValidator
+final class ModelValidator
 {
     public function __construct(
         private ValidatorFactory $validatorFactory,

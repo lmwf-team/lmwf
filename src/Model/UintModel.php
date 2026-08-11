@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace LM\WebFramework\Model;
 use LM\WebFramework\Constraints\RangeConstraint;
 
-class UintModel extends IntegerModel
+final class UintModel extends IntegerModel
 {
     const MAX = 65535;
 

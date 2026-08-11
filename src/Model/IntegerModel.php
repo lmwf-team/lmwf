@@ -6,7 +6,7 @@ namespace LM\WebFramework\Model;
 
 use LM\WebFramework\Constraints\RangeConstraint;
 
-class IntegerModel extends AbstractScalar
+final class IntegerModel extends AbstractScalar
 {
     const MAX = 32767;
 

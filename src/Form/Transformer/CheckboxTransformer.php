@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace LM\WebFramework\Form\Transformer;
 
-class CheckboxTransformer implements IFormTransformer
+final class CheckboxTransformer implements IFormTransformer
 {
     public function __construct(
         private string $name,

@@ -7,7 +7,7 @@ namespace LM\WebFramework\SearchEngine;
 use ArrayAccess;
 use LM\WebFramework\DataStructures\SearchQuery;
 
-class SearchEngine
+final class SearchEngine
 {
     /**
      * @param array<string, string> $result

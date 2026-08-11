@@ -8,7 +8,7 @@ use LM\WebFramework\Form\Exceptions\MissingInputException;
 use LM\WebFramework\Form\Exceptions\WrongCsrfException;
 use LM\WebFramework\Session\SessionManager;
 
-class CsrfTransformer implements IFormTransformer
+final class CsrfTransformer implements IFormTransformer
 {
     const CSRF_FORM_ELEMENT_NAME = '_csrf';
 

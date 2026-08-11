@@ -18,7 +18,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
 
-class HttpRequestHandler
+final class HttpRequestHandler
 {
     public function __construct(
         private Configuration $configuration,

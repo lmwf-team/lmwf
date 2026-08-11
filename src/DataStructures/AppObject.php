@@ -13,7 +13,7 @@ use Traversable;
 /**
  * Immutable array whose values can be accessed as properties.
  */
-class AppObject implements ArrayAccess, IteratorAggregate
+final class AppObject implements ArrayAccess, IteratorAggregate
 {
     private array $data;
 

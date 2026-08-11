@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace LM\WebFramework\Constraints;
 
-class EnumConstraint implements IStringConstraint
+final class EnumConstraint implements IStringConstraint
 {
     private array $values;
 

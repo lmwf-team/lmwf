@@ -7,7 +7,7 @@ namespace LM\WebFramework\Form\Transformer;
 use DateTimeImmutable;
 use LM\WebFramework\Form\Exceptions\MissingInputException;
 
-class DateTimeTransformer implements IFormTransformer
+final class DateTimeTransformer implements IFormTransformer
 {
     public function __construct(
         private string $name,

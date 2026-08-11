@@ -7,7 +7,7 @@ namespace LM\WebFramework\Validator;
 use LM\WebFramework\Constraints\StringConstraint;
 use LM\WebFramework\DataStructures\ConstraintViolation;
 
-class StringValidator implements IValidator
+final class StringValidator implements IValidator
 {
     public function __construct(
         private StringConstraint $constraint,

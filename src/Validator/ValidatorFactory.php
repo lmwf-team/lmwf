@@ -15,7 +15,7 @@ use LM\WebFramework\Constraints\StringConstraint;
 use LM\WebFramework\Type\ModelValidator;
 use MF\Validator\MemberUploadedImageValidator;
 
-class ValidatorFactory
+final class ValidatorFactory
 {
     /**
      * @throws DomainException If no validator is associated with the constraint.

@@ -7,7 +7,7 @@ namespace LM\WebFramework\DataStructures;
 use LM\WebFramework\Constraints\IConstraint;
 use Stringable;
 
-class ConstraintViolation implements Stringable
+final class ConstraintViolation implements Stringable
 {
     public function __construct(
         private IConstraint $constraint,

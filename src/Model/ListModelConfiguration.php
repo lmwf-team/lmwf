@@ -6,7 +6,7 @@ namespace LM\WebFramework\Model;
 
 use Closure;
 
-class ListModelConfiguration implements IListModelConfiguration
+final class ListModelConfiguration implements IListModelConfiguration
 {
     public function __construct(
         private IModel $model,

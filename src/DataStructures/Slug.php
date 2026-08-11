@@ -9,7 +9,7 @@ use Stringable;
 use UnexpectedValueException;
 use voku\helper\ASCII;
 
-class Slug implements Stringable
+final class Slug implements Stringable
 {
     private string $value;
 

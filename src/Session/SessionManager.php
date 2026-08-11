@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace LM\WebFramework\Session;
 
-class SessionManager
+final class SessionManager
 {
     const CSRF = 'csrf';
 

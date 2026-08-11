@@ -7,7 +7,7 @@ namespace LM\WebFramework\Validator;
 use LM\WebFramework\Constraints\EnumConstraint;
 use LM\WebFramework\DataStructures\ConstraintViolation;
 
-class EnumValidator implements IValidator
+final class EnumValidator implements IValidator
 {
     public function __construct(
         private EnumConstraint $constraint,

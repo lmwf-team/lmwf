@@ -4,6 +4,6 @@ declare(strict_types=1);
 
 namespace LM\WebFramework\Database\Exceptions;
 
-class NullDbDataNotAllowedException extends InvalidDbDataException
+final class NullDbDataNotAllowedException extends InvalidDbDataException
 {
 }

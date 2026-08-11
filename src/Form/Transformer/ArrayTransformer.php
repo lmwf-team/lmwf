@@ -6,7 +6,7 @@ namespace LM\WebFramework\Form\Transformer;
 
 use LM\WebFramework\Form\Exceptions\ExtractionException;
 
-class ArrayTransformer implements IFormTransformer
+final class ArrayTransformer implements IFormTransformer
 {
     /**
      * @param array<IFormTransformer> $formElements

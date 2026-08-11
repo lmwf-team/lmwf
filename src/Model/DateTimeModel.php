@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace LM\WebFramework\Model;
 
-class DateTimeModel extends AbstractScalar
+final class DateTimeModel extends AbstractScalar
 {
     /**
      * @param \LM\WebFramework\Constraints\IDateTimeConstraint[] $constraints

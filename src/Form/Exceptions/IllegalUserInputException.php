@@ -6,7 +6,7 @@ namespace LM\WebFramework\Form\Exceptions;
 /**
  * Thrown by a submittable when no value could be extracted from the request.
  */
-class IllegalUserInputException extends ExtractionException
+final class IllegalUserInputException extends ExtractionException
 {
     private string $userErrorMessage;
 

@@ -6,7 +6,7 @@ namespace LM\WebFramework\DataStructures;
 
 use InvalidArgumentException;
 
-class Searchable
+final class Searchable
 {
     public function __construct(
         private string $name,

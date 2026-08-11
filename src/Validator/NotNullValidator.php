@@ -7,7 +7,7 @@ namespace LM\WebFramework\Validator;
 use LM\WebFramework\Constraints\IConstraint;
 use LM\WebFramework\DataStructures\ConstraintViolation;
 
-class NotNullValidator implements IValidator
+final class NotNullValidator implements IValidator
 {
     public function __construct(
         private IConstraint $constraint,

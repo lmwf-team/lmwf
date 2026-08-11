@@ -7,7 +7,7 @@ namespace LM\WebFramework\Validator;
 use LM\WebFramework\Constraints\RangeConstraint;
 use LM\WebFramework\DataStructures\ConstraintViolation;
 
-class RangeValidator implements IValidator
+final class RangeValidator implements IValidator
 {
     public function __construct(
         private RangeConstraint $constraint,

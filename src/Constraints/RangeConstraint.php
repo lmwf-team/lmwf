@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace LM\WebFramework\Constraints;
 
-class RangeConstraint implements INumberConstraint
+final class RangeConstraint implements INumberConstraint
 {
     public function __construct(
         private ?int $min = 0,

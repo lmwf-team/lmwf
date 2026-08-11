@@ -11,7 +11,7 @@ use LM\WebFramework\Form\DataStructures\StdFormData;
 /**
  * Extracts a FormArray from HTTP requests, and converts arrays into FormArray-s.
  */
-class Form implements IFormExtractor
+final class Form implements IFormExtractor
 {
     private array $children;
 

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace LM\WebFramework\Constraints;
 
-class StringConstraint implements IConstraint
+final class StringConstraint implements IConstraint
 {
     const MAX_LENGTH = 255;
 

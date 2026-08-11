@@ -7,7 +7,7 @@ namespace LM\WebFramework\Constraints;
 use InvalidArgumentException;
 use LM\WebFramework\Model\IModel;
 
-class EntityConstraint implements IConstraint
+final class EntityConstraint implements IConstraint
 {
     /**
      * @param array<IModel> $properties

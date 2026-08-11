@@ -7,7 +7,7 @@ namespace LM\WebFramework\Form\DataStructures;
 /*
 * @todo Remove unused methods?
 */
-class FormArray implements IFormData
+final class FormArray implements IFormData
 {
     /**
      * @param array<IFormData> $submissions An array of submissions, indexed by the name of the form element that extracted it.

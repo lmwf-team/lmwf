@@ -15,7 +15,7 @@ use LM\WebFramework\Model\ListModel;
 use LM\WebFramework\Model\UintModel;
 use PHPUnit\Framework\TestCase;
 
-class DbEntityManagerTest extends TestCase
+final class DbEntityManagerTest extends TestCase
 {
     private DbEntityManager $em;
 
