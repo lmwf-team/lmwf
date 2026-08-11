@@ -59,7 +59,7 @@ final class HttpRequestHandler
             ;
         }
 
-        $cspValue = "default-src {$this->configuration->getCSPDefaultSources()}; object-src {$this->configuration->getCSPObjectSources()}; style-src {$this->configuration->getCSPObjectSources()}";
+        $cspValue = "default-src {$this->configuration->getCSPDefaultSources()}; object-src {$this->configuration->getCSPObjectSources()}; style-src {$this->configuration->getCSPStyleSources()}";
         return $response->withAddedHeader('Content-Security-Policy', $cspValue);
     }
 
