@@ -54,6 +54,7 @@ jobs:
           name: coverage
           run-id: ${{ github.event.workflow_run.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: xml-coverage
       - name: Generate JSON file for coverage badge
         if: ${{ steps.download.outcome == 'success' }}
         run: ./dev/phpunit/coverage.php
