@@ -5,8 +5,10 @@
     "language": "en",
     "publicRelPath": "",
     "rootRoute": {
-        "fqcn": "App.Controller.HomeController",
+        "fqcn": "LMWF.Tests.Mocks.RoutedController",
         "roles": []
+    },
+    "thumbnailFormats": {
     },
     "errorControllers": {
         "alreadyLoggedInFqcn": "",

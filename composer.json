@@ -9,7 +9,8 @@
     "description": "Lightweight web framework that doesn't require tons of dependencies and keeps you in control.",
     "autoload": {
         "psr-4": {
-            "LMWF\\": "src/"
+            "LMWF\\": "src/",
+            "LMWF\\Tests\\": "tests/"
         }
     },
     "keywords": [

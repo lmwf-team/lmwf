@@ -9,8 +9,12 @@ use LMWF\Conf\Http\RouteDef;
 use LMWF\Conf\Http\SubrouteCannotAddRoleConfException;
 use LMWF\Conf\Http\UnauthorizedAttributeConfException;
 use LMWF\DataStructures\Factory\CollectionFactory;
+use LMWF\Tests\Mocks\HomeController;
 use PHPUnit\Framework\TestCase;
 use TypeError;
+use UnexpectedValueException;
+use LMWF\Tests\Mocks\RoutedController;
+use LMWF\Tests\Mocks\TestController;
 
 final class RouteDefParserTest extends TestCase
 {
@@ -22,8 +26,8 @@ final class RouteDefParserTest extends TestCase
 
     public function testParsing(): void
     {
-        $homeRouteDef = new RouteDef('HomeController', ["ADMIN", 'VISITOR']);
-        $testRouteDef = new RouteDef("TestController", ["ADMIN", "VISITOR"]);
+        $homeRouteDef = new RouteDef(HomeController::class, ["ADMIN", 'VISITOR']);
+        $testRouteDef = new RouteDef(TestController::class, ["ADMIN", "VISITOR"]);
         $rootRouteDef = new RouteDef(null, ["ADMIN", "VISITOR"], subroutes: [
             '' => $homeRouteDef,
             'test' => $testRouteDef,
@@ -34,12 +38,12 @@ final class RouteDefParserTest extends TestCase
 
     public function testParsingWithParams(): void
     {
-        $expected = new RouteDef('Controller');
+        $expected = new RouteDef(RoutedController::class);
         self::assertEquals($expected, $this->parseJson(__DIR__ . "/resources/route_w_params_0.json"));
         self::assertEquals($expected, $this->parseJson(__DIR__ . "/resources/route_w_params_1.json"));
         self::assertEquals($expected, $this->parseJson(__DIR__ . "/resources/route_w_params_2.json"));
 
-        $expected2 = new RouteDef("Controller", ["VISITOR"], nArgsLowerLimit: 1, nArgsUpperLimit: 5);
+        $expected2 = new RouteDef(RoutedController::class, ["VISITOR"], nArgsLowerLimit: 1, nArgsUpperLimit: 5);
         self::assertEquals($expected2, $this->parseJson(__DIR__ . "/resources/route_w_params_3.json"));
     }
 
@@ -49,7 +53,7 @@ final class RouteDefParserTest extends TestCase
             null,
             ["ADMIN", "VISITOR"],
             subroutes: [
-                'sub' => new RouteDef("Controller", ["ADMIN"], nArgsLowerLimit: 0, nArgsUpperLimit: 3),
+                'sub' => new RouteDef(RoutedController::class, ["ADMIN"], nArgsLowerLimit: 0, nArgsUpperLimit: 3),
             ],
         );
         self::assertEquals($expected, $this->parseJson(__DIR__ . "/resources/route_w_both.json"));
@@ -63,19 +67,19 @@ final class RouteDefParserTest extends TestCase
 
     public function testParsingRouteWithExtra1(): void
     {
-        $this->expectException(TypeError::class);
+        $this->expectException(UnexpectedValueException::class);
         $this->parseJson(__DIR__ . "/resources/route_w_extra_1.json");
     }
 
     public function testParsingRouteWithExtra2(): void
     {
-        $this->expectException(UnauthorizedAttributeConfException::class);
+        $this->expectException(UnexpectedValueException::class);
         $this->parseJson(__DIR__ . "/resources/route_w_extra_2.json");
     }
 
     public function parseJson(string $filePath, bool $allowOverridingRoles = false): RouteDef
     {
-        $jsonDecoded = CollectionFactory::fromJson($filePath);
+        $jsonDecoded = CollectionFactory::createDeepAppObject(CollectionFactory::fromJson($filePath));
         $parser = new RouteDefParser();
         return $parser->parse($jsonDecoded, allowOverridingParentRoles: $allowOverridingRoles);
     }

@@ -6,6 +6,7 @@ namespace LMWF\Tests\DataStructures;
 
 use InvalidArgumentException;
 use LMWF\DataStructures\AppList;
+use LMWF\DataStructures\Exceptions\UnexpectedPropertyType;
 use OutOfBoundsException;
 use PHPUnit\Framework\TestCase;
 use TypeError;
@@ -57,7 +58,7 @@ final class AppListTest extends TestCase
         self::assertEquals($list[6], $appList->getArray(6));
         self::assertEquals($list[5], $appList->getNullableScalar(5, 'integer'));
 
-        $this->expectException(TypeError::class);
+        $this->expectException(UnexpectedPropertyType::class);
         $appList->getInt(1);
 
         $this->expectException(OutOfBoundsException::class);

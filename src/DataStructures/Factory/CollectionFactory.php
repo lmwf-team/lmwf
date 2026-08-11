@@ -98,7 +98,7 @@ class CollectionFactory
             throw new UnexpectedValueException("Expected the decoded JSON to be an associative array.");
         }
 
-        if (!array_all(array_keys($decoded), 'is_string')) {
+        if (!array_all(array_keys($decoded), fn ($value, $_) => is_string($value))) {
             throw new UnexpectedValueException('Not all of the keys of the parsed JSON were strings.');
         }
         // @phpstan-ignore return.type

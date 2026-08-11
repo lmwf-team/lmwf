@@ -147,7 +147,7 @@ final readonly class AppConf
     {
         $value = $this->data->get($key);
         if (!is_string($value) && null !== $value) {
-            throw new UnexpectedPropertyType($key, 'null|string');
+            throw new UnexpectedPropertyType($key, 'null|string', $value);
         }
         return $value;
     }
@@ -200,9 +200,9 @@ final readonly class AppConf
      */
     private function readErrorControllerFqcn(AppObject $confParams, string $error): string
     {
-        $fqcn = $confParams->getAppObject('errorControllers')->getString($error);
+        $fqcn = str_replace('.', '\\', $confParams->getAppObject('errorControllers')->getString($error));
         if (!class_exists($fqcn) || !is_subclass_of($fqcn, IController::class)) {
-            throw new UnexpectedValueException('The error controller FQCN is either not a valid FQCN, refers to a non-exsiting class, or to a class that does not implement IController.');
+            throw new UnexpectedValueException("The error controller FQCN ('$fqcn') is either not a valid FQCN, refers to a non-exsiting class, or to a class that does not implement IController.");
         }
         return $fqcn;
     }

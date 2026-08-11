@@ -5,10 +5,10 @@
     ],
     "routes": {
         "": {
-            "fqcn": "HomeController"
+            "fqcn": "LMWF.Tests.Mocks.HomeController"
         },
         "test": {
-            "fqcn": "TestController"
+            "fqcn": "LMWF.Tests.Mocks.TestController"
         }
     }
 }

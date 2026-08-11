@@ -2,10 +2,10 @@
     "isDev": true,
     "language": "fr",
     "errorControllers": {
-        "alreadyLoggedInFqcn": "",
-        "defaultErrorFqcn": "",
-        "methodNotSupportedFqcn": "",
-        "notFoundFqcn": "Controllers.NotFoundController",
-        "notLoggedInFqcn": ""
+        "alreadyLoggedInFqcn": "LMWF.Tests.Mocks.RandomErrorController",
+        "defaultErrorFqcn": "LMWF.Tests.Mocks.RandomErrorController",
+        "methodNotSupportedFqcn": "LMWF.Tests.Mocks.RandomErrorController",
+        "notFoundFqcn": "LMWF.Tests.Mocks.NotFoundController",
+        "notLoggedInFqcn": "LMWF.Tests.Mocks.RandomErrorController"
     }
 }

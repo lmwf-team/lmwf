@@ -1,5 +1,5 @@
 {
-    "fqcn": "Controller",
+    "fqcn": "LMWF.Tests.Mocks.RoutedController",
     "roles": [
         "VISITOR"
     ],

@@ -98,7 +98,7 @@ abstract readonly class ImmutableArray implements ArrayAccess, Countable, IArray
         if ($value instanceof AppList) {
             return $value;
         }
-        throw new UnexpectedPropertyType($key, AppList::class);
+        throw new UnexpectedPropertyType($key, AppList::class, $value);
     }
 
     /**
@@ -110,8 +110,10 @@ abstract readonly class ImmutableArray implements ArrayAccess, Countable, IArray
         $value = $this->data[$key];
         if ($value instanceof AppObject) {
             return $value;
+        } elseif ($value instanceof AppList and 0 === $value->count()) {
+            return new AppObject([]);
         }
-        throw new UnexpectedPropertyType($key, AppObject::class);
+        throw new UnexpectedPropertyType($key, AppObject::class, $value);
     }
 
     /**
@@ -126,12 +128,14 @@ abstract readonly class ImmutableArray implements ArrayAccess, Countable, IArray
         if ($value instanceof AppObject) {
             foreach ($value as $subkey => $item) {
                 if (!$item instanceof $itemFqcn) {
-                    throw new UnexpectedPropertyType("$key.$subkey", AppObject::class);
+                    throw new UnexpectedPropertyType("$key.$subkey", AppObject::class, $value);
                 }
             }
             return $value;
+        } elseif ($value instanceof AppList and 0 === $value->count()) {
+            return new AppObject([]);
         }
-        throw new UnexpectedPropertyType($key, AppObject::class);
+        throw new UnexpectedPropertyType($key, AppObject::class, $value);
     }
 
     /**
@@ -144,7 +148,7 @@ abstract readonly class ImmutableArray implements ArrayAccess, Countable, IArray
         if (is_array($value)) {
             return $value;
         }
-        throw new UnexpectedPropertyType($key, 'array');
+        throw new UnexpectedPropertyType($key, 'array', $value);
     }
 
 
@@ -158,7 +162,7 @@ abstract readonly class ImmutableArray implements ArrayAccess, Countable, IArray
         if ($value instanceof IArrayable) {
             return $value;
         }
-        throw new UnexpectedPropertyType($key, IArrayable::class);
+        throw new UnexpectedPropertyType($key, IArrayable::class, $value);
     }
 
 
@@ -171,7 +175,7 @@ abstract readonly class ImmutableArray implements ArrayAccess, Countable, IArray
         if (is_bool($value)) {
             return $value;
         }
-        throw new UnexpectedPropertyType($key, 'bool');
+        throw new UnexpectedPropertyType($key, 'bool', $value);
     }
 
 
@@ -184,7 +188,7 @@ abstract readonly class ImmutableArray implements ArrayAccess, Countable, IArray
         if (is_float($value)) {
             return $value;
         }
-        throw new UnexpectedPropertyType($key, 'float');
+        throw new UnexpectedPropertyType($key, 'float', $value);
     }
 
     /**
@@ -197,7 +201,7 @@ abstract readonly class ImmutableArray implements ArrayAccess, Countable, IArray
         if (is_int($value)) {
             return $value;
         }
-        throw new UnexpectedPropertyType($key, 'int');
+        throw new UnexpectedPropertyType($key, 'int', $value);
     }
 
     /**
@@ -213,7 +217,7 @@ abstract readonly class ImmutableArray implements ArrayAccess, Countable, IArray
             }
             return $value;
         }
-        throw new UnexpectedPropertyType($key, 'int');
+        throw new UnexpectedPropertyType($key, 'int', $value);
     }
 
     /**
@@ -227,7 +231,7 @@ abstract readonly class ImmutableArray implements ArrayAccess, Countable, IArray
             return $value;
         }
 
-        throw new UnexpectedPropertyType($key, "?$fqcn");
+        throw new UnexpectedPropertyType($key, "?$fqcn", $value);
     }
 
     /**
@@ -241,7 +245,7 @@ abstract readonly class ImmutableArray implements ArrayAccess, Countable, IArray
             return $value;
         }
 
-        throw new UnexpectedPropertyType($key, "?$type");
+        throw new UnexpectedPropertyType($key, "?$type", $value);
     }
 
     /**
@@ -255,7 +259,7 @@ abstract readonly class ImmutableArray implements ArrayAccess, Countable, IArray
             return $value;
         }
 
-        throw new UnexpectedPropertyType($key, "string");
+        throw new UnexpectedPropertyType($key, "string", $value);
     }
 
     /**

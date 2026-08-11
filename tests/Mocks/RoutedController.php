@@ -1,0 +1,22 @@
+<?php
+
+declare(strict_types=1);
+
+namespace LMWF\Tests\Mocks;
+
+use LMWF\Http\Controller\IRoutedController;
+use LMWF\Http\Routing\Route;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use SebastianBergmann\CodeCoverage\MethodNotImplementedException;
+
+class RoutedController implements IRoutedController
+{
+    #[\Override]
+    public function generateResponse(
+        Route $route,
+        ServerRequestInterface $request,
+    ): ResponseInterface {
+        throw new MethodNotImplementedException();
+    }
+}

@@ -18,6 +18,7 @@ use LMWF\Constraint\Type\EntityListModel;
 use LMWF\Constraint\Type\ListModel;
 use LMWF\Constraint\Type\StringModel;
 use PHPUnit\Framework\TestCase;
+use TypeError;
 
 final class DbEntityManagerTest extends TestCase
 {
@@ -43,7 +44,7 @@ final class DbEntityManagerTest extends TestCase
 
     public function testInvalidDbDataException(): void
     {
-        $this->expectException(InvalidDbDataException::class);
+        $this->expectException(TypeError::class);
         $this->em->convertDbScalar(true, new IntModel());
     }
 

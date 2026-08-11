@@ -5,7 +5,7 @@
     ],
     "routes": {
         "sub": {
-            "fqcn": "Controller",
+            "fqcn": "LMWF.Tests.Mocks.RoutedController",
             "roles": [
                 "ADMIN"
             ],

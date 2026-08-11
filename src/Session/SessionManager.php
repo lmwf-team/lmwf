@@ -100,7 +100,7 @@ final class SessionManager
     {
         if (key_exists(self::MESSAGES, $this->data)) {
             if (!is_array($this->data[self::MESSAGES]) || !array_is_list($this->data[self::MESSAGES])) {
-                throw new UnexpectedPropertyType(self::MESSAGES, 'array');
+                throw new UnexpectedPropertyType(self::MESSAGES, 'array', $this->data[self::MESSAGES]);
             }
             $this->data[self::MESSAGES][] = $msg;
         } else {

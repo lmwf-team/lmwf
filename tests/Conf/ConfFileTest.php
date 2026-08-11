@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 use LMWF\Conf\AppConf;
 use LMWF\DataStructures\Factory\CollectionFactory;
+use LMWF\Tests\Mocks\NotFoundController;
+use LMWF\Tests\Mocks\RandomErrorController;
 use PHPUnit\Framework\Attributes\WithoutErrorHandler;
 use PHPUnit\Framework\TestCase;
 
@@ -49,17 +51,17 @@ final class ConfFileTest extends TestCase
             [
                 'handleExceptions' => true,
                 'errorControllers' => [
-                    'alreadyLoggedInFqcn' => self::class . '2',
-                    'defaultErrorFqcn' => self::class . '2',
-                    'methodNotSupportedFqcn' => self::class . '2',
-                    'notFoundFqcn' => self::class . '2',
-                    'notLoggedInFqcn' => self::class . '2',
+                    'alreadyLoggedInFqcn' => RandomErrorController::class,
+                    'defaultErrorFqcn' => RandomErrorController::class,
+                    'methodNotSupportedFqcn' => RandomErrorController::class,
+                    'notFoundFqcn' => RandomErrorController::class,
+                    'notLoggedInFqcn' => RandomErrorController::class,
                 ]
             ],
         );
         self::assertEquals($conf->uploadRelPath, $jsonDist['uploadRelPath']);
         self::assertEquals($conf->language, $jsonLocal['language']);
-        self::assertEquals($conf->httpConf->errorControllers->notFoundFqcn, self::class . '2');
+        self::assertEquals($conf->httpConf->errorControllers->notFoundFqcn, RandomErrorController::class);
         self::assertEquals($conf->handleExceptions, true);
     }
 
@@ -72,7 +74,7 @@ final class ConfFileTest extends TestCase
                 'handleExceptions' => true,
             ]
         );
-        self::assertEquals($conf->httpConf->errorControllers->notFoundFqcn, 'Controllers\NotFoundController');
+        self::assertEquals($conf->httpConf->errorControllers->notFoundFqcn, NotFoundController::class);
     }
 
     #[\Override]
