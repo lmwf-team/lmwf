@@ -27,7 +27,7 @@ final class IntValidator implements ITypeValidator
                 $cvs[] = new ConstraintViolation($rangeConstraint, 'Value must be higher than ' . $rangeConstraint->getLowerLimit() . '.');
             }
 
-            if (null !== $rangeConstraint->getLowerLimit() && $value > $rangeConstraint->getUpperLimit()) {
+            if (null !== $rangeConstraint->getUpperLimit() && $value > $rangeConstraint->getUpperLimit()) {
                 $cvs[] = new ConstraintViolation($rangeConstraint, 'Value must be lower than ' . $rangeConstraint->getUpperLimit() . '.');
             }
         }
