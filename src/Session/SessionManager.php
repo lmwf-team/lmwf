@@ -16,6 +16,8 @@ final class SessionManager
 
     public const MESSAGES = 'messages';
 
+    public const DEBUG_VARIABLES_SK = 'lmwf_debug_variables';
+
     public function getCsrf(): string
     {
         return $_SESSION[self::CSRF] ?? $_SESSION[self::CSRF] = bin2hex(random_bytes(self::CSRF_N_BYTES));
@@ -53,6 +55,20 @@ final class SessionManager
         $_SESSION[self::CUSTOM_PREFIX . $key] = $value;
     }
 
+    /**
+     * @todo Throw exception if not in dev mode.
+     */
+    public function addDebugVariable($variable): void
+    {
+        if (key_exists(self::DEBUG_VARIABLES_SK, $_SESSION)) {
+            $_SESSION[self::DEBUG_VARIABLES_SK][] = $variable;
+        } else {
+            $_SESSION[self::DEBUG_VARIABLES_SK] = [
+                $variable,
+            ];
+        }
+    }
+
     public function addMessage(string $message): void
     {
         if (key_exists(self::MESSAGES, $_SESSION)) {
@@ -62,6 +78,16 @@ final class SessionManager
                 $message,
             ];
         }
+    }
+
+    /**
+     * @todo Throw exception if not in dev mode.
+     */
+    public function getAndDeleteDebugVariables(): array
+    {
+        $variables = $_SESSION[self::DEBUG_VARIABLES_SK] ?? [];
+        $_SESSION[self::DEBUG_VARIABLES_SK] = [];
+        return $variables;
     }
 
     public function getAndDeleteMessages(): array
