@@ -1,3 +1,9 @@
+<?php
+require_once(private_root().'lib/f_errorpage/f_errorpage.php');
+if (!isConnected()) :
+    displayErrorPage('Permission Denied', 'You need to be logged in to access this page.');
+else:
+?>
 <?php logOut(); ?>
 <!DOCTYPE html>
 <html>
@@ -6,4 +12,5 @@
     </head>
     <body>
     </body>
-</html>
+</html>ç
+<?php endif ?>

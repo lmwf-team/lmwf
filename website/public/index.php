@@ -35,3 +35,8 @@ function private_root(): string
 {
     return '../private/';
 }
+
+function lib_root(): string
+{
+    return '../private/lib/';
+}

@@ -2,7 +2,7 @@
 
 // TODO: check doctrine and database mapping
 
-require_once(private_root().'database-api/Database.php');
+require_once(lib_root().'c_database/Database.php');
 
 $db = Database::getConnection();
 
