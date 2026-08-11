@@ -12,6 +12,7 @@ final class ForeignEntityModel extends AbstractModel
         private string $referenceKeyInParent,
         bool $isNullable = false,
     ) {
+        // @todo isNullable should be extracted from entityModel?
         parent::__construct($isNullable);
     }
 

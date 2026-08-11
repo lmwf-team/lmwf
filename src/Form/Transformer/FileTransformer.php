@@ -80,7 +80,7 @@ final class FileTransformer implements IFormTransformer
             }
 
             if('png' !== $extension) {
-                $streamGdImg = imagecreatefromstring($file->getStream());
+                $streamGdImg = imagecreatefromstring($file->getStream()->getContents());
                 imagewebp($streamGdImg, $destinationPath, 95);
             } else {
                 $file->moveTo($destinationPath);
@@ -103,13 +103,13 @@ final class FileTransformer implements IFormTransformer
     }
 
     private function createThumbnail(Filename $originalPath, string $suffix, int $minWidth, int $minHeight, int $quality) {
-        $originalImg = imagecreatefromstring(file_get_contents($originalPath));
+        $originalImg = imagecreatefromstring(file_get_contents($originalPath->__toString()));
 
         list($width, $height) = [imagesx($originalImg), imagesy($originalImg)];
 
         $scale = max($minWidth / $width, $minHeight / $height);
 
-        list($newWidth, $newHeight) = [round($width * $scale), round($height * $scale)];
+        list($newWidth, $newHeight) = [(int) round($width * $scale), (int) round($height * $scale)];
 
         $thumbnail = imagecreatetruecolor($newWidth, $newHeight);
 

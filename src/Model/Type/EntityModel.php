@@ -43,9 +43,11 @@ final class EntityModel extends AbstractModel
     }
  
     /**
-     * @return \LM\WebFramework\Model\Type\IModel[] An associative array of
-     * properties. This guarantees each property has a unique key in the context
-     * of the model.
+     * @return array<string, \LM\WebFramework\Model\Type\IModel> An
+     * associative array of  properties.
+     * 
+     * This guarantees each property has a unique key in the context of the
+     * model.
      */
     public function getProperties(): array
     {
@@ -93,6 +95,16 @@ final class EntityModel extends AbstractModel
             );
         }
         throw new InvalidArgumentException('No property with that key exists.');
+    }
+
+    public function setIdentifier(string $newIdentifier): self
+    {
+        return new self(
+            $newIdentifier,
+            $this->properties,
+            $this->idKey,
+            $this->isNullable()
+        );
     }
 
     public function prune(array $propertiesToKeep): self

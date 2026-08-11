@@ -6,6 +6,6 @@ namespace LM\WebFramework\Controller\Exception;
 
 use InvalidArgumentException;
 
-final class InvalidHttpRequest extends InvalidArgumentException
+class InvalidHttpRequest extends InvalidArgumentException
 {
 }

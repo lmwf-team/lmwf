@@ -7,7 +7,6 @@ namespace LM\WebFramework\Form;
 use DomainException;
 use InvalidArgumentException;
 use LM\WebFramework\Configuration;
-use LM\WebFramework\Model\Constraints\IUploadedImageConstraint;
 use LM\WebFramework\Form\Transformer\ArrayTransformer;
 use LM\WebFramework\Form\Transformer\CheckboxTransformer;
 use LM\WebFramework\Form\Transformer\CsrfTransformer;
@@ -18,6 +17,7 @@ use LM\WebFramework\Form\Transformer\ListTransformer;
 use LM\WebFramework\Form\Transformer\StringTransformer;
 use LM\WebFramework\Model\Type\BoolModel;
 use LM\WebFramework\Model\Type\DateTimeModel;
+use LM\WebFramework\Model\Type\EntityListModel;
 use LM\WebFramework\Model\Type\EntityModel;
 use LM\WebFramework\Model\Type\IModel;
 use LM\WebFramework\Model\Type\IntModel;
@@ -49,11 +49,10 @@ final class FormFactory
             $formElements = [];
             $defaultCallbacks = [];
             foreach ($model->getProperties() as $key => $property) {
-                if (!isset($config[$key]['ignore']) || false === $config[$key]['ignore']) {
+                $propConfig = $config[$key] ?? [];
+                $propConfig['ignore'] = $config[$key]['ignore'] ?? false;
+                if (!$propConfig['ignore']) {
                     $formElements[$key] = $this->createTransformer($property, $config[$key] ?? [], $key);
-                }
-                if (isset($config[$key]['default'])) {
-                    $defaultCallbacks[$key] = $config[$key]['default'];
                 }
             }
             return new ArrayTransformer($formElements, $csrf ? $this->csrfTransformer : null, $name, $defaultCallbacks);
@@ -62,7 +61,7 @@ final class FormFactory
         if (null === $name) {
             throw new InvalidArgumentException('A name must be provided for non-array transformers.');
         }
-        if ($model instanceof ListModel) {
+        if ($model instanceof ListModel || $model instanceof EntityListModel) {
             return new ListTransformer($model->getItemModel(), $config, $this, $name);
         }
         if ($model instanceof StringModel) {

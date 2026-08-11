@@ -19,7 +19,8 @@ final class ArrayTransformer implements IFormTransformer
     ) {
     }
 
-    public function extractValueFromRequest(array $requestParsedBody, array $uploadedFiles): array {
+    public function extractValueFromRequest(array $requestParsedBody, array $uploadedFiles): array
+    {
         $data = null === $this->name ? $requestParsedBody : $requestParsedBody[$this->name] ?? null;
         if (null === $data) {
             return [];

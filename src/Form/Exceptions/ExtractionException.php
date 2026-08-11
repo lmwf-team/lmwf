@@ -10,7 +10,7 @@ use Throwable;
 /**
  * Thrown by a submittable when no value could be extracted from the request.
  */
-final class ExtractionException extends InvalidArgumentException
+class ExtractionException extends InvalidArgumentException
 {
     private string $userErrorMessage;
 

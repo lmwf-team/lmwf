@@ -6,6 +6,9 @@ namespace LM\WebFramework\Model\Type;
 
 use LM\WebFramework\Model\Type\AbstractModel;
 
+/**
+ * @todo To delete.
+*/
 final class ListModel extends AbstractModel
 {
     public function __construct(

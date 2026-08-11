@@ -87,14 +87,24 @@ final class DbEntityManager
         foreach ($model->getProperties() as $key => $property) {
             $value = null;
 
+
             if ($property instanceof ForeignEntityModel) {
+                /**
+                 * @todo If $property is nullable, don’t throw exception!
+                 * @todo Create method to get referenceId.
+                 * @todo Should return null?
+                 */
                 $referenceId = $dbRows[$index][$model->getIdentifier() . self::SEP . $property->getReferenceKeyInParent()];
                 if (null !== $referenceId) {
                     $referencedRowNos = $this->getReferencedRowNos($dbRows, $property, $referenceId);
-                    if (1 !== count($referencedRowNos)) {
-                        throw new UnexpectedValueException('Could not find specifed foreign entity.');
+                    if (count($referencedRowNos) > 0) {
+                        $value = $this->convertDbRowsToAppObject($dbRows, $property->getEntityModel(), $referencedRowNos[0]);
+                    } elseif (!$property->getEntityModel()->isNullable()) {
+                        throw new UnexpectedValueException("Could not find specifed foreign entity using reference ID {$referenceId} and reference key {$property->getReferenceKeyInParent()} in parent and {$property->getReferencedKeyInChild()} in child for property {$key}.");
                     }
-                    $value = $this->convertDbRowsToAppObject($dbRows, $property->getEntityModel(), $referencedRowNos[0]);
+                } elseif (!$property->isNullable()) {
+                    // @todo Add test for this edge case.
+                    throw new InvalidArgumentException('Mandatory sub entity reference id is null.');
                 }
 
             } elseif ($property instanceof EntityModel) {
@@ -113,7 +123,7 @@ final class DbEntityManager
         return new AppObject($transientAppObject);
     }
 
-    public function convertDbEntityList(array $dbRows, EntityListModel $entityListModel, ?string $referenceId) : array
+    public function convertDbEntityList(array $dbRows, EntityListModel $entityListModel, int|string|null $referenceId) : array
     {
         $itemModel = $entityListModel->getItemModel();
         $appItems = [];
@@ -149,6 +159,9 @@ final class DbEntityManager
 
     public function convertDbRowsToList(array $dbRows, IModel $itemModel): array
     {
+        if ($itemModel instanceof EntityModel) {
+            return $this->convertDbRowsToEntityList($dbRows, $itemModel);
+        }
         $appData = [];
         foreach ($dbRows as $rowNo => $row) {
             if ($itemModel instanceof IScalarModel) {
@@ -159,6 +172,20 @@ final class DbEntityManager
                 $appData[] = $this->convertDbRowsToAppObject($dbRows, $itemModel->getEntityModel(), $rowNo);
             } elseif ($itemModel instanceof ListModel) {
                 $appData[] = $this->convertDbList($row, $itemModel);
+            }
+        }
+        return $appData;
+    }
+
+    public function convertDbRowsToEntityList(array $dbRows, EntityModel $itemModel): array
+    {
+        $appData = [];
+        $ids = [];
+        foreach ($dbRows as $rowNo => $row) {
+            $rowEntityId = $row[$itemModel->getIdentifier() . self::SEP . $itemModel->getIdKey()];
+            if (!in_array($rowEntityId, $ids, strict: true)) {
+                $appData[] = $this->convertDbRowsToAppObject($dbRows, $itemModel, $rowNo);
+                $ids[] = $rowEntityId;
             }
         }
         return $appData;
@@ -198,10 +225,42 @@ final class DbEntityManager
         }
     }
 
+    /**
+     * Perform an outer join on two result sets, as if the two were issued from
+     * an outer join request.
+     * 
+     * @param array[] $dbRowsLeft A list of rows returned from the database.
+     * @param array[] $dbRowsRight A list of rows returned from the database.
+     * @return array[] A list of rows with $dbRowsRight appended to $dbRowsLeft,
+     * and with each row having all the same columns.
+     */
+    public function outerJoinDbRows(array $dbRowsLeft, array $dbRowsRight): array
+    {
+        if (0 === count($dbRowsLeft)) {
+            return $dbRowsRight;
+        } elseif (0 === count($dbRowsRight)) {
+            return $dbRowsLeft;
+        }
+
+        $emptyRow = array_map(fn () => null, $dbRowsLeft[0] + $dbRowsRight[0]);
+    
+        $dbRows = [];
+
+        for ($i = 0; $i < max(count($dbRowsLeft), count($dbRowsRight)); $i++) {
+            if ($i < count($dbRowsLeft)) {
+                $dbRows[$i] = $dbRowsLeft[$i] + ($dbRowsRight[$i] ?? $emptyRow);
+            } else {
+                $dbRows[$i] = array_merge($emptyRow, $dbRowsRight[$i]);
+            }
+        }
+
+        return $dbRows;
+    }
+
     private function getReferencedRowNos(
         array $dbRows,
         ForeignEntityModel $property,
-        string $referenceId,
+        int|string $referenceId,
     ): array {
         $prunedDbRows = array_filter(
             $dbRows,

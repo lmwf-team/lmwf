@@ -21,6 +21,7 @@ use PhpParser\Node\Expr\Cast\String_;
 use PHPUnit\Framework\TestCase;
 
 use function PHPUnit\Framework\isNan;
+use function PHPUnit\Framework\isNull;
 
 final class DbEntityManagerTest extends TestCase
 {
@@ -250,5 +251,168 @@ final class DbEntityManagerTest extends TestCase
         ]);
         $actual = $this->em->convertDbRowsToAppObject($dbRows, $model);
         $this->assertEquals($expected, $actual);
+    }
+
+    public function testNullSubEntity(): void
+    {
+        $dbRows = [
+            [
+                'entity_id' => '1',
+                'entity_parent_id' => null,
+                'parent_id' => null,
+                'parent_parent_id' => null,
+            ],
+        ];
+        $model = new EntityModel(
+            'entity',
+            [
+                'id' => new StringModel(),
+                'parent_id' => new StringModel(isNullable: true),
+                'parent' => new ForeignEntityModel(
+                    new EntityModel(
+                        'parent',
+                        [
+                            'id' => new IntModel(),
+                            'parent_id' => new StringModel(),
+                        ],
+                    ),
+                    'id',
+                    'parent_id',
+                    isNullable: true,
+                ),
+            ],
+        );
+        $expected = new AppObject([
+            'id' => '1',
+            'parent_id' => null,
+            'parent' => null,
+        ]);
+        $actual = $this->em->convertDbRowsToAppObject($dbRows, $model);
+        $this->assertEquals($expected, $actual);
+    }
+
+    public function testOuterJoin(): void
+    {
+        $dbRowsLeft = [
+            [
+                'person_id' => 0,
+                'person_name' => 'Martin',
+            ],
+            [
+                'person_id' => 1,
+                'person_name' => 'Robert',
+            ],
+        ];
+        $dbRowsRight = [
+            [
+                'school_id' => 1,
+                'school_name' => 'UOD',
+            ],
+            [
+                'school_id' => 2,
+                'school_name' => 'GCU',
+            ],
+            [
+                'school_id' => 3,
+                'school_name' => 'HWU',
+            ],
+        ];
+        $expected = [
+            [
+                'person_id' => 0,
+                'person_name' => 'Martin',
+                'school_id' => 1,
+                'school_name' => 'UOD',
+            ],
+            [
+                'person_id' => 1,
+                'person_name' => 'Robert',
+                'school_id' => 2,
+                'school_name' => 'GCU',
+            ],
+            [
+                'person_id' => null,
+                'person_name' => null,
+                'school_id' => 3,
+                'school_name' => 'HWU',
+            ],
+        ];
+
+        $this->assertSame($expected, $this->em->outerJoinDbRows($dbRowsLeft, $dbRowsRight));
+    }
+
+    public function testConversionToList(): void
+    {
+        $articleModel = new EntityModel(
+            'article',
+            [
+                'id' => new StringModel(),
+                'author_id' => new IntModel(),
+            ],
+        );
+        $personModel = new EntityModel(
+            'person',
+            [
+                'id' => new IntModel(),
+                'name' => new StringModel(),
+                'articles' => new EntityListModel(
+                    new ForeignEntityModel($articleModel, 'author_id', 'id'),
+                ),
+            ],
+        );
+        $dbRows = [
+            [
+                'person_id' => 0,
+                'person_name' => 'Martin',
+                'article_id' => 'un-article',
+                'article_author_id' => 0,
+            ],
+            [
+                'person_id' => 0,
+                'person_name' => 'Martin',
+                'article_id' => 'un-autre-article',
+                'article_author_id' => 1,
+            ],
+            [
+                'person_id' => 0,
+                'person_name' => 'Martin',
+                'article_id' => 'encore-un-article',
+                'article_author_id' => 0,
+            ],
+            [
+                'person_id' => 2,
+                'person_name' => 'George',
+                'article_id' => 'yet-another-article',
+                'article_author_id' => 2,
+            ],
+        ];
+        $expected = [
+            new AppObject([
+                'id' => 0,
+                'name' => 'Martin',
+                'articles' => [
+                    [
+                        'id' => 'un-article',
+                        'author_id' => 0,
+                    ],
+                    [
+                        'id' => 'encore-un-article',
+                        'author_id' => 0,
+                    ],
+                ],
+            ]),
+            new AppObject([
+                'id' => 2,
+                'name' => 'George',
+                'articles' => [
+                    [
+                        'id' => 'yet-another-article',
+                        'author_id' => 2,
+                    ],
+                ],
+            ]),
+        ];
+
+        $this->assertEquals($expected, $this->em->convertDbRowsToList($dbRows, $personModel));
     }
 }
