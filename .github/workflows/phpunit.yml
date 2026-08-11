@@ -14,7 +14,7 @@ jobs:
   phpunit:
     runs-on: ubuntu-latest
     steps:
-      - uses: ./.github/actions/set-up-repository
+      - uses: ./.github/actions/set-up-repository.yml
 
       - name: Run test suite
         run: vendor/bin/phpunit tests
