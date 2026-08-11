@@ -3,11 +3,11 @@
 namespace LM\WebFramework\Controller;
 
 use LM\Exception\SessionStartFailureException;
-use LM\PersonalDataManager\Routing\Router;
+use LM\WebFramework\Routing\IRouter;
 
 class MainController
 {
-    public function processRequest(Router $router)
+    public function processRequest(IRouter $router)
     {
         $is_session_started = session_start();
 
