@@ -6,6 +6,7 @@ namespace LMWF\DataStructures\Factory;
 
 use LMWF\DataStructures\AppList;
 use LMWF\DataStructures\AppObject;
+use UnexpectedValueException;
 
 class CollectionFactory
 {
@@ -49,5 +50,25 @@ class CollectionFactory
             }
         }
         return new AppObject($data);
+    }
+
+    /**
+     * Parse the given JSON file as an associative array.
+     * 
+     * @param string $filePath Path to the JSON file.
+     * @todo Return AppObject instead?
+     * @return array<string, mixed>
+     */
+    public static function fromJson(string $filePath): array
+    {
+        $fileContent = file_get_contents($filePath);
+        if (false === $fileContent) {
+            throw new UnexpectedValueException("Could not read content of file '$filePath'.");
+        }
+        $decoded = json_decode($fileContent, associative: true, flags: JSON_THROW_ON_ERROR);
+        if (!is_array($decoded)) {
+            throw new UnexpectedValueException("Expected the decoded JSON to be an associative array.");
+        }
+        return $decoded;
     }
 }

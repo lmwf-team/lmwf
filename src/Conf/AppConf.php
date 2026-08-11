@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace LMWF\Conf;
 
-use LMWF\Conf\Exception\CouldNotReadFileException;
 use LMWF\DataStructures\AppObject;
 use LMWF\DataStructures\Factory\CollectionFactory;
 use LMWF\DataStructures\ImgFormat;
@@ -64,13 +63,12 @@ final readonly class AppConf
         string $confFolderPath,
         array $confData = [],
     ): self {
-        if (file_exists("$confFolderPath/" . self::LOCAL_FN)) {
-            $envLocal = self::readConfFile("$confFolderPath/" . self::LOCAL_FN);
-            $confData += json_decode($envLocal, true, flags: JSON_THROW_ON_ERROR);
+        $localConfPath = "$confFolderPath/" . self::LOCAL_FN;
+        if (file_exists($localConfPath)) {
+            $confData += CollectionFactory::fromJson($localConfPath);
         }
 
-        $env = self::readConfFile("$confFolderPath/" . self::DIST_FN);
-        $confData += json_decode($env, true, flags: JSON_THROW_ON_ERROR);
+        $confData += CollectionFactory::fromJson("$confFolderPath/" . self::DIST_FN);
 
         $confData += [
             'confFolderPath' => $confFolderPath,
@@ -79,18 +77,6 @@ final readonly class AppConf
         return new self(
             $confData,
         );
-    }
-
-    /**
-     * @todo Could go in a separate service dedicated to reading files.
-     */
-    public static function readConfFile(string $filePath): string
-    {
-        $fileContent = file_get_contents($filePath);
-        if (false === $fileContent) {
-            throw new CouldNotReadFileException($filePath);
-        }
-        return $fileContent;
     }
 
     /**

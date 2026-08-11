@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use LMWF\Conf\AppConf;
+use LMWF\DataStructures\Factory\CollectionFactory;
 use PHPUnit\Framework\Attributes\WithoutErrorHandler;
 use PHPUnit\Framework\TestCase;
 
@@ -40,8 +41,8 @@ final class ConfFileTest extends TestCase
     #[WithoutErrorHandler]
     public function testValidConf(): void
     {
-        $jsonDist = json_decode(file_get_contents(__DIR__ . "/resources/valid_conf/lmwf_app.json"), true, flags: JSON_THROW_ON_ERROR);
-        $jsonLocal = json_decode(file_get_contents(__DIR__ . "/resources/valid_conf/.lmwf_app.local.json"), true, flags: JSON_THROW_ON_ERROR);
+        $jsonDist = CollectionFactory::fromJson(__DIR__ . "/resources/valid_conf/lmwf_app.json");
+        $jsonLocal = CollectionFactory::fromJson(__DIR__ . "/resources/valid_conf/.lmwf_app.local.json");
         $conf = AppConf::createFromEnvFile(
             __DIR__ . "/resources/valid_conf",
             [
@@ -64,7 +65,6 @@ final class ConfFileTest extends TestCase
     #[WithoutErrorHandler]
     public function testValidConf2(): void
     {
-        $jsonLocal = json_decode(file_get_contents(__DIR__ . "/resources/valid_conf/.lmwf_app.local.json"), true, flags: JSON_THROW_ON_ERROR);
         $conf = AppConf::createFromEnvFile(
             __DIR__ . "/resources/valid_conf",
             [

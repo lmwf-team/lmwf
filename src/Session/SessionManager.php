@@ -4,12 +4,10 @@ declare(strict_types=1);
 
 namespace LMWF\Session;
 
-use InvalidArgumentException;
-use LMWF\Kernel;
-use UnexpectedValueException;
-
 /**
- * @todo Should be moved to Http.
+ * @todo Should be moved to Http? Would make it easier to Http to access the
+ * session, but Session does not need to access Http. Besides, Form only
+ * relies on Session but does not rely on Http.
  */
 final class SessionManager
 {

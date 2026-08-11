@@ -8,6 +8,7 @@ use LMWF\Conf\RouteDefParser;
 use LMWF\Conf\Http\RouteDef;
 use LMWF\Conf\Http\SubrouteCannotAddRoleConfException;
 use LMWF\Conf\Http\UnauthorizedAttributeConfException;
+use LMWF\DataStructures\Factory\CollectionFactory;
 use PHPUnit\Framework\TestCase;
 use TypeError;
 
@@ -74,11 +75,7 @@ final class RouteDefParserTest extends TestCase
 
     public function parseJson(string $filePath, bool $allowOverridingRoles = false): RouteDef
     {
-        $jsonDecoded = json_decode(
-            file_get_contents($filePath),
-            associative: true,
-            flags: JSON_THROW_ON_ERROR,
-        );
+        $jsonDecoded = CollectionFactory::fromJson($filePath);
         $parser = new RouteDefParser();
         return $parser->parse($jsonDecoded, allowOverridingParentRoles: $allowOverridingRoles);
     }
