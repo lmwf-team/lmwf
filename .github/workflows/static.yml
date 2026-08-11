@@ -41,7 +41,7 @@ jobs:
       - name: Create "docs" folder if it does not exits
         run: mkdir -p ./docs
       - name: Run deptrac
-        run: vendor/bin/deptrac analyse --formatter=graphviz-image --output docs/diagram.png
+        run: vendor/bin/deptrac analyse --formatter=graphviz-image --output docs/diagram.png && echo $?
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact
