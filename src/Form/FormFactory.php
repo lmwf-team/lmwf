@@ -45,9 +45,9 @@ final class FormFactory
     ) {
     }
 
-    public function createForm(ArrayModel $model, array $fieldConfs = []): ArrayTransformer
+    public function createForm(ArrayModel $model, array $formConfParams = []): ArrayTransformer
     {
-        $formConf = $this->formConfFactory->createConf($model, $fieldConfs);
+        $formConf = $this->formConfFactory->createConf($model, $formConfParams);
         return $this->createFormTransformer($formConf, null, true);
     }
 
@@ -85,6 +85,8 @@ final class FormFactory
             return new CheckboxTransformer($name);
         } elseif (FormFieldType::Date === $fieldConf->type) {
             return new DateTimeTransformer($name);
+        } elseif (FormFieldType::Int === $fieldConf->type) {
+            return new IntTransformer($name);
         }
 
         throw new DomainException("No transformer found for field with name {$name} of type {$fieldConf->type->value}.");
