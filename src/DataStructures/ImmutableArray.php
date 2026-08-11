@@ -39,6 +39,14 @@ abstract readonly class ImmutableArray implements ArrayAccess, Countable, IArray
     }
 
     /**
+     * @param callable(TValue, TKey): bool $callback
+     */
+    public function all(callable $callback): bool
+    {
+        return array_all($this->data, $callback);
+    }
+
+    /**
      * @param mixed $value
      */
     public function contains(mixed $value): bool

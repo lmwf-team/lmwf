@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace LMWF\Conf;
 
+use LMWF\DataStructures\AppList;
 use LMWF\DataStructures\AppObject;
 use LMWF\DataStructures\Exceptions\UnexpectedPropertyType;
 use LMWF\DataStructures\Factory\CollectionFactory;
@@ -114,7 +115,6 @@ final readonly class AppConf
             ->toArray()
         ;
 
-
         $csps = $this->readCsps($this->data);
 
         $this->httpConf = new HttpConf(
@@ -183,13 +183,13 @@ final readonly class AppConf
      */
     private function readCsps(AppObject $confParams): array
     {
-        $csps = $confParams->getAppObject('csp')->toArray();
-        if (!array_all($csps, fn ($csp) => is_array($csp) && array_is_list($csp) && array_all($csp, 'is_string'))) {
+        $csps = $confParams->getAppObject('csp');
+        if (!$csps->all(fn ($csp, $_) => $csp instanceof AppList && $csp->all(fn ($value, $_) => is_string($value)))) {
             throw new UnexpectedValueException('CSP configuration is not correct.');
         }
         // @todo Remove that when PHPStan fixes the issue
-        // @phpstan-ignore return.type
-        return $csps;
+        // @phpstan-ignore method.nonObject, return.type
+        return $csps->map(fn ($values) => $values->toArray())->toArray();
     }
 
     /**
