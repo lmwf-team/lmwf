@@ -26,6 +26,17 @@ abstract class ImmutableArray implements ArrayAccess, Countable, IArrayable, Ite
     ) {
     }
 
+    public function contains(mixed $value): bool
+    {
+        foreach ($this->data as $datum) {
+            if ($value === $datum) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public function count(): int
     {
         return count($this->data);
