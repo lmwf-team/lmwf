@@ -18,7 +18,7 @@ use Psr\Http\Message\ServerRequestInterface;
 
 final class HttpRequestHandlerTest extends TestCase
 {
-    private readonly HttpRequestHandler $handler;
+    private HttpRequestHandler $handler;
 
     public function setUp(): void
     {

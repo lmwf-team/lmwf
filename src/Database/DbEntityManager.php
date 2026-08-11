@@ -57,10 +57,7 @@ final class DbEntityManager
         if ($model instanceof BoolModel && (0 === $dbData || 1 === $dbData)) {
             return 1 === $dbData;
         } elseif ($model instanceof DateTimeModel && is_string($dbData)) {
-            try {
-                return new DateTimeImmutable($dbData);
-            } catch (DateMalformedStringException) {
-            }
+            return new DateTimeImmutable($dbData);
         } elseif ($model instanceof IntModel && is_numeric($dbData)) {
             return intval($dbData);
         } elseif ($model instanceof StringModel && is_string($dbData)) {

@@ -38,7 +38,7 @@ class LoggedException extends Exception implements IArrayable
 
         $previous = $this->getPrevious();
         if (null !== $previous) {
-            $asArray['previous'] = $previous instanceof IArrayable ? $previous->toArray() : $this->previous->__toString();
+            $asArray['previous'] = $previous instanceof IArrayable ? $previous->toArray() : $previous->__toString();
         }
 
         return $asArray;

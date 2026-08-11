@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace LM\WebFramework\ErrorHandling;
 
-enum Loglevel
+enum LogLevel
 {
     case NOTICE;
 }
