@@ -26,10 +26,13 @@ class MainController
 
         $request = null;
 
+        $server = $_SERVER;
+        $server['REQUEST_URI'] = $_GET['page'];
+
         if ('GET' === $_SERVER['REQUEST_METHOD']) {
-            $request = new DefaultRequest($_SERVER);
+            $request = new DefaultRequest($server);
         } elseif ('POST' === $_SERVER['REQUEST_METHOD']) {
-            $request = new DefaultPostRequest($_SERVER, $_POST);
+            $request = new DefaultPostRequest($server, $_POST);
         }
 
         if ($request instanceof IRequest) {
