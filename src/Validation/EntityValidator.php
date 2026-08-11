@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace LM\WebFramework\Validation;
 
+use LM\WebFramework\Model\Type\ArrayModel;
 use LM\WebFramework\Validation\ConstraintViolation\ConstraintViolation;
-use LM\WebFramework\Model\Type\EntityModel;
 
 final class EntityValidator implements ITypeValidator
 {
     public function __construct(
-        private EntityModel $model,
+        private ArrayModel $model,
     ) {
     }
 

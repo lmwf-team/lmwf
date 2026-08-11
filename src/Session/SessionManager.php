@@ -12,7 +12,14 @@ final class SessionManager
 
     public const CURRENT_MEMBER_USERNAME = "cmu";
 
+    public const CUSTOM_PREFIX = 'custom_';
+
     public const MESSAGES = 'messages';
+
+    public function getCsrf(): string
+    {
+        return $_SESSION[self::CSRF] ?? $_SESSION[self::CSRF] = bin2hex(random_bytes(self::CSRF_N_BYTES));
+    }
 
     public function getCurrentMemberUsername(): ?string
     {
@@ -21,6 +28,11 @@ final class SessionManager
         } else {
             return null;
         }
+    }
+
+    public function getCustom(string $key): string
+    {
+        return $_SESSION[self::CUSTOM_PREFIX . $key];
     }
 
     public function isUserLoggedIn(): bool
@@ -36,9 +48,9 @@ final class SessionManager
         $_SESSION[self::CURRENT_MEMBER_USERNAME] = $username;
     }
 
-    public function getCsrf(): string
+    public function setCustom(string $key, string $value): void
     {
-        return $_SESSION[self::CSRF] ?? $_SESSION[self::CSRF] = bin2hex(random_bytes(self::CSRF_N_BYTES));
+        $_SESSION[self::CUSTOM_PREFIX . $key] = $value;
     }
 
     public function addMessage(string $message): void

@@ -16,10 +16,10 @@ use LM\WebFramework\Form\Transformer\IFormTransformer;
 use LM\WebFramework\Form\Transformer\IntTransformer;
 use LM\WebFramework\Form\Transformer\ListTransformer;
 use LM\WebFramework\Form\Transformer\StringTransformer;
+use LM\WebFramework\Model\Type\ArrayModel;
 use LM\WebFramework\Model\Type\BoolModel;
 use LM\WebFramework\Model\Type\DateTimeModel;
 use LM\WebFramework\Model\Type\EntityListModel;
-use LM\WebFramework\Model\Type\EntityModel;
 use LM\WebFramework\Model\Type\ForeignEntityModel;
 use LM\WebFramework\Model\Type\IModel;
 use LM\WebFramework\Model\Type\IntModel;
@@ -39,7 +39,7 @@ final class FormFactory
     ) {
     }
 
-    public function createForm(EntityModel $model, array $config = []): ArrayTransformer
+    public function createForm(ArrayModel $model, array $config = []): ArrayTransformer
     {
         return $this->createTransformer($model, $config, null, true);
     }
@@ -48,7 +48,7 @@ final class FormFactory
     {
         if ($model instanceof ForeignEntityModel) {
             return $this->createTransformer($model->getEntityModel(), $config, $name, $csrf);
-        } elseif ($model instanceof EntityModel) {
+        } elseif ($model instanceof ArrayModel) {
             $formElements = [];
             $defaultCallbacks = [];
             foreach ($model->getProperties() as $key => $property) {
@@ -59,7 +59,6 @@ final class FormFactory
                 }
             }
             return new ArrayTransformer($formElements, $csrf ? $this->csrfTransformer : null, $name, $defaultCallbacks);
-
         }
         if (null === $name) {
             throw new InvalidArgumentException('A name must be provided for non-array transformers.');

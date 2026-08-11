@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace LM\WebFramework\Validation;
 
 use InvalidArgumentException;
+use LM\WebFramework\Model\Type\ArrayModel;
 use LM\WebFramework\Validation\ConstraintViolation\ConstraintViolation;
 use LM\WebFramework\Model\Type\IModel;
 use LM\WebFramework\Model\Type\BoolModel;
+use LM\WebFramework\Model\Type\DataArrayModel;
 use LM\WebFramework\Model\Type\DateTimeModel;
 use LM\WebFramework\Model\Type\EntityListModel;
 use LM\WebFramework\Model\Type\EntityModel;
@@ -31,6 +33,7 @@ final class Validator
                 $this->validator = new ForeignEntityValidator($model);
                 break;
 
+            case DataArrayModel::class:
             case EntityModel::class:
                 $this->validator = new EntityValidator($model);
                 break;

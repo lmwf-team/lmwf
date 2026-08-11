@@ -8,7 +8,7 @@ use LM\WebFramework\Model\Constraints\IRangeConstraint;
 use LM\WebFramework\Model\Type\AbstractModel;
 
 /**
- * @todo To delete?
+ * @todo Rename to ScalarListModel? Merge with EntityListModel?
 */
 final class ListModel extends AbstractModel
 {
@@ -20,7 +20,7 @@ final class ListModel extends AbstractModel
         parent::__construct($isNullable);
     }
 
-    public function getItemModel(): IScalarModel|EntityModel|ListModel
+    public function getItemModel(): IScalarModel
     {
         return $this->itemModel;
     }
