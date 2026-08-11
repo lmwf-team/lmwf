@@ -7,9 +7,6 @@ on:
 permissions:
   contents: read
 
-env:
-  COMPOSER_CACHE_DIRECTORY: vendor
-
 jobs:
   phpunit:
     runs-on: ubuntu-latest
