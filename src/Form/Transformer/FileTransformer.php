@@ -46,9 +46,10 @@ final readonly class FileTransformer implements IFormTransformer
     #[\Override]
     public function transformSubmittedData(array $parsedPayload, array $uploadedFiles): null|array|string
     {
-        if (!key_exists($this->name, $uploadedFiles)) {
-            return $this->extractPreviousFilename($parsedPayload);
-        }
+        // Apparently, the key always exists even if no file was submitted, so I commented this.
+        // if (!key_exists($this->name, $uploadedFiles)) {
+        //     return $this->extractPreviousFilename($parsedPayload);
+        // }
 
         $uploaded = $uploadedFiles[$this->name];
 
@@ -59,10 +60,13 @@ final readonly class FileTransformer implements IFormTransformer
             }
             return $filenames;
         } else {
-            return $this->saveUploadedImage($uploaded);
+            return $this->saveUploadedImage($uploaded) ?? $this->extractPreviousFilename($parsedPayload);
         }
     }
 
+    /**
+     * @todo Handle multiple filenames.
+     */
     private function extractPreviousFilename(array $parsedPayload): ?string
     {
         if (key_exists($this->name . self::PREVIOUS_SUFFIX, $parsedPayload)) {
@@ -76,13 +80,13 @@ final readonly class FileTransformer implements IFormTransformer
 
     private function createThumbnails(Filename $filename): void
     {
-        $imgFileContent = file_get_contents("{$this->destinationFolder}/{$filename->__toString()}");
-        if (false === $imgFileContent) {
-            throw new UnexpectedValueException("Failed to read the destination image '{$filename->__toString()}' to create thumbnail.");
+        $fileContent = file_get_contents("{$this->destinationFolder}/$filename");
+        if (false === $fileContent) {
+            throw new UnexpectedValueException("Failed to read the destination image '$filename' to create thumbnail.");
         }
-        $originalImg = imagecreatefromstring($imgFileContent);
+        $originalImg = imagecreatefromstring($fileContent);
         if (false === $originalImg) {
-            throw new UnexpectedValueException("Could not create GdImage from content of file '{$filename->__toString()}'.");
+            throw new UnexpectedValueException("Could not create GdImage from content of file '$filename'.");
         }
         list($width, $height) = [imagesx($originalImg), imagesy($originalImg)];
 
@@ -91,13 +95,13 @@ final readonly class FileTransformer implements IFormTransformer
 
             list($newWidth, $newHeight) = [(int) round($width * $scale), (int) round($height * $scale)];
 
-            $thumbnail = imagecreatetruecolor($newWidth, $newHeight);
+            $thumbnailImg = imagecreatetruecolor($newWidth, $newHeight);
 
-            imagecopyresized($thumbnail, $originalImg, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
+            imagecopyresized($thumbnailImg, $originalImg, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
 
             imagewebp(
-                $thumbnail,
-                $filename->filenameNoExt . '.' . $key . '.' . $filename->extension,
+                $thumbnailImg,
+                "{$this->destinationFolder}/{$filename->filenameNoExt}.$key.{$filename->extension}",
                 $format['webp_quality'],
             );
         }
@@ -137,7 +141,7 @@ final readonly class FileTransformer implements IFormTransformer
 
             case UPLOAD_ERR_NO_FILE:
                 return null;
-                
+
             case UPLOAD_ERR_CANT_WRITE:
             case UPLOAD_ERR_EXTENSION:
             case UPLOAD_ERR_NO_TMP_DIR:
