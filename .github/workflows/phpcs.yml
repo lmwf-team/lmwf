@@ -16,4 +16,4 @@ jobs:
       - uses: ./.github/actions/set-up-repository
 
       - name: Run phpcs
-        run: ./dev/phpcs/psr12.sh
+        run: ./dev/psr12.sh
