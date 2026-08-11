@@ -8,7 +8,7 @@ abstract class AbstractNamedTransformer implements IFormTransformer
 {
     public function __construct(
         private string $name,
-    ) {    
+    ) {
     }
 
     /**

@@ -13,7 +13,7 @@ final readonly class Router
      * A Path Segment is defined as any part of the Request Target
      * (origin-form of the composed URI) that is between two slashes,
      * or the last part after the last slash.
-     * 
+     *
      * @param string $path An URL-encoded path.
      * @todo Make not static? It would be more OOP.
      * @todo Use AppList instead?

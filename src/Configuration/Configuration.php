@@ -46,7 +46,8 @@ final class Configuration
      * @todo Create model for configuration, and check it is valid? (Would make testing harder.)
      * @todo Accept an array and create a model from it?
      */
-    public function __construct(array $confData, bool $handleExceptions = true) {
+    public function __construct(array $confData, bool $handleExceptions = true)
+    {
         $confData += [
             self::HANLDE_EXCEPTIONS => $handleExceptions,
         ];

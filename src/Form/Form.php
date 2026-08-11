@@ -49,7 +49,6 @@ final class Form implements IFormExtractor
                 $child->extractFromRequest($requestParsedBody, $uploadedFiles ?? []);
             } else {
                 if ($child instanceof Form) {
-
                 }
                 $formDatas[$child->getName()] = $child->extractFromRequest($requestParsedBody, $uploadedFiles ?? []);
             }

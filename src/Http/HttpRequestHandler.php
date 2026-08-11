@@ -78,7 +78,7 @@ final class HttpRequestHandler
         //         if (null !== $config->getLoggerFqcn()) {
         //             $container->get($config->getLoggerFqcn())->info($exception->getMessage());
         //         }
-                
+
         //         if ($config->isDev()) {
         //             throw $exception;
         //         } else {
@@ -107,7 +107,7 @@ final class HttpRequestHandler
         $segs = Router::getSegmentsFromPath($path);
         Logger::notice("Found segments are \"" . implode(",", $segs) . "\".");
         $params = [];
-    
+
         if (!$this->conf->handleExceptions()) {
             Logger::notice("Exceptions are not handled by the app.");
             return $this->generateResponseFromRoute($request, $segs);
@@ -116,7 +116,7 @@ final class HttpRequestHandler
         try {
             Logger::notice("Exceptions are handled by the app.");
             return $this->generateResponseFromRoute($request, $segs);
-        } catch (RouteNotFoundException|RequestedResourceNotFound) {
+        } catch (RouteNotFoundException | RequestedResourceNotFound) {
             Logger::notice("Resource requested by user was not found.");
             $fqcn = $this->conf->getErrorNotFoundControllerFQCN();
         } catch (AlreadyAuthenticated) {

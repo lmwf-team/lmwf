@@ -27,7 +27,8 @@ final class ValidatorTest extends TestCase
     public function testUnsupportedModel(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        new Validator(new class () extends AbstractModel {});
+        new Validator(new class () extends AbstractModel {
+        });
     }
 
     public function testStringValidator(): void
@@ -75,6 +76,5 @@ final class ValidatorTest extends TestCase
         $this->assertNotEmpty((new Validator($model))->validate($entity));
         $entity['sub_entity_id'] = 'hi';
         $this->assertEmpty((new Validator($model))->validate($entity));
-
     }
 }

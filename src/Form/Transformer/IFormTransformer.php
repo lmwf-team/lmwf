@@ -6,7 +6,7 @@ namespace LM\WebFramework\Form\Transformer;
 
 /**
  * Transforms submitted data into app data.
- * 
+ *
  * When data is entered in the form by the user and is submitted, PHP stores it in global arrays.
  * The data contained within these arrays are implemented as "form data".
  * Data is then transformed on the server-side by the PHP application by an IFormTransformer instance.

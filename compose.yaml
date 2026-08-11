@@ -7,3 +7,11 @@ services:
     tty: true
     post_start:
       - command: /usr/local/init.sh
+  phpcs_dsn:
+    build:
+      dockerfile: docker/phpcs/Dockerfile
+    tty: true
+    working_dir: /usr/src/lmwf
+    volumes:
+      - ./src:/usr/src/lmwf/src
+      - ./tests:/usr/src/lmwf/tests

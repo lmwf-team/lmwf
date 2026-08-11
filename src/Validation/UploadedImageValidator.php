@@ -22,7 +22,6 @@ final class UploadedImageValidator implements ITypeValidator
     {
         $violations = [];
         if (is_array($data)) {
-
         } elseif ($data == IUploadedImageConstraint::FILE_TOO_BIG_ERROR) {
             $violations[] = new ConstraintViolation($this->constraint, 'Le fichier est trop gros.');
         } elseif ($data == IUploadedImageConstraint::MISC_ERROR) {

@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace LM\WebFramework\Http\Error;
 
-enum RoutingError {
+enum RoutingError
+{
     case RouteNotFound;
     case UnsupportedArgs;
-};
+}

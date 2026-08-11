@@ -38,7 +38,7 @@ final class Kernel
         } else {
             error_reporting(E_ERROR | E_WARNING | E_PARSE);
         }
-        
+
         $cb = new ContainerBuilder();
         if (!$config->isDev()) {
             $cb->enableCompilation("{$config->getPathOfAppDirectory()}/var/cache");

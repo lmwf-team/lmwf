@@ -1,4 +1,4 @@
-name: PHP CS Fixer
+name: Check PHP style
 
 on:
   push:
@@ -15,5 +15,5 @@ jobs:
       
       - uses: ./.github/actions/set-up-repository
 
-      - name: Check coding style
-        run: vendor/bin/php-cs-fixer -n --silent check
+      - name: Run phpcs
+        run: ./check-php-style

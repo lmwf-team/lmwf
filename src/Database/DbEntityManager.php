@@ -114,7 +114,6 @@ final class DbEntityManager
                     // @todo Add test for this edge case.
                     throw new InvalidArgumentException('Mandatory sub entity reference id is null.');
                 }
-
             } elseif ($property instanceof EntityModel) {
                 $value = $this->convertDbRowsToAppObject($dbRows, $property, $index);
             } elseif ($property instanceof EntityListModel) {

@@ -11,8 +11,8 @@ final class IllegalUserInputException extends ExtractionException
 {
     private string $userErrorMessage;
 
-    public function __construct(
-    ) {
+    public function __construct()
+    {
         parent::__construct('Such a value is not authorized.');
     }
 }

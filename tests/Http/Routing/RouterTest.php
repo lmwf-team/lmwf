@@ -36,7 +36,7 @@ final class RouterTest extends TestCase
         $router = new Router();
         $this->assertEquals($subRoute, $router->getRouteFromPath($routeDef, "/{$subRouteId}"));
     }
-    
+
     public function testParameterizedRoute(): void
     {
         $routeDef = new ParameterizedRoute(self::class, minArgs: 1, maxArgs: 1);
@@ -52,7 +52,7 @@ final class RouterTest extends TestCase
         $this->assertEquals($expected, $router->getRouteFromPath($routeDef, '/test//'));
         $this->assertEquals($expected, $router->getRouteFromPath($routeDef, '//test//'));
     }
-    
+
     public function testParameterizedRouteWithBadParams0(): void
     {
         $routeDef = new ParameterizedRoute(self::class, minArgs: 1, maxArgs: 1);
@@ -61,7 +61,7 @@ final class RouterTest extends TestCase
         $this->expectException(RouteNotFoundException::class);
         $router->getRouteFromPath($routeDef, '');
     }
-    
+
     public function testParameterizedRouteWithBadParams1(): void
     {
         $routeDef = new ParameterizedRoute(self::class, minArgs: 1, maxArgs: 1);
@@ -70,7 +70,7 @@ final class RouterTest extends TestCase
         $this->expectException(RouteNotFoundException::class);
         $router->getRouteFromPath($routeDef, '/');
     }
-    
+
     public function testParameterizedRouteWithBadParams2(): void
     {
         $routeDef = new ParameterizedRoute(self::class, minArgs: 1, maxArgs: 1);
@@ -79,7 +79,7 @@ final class RouterTest extends TestCase
         $this->expectException(RouteNotFoundException::class);
         $router->getRouteFromPath($routeDef, '//');
     }
-    
+
     public function testParameterizedRouteWithBadParams3(): void
     {
         $routeDef = new ParameterizedRoute(self::class, minArgs: 1, maxArgs: 1);
@@ -88,7 +88,7 @@ final class RouterTest extends TestCase
         $this->expectException(RouteNotFoundException::class);
         $router->getRouteFromPath($routeDef, 'test/prout');
     }
-    
+
     public function testParameterizedRouteWithBadParams4(): void
     {
         $routeDef = new ParameterizedRoute(self::class, minArgs: 1, maxArgs: 1);
@@ -97,7 +97,7 @@ final class RouterTest extends TestCase
         $this->expectException(RouteNotFoundException::class);
         $router->getRouteFromPath($routeDef, '/test/prout');
     }
-    
+
     public function testParameterizedRouteWithBadParams5(): void
     {
         $routeDef = new ParameterizedRoute(self::class, minArgs: 1, maxArgs: 1);
@@ -106,7 +106,7 @@ final class RouterTest extends TestCase
         $this->expectException(RouteNotFoundException::class);
         $router->getRouteFromPath($routeDef, '//test/prout');
     }
-    
+
     public function testParameterizedRouteWithBadParams6(): void
     {
         $routeDef = new ParameterizedRoute(self::class, minArgs: 1, maxArgs: 1);
@@ -115,7 +115,7 @@ final class RouterTest extends TestCase
         $this->expectException(RouteNotFoundException::class);
         $router->getRouteFromPath($routeDef, '/test/prout/');
     }
-    
+
     public function testParameterizedRouteWithBadParams7(): void
     {
         $routeDef = new ParameterizedRoute(self::class, minArgs: 1, maxArgs: 1);
@@ -124,7 +124,7 @@ final class RouterTest extends TestCase
         $this->expectException(RouteNotFoundException::class);
         $router->getRouteFromPath($routeDef, '/test/prout//');
     }
-    
+
     public function testNonExistingRoute(): void
     {
         $routeDef = new ParentRoute(self::class, routes: []);
@@ -297,19 +297,19 @@ final class RouterTest extends TestCase
     //         [],
     //         HttpRequestHandler::getPathSegments(''),
     //     );
-        
+
     //     $this->assertEquals(
     //         [],
     //         HttpRequestHandler::getPathSegments('/'),
     //     );
-        
+
     //     $this->assertEquals(
     //         [
     //             'aui',
     //         ],
     //         HttpRequestHandler::getPathSegments('/aui/'),
     //     );
-        
+
     //     $this->assertEquals(
     //         [
     //             'aui',
@@ -318,7 +318,7 @@ final class RouterTest extends TestCase
     //         ],
     //         HttpRequestHandler::getPathSegments('aui/test/something'),
     //     );
-        
+
     //     $this->assertEquals(
     //         [
     //             'something',
@@ -326,7 +326,7 @@ final class RouterTest extends TestCase
     //         ],
     //         HttpRequestHandler::getPathSegments('/something/else?eius&36ab2'),
     //     );
-        
+
     //     $this->assertEquals(
     //         [
     //             urldecode('a-zA-Z0-9.-_~!$&\'()*+,;=:@'),

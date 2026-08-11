@@ -11,6 +11,10 @@ jobs:
   phpunit:
     runs-on: ubuntu-latest
     steps:
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+
       - uses: actions/checkout@v4
 
       - uses: ./.github/actions/set-up-repository

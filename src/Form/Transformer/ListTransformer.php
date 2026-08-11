@@ -41,7 +41,6 @@ final class ListTransformer implements IFormTransformer
                     ->transformSubmittedData($element, $uploadedFiles)
                 ;
             }
-
         }
 
         return $value;
