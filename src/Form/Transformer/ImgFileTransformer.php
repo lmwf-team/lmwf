@@ -10,6 +10,7 @@ use LMWF\ErrorHandling\Log;
 use LMWF\Constraint\Value\IUploadedImageConstraint;
 use LMWF\DataStructures\ImgFormat;
 use LMWF\File\FileService;
+use PHP_CodeSniffer\Files\File;
 use Psr\Http\Message\UploadedFileInterface;
 use UnexpectedValueException;
 
@@ -43,7 +44,10 @@ final readonly class ImgFileTransformer implements IFormTransformer
         if (is_array($uploaded)) {
             $filenames = [];
             foreach ($uploaded as $img) {
-                $filenames[] = $this->saveUploadedImage($img);
+                $savedFilename = $this->saveUploadedImage($img);
+                if (null !== $savedFilename) {
+                    $filenames[] = $savedFilename;
+                }
             }
             return $filenames;
         } else {
@@ -67,11 +71,19 @@ final readonly class ImgFileTransformer implements IFormTransformer
         }
     }
 
+    /**
+     * @return null|string The filename of the saved image, or null if no image
+     * was uploaded.
+     */
     private function saveUploadedImage(UploadedFileInterface $uploadedFile): null|string
     {
         switch ($uploadedFile->getError()) {
             case UPLOAD_ERR_OK:
-                $destFilename = Filename::fromString($uploadedFile->getClientFilename(), transform: true)->withExt('webp');
+                $clientFilename = $uploadedFile->getClientFilename();
+                $destFilename = null !== $clientFilename ?
+                    Filename::fromString($clientFilename, transform: true)->withExt('webp') :
+                    new Filename('untitled', 'webp')
+                ;
 
                 $destinationPath = $this->fileService->getAvailablePathForUploadedImg($destFilename);
 

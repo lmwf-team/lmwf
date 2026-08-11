@@ -77,7 +77,7 @@ readonly class FormConfFactory
             $rangeConstraint = $model->getRangeConstraint();
         }
 
-        $type = key_exists(self::TYPE_KN, $fieldConfParams) ? FormFieldType::fromString($fieldConfParams[self::TYPE_KN]) : $this->getTypeFromModel($model);
+        $type = $this->getType($fieldConfParams, $model);
 
         return new FormFieldConf(
             $model,
@@ -105,6 +105,19 @@ readonly class FormConfFactory
         return function ($values) use ($slugCallbackConf) {
             return null !== $values[$slugCallbackConf] ? (new Slug($values[$slugCallbackConf], true))->__toString() : null;
         };
+    }
+
+    /**
+     * @param array<string, mixed> $fieldConfParams
+     */
+    private function getType(array $fieldConfParams, ?IModel $model): FormFieldType
+    {
+        if( key_exists(self::TYPE_KN, $fieldConfParams)) {
+            return FormFieldType::fromString($fieldConfParams[self::TYPE_KN]);
+        } elseif (null !== $model) {
+            return $this->getTypeFromModel($model);
+        }
+        throw new InvalidArgumentException('Both the type and the model cannot be null as the type of the form field must be set.');
     }
 
     private function getTypeFromModel(IModel $model): FormFieldType

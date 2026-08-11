@@ -6,6 +6,7 @@ namespace LMWF\DataStructures;
 
 use InvalidArgumentException;
 use Stringable;
+use UnexpectedValueException;
 
 final class KeyName implements Stringable
 {
@@ -23,7 +24,11 @@ final class KeyName implements Stringable
     public function __construct(string $stringInput)
     {
         if (1 === preg_match(self::CAMEL_BACK_ATTRIBUTE_REGEX, $stringInput)) {
-            $this->value = $this->convert(preg_replace('/[A-Z]/', '_$0', $stringInput));
+            $underscored = preg_replace('/[A-Z]/', '_$0', $stringInput);
+            if (null === $underscored) {
+                throw new UnexpectedValueException('Got null when trying to convert camel back to snake case.');
+            }
+            $this->value = $this->convert($underscored);
         } else {
             $this->value = $this->convert($stringInput);
         }
@@ -37,7 +42,13 @@ final class KeyName implements Stringable
         $stringUnderscore = str_replace(self::INPUT_SEPARATORS, '_', $stringInput);
         $stringLowercase = strtolower($stringUnderscore);
         $stringAscii = preg_replace('/[^a-z0-9_]/', '', $stringLowercase);
+        if (null === $stringAscii) {
+            throw new UnexpectedValueException('Got null unexpectedly when trying to convert string to ASCII.');
+        }
         $stringConverted = preg_replace('/(_{2,})|(^_+)|(_+$)/', '', $stringAscii);
+        if (null === $stringConverted) {
+            throw new UnexpectedValueException('Converted string is unexpectedly null.');
+        }
 
         return $stringConverted;
     }

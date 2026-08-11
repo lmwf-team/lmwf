@@ -51,9 +51,8 @@ final class ArrayTransformer implements IFormTransformer
             }
         }
         foreach ($nullFieldNames as $fieldName) {
-            $fieldDefaultFn = $this->fieldDefaults[$fieldName];
-            if (null !== $fieldDefaultFn) {
-                $formData[$fieldName] = $fieldDefaultFn($formData);
+            if (key_exists($fieldName, $this->fieldDefaults)) {
+                $formData[$fieldName] = $this->fieldDefaults[$fieldName]($formData);
             }
         }
         if (null !== $this->csrf) {

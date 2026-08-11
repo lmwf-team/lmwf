@@ -37,7 +37,8 @@ final readonly class SearchQuery
                 $lowerStr = mb_strtolower($modifiedQuery[$i]);
                 $convertedQuery = str_replace(self::ACCEPTED_DELIMITERS, self::SEPARATOR, $lowerStr);
                 $convertedQuery = preg_replace("#[[:punct:]]#", self::SEPARATOR, $convertedQuery);
-                $keywords = array_merge($keywords, array_filter(explode(self::SEPARATOR, $convertedQuery), fn ($keyword) => '' !== $keyword));
+
+                $keywords = null === $convertedQuery ? [] : array_merge($keywords, array_filter(explode(self::SEPARATOR, $convertedQuery), fn ($keyword) => '' !== $keyword));
             } elseif ('' !== $modifiedQuery[$i]) {
                 $keywords[] = mb_strtolower($modifiedQuery[$i]);
             }

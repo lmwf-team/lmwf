@@ -11,8 +11,8 @@ use Throwable;
  */
 class MissingInputException extends ExtractionException
 {
-    public function __construct(?string $inputName = null, ?Throwable $previous = null)
+    public function __construct(string $inputName, ?Throwable $previous = null)
     {
-        parent::__construct(null !== $inputName ? $inputName . ' is missing ' : null, previous: $previous);
+        parent::__construct("Input '{$inputName}' is missing.", previous: $previous);
     }
 }

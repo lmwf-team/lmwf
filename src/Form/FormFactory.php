@@ -108,7 +108,9 @@ final class FormFactory
                 $fieldName,
                 false,
             );
-            $fieldDefaults[$fieldName] = $fieldConf->default;
+            if (null !== $fieldConf->default) {
+                $fieldDefaults[$fieldName] = $fieldConf->default;
+            }
         }
         return new ArrayTransformer(
             $fieldTransformers,
