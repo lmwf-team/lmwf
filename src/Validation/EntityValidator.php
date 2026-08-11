@@ -7,7 +7,7 @@ namespace LM\WebFramework\Validation;
 use LM\WebFramework\Validation\ConstraintViolation\ConstraintViolation;
 use LM\WebFramework\Model\Type\EntityModel;
 
-class EntityValidator implements ITypeValidator
+final class EntityValidator implements ITypeValidator
 {
     public function __construct(
         private EntityModel $model,

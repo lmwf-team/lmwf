@@ -1,0 +1,9 @@
+jobs:
+  php_cs_fixer:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: PHP-CS-Fixer
+        uses: docker://ghcr.io/php-cs-fixer/php-cs-fixer:3-php8.3
+          with:
+            args: check

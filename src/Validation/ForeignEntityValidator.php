@@ -6,7 +6,7 @@ namespace LM\WebFramework\Validation;
 
 use LM\WebFramework\Model\Type\ForeignEntityModel;
 
-class ForeignEntityValidator implements ITypeValidator
+final class ForeignEntityValidator implements ITypeValidator
 {
     public function __construct(
         private ForeignEntityModel $model,
