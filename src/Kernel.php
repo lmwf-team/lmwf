@@ -16,10 +16,17 @@ class Kernel
             $msg = "$errNo, $errStr in $errFile on line $errLine";
             throw new RuntimeException($msg, $errNo);
         });
+
+        $config = new Configuration($projectRootPath);
+
+        $cb = (new ContainerBuilder());
+        if (!$config->isDev()) {
+            $cb->enableCompilation("$projectRootPath/var/cache");
+        }
     
-        $container = (new ContainerBuilder())
+        $container = $cb
             ->addDefinitions([
-                Configuration::class => new Configuration($projectRootPath),
+                Configuration::class => $config,
             ])
             ->build()
         ;
