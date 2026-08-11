@@ -13,6 +13,7 @@ class ArrayTransformer implements IFormTransformer
         private array $formElements,
         private ?CsrfTransformer $csrf = null,
         private ?string $name = null,
+        private array $defaultCallbacks = [],
     ) {
     }
 
@@ -25,13 +26,18 @@ class ArrayTransformer implements IFormTransformer
             throw new ExtractionException('Une erreur s’est produite.');
         }
 
-        $value = [];
+        $values = [];
         foreach ($this->formElements as $key => $transformer) {
-            $value[$key] = $transformer->extractValueFromRequest($data, $uploadedFiles);
+            $values[$key] = $transformer->extractValueFromRequest($data, $uploadedFiles);
+        }
+        foreach ($values as $key => $v) {
+            if (null === $v && key_exists($key, $this->defaultCallbacks)) {
+                $values[$key] = $this->defaultCallbacks[$key]($values);
+            }
         }
         if (null !== $this->csrf) {
             $this->csrf->extractValueFromRequest($data, $uploadedFiles);
         }
-        return $value;
+        return $values;
     }
 }

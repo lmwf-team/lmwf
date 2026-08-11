@@ -39,12 +39,16 @@ class FormFactory
     public function createTransformer(IModel $model, array $config = [], ?string $name = null, bool $csrf = false): IFormTransformer {
         if (null !== $model->getArrayDefinition()) {
             $formElements = [];
+            $defaultCallbacks = [];
             foreach ($model->getArrayDefinition() as $key => $property) {
                 if (!isset($config[$key]['ignore']) || false === $config[$key]['ignore']) {
                     $formElements[$key] = $this->createTransformer($property, $config[$key] ?? [], $key);
                 }
+                if (isset($config[$key]['default'])) {
+                    $defaultCallbacks[$key] = $config[$key]['default'];
+                }
             }
-            return new ArrayTransformer($formElements, $csrf ? $this->csrfTransformer : null, $name);
+            return new ArrayTransformer($formElements, $csrf ? $this->csrfTransformer : null, $name, $defaultCallbacks);
 
         }
         if (null === $name) {
