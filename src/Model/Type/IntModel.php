@@ -22,9 +22,8 @@ final class IntModel extends AbstractModel implements IScalarModel
         ?int $max = null,
         bool $isNullable = false,
     ) {
-        if (null !== $min || null !== $max) {
-            $this->rangeConstraint = new RangeConstraint($min, $max);
-        }
+        $this->rangeConstraint = (null !== $min || null !== $max) ? new RangeConstraint($min, $max) : null;
+
         parent::__construct(
             isNullable: $isNullable,
         );
