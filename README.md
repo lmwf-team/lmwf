@@ -1,7 +1,7 @@
 [![PSR-12](https://github.com/lmwf-team/lmwf/actions/workflows/phpcs.yml/badge.svg)](https://github.com/lmwf-team/lmwf/actions/workflows/phpcs.yml)
 [![PHPUnit](https://github.com/lmwf-team/lmwf/actions/workflows/phpunit.yml/badge.svg)](https://github.com/lmwf-team/lmwf/actions/workflows/phpunit.yml)
 [![PHPStan](https://github.com/lmwf-team/lmwf/actions/workflows/phpstan.yml/badge.svg)](https://github.com/lmwf-team/lmwf/actions/workflows/phpstan.yml)
-![Code Coverage Badge](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/lmwf-team/lmwf/refs/heads/coverage_badge_test/example.json)
+![Code Coverage Badge](https://img.shields.io/endpoint?url=https://lmwf-team.github.io/lmwf/coverage.json)
 
 # LMWF
 
