@@ -5,6 +5,7 @@ namespace LM\PersonalDataManager\Controller;
 use LM\Database\DatabaseConnection;
 use LM\PersonalDataManager\View\LoginView;
 use LM\PersonalDataManager\View\SuccessNotice;
+use LM\PersonalDataManager\View\ErrorNotice;
 use LM\WebFramework\Controller\IPageController;
 use LM\WebFramework\Identification\UserIdentification;
 use LM\WebFramework\Form\FormReader;
