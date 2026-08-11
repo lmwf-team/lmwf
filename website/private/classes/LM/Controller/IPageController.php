@@ -1,6 +1,6 @@
 <?php
 
-namespace LM;
+namespace LM\Controller;
 
 interface IPageController
 {

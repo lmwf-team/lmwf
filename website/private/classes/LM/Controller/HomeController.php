@@ -1,6 +1,6 @@
 <?php
 
-namespace LM;
+namespace LM\Controller;
 
 class HomeController implements IPageController
 {
