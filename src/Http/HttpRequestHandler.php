@@ -101,7 +101,7 @@ final class HttpRequestHandler
         $pathSegments = $this->getPathSegments($request->getRequestTarget());
 
         /// @todo Magic strings
-        $route = $this->router->getControllerFqcn(
+        $route = $this->router->getRouteInfo(
             $pathSegments,
             $this->session->isUserLoggedIn() ? 'admins' : 'visitors',
         );

@@ -141,6 +141,9 @@ final class Configuration
         return $this->getSetting('publicUrl');
     }
 
+    /**
+     * @todo Rename to getMainRoute or getRootRoute.
+     */
     public function getRoutes(): AppObject
     {
         return $this->confData->getAppObject('rootRoute');

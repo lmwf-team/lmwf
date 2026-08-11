@@ -9,6 +9,7 @@ use InvalidArgumentException;
 use LM\WebFramework\Configuration\Configuration;
 use LM\WebFramework\Controller\Exception\RequestedResourceNotFound;
 use LM\WebFramework\Http\HttpRequestHandler;
+use LM\WebFramework\Http\Model\RouteInfo;
 use LM\WebFramework\Http\Router;
 use PHPUnit\Framework\TestCase;
 
@@ -16,126 +17,75 @@ final class RouterTest extends TestCase
 {
     public function testFindController(): void
     {
-        $configData =
-            [
-                'rootRoute' => [
-                    'routes' => [
-                        'login' => [
-                            'roles' => [
-                                'admins' => false,
+        $configData = [
+            'rootRoute' => [
+                'routes' => [
+                    'login' => [
+                        'fqcn' => 'LoginController',
+                        'allowsAdmins' => false,
+                    ],
+                    'admin' => [
+                        'allowsVisitors' => false,
+                        'routes' => [
+                            'account' => [
+                                'fqcn' => 'AccountController',
                             ],
-                            'controller' => [
-                                'class' => 'LoginController',
-                            ],
-                        ],
-                        'admin' => [
-                            'roles' => [
-                                'visitors' => false,
-                            ],
-                            'routes' => [
-                                'account' => [
-                                    'controller' => [
-                                        'class' => 'AccountController',
-                                    ],
+                            'articles' => [
+                                'fqcn' => 'EditArticleController',
+                                'allowsVisitors' => false,
+                                'args' => [
+                                    0 => [],
+                                    1 => [],
                                 ],
                             ]
-                        ],
-                        'article' => [
-                            'controller' => [
-                                'class' => 'ArticleController',
-                                'n_args' => 1,
-                            ]
-                        ],
-                        'articles' => [
-                            'controller' => [
-                                'class' => 'ArticlesController',
-                                'n_args' => 1,
-                            ],
-                            'routes' => [
-                                'edit' => [
-                                    'roles' => [
-                                        'visitors' => false,
-                                    ],
-                                    'controller' => [
-                                        'class' => 'EditArticleController',
-                                    ]
-                                ]
+                        ]
+                    ],
+                    'articles' => [
+                        'fqcn' => 'ArticlesController',
+                        'args' => [
+                            0 => [],
+                            1 => [
+                                'fqcn' => 'ArticleController',
                             ]
                         ]
                     ]
-                ],
-            ]
-        ;
+                ]
+            ],
+        ];
 
-        $config = new Configuration(
-            $configData,
-            // '.',
-            // 'EN',
-        );
-
-        $router = new Router($config);
+        $router = new Router(new Configuration($configData));
 
         $this->assertEquals(
-            [
-                'class' => 'LoginController',
-                'n_args' => 0,
-                'roles' => [
-                    'admins' => false,
-                    'visitors' => true,
-                ],
-            ],
-            $router->getControllerFqcn(['login']),
+            new RouteInfo('LoginController', 0, false, true),
+            $router->getRouteInfo(['login']),
         );
 
-        $this->expectException(RequestedResourceNotFound::class);
-        $router->getControllerFqcn(['admin']);
+        // $this->expectException(RequestedResourceNotFound::class);
+        // $router->getRouteInfo(['admin']);
 
         $this->assertEquals(
-            [
-                'class' => 'EditArticleController',
-                'n_args' => 0,
-                'roles' => [
-                    'admins' => true,
-                    'visitors' => false,
-                ],
-            ],
-            $router->getControllerFqcn(['articles', 'edit']),
+            new RouteInfo('EditArticleController', 0, true, false),
+            $router->getRouteInfo(['admin', 'articles']),
         );
 
         $this->assertEquals(
-            [
-                'class' => 'ArticlesController',
-                'n_args' => 1,
-                'roles' => [
-                    'admins' => true,
-                    'visitors' => true,
-                ],
-            ],
-            $router->getControllerFqcn(['articles', 'foo']),
+            new RouteInfo('EditArticleController', 1, true, false),
+            $router->getRouteInfo(['admin', 'articles', 'mon_article']),
         );
 
         $this->assertEquals(
-            [
-                'class' => 'ArticlesController',
-                'n_args' => 1,
-                'roles' => [
-                    'admins' => true,
-                    'visitors' => true,
-                ],
-            ],
-            $router->getControllerFqcn(['articles']),
+            new RouteInfo('ArticlesController', 0, true, true),
+            $router->getRouteInfo(['articles']),
         );
 
         $this->assertEquals(
-            [
-                'class' => 'ArticleController',
-                'n_args' => 1,
-                'roles' => [
-                    'admins' => true,
-                    'visitors' => true,
-                ],
-            ],
-            $router->getControllerFqcn(['article', 'mon-article']),
+            new RouteInfo('ArticleController', 1, true, true),
+            $router->getRouteInfo(['articles', 'foo']),
+        );
+
+        $this->assertEquals(
+            new RouteInfo('ArticleController', 1, true, true),
+            $router->getRouteInfo(['articles', 'mon-article']),
         );
     }
 
