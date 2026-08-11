@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace LM\WebFramework\Form\Transformer;
 
+use LM\WebFramework\Form\Conf\FormFieldConf;
 use LM\WebFramework\Form\Exceptions\ExtractionException;
 use LM\WebFramework\Form\FormFactory;
 use LM\WebFramework\Model\Type\IModel;
@@ -12,8 +13,7 @@ use LM\WebFramework\Model\Type\IScalarModel;
 final class ListTransformer implements IFormTransformer
 {
     public function __construct(
-        private IModel $nodeModel,
-        private array $nodeConfig,
+        private array|FormFieldConf $nodeConf,
         private FormFactory $formFactory,
         private string $name,
     ) {
@@ -32,12 +32,12 @@ final class ListTransformer implements IFormTransformer
         foreach ($data as $name => $element) {
             if ($this->nodeModel instanceof IScalarModel) {
                 $value[] = $this->formFactory
-                    ->createTransformer($this->nodeModel, $this->nodeConfig, name: $name)
+                    ->createTransformer($this->nodeConf, name: $name)
                     ->transformSubmittedData($element, $uploadedFiles)
                 ;
             } else {
                 $value[] = $this->formFactory
-                    ->createTransformer($this->nodeModel, $this->nodeConfig, csrf: false)
+                    ->createTransformer($this->nodeConf, withCsrf: false)
                     ->transformSubmittedData($element, $uploadedFiles)
                 ;
             }

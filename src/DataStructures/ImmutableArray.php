@@ -19,7 +19,7 @@ use UnexpectedValueException;
  * An immutable array consists of key-value pairs named properties. Keys are
  * either integers or strings, and values can be any data type.
  */
-abstract class ImmutableArray implements ArrayAccess, Countable, IArrayable, IteratorAggregate
+abstract readonly class ImmutableArray implements ArrayAccess, Countable, IArrayable, IteratorAggregate
 {
     public function __construct(
         protected array $data,

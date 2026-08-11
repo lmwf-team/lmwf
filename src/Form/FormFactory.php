@@ -7,6 +7,8 @@ namespace LM\WebFramework\Form;
 use DomainException;
 use InvalidArgumentException;
 use LM\WebFramework\Configuration\Configuration;
+use LM\WebFramework\Form\Conf\FormConfFactory;
+use LM\WebFramework\Form\Conf\FormFieldConf;
 use LM\WebFramework\Form\Transformer\ArrayTransformer;
 use LM\WebFramework\Form\Transformer\CheckboxTransformer;
 use LM\WebFramework\Form\Transformer\CsrfTransformer;
@@ -36,57 +38,79 @@ final class FormFactory
     public const CSRF_FORM_ELEMENT_NAME = '_csrf';
 
     public function __construct(
-        private Configuration $config,
+        private Configuration $conf,
         private CsrfTransformer $csrfTransformer,
+        private FormConfFactory $formConfFactory,
     ) {
     }
 
-    public function createForm(ArrayModel $model, array $config = []): ArrayTransformer
+    public function createForm(ArrayModel $model, array $fieldConfs = []): ArrayTransformer
     {
-        return $this->createTransformer($model, $config, null, true);
+        $formConf = $this->formConfFactory->createConf($model, $fieldConfs);
+        return $this->createFormTransformer($formConf, null, true);
     }
 
-    public function createTransformer(IModel $model, array $config = [], ?string $name = null, bool $csrf = false): IFormTransformer
-    {
-        if ($model instanceof ForeignEntityModel) {
-            return $this->createTransformer($model->getEntityModel(), $config, $name, $csrf);
-        } elseif ($model instanceof ArrayModel) {
-            $formElements = [];
-            $defaultCallbacks = [];
-            foreach ($model->getProperties() as $key => $property) {
-                $propConfig = $config[$key] ?? [];
-                $propConfig['ignore'] = $config[$key]['ignore'] ?? false;
-                if (!$propConfig['ignore']) {
-                    $formElements[$key] = $this->createTransformer($property, $config[$key] ?? [], $key);
-                }
-            }
-            return new ArrayTransformer($formElements, $csrf ? $this->csrfTransformer : null, $name, $defaultCallbacks);
+    public function createTransformer(
+        array|FormFieldConf $conf,
+        ?string $name = null,
+        bool $withCsrf = false,
+    ): IFormTransformer {
+        if ($conf instanceof FormFieldConf) {
+            return $this->createFieldTransformer($conf, $name);
         }
+        return $this->createFormTransformer($conf, $name, $withCsrf);
+    }
+
+    public function createFieldTransformer(
+        FormFieldConf $conf,
+        ?string $name = null,
+    ): IFormTransformer {
         if (null === $name) {
             throw new InvalidArgumentException('A name must be provided for non-array transformers.');
         }
-        if ($model instanceof ListModel || $model instanceof EntityListModel) {
-            return new ListTransformer($model->getItemModel(), $config, $this, $name);
+        if ($conf->model instanceof ListModel || $conf->model instanceof EntityListModel) {
+            return new ListTransformer($conf->model->getItemModel(), $conf, $this, $name);
         }
-        if ($model instanceof StringModel) {
-            if (null !== $model->getUploadedImageConstraint()) {
-                return new FileTransformer($this->config->getPathOfUploadedFiles(), $name);
+        if ($conf->model instanceof StringModel) {
+            if (null !== $conf->model->getUploadedImageConstraint()) {
+                return new FileTransformer($this->conf->getPathOfUploadedFiles(), $name);
             }
             return new StringTransformer($name);
         }
-        if ($model instanceof IntModel) {
+        if ($conf->model instanceof IntModel) {
             return new IntTransformer($name);
         }
-        if ($model instanceof DateTimeModel) {
+        if ($conf->model instanceof DateTimeModel) {
             return new DateTimeTransformer($name);
         }
-        if ($model instanceof BoolModel) {
+        if ($conf->model instanceof BoolModel) {
             return new CheckboxTransformer($name);
         }
-        if ($model instanceof JsonModel) {
+        if ($conf->model instanceof JsonModel) {
             return new JsonTransformer($name);
         }
 
-        throw new DomainException('No transformer found for ' . get_class($model) . '.');
+        throw new DomainException('No transformer found for ' . get_class($conf->model) . '.');
+    }
+
+    public function createFormTransformer(
+        array $formConf,
+        ?string $name = null,
+        bool $withCsrf = false,
+    ): ArrayTransformer {
+        $fieldTransformers = [];
+        foreach ($formConf as $key => $fieldConf) {
+            $fieldTransformers[$key] = $this->createTransformer(
+                $fieldConf,
+                $key,
+                false,
+            );
+        }
+        return new ArrayTransformer(
+            $fieldTransformers,
+            $withCsrf ? $this->csrfTransformer : null,
+            $name,
+            [],
+        );
     }
 }

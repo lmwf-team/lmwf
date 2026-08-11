@@ -14,7 +14,7 @@ use OutOfBoundsException;
  *
  * @todo Force a certain naming style for property keys?
  */
-final class AppObject extends ImmutableArray
+final readonly class AppObject extends ImmutableArray
 {
     /**
      * @param array<string, mixed> $appArray An associative array.
