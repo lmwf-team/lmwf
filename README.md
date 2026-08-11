@@ -1,4 +1,4 @@
-[![Check PHP style](https://github.com/lmwf-team/lmwf/actions/workflows/check-php-style.yml/badge.svg)](https://github.com/lmwf-team/lmwf/actions/workflows/check-php-style.yml)
+[![PHP_CodeSniffer](https://github.com/lmwf-team/lmwf/actions/workflows/phpcs.yml/badge.svg)](https://github.com/lmwf-team/lmwf/actions/workflows/phpcs.yml)
 [![PHPUnit](https://github.com/lmwf-team/lmwf/actions/workflows/phpunit.yml/badge.svg)](https://github.com/lmwf-team/lmwf/actions/workflows/phpunit.yml)
 [![PHPStan](https://github.com/lmwf-team/lmwf/actions/workflows/phpstan.yml/badge.svg)](https://github.com/lmwf-team/lmwf/actions/workflows/phpstan.yml)
 
