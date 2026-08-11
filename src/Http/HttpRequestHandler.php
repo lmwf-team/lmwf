@@ -33,27 +33,31 @@ final class HttpRequestHandler
     /**
      * Handles the entire process of responding to an HTTP request and return an
      * HTTP response.
+     * 
+     * @todo Define access control in config.
      */
     public function generateResponse(ServerRequestInterface $request): ResponseInterface
     {
         $pathSegments = $this->getPathSegments($request->getRequestTarget());
 
         try {
-            $controllerRoute = $this->configuration->getControllerFqcn($pathSegments);
-            $controller = $this->container->get($controllerRoute['class']);
+            $route = $this->configuration->getControllerFqcn($pathSegments);
 
             /**
              * @todo Define clearance in config
              */
-            if (Clearance::VISITORS === $controller->getAccessControl() && $this->session->isUserLoggedIn()) {
+            if (false === $route['roles']['admins'] && $this->session->isUserLoggedIn()) {
                 throw new AlreadyAuthenticated();
-            } elseif (Clearance::ADMINS === $controller->getAccessControl() && !$this->session->isUserLoggedIn()) {
+            } elseif (true === $route['roles']['admins'] && !$this->session->isUserLoggedIn()) {
                 throw new AccessDenied();
             }
+
+            $controller = $this->container->get($route['class']);
+
     
             return $this->addCspSources($controller->generateResponse(
                 $request,
-                0 === $controllerRoute['n_args'] ? [] : array_slice($pathSegments, -$controllerRoute['n_args']),
+                0 === $route['n_args'] ? [] : array_slice($pathSegments, -$route['n_args']),
                 [],
             ));
         } catch (SettingNotFoundException $e) {

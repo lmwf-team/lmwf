@@ -4,12 +4,8 @@ declare(strict_types=1);
 
 namespace LM\WebFramework\Configuration;
 
-use LengthException;
 use LM\WebFramework\Configuration\Exception\SettingNotFoundException;
 use LM\WebFramework\DataStructures\AppObject;
-use Psr\Http\Message\ServerRequestInterface;
-use RequestWrapper;
-use UnexpectedValueException;
 
 final class Configuration
 {
@@ -44,9 +40,27 @@ final class Configuration
         $currentRoute = $this->configData->getAppObject('rootRoute');
         $nPathSegments = count($pathSegments);
         $i = 0;
+        $roles = [
+            'admins' => true,
+            'visitors' => true,
+        ];
+        if ($currentRoute->hasProperty('roles')) {
+            foreach ($currentRoute['roles'] as $roleId => $isAuthorized) {
+                if (false === $isAuthorized && key_exists($roleId, $roles)) {
+                    $roles[$roleId] = false;
+                }
+            }
+        }
         while ($i < $nPathSegments) {
             if ($currentRoute->hasProperty('routes') && $currentRoute->getAppObject('routes')->hasProperty($pathSegments[$i])) {
                 $currentRoute = $currentRoute['routes'][$pathSegments[$i]];
+                if ($currentRoute->hasProperty('roles')) {
+                    foreach ($currentRoute['roles'] as $roleId => $isAuthorized) {
+                        if (false === $isAuthorized && key_exists($roleId, $roles)) {
+                            $roles[$roleId] = false;
+                        }
+                    }
+                }
             } elseif ($currentRoute->hasProperty('controller')) {
                 $nRemainingPathSegments = $nPathSegments - $i;
                 $maxNArgs = $currentRoute['controller']['max_n_args'] ?? $currentRoute['controller']['n_args'] ?? 0;
@@ -61,15 +75,21 @@ final class Configuration
             }
             $i++;
         }
+        if ($currentRoute->hasProperty('roles')) {
+            foreach ($currentRoute['roles'] as $roleId => $isAuthorized) {
+                if (false === $isAuthorized && key_exists($roleId, $roles)) {
+                    $roles[$roleId] = false;
+                }
+            }
+        }
 
         if (!$currentRoute->hasProperty('controller')) {
             throw new SettingNotFoundException("Requested route does not have an associated controller.");
         }
 
-
-
         $controllerRoute = $currentRoute['controller']->toArray();
         $controllerRoute['n_args'] = $nPathSegments - $i;
+        $controllerRoute['roles'] = $roles;
         return $controllerRoute;
     } 
 

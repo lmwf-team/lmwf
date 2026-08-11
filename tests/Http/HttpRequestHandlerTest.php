@@ -18,13 +18,19 @@ final class HttpRequestHandlerTest extends TestCase
             [
                 'rootRoute' => [
                     'routes' => [
+                        'login' => [
+                            'roles' => [
+                                'admins' => false,
+                            ],
+                            'controller' => [
+                                'class' => 'LoginController',
+                            ],
+                        ],
                         'admin' => [
+                            'roles' => [
+                                'visitors' => false,
+                            ],
                             'routes' => [
-                                'login' => [
-                                    'controller' => [
-                                        'class' => 'LoginController',
-                                    ],
-                                ],
                                 'account' => [
                                     'controller' => [
                                         'class' => 'AccountController',
@@ -45,6 +51,9 @@ final class HttpRequestHandlerTest extends TestCase
                             ],
                             'routes' => [
                                 'edit' => [
+                                    'roles' => [
+                                        'visitors' => false,
+                                    ],
                                     'controller' => [
                                         'class' => 'EditArticleController',
                                     ]
@@ -66,8 +75,12 @@ final class HttpRequestHandlerTest extends TestCase
             [
                 'class' => 'LoginController',
                 'n_args' => 0,
+                'roles' => [
+                    'admins' => false,
+                    'visitors' => true,
+                ],
             ],
-            $config->getControllerFqcn(['admin', 'login']),
+            $config->getControllerFqcn(['login']),
         );
 
         $this->expectException(SettingNotFoundException::class);
@@ -77,6 +90,10 @@ final class HttpRequestHandlerTest extends TestCase
             [
                 'class' => 'EditArticleController',
                 'n_args' => 0,
+                'roles' => [
+                    'admins' => true,
+                    'visitors' => false,
+                ],
             ],
             $config->getControllerFqcn(['articles', 'edit']),
         );
@@ -85,6 +102,10 @@ final class HttpRequestHandlerTest extends TestCase
             [
                 'class' => 'ArticlesController',
                 'n_args' => 1,
+                'roles' => [
+                    'admins' => true,
+                    'visitors' => true,
+                ],
             ],
             $config->getControllerFqcn(['articles', 'foo']),
         );
@@ -93,6 +114,10 @@ final class HttpRequestHandlerTest extends TestCase
             [
                 'class' => 'ArticlesController',
                 'n_args' => 1,
+                'roles' => [
+                    'admins' => true,
+                    'visitors' => true,
+                ],
             ],
             $config->getControllerFqcn(['articles']),
         );
@@ -101,6 +126,10 @@ final class HttpRequestHandlerTest extends TestCase
             [
                 'class' => 'ArticleController',
                 'n_args' => 1,
+                'roles' => [
+                    'admins' => true,
+                    'visitors' => true,
+                ],
             ],
             $config->getControllerFqcn(['article', 'mon-article']),
         );
