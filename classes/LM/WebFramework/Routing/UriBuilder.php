@@ -19,6 +19,6 @@ class UriBuilder implements IUriBuilder
 
     private function getProtocol(): string
     {
-        return $config['protocol'];
+        return $this->config['protocol'];
     }
 }
