@@ -58,7 +58,6 @@ final readonly class Router
             if ($nArgs < $routeDef->minArgs || $nArgs > $routeDef->maxArgs) {
                 throw new RouteNotFoundException("No route could be found for segment. It does not have the correct number of arguments. ({$nArgs} when it should be between {$routeDef->minArgs} and {$routeDef->maxArgs}.)");
             }
-            array_unshift($nextSegs, $currentSeg);
             return new Route($routeDef, $nextSegs, $parentRoute, $nArgs);
         } elseif ($routeDef instanceof ParentRoute) {
             $route = new Route($routeDef, [$currentSeg], $parentRoute);
