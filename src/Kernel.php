@@ -37,11 +37,10 @@ final class Kernel
         if (self::CLI_ID === php_sapi_name()) {
             return $container;
         } else {
-            $request = ServerRequest::fromGlobals();
-
-            $response = $container->get(HttpRequestHandler::class)->generateResponse($request);
-
             session_start();
+
+            $request = ServerRequest::fromGlobals();
+            $response = $container->get(HttpRequestHandler::class)->generateResponse($request);
 
             http_response_code($response->getStatusCode());
 
