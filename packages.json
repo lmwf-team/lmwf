@@ -1,7 +1,0 @@
-{
-    "packages": {
-        "lmwf-team/lmwf": {
-            "dev-master": { "composer.json" }
-        }
-    }
-}

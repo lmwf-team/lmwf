@@ -1,8 +1,8 @@
 {
-    "name": "lmwf-team/lmwfgit",
+    "name": "lmwf-team/lmwf",
     "version": "1.0.0",
     "dist": {
         "url": "https://github.com/lmwf-team/lmwf/archive/master.zip",
-        "type": "zip$"
+        "type": "zip"
     }
 }
