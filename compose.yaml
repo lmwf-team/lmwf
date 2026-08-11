@@ -9,5 +9,6 @@ services:
   composer_dsn:
     command: sleep infinity
     image: composer:latest
+    working_dir: /app
     volumes:
       - ./vendor:/app/vendor
