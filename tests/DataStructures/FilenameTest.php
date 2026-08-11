@@ -7,6 +7,12 @@ use PHPUnit\Framework\TestCase;
 
 final class FilenameTest extends TestCase
 {
+    public function testInt(): void
+    {
+        $filename = new Filename('8234-33', 'png');
+        self::assertEquals('8234-33.png', $filename->__toString());
+    }
+
     public function testInvalidAccents(): void
     {
         self::expectException(InvalidArgumentException::class);

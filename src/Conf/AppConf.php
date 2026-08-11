@@ -157,16 +157,20 @@ final readonly class AppConf
     }
 
     /**
-     * @param list<non-decimal-int-string> $keys
+     * @param list<non-decimal-int-string>|string $keys
      */
-    public function getSetting(array $keys): string
+    public function getSetting(array|string $key): string
     {
-        $length = count($keys);
+        if (is_string($key)) {
+            return $this->data->getString($key);
+        }
+
+        $length = count($key);
         $data = $this->data;
         for ($i = 0; $i < $length - 1; $i++) {
-            $data = $data->getAppObject($keys[$i]);
+            $data = $data->getAppObject($key[$i]);
         }
-        return $data->getString($keys[$length - 1]);
+        return $data->getString($key[$length - 1]);
     }
 
     /**

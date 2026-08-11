@@ -14,7 +14,7 @@ use UnexpectedValueException;
 final readonly class Filename implements Stringable
 {
     const string ALLOWED_SEPS = '-';
-    const string ALLOWED_LETTERS = 'abcdefghijklmnopqrstuvwxyz';
+    const string ALLOWED_LETTERS = 'abcdefghijklmnopqrstuvwxyz0123456789';
 
     public function __construct(
         public string $basename,
