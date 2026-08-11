@@ -24,4 +24,9 @@ class AppList extends ImmutableArray
     {
         return implode($separator, $this->data);
     }
+
+    public function map(callable $callback): self
+    {
+        return new self(array_map($callback, $this->data));
+    }
 }
