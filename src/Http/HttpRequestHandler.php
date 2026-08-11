@@ -59,8 +59,14 @@ final class HttpRequestHandler
             ;
         }
 
-        $cspValue = "default-src {$this->configuration->getCSPDefaultSources()}; object-src {$this->configuration->getCSPObjectSources()}; style-src {$this->configuration->getCSPStyleSources()}";
-        return $response->withAddedHeader('Content-Security-Policy', $cspValue);
+        // @todo Don’t specify CSP sources if they are not set in configuration
+        $cspValues = [
+            "default-src {$this->configuration->getCSPDefaultSources()}",
+            "font-src {$this->configuration->getCSPFontSources()}",
+            "object-src {$this->configuration->getCSPObjectSources()}",
+            "style-src {$this->configuration->getCSPStyleSources()}",
+        ];
+        return $response->withAddedHeader('Content-Security-Policy', implode(';', $cspValues));
     }
 
     /**

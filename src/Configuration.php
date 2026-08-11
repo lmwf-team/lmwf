@@ -46,6 +46,14 @@ final class Configuration
     }
 
     /**
+     * @return string List of valid CSP font origins
+     */
+    public function getCSPFontSources(): string
+    {
+        return $this->configData->getAppList('cspFontSources')->implode(' ');
+    }
+
+    /**
      * @return string List of valid CSP object origins
      */
     public function getCSPObjectSources(): string
