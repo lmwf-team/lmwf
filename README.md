@@ -1,2 +1,2 @@
 # lmwf
-A very simple web framework, that doesn’t require a ridiculous amount of PHP dependencies, extensions, and Linux packages.
+Lightweight web framework that doesn’t require tons of dependencies and keeps you in control.
