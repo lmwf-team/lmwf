@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace LM\WebFramework\Model;
 
-final class DateTimeModel extends AbstractScalar
+final class DateTimeModel extends AbstractModel implements IScalarModel
 {
     /**
      * @param \LM\WebFramework\Constraints\IDateTimeConstraint[] $constraints
@@ -16,8 +16,7 @@ final class DateTimeModel extends AbstractScalar
         parent::__construct($isNullable);
     }
 
-    #[\Override]
-    public function getDateTimeConstraints(): ?array {
+    public function getDateTimeConstraints(): array {
         return $this->constraints;
     }
 }

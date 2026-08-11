@@ -4,6 +4,6 @@ declare(strict_types=1);
 
 namespace LM\WebFramework\Model;
 
-interface IList
+interface IScalarModel extends IModel
 {
 }

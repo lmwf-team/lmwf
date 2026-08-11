@@ -7,7 +7,7 @@ namespace LM\WebFramework\Database\Exceptions;
 use InvalidArgumentException;
 use LM\WebFramework\Model\IModel;
 
-final class InvalidDbDataException extends InvalidArgumentException
+class InvalidDbDataException extends InvalidArgumentException
 {
     public function __construct(mixed $dbData, IModel $model, ?string $propertyName = null)
     {

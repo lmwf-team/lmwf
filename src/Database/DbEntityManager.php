@@ -4,16 +4,21 @@ declare(strict_types=1);
 
 namespace LM\WebFramework\Database;
 
+use DateMalformedStringException;
 use DateTimeImmutable;
 use InvalidArgumentException;
 use LM\WebFramework\Database\Exceptions\InvalidDbDataException;
 use LM\WebFramework\Database\Exceptions\NullDbDataNotAllowedException;
 use LM\WebFramework\DataStructures\AppObject;
-use LM\WebFramework\Model\IEntity;
-use LM\WebFramework\Model\IForeignEntity;
-use LM\WebFramework\Model\IList;
-use LM\WebFramework\Model\IModel;
-use LM\WebFramework\Model\IScalar;
+use LM\WebFramework\Model\AbstractEntityModel;
+use LM\WebFramework\Model\BoolModel;
+use LM\WebFramework\Model\DateTimeModel;
+use LM\WebFramework\Model\EntityModel;
+use LM\WebFramework\Model\ForeignEntityModel;
+use LM\WebFramework\Model\IntModel;
+use LM\WebFramework\Model\IScalarModel;
+use LM\WebFramework\Model\ListModel;
+use LM\WebFramework\Model\StringModel;
 use UnexpectedValueException;
 
 /**
@@ -27,26 +32,6 @@ final class DbEntityManager
         return count($array) === count(array_filter($array, fn($key) => is_int($key), ARRAY_FILTER_USE_KEY));
     }
 
-    public function convertDbDataRow(array $dbRows, IModel $model, string $prefix, int $index = 0): AppObject
-    {
-        if (null !== $model->getListNodeModel()) {
-            return $this->convertDbDataToList($dbRows, $model);
-        }
-        if (null !== $model->getArrayDefinition()) {
-            $transientAppData = [];
-            foreach ($model->getArrayDefinition() as $key => $property) {
-                if (null !== $property->getArrayDefinition() || null !== $property->getListNodeModel()) {
-                    $transientAppData[$key] = $this->convertDbDataRow($dbRows, $property, $index);
-                } else {
-                    $transientAppData[$key] = $this->convertDbDataValue($dbRows[$index][$prefix . self::SEP . $key], $property);
-                }
-            }
-            return new AppObject($transientAppData);
-        }
-
-        throw new InvalidDbDataException('Model must have an array definition.', $model);
-    }
-
     /**
      * Transform DB Data into App Data.
      * 
@@ -54,93 +39,81 @@ final class DbEntityManager
      * app data: bool, int, DateTime, and finally string.
      *
      * @param int|string|null $dbData DB Data.
-     * @param IScalar $model The model of the DB Data.
+     * @param IScalarModel $model The model of the DB Data.
      * @return mixed A PHP scalar type or base class object.
      * @throws InvalidArgumentException If $dbData is not of any DB Data variable type.
      */
-    public function convertDbScalar(bool|int|string|null $dbData, IScalar $model): mixed
+    public function convertDbScalar(bool|int|string|null $dbData, IScalarModel $model): mixed
     {
-        if (is_numeric($dbData)) {
-            if ($model->isBool() && in_array($dbData, [0, 1], true)) {
-                return 1 === $dbData;
-            } elseif (null !== $model->getIntegerConstraints()) {
-                return intval($dbData);
-            }
-        }
-        if (is_string($dbData)) {
-            if (null !== $model->getDateTimeConstraints()) {
+        if ($model instanceof BoolModel && (0 === $dbData || 1 === $dbData)) {
+            return 1 === $dbData;
+        } elseif ($model instanceof DateTimeModel && is_string($dbData)) {
+            try {
                 return new DateTimeImmutable($dbData);
+            } catch (DateMalformedStringException) {
             }
-            if (null !== $model->getStringConstraints()) {
-                return $dbData;
-            }
-        }
-        if (null === $dbData) {
-            if ($model->isNullable()) {
-                return null;
-            }
-            throw new NullDbDataNotAllowedException($dbData, $model);
-        }
-
-        throw new InvalidDbDataException($dbData, $model);
-    }
-
-    public function convertDbDataToList(array $dbList, IEntity|IModel $nodeModel, string $prefix): array
-    {
-        if (is_array($dbList) && array_is_list($dbList)) {
-            if ($nodeModel instanceof IEntity) {
-
-                return array_map(
-                    function ($i) use ($dbList, $nodeModel, $prefix) {
-                        return $this->convertDbDataRow($dbList, $nodeModel, $prefix, $i);
-                    },
-                    array_keys($dbList),
-                );
-            } elseif ($nodeModel instanceof IList) {
-                throw new InvalidArgumentException('Nested lists not supported yet.');
+        } elseif ($model instanceof IntModel && is_numeric($dbData)) {
+            return intval($dbData);
+        } elseif ($model instanceof StringModel && is_string($dbData)) {
+            return $dbData;
+        } elseif ($model->isNullable() && is_null($dbData)) {
+            return null;
+        } else {
+            if (null === $dbData) {
+                throw new NullDbDataNotAllowedException($dbData, $model);
             } else {
-                return array_map(
-                    function ($node) use ($nodeModel) {
-                        return $this->convertDbDataValue($node, $nodeModel);
-                    },
-                    $dbList,
-                );
+                throw new InvalidDbDataException($dbData, $model);
             }
-            
         }
-
-        throw new InvalidDbDataException('Given $dbList must be a list.', $model);
     }
 
     /**
-     * @param array[] $dbRows A list of rows each stored as associative arrays.
-     * @param IEntity $entity The model of each row.
+     * @param array[] $dbRows A list of associative arrays each storing a
+     * different row.
+     * @param AbstractEntityModel $model The model of each row.
      * @param int $index The row identifier of the main entity.
      */
-    public function convertDbRowsToAppObject(array $dbRows, IEntity $entity, int $index = 0): AppObject
+    public function convertDbRowsToAppObject(array $dbRows, AbstractEntityModel $model, int $index = 0): AppObject
     {
-        if (array_is_list($dbRows)) {
+        if (!array_is_list($dbRows)) {
             throw new InvalidArgumentException('$dbRows must be a list of rows.');
         }
 
         $transientAppObject = [];
-        foreach ($entity->getProperties() as $key => $property) {
+        foreach ($model->getProperties() as $key => $property) {
             $value = null;
-            if ($property instanceof IForeignEntity) {
+
+            if ($property instanceof ForeignEntityModel) {
+                $parentId = $dbRows[$index][$model->getIdentifier() . self::SEP . $property->getParentIdKey()];
                 $linkedRowsKeys = array_filter(
                     array_keys($dbRows),
-                    function ($rowKey) use ($dbRows, $index, $property) {
-                        return $property->isLinked($dbRows[$index], $dbRows[$rowKey]);
+                    function ($rowKey) use ($dbRows, $parentId, $property) {
+                        return $dbRows[$rowKey][$property->getIdentifier() . self::SEP . $property->getChildIdKey()] === $parentId;
                     },
                 );
                 if (count($linkedRowsKeys) > 0) {
                     $value = $this->convertDbRowsToAppObject($dbRows, $property, $linkedRowsKeys[0]);
                 }
+            } elseif ($property instanceof EntityModel) {
+                $value = $this->convertDbRowsToAppObject($dbRows, $property, $index);
+            } elseif ($property instanceof ListModel) {
+                $itemModel = $property->getItemModel();
+                $value = [];
+                $ids = [];
+                $parentId = $dbRows[$index][$model->getIdentifier() . self::SEP . $itemModel->getParentIdKey()];
+                foreach ($dbRows as $rowIndex => $row) {
+                    $rowId = $row[$itemModel->getIdentifier() . self::SEP . $itemModel->getChildIdKey()];
+                    if ($rowId === $parentId && !in_array($rowId, $ids)) {
+                        $value[] = $this->convertDbRowsToAppObject($dbRows, $itemModel, $rowIndex);
+                    }
+                }
             } else {
-                $value = $this->convertDbDataToValue($dbRows[$index][$key], $property);
+                $value = $this->convertDbScalar($dbRows[$index][$model->getIdentifier() . self::SEP . $key], $property);
             }
+
             $transientAppObject[$key] = $value;
         }
+        return new AppObject($transientAppObject);
     }
 
     /**
@@ -175,97 +148,5 @@ final class DbEntityManager
         } else {
             return $appData;
         }
-    }
-
-    /**
-     * @param $dbRows array A list of database rows mapped by column.
-     */
-    private function convertListToAppObject(array $dbRows, IModel $model, ?string $prefix = null, int $index = 0): ?AppObject
-    {
-        if (!array_is_list($dbRows)) {
-            throw new InvalidArgumentException('Expected list argument.');
-        }
-
-        if (null !== $listNodeModel = $model->getListNodeModel()) {
-            // Make convertListToAppObject return a list of whatever the list node model is.
-            $appDataList = [];
-            // To prevent adding the same item twice
-            $ids = [];
-            
-            // For each list property, we will check each row of $dbRows
-            foreach ($dbRows as $rowIndex => $row) {
-                if (null !== $row["{$prefix}_id"] & !in_array($row["{$prefix}_id"], $ids, true)) {
-                    $appDataList[] = $this->convertListToAppObject($dbRows, $listNodeModel, $prefix, $rowIndex);
-                    $ids[] = $row["{$prefix}_id"];
-                }
-            }
-            return new AppObject($appDataList);
-        }
-        elseif (null !== $arrayModel = $model->getArrayDefinition()) {
-            $transientAppObject = [];
-            foreach ($arrayModel as $pKey => $pModel) {
-                if (null !== $pModel->getArrayDefinition() || null !== $pModel->getListNodeModel()) {
-                    $subPrefix = 's' === substr($pKey, strlen($pKey) - 1) ? $subPrefix = substr($pKey, 0, strlen($pKey) - 1) : $pKey;
-                    $parentEntityId = $dbRows[$index][$prefix . self::SEP . 'id'];
-                    $relatedDbRows = array_values(array_filter($dbRows, function ($row) use ($prefix, $parentEntityId){
-                        return $row[$prefix . self::SEP . 'id'] === $parentEntityId;
-                    }));
-                    $transientAppObject[$pKey] = $this->convertListToAppObject($relatedDbRows, $pModel, $subPrefix, $index);
-                } else {
-                    $transientAppObject[$pKey] = $this->toAppData($dbRows[$index][$prefix . self::SEP . $pKey], $pModel);
-                }
-            }
-
-            return new AppObject($transientAppObject);
-        }
-        else {
-            throw new InvalidArgumentException('$dbRows is not valid.');
-        }
-    }
-
-    private function convertNonListArrayToAppObject(array $dbArray, IModel $model, ?string $prefix = null): ?AppObject
-    {
-        if (null === $model->getArrayDefinition()) {
-            throw new InvalidDbDataException($dbArray, $model, $prefix);
-        }
-
-        $appArray = [];
-        $nValidNull = 0;
-        $nInvalidNull = 0;
-        $firstNullException = null;
-        foreach ($model->getArrayDefinition() as $key => $property) {
-            try {
-                if (null !== $property->getArrayDefinition()) {
-                    $appData = $this->toAppData($dbArray, $property, $key);
-                } elseif (null !== $property->getListNodeModel()) {
-                    $subPrefix = 's' === substr($key, strlen($key) - 1) ? $subPrefix = substr($key, 0, strlen($key) - 1) : $key;
-                    $appData = $this->toAppData($dbArray[$key], $property, $subPrefix);
-                } else {
-                    $appData = $this->toAppData(
-                        $dbArray[$prefix . self::SEP . $key],
-                        $property,
-                    );
-                }
-            } catch (NullDbDataNotAllowedException $e) {
-                $appData = $e;
-                $nInvalidNull++;
-                if (null === $firstNullException) {
-                    $firstNullException = $e;
-                }
-            }
-            if (null === $appData) {
-                $nValidNull++;
-            }
-            $appArray[$key] = $appData;
-        }
-
-        if (null !== $firstNullException) {
-            if (count($appArray) == $nValidNull + $nInvalidNull) {
-                return $this->toAppData(null, $model, $prefix);
-            }
-            throw $firstNullException;
-        }
-        
-        return new AppObject($appArray);
     }
 }

@@ -7,13 +7,14 @@ namespace LM\WebFramework\DataStructures;
 use ArrayAccess;
 use ArrayIterator;
 use BadMethodCallException;
+use Countable;
 use IteratorAggregate;
 use Traversable;
 
 /**
  * Immutable array whose values can be accessed as properties.
  */
-final class AppObject implements ArrayAccess, IteratorAggregate
+final class AppObject implements ArrayAccess, Countable, IteratorAggregate
 {
     private array $data;
 
@@ -34,6 +35,11 @@ final class AppObject implements ArrayAccess, IteratorAggregate
     public function attributeGet(string $offset): mixed {
         $keyName = (new KeyName($offset))->__toString();
         return $this->data[$keyName];
+    }
+
+    public function count(): int
+    {
+        return count($this->data);
     }
 
     public function getIterator(): Traversable {

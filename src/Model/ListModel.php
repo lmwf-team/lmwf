@@ -4,39 +4,20 @@ declare(strict_types=1);
 
 namespace LM\WebFramework\Model;
 
-final class ListModel implements IModel
+use LM\WebFramework\Model\AbstractModel;
+use LM\WebFramework\Model\ForeignEntityModel;
+
+final class ListModel extends AbstractModel
 {
     public function __construct(
-        private IModel $nodeModel,
-        private bool $isNullable = false,
-    ) {
+        private ForeignEntityModel $itemModel,
+        bool $isNullable = false,
+    )
+    {
+        parent::__construct($isNullable);
     }
 
-    public function getArrayDefinition(): ?array {
-        return null;
-    }
-
-    public function getDateTimeConstraints(): ?array {
-        return null;
-    }
-
-    public function getListNodeModel(): IModel {
-        return $this->nodeModel;
-    }
-
-    public function getIntegerConstraints(): ?array {
-        return null;
-    }
-
-    public function getStringConstraints(): ?array {
-        return null;
-    }
-
-    public function isBool(): bool {
-        return false;
-    }
-
-    public function isNullable(): bool {
-        return $this->isNullable;
+    public function getItemModel() : ForeignEntityModel {
+        return $this->itemModel;
     }
 }

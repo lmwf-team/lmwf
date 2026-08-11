@@ -13,7 +13,6 @@ use LM\WebFramework\Constraints\INumberConstraint;
 use LM\WebFramework\Constraints\IUploadedImageConstraint;
 use LM\WebFramework\Constraints\StringConstraint;
 use LM\WebFramework\Type\ModelValidator;
-use MF\Validator\MemberUploadedImageValidator;
 
 final class ValidatorFactory
 {

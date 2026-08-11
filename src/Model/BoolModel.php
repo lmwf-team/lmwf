@@ -4,10 +4,6 @@ declare(strict_types=1);
 
 namespace LM\WebFramework\Model;
 
-final class BoolModel extends AbstractScalar
+final class BoolModel extends AbstractModel implements IScalarModel
 {
-    #[\Override]
-    public function isBool(): bool {
-        return true;
-    }
 }

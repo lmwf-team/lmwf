@@ -6,9 +6,11 @@ namespace LM\WebFramework\Model;
 
 use LM\WebFramework\Constraints\RangeConstraint;
 
-final class IntegerModel extends AbstractScalar
+final class IntModel extends AbstractModel implements IScalarModel
 {
     const MAX = 32767;
+
+    const MAX_UNSIGNED = 65535;
 
     const MIN = -32767;
 
@@ -18,15 +20,20 @@ final class IntegerModel extends AbstractScalar
      * @param LM\WebFramework\Constraints\INumberConstraint[] $constraints
      */
     public function __construct(
-        ?array $constraints = null,
+        ?int $min = null,
+        ?int $max = null,
         bool $isNullable = false,
     ) {
-        $this->constraints = null !== $constraints ? $constraints : [new RangeConstraint(self::MIN, self::MAX)];
-        parent::__construct($isNullable);
+        if (null !== $min || null !== $max) {
+            $this->constraints = new RangeConstraint($min, $max);
+        }
+        parent::__construct(
+            isNullable: $isNullable,
+        );
     }
 
-    #[\Override]
-    public function getIntegerConstraints(): array {
+    public function getNumberConstraints(): array
+    {
         return $this->constraints;
     }
 }

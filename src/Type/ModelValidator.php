@@ -8,8 +8,14 @@ use DateTimeInterface;
 use DomainException;
 use InvalidArgumentException;
 use LM\WebFramework\Constraints\INotNullConstraint;
+use LM\WebFramework\DataStructures\AppObject;
 use LM\WebFramework\DataStructures\ConstraintViolation;
+use LM\WebFramework\Model\IBoolModel;
+use LM\WebFramework\Model\IDateTimeModel;
+use LM\WebFramework\Model\IEntity;
 use LM\WebFramework\Model\IModel;
+use LM\WebFramework\Model\IScalar;
+use LM\WebFramework\Model\IScalarModel;
 use LM\WebFramework\Validator\ValidatorFactory;
 
 final class ModelValidator
@@ -19,11 +25,8 @@ final class ModelValidator
     ) {
     }
 
-    /**
-     * @throws InvalidArgumentException If $data is not of the expected class or type.
-     * @throws DomainException If $model is unknown.
-     */
-    public function validate(mixed $data, IModel $model): array {        
+    public function validate(mixed $data, IModel $model): array
+    {
         if (null === $data) {
             if (!$model->isNullable()) {
                 return [
@@ -36,32 +39,60 @@ final class ModelValidator
                 return [];
             }
         }
-        if (is_array($data)) {
-            $arrayDefinition = $model->getArrayDefinition();
-            $listNodeModel = $model->getListNodeModel();
-            if (null !== $arrayDefinition) {
-                $constraintViolations = [];
-                if (count($arrayDefinition) !== count($data)) {
-                    throw new InvalidArgumentException('The provided array does not have the expected number of properties.');
-                }
-                foreach ($arrayDefinition as $key => $property) {
-                    $violations = $this->validate($data[$key], $property);
-                    if (count($violations) > 0) {
-                        $constraintViolations[$key] = $violations;
-                    }
-                }
-                return $constraintViolations;
-            } elseif (null !== $listNodeModel) {
-                $constraintViolations = [];
-                foreach ($data as $key => $value) {
-                    $violations = $this->validate($value, $listNodeModel);
-                    if (count($violations) > 0) {
-                        $constraintViolations[$key] = key_exists($key, $constraintViolations) ? array_merge_recursive($constraintViolations[$key], $violations) : $violations;
-                    }
-                }
-                return $constraintViolations;
+
+        if ($model instanceof IEntity && $data instanceof AppObject) {
+            return $this->validateEntity($data, $model);
+        }
+        if ($model instanceof IBoolModel) {
+
+        }
+        if ($model instanceof IDateTimeModel) {
+
+        }
+        
+        if ($model instanceof IScalarModel && is_scalar($data)) {
+            return $this->validateScalar($data, $model);
+        }
+
+        throw new InvalidArgumentException("Data is not of any type supported by the given model.");
+    }
+
+    /**
+     * @throws InvalidArgumentException If $data is not of the expected class or type.
+     * @throws DomainException If $model is unknown.
+     */
+    private function validateEntity(AppObject $entity, IEntity $model): array
+    {
+        $properties = $model->getProperties();
+        $constraintViolations = [];
+        if (count($properties) !== count($entity)) {
+            throw new InvalidArgumentException('The provided array does not have the expected number of properties.');
+        }
+
+        foreach ($properties as $key => $property) {
+            $violations = $this->validate($entity[$key], $property);
+            if (count($violations) > 0) {
+                $constraintViolations[$key] = $violations;
             }
         }
+        return $constraintViolations;
+        // } elseif (null !== $listNodeModel) {
+        //     $constraintViolations = [];
+        //     foreach ($data as $key => $value) {
+        //         $violations = $this->validate($value, $listNodeModel);
+        //         if (count($violations) > 0) {
+        //             $constraintViolations[$key] = key_exists($key, $constraintViolations) ? array_merge_recursive($constraintViolations[$key], $violations) : $violations;
+        //         }
+        //     }
+        //     return $constraintViolations;
+        // }
+    }
+
+    /**
+     * @throws InvalidArgumentException If $data is not of the expected class or type.
+     * @throws DomainException If $model is unknown.
+     */
+    private function validateScalar(bool|int|string|DateTimeInterface $data, IScalarModel $model): array {        
         if (is_string($data)) {
             $stringConstraints = $model->getStringConstraints();
             if (null !== $stringConstraints) {
