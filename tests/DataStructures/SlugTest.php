@@ -16,4 +16,20 @@ final class SlugTest extends TestCase
             (new Slug('Mise à jour 1.5 pour The Crystal Mission', true))->__toString(),
         );
     }
+
+    public function testDiacriticETransform(): void
+    {
+        self::assertEquals(
+            'e',
+            (new Slug('e', true))->__toString(),
+        );
+    }
+
+    public function testUnderscoreTransform(): void
+    {
+        self::assertEquals(
+            'a-b',
+            (new Slug('a_b', true))->__toString(),
+        );
+    }
 }
