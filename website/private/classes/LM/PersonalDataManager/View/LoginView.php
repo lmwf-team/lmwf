@@ -4,7 +4,7 @@ namespace LM\PersonalDataManager\View;
 
 use LM\WebFramework\View\IView;
 
-class HomeView implements IView
+class LoginView implements IView
 {
 	public function display(): void
 	{
@@ -13,14 +13,17 @@ class HomeView implements IView
 <html>
 	<head>
 		<meta charset="utf-8">
-		<title>Home</title>
+		<title>Login</title>
 	</head>
 	<body>
 		<header>
-			<h1>Home</h1>
+			<h1>Login</h1>
+			<nav>
+				<a href="index.php">Home</a> / Login
+			</nav>
 		</header>
 		<main>
-			<p>Personal Data Manager is the essential tool to help you manage your life! <a href="index.php?page=login">Log in!</a></p>
+			<p>Log in!</p>
 		</main>
 	</body>
 </html>
