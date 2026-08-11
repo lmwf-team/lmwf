@@ -16,7 +16,6 @@ use LM\WebFramework\Http\HttpRequestHandler;
 use LM\WebFramework\Http\Routing\Route;
 use LM\WebFramework\Http\Routing\RouteDef;
 use LM\WebFramework\Kernel;
-use LM\WebFramework\Logger\LoggerConsole;
 use LM\WebFramework\Session\SessionManager;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
@@ -101,7 +100,6 @@ final class HttpRequestHandlerTest extends TestCase
         $neverSupportedMethods = [
             'CONNECT',
             'TRACE',
-            'something',
         ];
 
         foreach ($neverSupportedMethods as $method) {

@@ -56,22 +56,22 @@ final class AppConf
      */
     public static function createFromEnvFile(
         string $confFolderPath,
-        array $configData = [],
+        array $confData = [],
     ): self {
         if (file_exists("$confFolderPath/" . self::LOCAL_FN)) {
             $envLocal = self::readConfFile("$confFolderPath/" . self::LOCAL_FN);
-            $configData += json_decode($envLocal, true, flags: JSON_THROW_ON_ERROR);
+            $confData += json_decode($envLocal, true, flags: JSON_THROW_ON_ERROR);
         }
 
         $env = self::readConfFile("$confFolderPath/" . self::DIST_FN);
-        $configData += json_decode($env, true, flags: JSON_THROW_ON_ERROR);
+        $confData += json_decode($env, true, flags: JSON_THROW_ON_ERROR);
 
-        $configData += [
+        $confData += [
             'confFolderPath' => $confFolderPath,
         ];
 
         return new self(
-            $configData,
+            $confData,
         );
     }
 

@@ -13,81 +13,75 @@ use Psr\Log\LoggerInterface;
 use ErrorException;
 
 /**
- * Initialises the Dependency Injection container, the configuration as well as
- * the logger if the configuration specifies one.
+ * Provides static methods to initialize the Dependency Injection container,
+ * initialize and register the app configuration as a service, uses the specifed
+ * logger to initialize the Log class, and to set the error handler to turn any
+ * error, warning, or notice into an exception.
  */
 final class Kernel
 {
     public const string CLI_ID = 'cli';
 
-    /// @brief Reads the configuration and initialises the container.
-    ///
-    /// @todo Rename projectRootPath to appRootPath or appFolderPath
-    /// @todo Rename to initFromConfFile?
-    public static function initialize(
-        string $projectRootPath,
-        string $language,
-        array $runtimeConfig = [],
+    /**
+     * Initialize the lmwf.
+     * 
+     * Initialize the app configuration (from the provided configuration data,
+     * from the provided path containing valid configuration files, or a mix of
+     * both), initialize the container (for dependency injection) and register
+     * the app configuration with it as well as any extra container definitions,
+     * initialize the Log class with the provided logger, and register a PHP
+     * error handler to turn any error, warning or notice into an exception.
+     * 
+     * @param ?string $confFolderPath The path to the folder containing the
+     * app configuration files, null if all the configuration is provided with
+     * $confData.
+     * @param array $confData An array of configuration data to initialize the
+     * configuration, to complement the configuration read from a file or
+     * replace it if no path was specified.
+     * @param ?LoggerInterface $logger A logger to initialize the Log class
+     * with.
+     */
+    public static function init(
+        ?string $confFolderPath,
+        array $confData = [],
+        array $containerDefinitions = [],
         ?LoggerInterface $logger = null,
     ): ContainerInterface {
-        $conf = AppConf::createFromEnvFile(
-            $projectRootPath,
-            $runtimeConfig,
+        $conf = null === $confFolderPath ? new AppConf($confData) : AppConf::createFromEnvFile(
+            $confFolderPath,
+            $confData,
         );
 
         $cb = new ContainerBuilder();
         if (!$conf->isDev) {
             $cb->enableCompilation("{$conf->appRootPath}/var/cache");
         }
-        $container = $cb
-            ->addDefinitions([
-                AppConf::class => $conf,
-                HttpConf::class => $conf->httpConf,
-            ])
-            ->build()
-        ;
-        Log::init($logger);
-        self::initErrorHandler();
-
-        return $container;
-    }
-
-    public static function initWithRuntimeConf(
-        array $confData = [],
-        array $containerDefinitions = [],
-        ?LoggerInterface $logger = null,
-    ): ContainerInterface {
-        $conf = new AppConf($confData);
-
         $containerDefinitions += [
                 AppConf::class => $conf,
                 HttpConf::class => $conf->httpConf,
         ];
-
-        $cb = new ContainerBuilder();
         $container = $cb
             ->addDefinitions($containerDefinitions)
             ->build()
         ;
+
         Log::init($logger);
+
         self::initErrorHandler();
 
         return $container;
     }
 
-    public static function initBare(
-        array $containerDefinitions = [],
-        ?LoggerInterface $logger = null,
-    ): ContainerInterface {
-        $cb = new ContainerBuilder();
-        $container = $cb
+    /**
+     * Initialize only the container and only with the provided definitions.
+     * 
+     * The Log class is not initialized nor is the PHP error handler set.
+     */
+    public static function initBare(array $containerDefinitions): ContainerInterface {
+        return new ContainerBuilder()
             ->addDefinitions($containerDefinitions)
             ->build()
         ;
-        Log::init($logger);
-        self::initErrorHandler();
-
-        return $container;
     }
 
     private static function initErrorHandler(): void
