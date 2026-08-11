@@ -50,9 +50,8 @@ jobs:
       - uses: actions/download-artifact@v8
         continue-on-error: true
         with:
-          artifact-ids: coverage
-          run-id: ${{ github.event.workflow_run.id }}
           name: coverage
+          run-id: ${{ github.event.workflow_run.id }}
       - name: Generate JSON file for coverage badge
         if: ${{ steps.download.outcome == 'success' }}
         run: ./dev/phpunit/coverage.php
