@@ -7,11 +7,13 @@ runs:
         php-version: '8.3'
 
     - run: composer validate --strict
+      shell: bash
 
     - name: Get Composer Cache Directory
       id: composer-cache-directory
       run: |
         echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+      shell: bash
 
     - name: Cache Composer dependencies
       id: composer-cache
@@ -23,5 +25,6 @@ runs:
           ${{ runner.os }}-composer-
 
     - name: Install Composer dependencies
-            if: steps.composer-cache.outputs.cache-hit != 'true'
-            run: composer install --prefer-dist --no-progress
+      if: steps.composer-cache.outputs.cache-hit != 'true'
+      run: composer install --prefer-dist --no-progress
+      shell: bash
