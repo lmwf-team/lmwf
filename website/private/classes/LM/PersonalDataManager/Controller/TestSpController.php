@@ -37,7 +37,7 @@ class TestSpController implements IPageController
 		$view->display();
 	}
 
-	public function doPost(): void {
+	public function doPost(array $postData): void {
 		echo 'post request';
 	}
 }

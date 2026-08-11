@@ -53,4 +53,9 @@ abstract class TemplateView implements IView
 	</header>
 <?php
 	}
+
+	public function getUsernameFromForm(string $fieldName): Username
+	{
+		
+	}
 }

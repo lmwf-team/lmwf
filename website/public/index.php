@@ -32,5 +32,5 @@ $controller = $router->getControllerFromRequest();
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     $controller->doGet();
 } elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $controller->doPost();
+    $controller->doPost($_POST);
 }
