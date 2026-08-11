@@ -66,17 +66,18 @@ class FileTransformer implements IFormTransformer
 
     private function saveUploadedImage(UploadedFileInterface $file): null|string {
         if (0 === $file->getError()) {
+            $extension = 'image/png' === $file->getClientMediaType() ? 'png' : 'webp';
             $uploadedFileName = pathinfo($file->getClientFilename(), PATHINFO_FILENAME);
             $newFilename = (new Slug($uploadedFileName, true, true))->__toString();
-            $destinationPath = "{$this->destinationFolder}/{$newFilename}.webp";
+            $destinationPath = "{$this->destinationFolder}/{$newFilename}.$extension";
 
             $i = 0;
             while (file_exists($destinationPath)) {
-                $destinationPath = "{$this->destinationFolder}/{$newFilename}-{$i}.webp";
+                $destinationPath = "{$this->destinationFolder}/{$newFilename}-{$i}.$extension";
                 $i++;
             }
 
-            if('image/webp' !== $file->getClientMediaType()) {
+            if('png' !== $extension) {
                 $streamGdImg = imagecreatefromstring($file->getStream());
                 imagewebp($streamGdImg, $destinationPath, 95);
             } else {
@@ -98,7 +99,7 @@ class FileTransformer implements IFormTransformer
     }
 
     private function createThumbnail(Filename $originalPath, string $suffix, int $minWidth, int $minHeight, int $quality) {
-        $originalImg = imagecreatefromwebp($originalPath);
+        $originalImg = imagecreatefromstring(file_get_contents($originalPath));
 
         list($width, $height) = [imagesx($originalImg), imagesy($originalImg)];
 
