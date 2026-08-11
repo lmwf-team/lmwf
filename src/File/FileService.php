@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace LM\WebFramework\File;
 use LM\WebFramework\Configuration;
 use LM\WebFramework\Constraints\IUploadedImageConstraint;

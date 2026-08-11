@@ -1,8 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace LM\WebFramework\Model;
 
-interface IEntity
+interface IEntity extends IModel
 {
     /**
      * @return \LM\WebFramework\Model\IModel[]

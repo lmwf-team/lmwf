@@ -1,14 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace LM\WebFramework\Model;
 
 use LM\WebFramework\Constraints\StringConstraint;
 
-class StringModel implements IModel
+class StringModel extends AbstractScalar
 {
     private array $constraints;
-
-    private bool $isNullable;
 
     /**
      * @param \LM\WebFramework\Constraints\IConstraint[] $constraints
@@ -18,34 +18,10 @@ class StringModel implements IModel
         bool $isNullable = false,
     ) {
         $this->constraints = null !== $constraints ? $constraints : [new StringConstraint()];
-        $this->isNullable = $isNullable;
-    }
-
-    public function getArrayDefinition(): ?array {
-        return null;
-    }
-
-    public function getDateTimeConstraints(): ?array {
-        return null;
-    }
-
-    public function getListNodeModel(): ?IModel {
-        return null;
-    }
-
-    public function getIntegerConstraints(): ?array {
-        return null;
+        parent::__construct($isNullable);
     }
 
     public function getStringConstraints(): array {
         return $this->constraints;
-    }
-
-    public function isBool(): bool {
-        return false;
-    }
-
-    public function isNullable(): bool {
-        return $this->isNullable;
     }
 }

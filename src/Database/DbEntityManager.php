@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace LM\WebFramework\Database;
 
 use DateTimeImmutable;
@@ -7,7 +9,11 @@ use InvalidArgumentException;
 use LM\WebFramework\Database\Exceptions\InvalidDbDataException;
 use LM\WebFramework\Database\Exceptions\NullDbDataNotAllowedException;
 use LM\WebFramework\DataStructures\AppObject;
+use LM\WebFramework\Model\IEntity;
+use LM\WebFramework\Model\IForeignEntity;
+use LM\WebFramework\Model\IList;
 use LM\WebFramework\Model\IModel;
+use LM\WebFramework\Model\IScalar;
 use UnexpectedValueException;
 
 /**
@@ -21,24 +27,39 @@ class DbEntityManager
         return count($array) === count(array_filter($array, fn($key) => is_int($key), ARRAY_FILTER_USE_KEY));
     }
 
+    public function convertDbDataRow(array $dbRows, IModel $model, string $prefix, int $index = 0): AppObject
+    {
+        if (null !== $model->getListNodeModel()) {
+            return $this->convertDbDataToList($dbRows, $model);
+        }
+        if (null !== $model->getArrayDefinition()) {
+            $transientAppData = [];
+            foreach ($model->getArrayDefinition() as $key => $property) {
+                if (null !== $property->getArrayDefinition() || null !== $property->getListNodeModel()) {
+                    $transientAppData[$key] = $this->convertDbDataRow($dbRows, $property, $index);
+                } else {
+                    $transientAppData[$key] = $this->convertDbDataValue($dbRows[$index][$prefix . self::SEP . $key], $property);
+                }
+            }
+            return new AppObject($transientAppData);
+        }
+
+        throw new InvalidDbDataException('Model must have an array definition.', $model);
+    }
+
     /**
      * Transform DB Data into App Data.
+     * 
+     * The following order of priority applies when converting the DB data into
+     * app data: bool, int, DateTime, and finally string.
      *
-     * @param mixed $dbData DB Data.
-     * @param IModel $model The model of the DB Data.
-     * @param string|null $prefix If DB Data is an array, the prefix to use when extracting its properties.
-     * @return mixed App Data. (An AppObject, a boolean, etc.)
+     * @param int|string|null $dbData DB Data.
+     * @param IScalar $model The model of the DB Data.
+     * @return mixed A PHP scalar type or base class object.
      * @throws InvalidArgumentException If $dbData is not of any DB Data variable type.
      */
-    public function toAppData(mixed $dbData, IModel $model, ?string $prefix = null): mixed {
-        if (is_array($dbData)) {
-            if (array_is_list($dbData)) {
-                return $this->convertListToAppObject($dbData, $model, $prefix);
-            }
-            else {
-                return $this->convertNonListArrayToAppObject($dbData, $model, $prefix);
-            }
-        }
+    public function convertDbScalar(bool|int|string|null $dbData, IScalar $model): mixed
+    {
         if (is_numeric($dbData)) {
             if ($model->isBool() && in_array($dbData, [0, 1], true)) {
                 return 1 === $dbData;
@@ -58,10 +79,68 @@ class DbEntityManager
             if ($model->isNullable()) {
                 return null;
             }
-            throw new NullDbDataNotAllowedException($dbData, $model, $prefix);
+            throw new NullDbDataNotAllowedException($dbData, $model);
         }
 
-        throw new InvalidDbDataException($dbData, $model, $prefix);
+        throw new InvalidDbDataException($dbData, $model);
+    }
+
+    public function convertDbDataToList(array $dbList, IEntity|IModel $nodeModel, string $prefix): array
+    {
+        if (is_array($dbList) && array_is_list($dbList)) {
+            if ($nodeModel instanceof IEntity) {
+
+                return array_map(
+                    function ($i) use ($dbList, $nodeModel, $prefix) {
+                        return $this->convertDbDataRow($dbList, $nodeModel, $prefix, $i);
+                    },
+                    array_keys($dbList),
+                );
+            } elseif ($nodeModel instanceof IList) {
+                throw new InvalidArgumentException('Nested lists not supported yet.');
+            } else {
+                return array_map(
+                    function ($node) use ($nodeModel) {
+                        return $this->convertDbDataValue($node, $nodeModel);
+                    },
+                    $dbList,
+                );
+            }
+            
+        }
+
+        throw new InvalidDbDataException('Given $dbList must be a list.', $model);
+    }
+
+    /**
+     * @param array[] $dbRows A list of rows each stored as associative arrays.
+     * @param IEntity $entity The model of each row.
+     * @param int $index The row identifier of the main entity.
+     */
+    public function convertDbRowsToAppObject(array $dbRows, IEntity $entity, int $index = 0): AppObject
+    {
+        if (array_is_list($dbRows)) {
+            throw new InvalidArgumentException('$dbRows must be a list of rows.');
+        }
+
+        $transientAppObject = [];
+        foreach ($entity->getProperties() as $key => $property) {
+            $value = null;
+            if ($property instanceof IForeignEntity) {
+                $linkedRowsKeys = array_filter(
+                    array_keys($dbRows),
+                    function ($rowKey) use ($dbRows, $index, $property) {
+                        return $property->isLinked($dbRows[$index], $dbRows[$rowKey]);
+                    },
+                );
+                if (count($linkedRowsKeys) > 0) {
+                    $value = $this->convertDbRowsToAppObject($dbRows, $property, $linkedRowsKeys[0]);
+                }
+            } else {
+                $value = $this->convertDbDataToValue($dbRows[$index][$key], $property);
+            }
+            $transientAppObject[$key] = $value;
+        }
     }
 
     /**

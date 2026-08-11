@@ -1,39 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace LM\WebFramework\Model;
 
-class BoolModel implements IModel
+class BoolModel extends AbstractScalar
 {
-    public function __construct(
-        private bool $isNullable = false,
-    ) {
-    }
-
-    public function getArrayDefinition(): ?array {
-        return null;
-    }
-
-    public function getDateTimeConstraints(): ?array {
-        return null;
-    }
-
-    public function getListNodeModel(): ?IModel {
-        return null;
-    }
-
-    public function getIntegerConstraints(): ?array {
-        return null;
-    }
-
-    public function getStringConstraints(): ?array {
-        return null;
-    }
-
+    #[\Override]
     public function isBool(): bool {
         return true;
-    }
-
-    public function isNullable(): bool {
-        return $this->isNullable;
     }
 }

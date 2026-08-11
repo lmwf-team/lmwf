@@ -1,8 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace LM\WebFramework\Model;
 
-class DateTimeModel implements IModel
+class DateTimeModel extends AbstractScalar
 {
     /**
      * @param \LM\WebFramework\Constraints\IDateTimeConstraint[] $constraints
@@ -11,33 +13,11 @@ class DateTimeModel implements IModel
         private array $constraints = [],
         private bool $isNullable = false,
     ) {
+        parent::__construct($isNullable);
     }
 
-    public function getArrayDefinition(): ?array {
-        return null;
-    }
-
+    #[\Override]
     public function getDateTimeConstraints(): ?array {
         return $this->constraints;
-    }
-
-    public function getListNodeModel(): ?IModel {
-        return null;
-    }
-
-    public function getIntegerConstraints(): ?array {
-        return null;
-    }
-
-    public function getStringConstraints(): ?array {
-        return null;
-    }
-
-    public function isBool(): bool {
-        return false;
-    }
-
-    public function isNullable(): bool {
-        return $this->isNullable;
     }
 }

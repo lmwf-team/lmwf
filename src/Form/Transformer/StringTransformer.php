@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace LM\WebFramework\Form\Transformer;
 
 use LM\WebFramework\Form\Exceptions\MissingInputException;

@@ -1,46 +1,23 @@
 <?php
 
+declare(strict_types=1);
+
 namespace LM\WebFramework\Model;
 
+/**
+ * I chose to separate IScalar from IEntity, instead of all putting them in
+ * IModel. This is because IScalar objects are treated in very similar way,
+ * while IEntity are treated in their own specific way. Having different
+ * interfaces to separate them thus makes sense.
+ * It also makes testing for the model more readable (instanceof instead of
+ * null !== $model->getArrayDefinition()).
+ * However, this might be bad OOP practice.
+ */
 interface IModel
 {
     /**
-     * @return bool Whether the content can be a boolean.
-     */
-    public function isBool(): bool;
-
-    /**
-     * @return bool Whether the content is necessarily specified or can be left omitted.
+     * @return bool Whether the content is necessarily specified or can be left
+     * omitted.
      */
     public function isNullable(): bool;
-
-    /**
-     * @return null|\LM\WebFramework\Model\IModel[] An indexed array of models if the
-     * content can be an entity, or null otherwise.
-     */
-    public function getArrayDefinition(): ?array;
-
-    /**
-     * @return null|\LM\WebFramework\Constraints\IDateTimeConstraint[] A list of
-     * constraints if the content can be a date, or null otherwise.
-     */
-    public function getDateTimeConstraints(): ?array;
-
-    /**
-     * @return null|\LM\WebFramework\Constraints\INumberConstraint[] A list of
-     * numeric constraints if the content can be a number, or null otherwise.
-     */
-    public function getIntegerConstraints(): ?array;
-
-    /**
-     * @return null|IModel The model of each list item if the content can be a
-     * list, or null otherwise.
-     */
-    public function getListNodeModel(): ?IModel;
-
-    /**
-     * @return null|LM\WebFramework\Constraints\IStringConstraint[] A list of
-     * string constraints if the content can be a string, or null otherwise.
-     */
-    public function getStringConstraints(): ?array;
 }

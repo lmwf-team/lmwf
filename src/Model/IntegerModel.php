@@ -1,18 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace LM\WebFramework\Model;
 
 use LM\WebFramework\Constraints\RangeConstraint;
 
-class IntegerModel implements IModel
+class IntegerModel extends AbstractScalar
 {
     const MAX = 32767;
 
     const MIN = -32767;
 
     private array $constraints;
-
-    private bool $isNullable;
 
     /**
      * @param LM\WebFramework\Constraints\INumberConstraint[] $constraints
@@ -22,34 +22,11 @@ class IntegerModel implements IModel
         bool $isNullable = false,
     ) {
         $this->constraints = null !== $constraints ? $constraints : [new RangeConstraint(self::MIN, self::MAX)];
-        $this->isNullable = $isNullable;
+        parent::__construct($isNullable);
     }
 
-    public function getArrayDefinition(): ?array {
-        return null;
-    }
-
-    public function getDateTimeConstraints(): ?array {
-        return null;
-    }
-
-    public function getListNodeModel(): ?IModel {
-        return null;
-    }
-    
+    #[\Override]
     public function getIntegerConstraints(): array {
         return $this->constraints;
-    }
-
-    public function getStringConstraints(): ?array {
-        return null;
-    }
-
-    public function isBool(): bool {
-        return false;
-    }
-
-    public function isNullable(): bool {
-        return $this->isNullable;
     }
 }
