@@ -1,0 +1,12 @@
+{
+    "rootRoute": {
+        "controller": "Controller",
+        "roles": [],
+        "minArgs": 0,
+        "routes": {
+            "sub": {
+                "controller": "Controller"
+            }
+        }
+    }
+}

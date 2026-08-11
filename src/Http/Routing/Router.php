@@ -8,7 +8,6 @@ use LM\WebFramework\Http\Error\RoutingError;
 use LM\WebFramework\Http\Model\RouteInfo;
 use LM\WebFramework\Http\Model\RouteInfoFactory;
 use LM\WebFramework\Http\Routing\Exception\RouteNotFoundException;
-use Uri\WhatWg\Url;
 
 final readonly class Router
 {
@@ -26,11 +25,16 @@ final readonly class Router
     {
         $segs = array_filter(explode('/', $path), fn($value) => '' !== $value) |> array_values(...);
         $nSegs = count($segs);
-        if (0 === $nSegs) {
-            return $this->rootRoute;
-        }
+
         $i = 0;
         $route = $this->rootRoute;
+        if ($route instanceof ParameterizedRoute) {
+            $nArgs = $nSegs - $i;
+            if ($nArgs < $route->minArgs || $nArgs > $route->maxArgs) {
+                throw new RouteNotFoundException("No route could be found for path: {$path}.");
+            }
+            return $route;
+        }
         while ($i < $nSegs) {
             $seg = $segs[$i];
             if (!key_exists($seg, $route->routes)) {

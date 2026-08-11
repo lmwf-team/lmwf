@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace LM\WebFramework\Tests\Http\Routing;
 
+use LM\WebFramework\Http\Routing\Exception\InvalidRouteConfException;
 use LM\WebFramework\Http\Routing\ParameterizedRoute;
 use LM\WebFramework\Http\Routing\ParentRoute;
 use LM\WebFramework\Http\Routing\Route;
@@ -52,5 +53,12 @@ final class RouteParserTest extends TestCase
         );
         $parser = new RouteParser;
         $this->assertEquals($expected, $parser->parseJson(__DIR__ . "/resources/route_w_both.json"));
+    }
+
+    public function testParsingInvalidRoute(): void
+    {
+        $parser = new RouteParser;
+        $this->expectException(InvalidRouteConfException::class);
+        $parser->parseJson(__DIR__ . "/resources/route_invalid.json");
     }
 }

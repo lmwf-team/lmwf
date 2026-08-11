@@ -24,7 +24,6 @@ final readonly class RouteParser
         $controller = str_replace('.', '\\', $route['controller']);
         if (key_exists('minArgs', $route) || key_exists('maxArgs', $route)) {
             if (key_exists('routes', $route)) {
-                // @todo test
                 throw new InvalidRouteConfException("A route definition cannot both defines 'routes' and 'minArgs' or 'maxArgs'.");
             }
             return new ParameterizedRoute($controller, $roles, $route['minArgs'] ?? 0, $route['maxArgs'] ?? 0);

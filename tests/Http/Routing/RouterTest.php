@@ -27,7 +27,7 @@ final class RouterTest extends TestCase
         $this->assertEquals($route, $router->getRouteFromUrl('//'));
     }
     
-    public function testRootRouteWithParams(): void
+    public function testParameterizedRoute(): void
     {
         $route = new ParameterizedRoute(self::class, minArgs: 1, maxArgs: 1);
         $router = new Router($route);
@@ -40,15 +40,77 @@ final class RouterTest extends TestCase
         $this->assertEquals($route, $router->getRouteFromUrl('test//'));
         $this->assertEquals($route, $router->getRouteFromUrl('/test//'));
         $this->assertEquals($route, $router->getRouteFromUrl('//test//'));
+    }
+    
+    public function testParameterizedRouteWithBadParams0(): void
+    {
+        $route = new ParameterizedRoute(self::class, minArgs: 1, maxArgs: 1);
+        $router = new Router($route);
 
         $this->expectException(RouteNotFoundException::class);
         $router->getRouteFromUrl('');
+    }
+    
+    public function testParameterizedRouteWithBadParams1(): void
+    {
+        $route = new ParameterizedRoute(self::class, minArgs: 1, maxArgs: 1);
+        $router = new Router($route);
+
+        $this->expectException(RouteNotFoundException::class);
         $router->getRouteFromUrl('/');
+    }
+    
+    public function testParameterizedRouteWithBadParams2(): void
+    {
+        $route = new ParameterizedRoute(self::class, minArgs: 1, maxArgs: 1);
+        $router = new Router($route);
+
+        $this->expectException(RouteNotFoundException::class);
         $router->getRouteFromUrl('//');
+    }
+    
+    public function testParameterizedRouteWithBadParams3(): void
+    {
+        $route = new ParameterizedRoute(self::class, minArgs: 1, maxArgs: 1);
+        $router = new Router($route);
+
+        $this->expectException(RouteNotFoundException::class);
         $router->getRouteFromUrl('test/prout');
+    }
+    
+    public function testParameterizedRouteWithBadParams4(): void
+    {
+        $route = new ParameterizedRoute(self::class, minArgs: 1, maxArgs: 1);
+        $router = new Router($route);
+
+        $this->expectException(RouteNotFoundException::class);
         $router->getRouteFromUrl('/test/prout');
+    }
+    
+    public function testParameterizedRouteWithBadParams5(): void
+    {
+        $route = new ParameterizedRoute(self::class, minArgs: 1, maxArgs: 1);
+        $router = new Router($route);
+
+        $this->expectException(RouteNotFoundException::class);
         $router->getRouteFromUrl('//test/prout');
+    }
+    
+    public function testParameterizedRouteWithBadParams6(): void
+    {
+        $route = new ParameterizedRoute(self::class, minArgs: 1, maxArgs: 1);
+        $router = new Router($route);
+
+        $this->expectException(RouteNotFoundException::class);
         $router->getRouteFromUrl('/test/prout/');
+    }
+    
+    public function testParameterizedRouteWithBadParams7(): void
+    {
+        $route = new ParameterizedRoute(self::class, minArgs: 1, maxArgs: 1);
+        $router = new Router($route);
+
+        $this->expectException(RouteNotFoundException::class);
         $router->getRouteFromUrl('/test/prout//');
     }
     
