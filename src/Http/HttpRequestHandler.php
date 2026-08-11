@@ -59,11 +59,20 @@ class HttpRequestHandler
             $controller = $this->getController($request);
             return $controller->generateResponse($request, $this->extractRouteParams($request));
         } catch (RequestedRouteNotFound|RequestedResourceNotFound) {
-            return $this->container->get($this->configuration->getErrorNotFoundControllerFQCN());
+            return $this->container
+                ->get($this->configuration->getErrorNotFoundControllerFQCN())
+                ->generateResponse($request, $this->extractRouteParams($request))
+            ;
         }catch (AlreadyAuthenticated) {
-            return $this->container->get($this->configuration->getErrorLoggedInControllerFQCN());
+            return $this->container
+                ->get($this->configuration->getErrorLoggedInControllerFQCN())
+                ->generateResponse($request, $this->extractRouteParams($request))
+            ;
         }catch (AccessDenied) {
-            return $this->container->get($this->configuration->getErrorNotLoggedInControllerFQCN());
+            return $this->container
+                ->get($this->configuration->getErrorNotLoggedInControllerFQCN())
+                ->generateResponse($request, $this->extractRouteParams($request))
+            ;
         }
     }
 
