@@ -7,7 +7,6 @@ use LM\WebFramework\Routing\DefaultRequest;
 use LM\WebFramework\Routing\DefaultPostRequest;
 use LM\WebFramework\Request\IRequest;
 use LM\WebFramework\Routing\IRouter;
-use LM\WebFramework\Routing\IRouter;
 use LM\WebFramework\Request\IPostRequest;
 
 class MainController
