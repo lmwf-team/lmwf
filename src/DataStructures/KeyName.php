@@ -20,7 +20,8 @@ final class KeyName implements Stringable
 
     private string $value;
 
-    public function __construct(string $stringInput) {
+    public function __construct(string $stringInput)
+    {
         if (preg_match(self::CAMEL_BACK_ATTRIBUTE_REGEX, $stringInput)) {
             $this->value = $this->convert(preg_replace('/[A-Z]/', '_$0', $stringInput));
         } else {
@@ -31,7 +32,8 @@ final class KeyName implements Stringable
         }
     }
 
-    public function convert(string $stringInput): string {
+    public function convert(string $stringInput): string
+    {
         $stringUnderscore = str_replace(self::INPUT_SEPARATORS, '_', $stringInput);
         $stringLowercase = strtolower($stringUnderscore);
         $stringAscii = preg_replace('/[^a-z0-9_]/', '', $stringLowercase);
