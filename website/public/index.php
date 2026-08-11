@@ -5,9 +5,14 @@
 // TODO: good html, semantics, AMP, open graph, schema, accessibility WAI
 
 // Constants definition
+// TODO: change some PDM by LWF
+// TODO: those constants could be replaced with an interface implemented by a 
+// class belonging to PDM?
 define('PDM_PAGE', 'page');
 define('PDM_SRC', dirname(__DIR__).'/private/');
 define('PDM_CLASSES', dirname(__DIR__).'/private/classes/');
+define('PDM_USERNAME_MAX_LENGTH', 255);
+define('PDM_MAX_LENGTH', 255);
 
 // Autoloader's registration
 require_once(PDM_CLASSES . 'LM/Autoloader/PhpFigAutoloader.php');

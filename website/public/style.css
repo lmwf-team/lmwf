@@ -1,0 +1,21 @@
+.breadcrumb {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.breadcrumb li {
+    display: inline-block;
+    padding-left: 1rem;
+    background: url("arrow_to_right.jpg");
+    background-position: center left;
+    background-size: 1rem auto;
+    background-repeat: no-repeat;
+}
+
+label {
+    display: block;
+}
+
+input[type=submit] {
+    display: block;
+}

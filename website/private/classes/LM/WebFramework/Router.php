@@ -10,6 +10,8 @@ class Router
 
     public function __construct(array $routes)
     {
+        // TODO: not very optimised. Instanciating each route when only one is
+        // used is a very inefficient process.
         foreach ($routes as $route_name => $route_controller) {
 
             $correct_name = is_string($route_name);
