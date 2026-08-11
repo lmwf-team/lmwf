@@ -4,7 +4,7 @@ namespace LM\WebFramework\Form\Transformer;
 
 use LM\WebFramework\Form\Exceptions\MissingInputException;
 use LM\WebFramework\Form\Exceptions\WrongCsrfException;
-use MF\Session\SessionManager;
+use LM\WebFramework\Session\SessionManager;
 
 class CsrfTransformer implements IFormTransformer
 {
