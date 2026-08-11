@@ -163,6 +163,7 @@ final class HttpRequestHandler
         }
 
         $response = $controller->generateResponse(
+            $route,
             $request,
             0 === $route->nArgs ? [] : array_slice($segs, -$route->nArgs),
             [],

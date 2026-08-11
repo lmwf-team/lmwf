@@ -15,7 +15,7 @@ final readonly class Router
     public function getRouteFromPath(ParameterizedRoute|ParentRoute $route, string $path): Route
     {
         $segs = array_values(array_filter(explode('/', $path), fn($value) => '' !== $value));
-        return $this->getRouteFromSegs($route, $segs);
+        return $this->getRouteFromSegs($route, null, $segs);
     }
 
     /**
@@ -23,25 +23,30 @@ final readonly class Router
      * @param int $i The index of the next path segment.
      * @todo Create SegsList type?
      */
-    public function getRouteFromSegs(ParameterizedRoute|ParentRoute $route, array $segs, int $i = 0): Route
+    public function getRouteFromSegs(ParameterizedRoute|ParentRoute $routeDef, ?Route $parentRoute, array $segs, int $i = 0): Route
     {
         $nSegs = count($segs);
 
         $nArgs = $nSegs - $i;
-        if ($route instanceof ParameterizedRoute) {
-            if ($nArgs < $route->minArgs || $nArgs > $route->maxArgs) {
-                throw new RouteNotFoundException("No route could be found for segment. It does not have the correct number of arguments. ({$nArgs} when it should be between {$route->minArgs} and {$route->maxArgs}.)");
+
+        if ($routeDef instanceof ParameterizedRoute) {
+            $relevantSegs = 0 === $i ? $segs : array_slice($segs, $i - 1, $nArgs + 1);
+            if ($nArgs < $routeDef->minArgs || $nArgs > $routeDef->maxArgs) {
+                throw new RouteNotFoundException("No route could be found for segment. It does not have the correct number of arguments. ({$nArgs} when it should be between {$routeDef->minArgs} and {$routeDef->maxArgs}.)");
             }
-            return new Route($route, $nArgs);
-        } elseif ($route instanceof ParentRoute) {
+            return new Route($routeDef, $relevantSegs, $parentRoute, $nArgs);
+        } elseif ($routeDef instanceof ParentRoute) {
+            $relevantSegs = 0 === $i ? [] : [$segs[$i - 1]];
+
             if ($i === $nSegs) {
-                return new Route($route);
+                return new Route($routeDef, $relevantSegs, $parentRoute);
             }
             $seg = $segs[$i];
-            if (!key_exists($seg, $route->routes)) {
+            if (!key_exists($seg, $routeDef->routes)) {
                 throw new RouteNotFoundException("No child route could be found for segment: {$segs[$i]}.");
             }
-            return $this->getRouteFromSegs($route->routes[$seg], $segs, $i + 1);
+            $route = new Route($routeDef, $relevantSegs, $parentRoute);
+            return $this->getRouteFromSegs($routeDef->routes[$seg], $route, $segs, $i + 1);
         }
         throw new LogicException("A route definition can only be a ParentRoute or an Route.");
     }

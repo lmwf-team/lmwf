@@ -7,7 +7,9 @@ namespace LM\WebFramework\Tests\Http;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\ServerRequest;
 use LM\WebFramework\Controller\IController;
+use LM\WebFramework\Controller\IRoutedController;
 use LM\WebFramework\Http\HttpRequestHandler;
+use LM\WebFramework\Http\Routing\Route;
 use LM\WebFramework\Kernel;
 use LM\WebFramework\Session\SessionManager;
 use PHPUnit\Framework\TestCase;
@@ -141,9 +143,10 @@ final class ServerErrorController implements IController
     }
 }
 
-final class HomeController implements IController
+final class HomeController implements IRoutedController
 {
     public function generateResponse(
+        Route $route,
         ServerRequestInterface $request,
         array $routeParams,
         array $serverParams,
@@ -152,9 +155,10 @@ final class HomeController implements IController
     }
 }
 
-final class MyController implements IController
+final class MyController implements IRoutedController
 {
     public function generateResponse(
+        Route $route,
         ServerRequestInterface $request,
         array $routeParams,
         array $serverParams,

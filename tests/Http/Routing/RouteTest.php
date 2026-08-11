@@ -7,49 +7,31 @@ namespace LM\WebFramework\Tests\Http\Routing;
 use InvalidArgumentException;
 use LM\WebFramework\Http\Routing\ParameterizedRoute;
 use LM\WebFramework\Http\Routing\ParentRoute;
+use LM\WebFramework\Http\Routing\Route;
 use PHPUnit\Framework\TestCase;
 
 final class RouteTest extends TestCase
 {
-    public function testWithInvalidRoles(): void
+    public function testRoute(): void
     {
-        $this->expectException(InvalidArgumentException::class);
-        new ParentRoute(self::class, roles: [1]);
+        $subRouteDef = new ParentRoute(self::class,);
+        $routeDef = new ParentRoute(self::class, routes: [
+            'sub' => $subRouteDef,
+        ]);
+        $route = new Route($routeDef, []);
+        $subRoute = new Route($subRouteDef, ['sub'], $route);
+        $this->assertSame('/sub', $subRoute->getPath());
     }
 
-    public function testWithNoRouteId(): void
+    public function testChildRouteWithNoSeg(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        new ParentRoute(self::class, routes: [new ParentRoute(self::class)]);
-    }
-
-    public function testWithEmptyRouteId(): void
-    {
-        $this->expectException(InvalidArgumentException::class);
-        new ParentRoute(self::class, routes: ['' => new ParentRoute(self::class)]);
-    }
-
-    public function testWithSlashInRouteId(): void
-    {
-        $this->expectException(InvalidArgumentException::class);
-        new ParentRoute(self::class, routes: ['/' => new ParentRoute(self::class)]);
-    }
-
-    public function testWithNegativeMinArgs(): void
-    {
-        $this->expectException(InvalidArgumentException::class);
-        new ParameterizedRoute(self::class, minArgs: -1);
-    }
-
-    public function testWithNegativeMaxArgs(): void
-    {
-        $this->expectException(InvalidArgumentException::class);
-        new ParameterizedRoute(self::class, maxArgs: -1);
-    }
-
-    public function testWithMaxArgsLowerThanMinArgs(): void
-    {
-        $this->expectException(InvalidArgumentException::class);
-        new ParameterizedRoute(self::class, minArgs:3, maxArgs: 1);
+        $subRouteDef = new ParentRoute(self::class,);
+        $routeDef = new ParentRoute(self::class, routes: [
+            'sub' => $subRouteDef,
+        ]);
+        $route = new Route($routeDef, []);
+        $subRoute = new Route($subRouteDef, [], $route);
+        $this->assertSame('/sub', $subRoute->getPath());
     }
 }

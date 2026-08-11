@@ -8,15 +8,10 @@ use LM\WebFramework\Http\Routing\Route;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-interface IController
+interface IRoutedController
 {
-    /**
-     * @todo $serverParams was added so that the error could passed to
-     * and displayed by the error page, but actually it might have
-     * sufficed to have created an IErrorController interface or
-     * something like it.
-     */
     public function generateResponse(
+        Route $route,
         ServerRequestInterface $request,
         array $routeParams,
         array $serverParams,
