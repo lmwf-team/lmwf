@@ -17,7 +17,6 @@ class HttpRequestHandler
         private Configuration $configuration,
         private ContainerInterface $container,
         private SessionManager $session,
-        private TwigService $twig,
     ) {
     }
 
