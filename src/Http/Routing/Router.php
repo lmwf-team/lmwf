@@ -7,8 +7,6 @@ namespace LM\WebFramework\Http\Routing;
 use DomainException;
 use LM\WebFramework\ErrorHandling\Log;
 use LM\WebFramework\Http\Routing\Exception\RouteNotFoundException;
-use LM\WebFramework\Http\Routing\RouteConf\ParamRouteConf;
-use LM\WebFramework\Http\Routing\RouteConf\ParentRouteConf;
 use LogicException;
 
 final readonly class Router
@@ -58,25 +56,25 @@ final readonly class Router
     ): Route {
         Log::debug("Current seg is '{$currentSeg}', next segs are: [" . implode(', ', $nextSegs) . "].");
 
-        if ($routeDef->conf instanceof ParamRouteConf) {
-            $nArgs = count($nextSegs);
-            if ($nArgs < $routeDef->conf->nArgsLowerLimit || $nArgs > $routeDef->conf->nArgsUpperLimit) {
-                throw new RouteNotFoundException("No route could be found for segment. It does not have the correct number of arguments. ({$nArgs} when it should be between {$routeDef->conf->nArgsLowerLimit} and {$routeDef->conf->nArgsUpperLimit}.)");
+
+        $nArgs = count($nextSegs);
+        if ($routeDef->nArgsLowerLimit > $nArgs) {
+                throw new RouteNotFoundException("The requested route needs more arguments. (It received {$nArgs} when it should be at least {$routeDef->nArgsLowerLimit}.)");
+        }
+        $route = new Route($routeDef, $currentSeg, array_slice($nextSegs, 0, $routeDef->nArgsUpperLimit), $parentRoute);
+        if ($routeDef->nArgsUpperLimit < $nArgs) {
+            if (0 === count($routeDef->subroutes)) {
+                throw new RouteNotFoundException("The requested route needs less arguments. (It received {$nArgs} when it should be at most {$routeDef->nArgsUpperLimit}.)");
             }
-            Log::debug("Found route with FQCN {$routeDef->fqcn}.");
-            return new Route($routeDef, $currentSeg, $nextSegs, $parentRoute);
-        } elseif ($routeDef->conf instanceof ParentRouteConf) {
-            $route = new Route($routeDef, $currentSeg, [], $parentRoute);
-            Log::debug("Current route definition is a parent route.");
-            if ([] === $nextSegs) {
-                return $route;
-            }
-            $nextSeg = $nextSegs[0];
-            if (!key_exists($nextSeg, $routeDef->conf->routes)) {
+            Log::debug("Current route has subroutes.");
+            $nextSeg = $nextSegs[$routeDef->nArgsUpperLimit];
+            if (!key_exists($nextSeg, $routeDef->subroutes)) {
                 throw new RouteNotFoundException("No child route could be found for segment: {$nextSeg}.");
             }
-            return $this->getRouteFromSegs($routeDef->conf->routes[$nextSeg], $route, $nextSeg, array_slice($nextSegs, 1));
+        
+            return $this->getRouteFromSegs($routeDef->subroutes[$nextSeg], $route, $nextSeg, array_slice($nextSegs, $routeDef->nArgsUpperLimit + 1));
         }
-        throw new LogicException("Route type is not known.");
+        
+        return $route;
     }
 }

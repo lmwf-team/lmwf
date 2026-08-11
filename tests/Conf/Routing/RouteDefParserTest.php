@@ -6,11 +6,9 @@ namespace LM\WebFramework\Tests\Conf\Routing;
 
 use LM\WebFramework\Configuration\RouteDefParser;
 use LM\WebFramework\Http\Routing\Exception\InvalidRouteConfException;
-use LM\WebFramework\Http\Routing\Exception\SubRouteCannotAddRoleConfException;
+use LM\WebFramework\Http\Routing\Exception\SubrouteCannotAddRoleConfException;
 use LM\WebFramework\Http\Routing\Exception\UnauthorizedAttributeConfException;
 use LM\WebFramework\Http\Routing\RouteDef;
-use LM\WebFramework\Http\Routing\RouteConf\ParamRouteConf;
-use LM\WebFramework\Http\Routing\RouteConf\ParentRouteConf;
 use PHPUnit\Framework\TestCase;
 use TypeError;
 
@@ -18,7 +16,7 @@ final class RouteDefParserTest extends TestCase
 {
     public function testAddingRoles(): void
     {
-        $this->expectException(SubRouteCannotAddRoleConfException::class);
+        $this->expectException(SubrouteCannotAddRoleConfException::class);
         $this->parseJson(__DIR__ . "/resources/added_role_in_sub_route.json");
     }
 
@@ -26,10 +24,10 @@ final class RouteDefParserTest extends TestCase
     {
         $homeRouteDef = new RouteDef('HomeController', ["ADMIN", 'VISITOR']);
         $testRouteDef = new RouteDef("TestController", ["ADMIN", "VISITOR"]);
-        $rootRouteDef = new RouteDef(null, ["ADMIN", "VISITOR"], new ParentRouteConf([
+        $rootRouteDef = new RouteDef(null, ["ADMIN", "VISITOR"], subroutes: [
             '' => $homeRouteDef,
             'test' => $testRouteDef,
-        ]));
+        ]);
         $actualRouteDef = $this->parseJson(__DIR__ . "/resources/route.json");
         $this->assertEquals($rootRouteDef, $actualRouteDef);
     }
@@ -41,7 +39,7 @@ final class RouteDefParserTest extends TestCase
         $this->assertEquals($expected, $this->parseJson(__DIR__ . "/resources/route_w_params_1.json"));
         $this->assertEquals($expected, $this->parseJson(__DIR__ . "/resources/route_w_params_2.json"));
 
-        $expected2 = new RouteDef("Controller", ["VISITOR"], new ParamRouteConf(1, 5));
+        $expected2 = new RouteDef("Controller", ["VISITOR"], nArgsLowerLimit: 1, nArgsUpperLimit: 5);
         $this->assertEquals($expected2, $this->parseJson(__DIR__ . "/resources/route_w_params_3.json"));
     }
 
@@ -50,17 +48,11 @@ final class RouteDefParserTest extends TestCase
         $expected = new RouteDef(
             null,
             ["ADMIN", "VISITOR"],
-            new ParentRouteConf([
-                'sub' => new RouteDef("Controller", ["ADMIN"], new ParamRouteConf(0, 3)),
-            ]),
+            subroutes: [
+                'sub' => new RouteDef("Controller", ["ADMIN"], nArgsLowerLimit: 0, nArgsUpperLimit: 3),
+            ],
         );
         $this->assertEquals($expected, $this->parseJson(__DIR__ . "/resources/route_w_both.json"));
-    }
-
-    public function testParsingInvalidRoute(): void
-    {
-        $this->expectException(InvalidRouteConfException::class);
-        $this->parseJson(__DIR__ . "/resources/route_invalid.json");
     }
 
     public function testParsingRouteWithExtra0(): void

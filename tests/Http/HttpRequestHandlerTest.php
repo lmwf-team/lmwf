@@ -12,7 +12,6 @@ use LM\WebFramework\Controller\IController;
 use LM\WebFramework\Controller\IRoutedController;
 use LM\WebFramework\Http\HttpRequestHandler;
 use LM\WebFramework\Http\Routing\Route;
-use LM\WebFramework\Http\Routing\RouteConf\ParentRouteConf;
 use LM\WebFramework\Http\Routing\RouteDef;
 use LM\WebFramework\Kernel;
 use LM\WebFramework\Logger\LoggerConsole;
@@ -32,13 +31,13 @@ final class HttpRequestHandlerTest extends TestCase
                 new RouteDef(
                     null,
                     ['ADMIN', 'VISITOR'],
-                    new ParentRouteConf([
+                    subroutes: [
                         '' => new RouteDef(HomeController::class),
                         'my' => new RouteDef(
                             MyController::class,
                             ['VISITOR']
                         ),
-                    ]),
+                    ],
                 ),
                 true,
                 null,

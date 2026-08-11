@@ -8,8 +8,6 @@ use DomainException;
 use LM\WebFramework\Http\Routing\Exception\RootRouteWithDefaultControllerException;
 use LM\WebFramework\Http\Routing\Exception\RouteNotFoundException;
 use LM\WebFramework\Http\Routing\Route;
-use LM\WebFramework\Http\Routing\RouteConf\ParamRouteConf;
-use LM\WebFramework\Http\Routing\RouteConf\ParentRouteConf;
 use LM\WebFramework\Http\Routing\RouteDef;
 use LM\WebFramework\Http\Routing\Router;
 use PHPUnit\Framework\TestCase;
@@ -35,15 +33,15 @@ final class RouterTest extends TestCase
     {
         $router = new Router();
 
-        $subRouteId = 'c’est mon idée de route !';
-        $subRouteDef = new RouteDef(self::class);
+        $subrouteId = 'c’est mon idée de route !';
+        $subrouteDef = new RouteDef(self::class);
 
         $rootRoute = Route::createRootRoute([
-            $subRouteId => $subRouteDef,
+            $subrouteId => $subrouteDef,
         ]);
-        $subRoute = new Route($subRouteDef, $subRouteId, parent: $rootRoute);
+        $subroute = new Route($subrouteDef, $subrouteId, parent: $rootRoute);
 
-        $this->assertEquals($subRoute, $router->getRouteFromPath($rootRoute->def, "/{$subRouteId}"));
+        $this->assertEquals($subroute, $router->getRouteFromPath($rootRoute->def, "/{$subrouteId}"));
     }
 
     public function testParameterizedRouteWithBadParams0(): void
@@ -60,7 +58,7 @@ final class RouterTest extends TestCase
     {
         $router = new Router();
 
-        $routeDef = new RouteDef(null, [], new ParamRouteConf(nArgsLowerLimit: 1, nArgsUpperLimit: 2));
+        $routeDef = new RouteDef(null, nArgsLowerLimit: 1, nArgsUpperLimit: 2);
 
         $this->assertEquals(new Route($routeDef, '', ['', '']), $router->getRouteFromPath($routeDef, '//'));
         $this->assertEquals(new Route($routeDef, '', ['test']), $router->getRouteFromPath($routeDef, '/test'));
@@ -72,7 +70,7 @@ final class RouterTest extends TestCase
     {
         $router = new Router();
 
-        $routeDef = new RouteDef(self::class, [], new ParamRouteConf(nArgsLowerLimit: 1, nArgsUpperLimit: 1));
+        $routeDef = new RouteDef(self::class, nArgsLowerLimit: 1, nArgsUpperLimit: 1);
 
         $this->expectException(RouteNotFoundException::class);
         $router->getRouteFromPath($routeDef, '/test/prout');
@@ -82,7 +80,7 @@ final class RouterTest extends TestCase
     {
         $router = new Router();
 
-        $routeDef = new RouteDef(self::class, [], new ParamRouteConf(nArgsLowerLimit: 1, nArgsUpperLimit: 1));
+        $routeDef = new RouteDef(self::class, nArgsLowerLimit: 1, nArgsUpperLimit: 1);
 
         $this->expectException(RouteNotFoundException::class);
         $router->getRouteFromPath($routeDef, '//test/prout');
@@ -92,7 +90,7 @@ final class RouterTest extends TestCase
     {
         $router = new Router();
 
-        $routeDef = new RouteDef(self::class, [], new ParamRouteConf(nArgsLowerLimit: 1, nArgsUpperLimit: 1));
+        $routeDef = new RouteDef(self::class, nArgsLowerLimit: 1, nArgsUpperLimit: 1);
 
         $this->expectException(RouteNotFoundException::class);
         $router->getRouteFromPath($routeDef, '/test/prout/');
@@ -102,20 +100,10 @@ final class RouterTest extends TestCase
     {
         $router = new Router();
 
-        $routeDef = new RouteDef(self::class, [], new ParamRouteConf(nArgsLowerLimit: 1, nArgsUpperLimit: 1));
+        $routeDef = new RouteDef(self::class, nArgsLowerLimit: 1, nArgsUpperLimit: 1);
 
         $this->expectException(RouteNotFoundException::class);
         $router->getRouteFromPath($routeDef, '/test/prout//');
-    }
-
-    public function testRootRouteWithDefaultController(): void
-    {
-        $router = new Router();
-
-        $routeDef = new RouteDef(self::class, [], new ParamRouteConf(nArgsLowerLimit: 1, nArgsUpperLimit: 1));
-
-        $this->expectException(RootRouteWithDefaultControllerException::class);
-        $router->getRouteFromPath($routeDef, '');
     }
 
     public function testNonAbsolutePath(): void
@@ -138,20 +126,20 @@ final class RouterTest extends TestCase
         $router->getRouteFromPath($rootRoute->def, '/test');
     }
 
-    public function testSubRoute(): void
+    public function testSubroute(): void
     {
-        $sub1SubRouteDef = new RouteDef(self::class, [], new ParentRouteConf());
-        $sub2SubRouteDef = new RouteDef(self::class, [], new ParamRouteConf(nArgsUpperLimit: 3));
+        $sub1SubrouteDef = new RouteDef(self::class);
+        $sub2SubrouteDef = new RouteDef(self::class, nArgsUpperLimit: 3);
 
         $router = new Router();
 
         $rootRoute = Route::createRootRoute([
-            'sub1' => $sub1SubRouteDef,
-            'sub2' => $sub2SubRouteDef,
+            'sub1' => $sub1SubrouteDef,
+            'sub2' => $sub2SubrouteDef,
         ]);
-        $sub1Route = new Route($sub1SubRouteDef, 'sub1', [], $rootRoute);
-        $sub2Route = new Route($sub2SubRouteDef, 'sub2', ['param1', 'param2'], $rootRoute);
-        $sub2RouteNoParams = new Route($sub2SubRouteDef, 'sub2', [], $rootRoute);
+        $sub1Route = new Route($sub1SubrouteDef, 'sub1', [], $rootRoute);
+        $sub2Route = new Route($sub2SubrouteDef, 'sub2', ['param1', 'param2'], $rootRoute);
+        $sub2RouteNoParams = new Route($sub2SubrouteDef, 'sub2', [], $rootRoute);
 
         $this->assertEquals($sub1Route, $router->getRouteFromPath($rootRoute->def, '/sub1'));
         $this->assertEquals($sub2Route, $router->getRouteFromPath($rootRoute->def, '/sub2/param1/param2'));

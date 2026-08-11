@@ -39,7 +39,7 @@ final class StringModel extends AbstractModel implements IScalarModel
         parent::__construct($isNullable);
     }
 
-    public function getEnumConstraint(): IEnumConstraint
+    public function getEnumConstraint(): ?IEnumConstraint
     {
         return $this->enumConstraint;
     }

@@ -10,7 +10,7 @@ use Throwable;
 
 final class RootRouteWithDefaultControllerException extends DomainException
 {
-    const string MESSAGE = 'The root route cannot define a controller, except, if it is a parameterized route, when it receives at least one parameter.';
+    const string MESSAGE = 'The root route cannot define a controller, except, if it is a parameterized route which takes at least one parameter.';
 
     public function __construct(?Throwable $previous = null)
     {

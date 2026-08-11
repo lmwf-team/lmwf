@@ -7,8 +7,6 @@ namespace LM\WebFramework\Http\Routing;
 use DomainException;
 use InvalidArgumentException;
 use LM\WebFramework\Http\Routing\Exception\RootRouteWithDefaultControllerException;
-use LM\WebFramework\Http\Routing\RouteConf\ParamRouteConf;
-use LM\WebFramework\Http\Routing\RouteConf\ParentRouteConf;
 
 /**
  * Instantiation of a RouteDef, based on a given path.
@@ -29,7 +27,7 @@ final readonly class Route
      */
     public static function createRootRoute(array $routes): self
     {
-        $rootRouteDef = new RouteDef(null, conf: new ParentRouteConf($routes));
+        $rootRouteDef = new RouteDef(null, subroutes: $routes);
         return new self($rootRouteDef, '');
     }
 
@@ -47,15 +45,11 @@ final readonly class Route
         public ?Route $parent = null,
     ) {
         $nArgs = count($parameters);
-        if ($def->conf instanceof ParentRouteConf && $nArgs > 0) {
-            throw new DomainException("A parent route cannot have parameters.");
-        }
-        if ($def->conf instanceof ParamRouteConf) {
-            if ($nArgs < $def->conf->nArgsLowerLimit) {
-                throw new DomainException("Instantiation of a parameterized route has a number of arguments below the minimum ({$nArgs} < {$def->conf->nArgsLowerLimit}).");
-            } elseif ($nArgs > $def->conf->nArgsUpperLimit) {
-                throw new DomainException("Instantiation of parameterized route has a number of arguments above the maximum ({$nArgs} > {$def->conf->nArgsUpperLimit}).");
-            }
+
+        if ($nArgs < $def->nArgsLowerLimit) {
+            throw new DomainException("Instantiation of a route has a number of arguments below the minimum in the route definition ({$nArgs} < {$def->nArgsLowerLimit}).");
+        } elseif ($nArgs > $def->nArgsUpperLimit) {
+            throw new DomainException("Instantiation of a route has a number of arguments above the maximum in the route definition ({$nArgs} > {$def->nArgsUpperLimit}).");
         }
 
         foreach ($parameters as $seg) {
@@ -68,9 +62,9 @@ final readonly class Route
             if ('' !== $this->seg) {
                 throw new DomainException('The root route can only match an empty path segment.');
             } elseif (null !== $def->fqcn) {
-                throw new RootRouteWithDefaultControllerException();
-            } elseif ($def->conf instanceof ParamRouteConf && 0 === $def->conf->nArgsLowerLimit) {
-                throw new DomainException('The root route cannot accept a null number of parameters.');
+                if (0 === $def->nArgsLowerLimit && 0 === count($def->subroutes)) {
+                    throw new RootRouteWithDefaultControllerException();
+                }
             }
         }
     }
@@ -80,8 +74,8 @@ final readonly class Route
      */
     public function getFqcn(): ?string
     {
-        if ($this->def->conf instanceof ParamRouteConf && null !== $this->def->conf->fqcnIfParams) {
-            return $this->def->conf->fqcnIfParams;
+        if (null !== $this->def->fqcnIfParams && count($this->parameters) > 0) {
+            return $this->def->fqcnIfParams;
         } else {
             return $this->def->fqcn;
         }

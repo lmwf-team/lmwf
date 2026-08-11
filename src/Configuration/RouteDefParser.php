@@ -6,10 +6,8 @@ namespace LM\WebFramework\Configuration;
 
 use LM\WebFramework\Configuration\Exception\SettingNotFoundException;
 use LM\WebFramework\Http\Routing\Exception\InvalidRouteConfException;
-use LM\WebFramework\Http\Routing\Exception\SubRouteCannotAddRoleConfException;
+use LM\WebFramework\Http\Routing\Exception\SubrouteCannotAddRoleConfException;
 use LM\WebFramework\Http\Routing\Exception\UnauthorizedAttributeConfException;
-use LM\WebFramework\Http\Routing\RouteConf\ParamRouteConf;
-use LM\WebFramework\Http\Routing\RouteConf\ParentRouteConf;
 use LM\WebFramework\Http\Routing\RouteDef;
 
 final readonly class RouteDefParser
@@ -34,7 +32,7 @@ final readonly class RouteDefParser
     /**
      * @param array<string, mixed> $route The JSON-decoded route as an associative array.
      * @param null|string[] $parentRoles The parent roles if defined, null if the current route is the root route.
-     * @param bool $allowOverridingParentRoles If true, a sub-route can add role its parent does not have.
+     * @param bool $allowOverridingParentRoles If true, a subroute can add role its parent does not have.
      */
     public function parse(
         array $route,
@@ -48,49 +46,40 @@ final readonly class RouteDefParser
             }
         }
 
+        // Parse FQCN and FQCN when route is accessed with parameters.
+        $fqcn = $this->parseFqcn($route, self::FQCN_KN);
+        $fqcnIfParams = $this->parseFqcn($route, self::FQCN_IF_PARAMS_KN);
+
         // Verify and set roles.
+        $roles = $parentRoles;
         if (key_exists(self::ROLES_KN, $route)) {
             $roles = $route[self::ROLES_KN];
             if (!$allowOverridingParentRoles && null !== $parentRoles) {
                 foreach ($roles as $role) {
                     if (!in_array($role, $parentRoles, strict: true)) {
-                        throw new SubRouteCannotAddRoleConfException($route, $role);
+                        throw new SubrouteCannotAddRoleConfException($route, $role);
                     }
                 }
             }
         } elseif (null === $parentRoles) {
             throw new SettingNotFoundException("The root route must define its roles.");
-        } else {
-            $roles = $parentRoles;
         }
 
-        // Parse FQCN.
-        $fqcn = $this->parseFqcn($route, self::FQCN_KN);
-
+        // Set subroutes.
+        $subroutes = [];
         if (key_exists(self::ROUTES_KN, $route)) {
-            if (key_exists(self::ARGS_MIN_KN, $route) || key_exists(self::ARGS_MAX_KN, $route)) {
-                throw new InvalidRouteConfException(self::AMBIGUOUS_DEF_MSG_FMT);
+            foreach ($route[self::ROUTES_KN] as $subrouteSeg => $subroute) {
+                $subroutes[$subrouteSeg] = $this->parse($subroute, $roles);
             }
-            $routes = [];
-            foreach ($route[self::ROUTES_KN] ?? [] as $subRouteId => $subRoute) {
-                $routes[$subRouteId] = $this->parse($subRoute, $roles);
-            }
-            return new RouteDef(
-                $fqcn,
-                $roles,
-                new ParentRouteConf($routes),
-            );
         }
 
-        $fqcnIfParams = $this->parseFqcn($route, self::FQCN_IF_PARAMS_KN);
         return new RouteDef(
             $fqcn,
             $roles,
-            new ParamRouteConf(
-                $route[self::ARGS_MIN_KN] ?? 0,
-                $route[self::ARGS_MAX_KN] ?? 0,
-                $fqcnIfParams,
-            ),
+            $subroutes,
+            $route[self::ARGS_MIN_KN] ?? 0,
+            $route[self::ARGS_MAX_KN] ?? 0,
+            $fqcnIfParams,
         );
     }
 

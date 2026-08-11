@@ -6,8 +6,6 @@ namespace LM\WebFramework\Tests\Http\Routing;
 
 use InvalidArgumentException;
 use LM\WebFramework\Http\Routing\RouteDef;
-use LM\WebFramework\Http\Routing\RouteConf\ParamRouteConf;
-use LM\WebFramework\Http\Routing\RouteConf\ParentRouteConf;
 use LM\WebFramework\Http\Routing\Route;
 use PHPUnit\Framework\TestCase;
 use DomainException;
@@ -29,12 +27,12 @@ final class RouteTest extends TestCase
     public function testInvalidRootRouteWithNoParams(): void
     {
         $this->expectException(DomainException::class);
-        new Route(new RouteDef(self::class, conf: new ParamRouteConf()), '');
+        new Route(new RouteDef(self::class), '');
     }
 
     public function testInvalidRouteParams(): void
     {
-        $rootRouteDef = new RouteDef(null, conf: new ParamRouteConf(nArgsLowerLimit: 1, nArgsUpperLimit: 2));
+        $rootRouteDef = new RouteDef(null, nArgsLowerLimit: 1, nArgsUpperLimit: 2);
         $this->expectException(DomainException::class);
         $rootRouteArgs4 = new Route($rootRouteDef, '', ['args1', 'args2', 'args3']);
     }
@@ -50,7 +48,7 @@ final class RouteTest extends TestCase
 
     public function testRootRouteWithParams(): void
     {
-        $rootRouteDef = new RouteDef(null, conf: new ParamRouteConf(nArgsLowerLimit: 1, nArgsUpperLimit: 2));
+        $rootRouteDef = new RouteDef(null, nArgsLowerLimit: 1, nArgsUpperLimit: 2);
         $rootRouteArgs1 = new Route($rootRouteDef, '', ['']);
         $rootRouteArgs2 = new Route($rootRouteDef, '', ['args2']);
         $rootRouteArgs3 = new Route($rootRouteDef, '', ['args3a', 'args3b']);
@@ -63,7 +61,8 @@ final class RouteTest extends TestCase
     {
         $homeRouteDef = new RouteDef(
             self::class,
-            conf: new ParamRouteConf(nArgsLowerLimit: 1, nArgsUpperLimit: 1),
+            nArgsLowerLimit: 1,
+            nArgsUpperLimit: 1,
         );
         $rootRoute = Route::createRootRoute(['' => $homeRouteDef]);
         $homeRoute = new Route($homeRouteDef, '', ['test-param'], parent: $rootRoute);
@@ -72,29 +71,29 @@ final class RouteTest extends TestCase
 
     public function testParentRoute(): void
     {
-        $subRouteDef = new RouteDef(self::class);
-        $rootRoute = Route::createRootRoute(['sub' => $subRouteDef]);
+        $subrouteDef = new RouteDef(self::class);
+        $rootRoute = Route::createRootRoute(['sub' => $subrouteDef]);
 
-        $subRoute = new Route($subRouteDef, 'sub', parent: $rootRoute);
-        $this->assertSame('/sub', $subRoute->getPath());
+        $subroute = new Route($subrouteDef, 'sub', parent: $rootRoute);
+        $this->assertSame('/sub', $subroute->getPath());
     }
 
     public function testNestedRoutes(): void
     {
-        $subSubRouteDef = new RouteDef(self::class);
-        $subRouteDef = new RouteDef(
+        $subSubrouteDef = new RouteDef(self::class);
+        $subrouteDef = new RouteDef(
             self::class,
-            conf: new ParentRouteConf([
-                'sub2' => $subSubRouteDef,
-            ]),
+            subroutes: [
+                'sub2' => $subSubrouteDef,
+            ],
         );
         $rootRoute = Route::createRootRoute([
-            'sub1' => $subRouteDef,
+            'sub1' => $subrouteDef,
         ]);
 
-        $subRoute = new Route($subRouteDef, 'sub1', parent: $rootRoute);
-        $subSubRoute = new Route($subSubRouteDef, 'sub2', parent: $subRoute);
-        $this->assertSame('/sub1/sub2', $subSubRoute->getPath());
+        $subroute = new Route($subrouteDef, 'sub1', parent: $rootRoute);
+        $subSubroute = new Route($subSubrouteDef, 'sub2', parent: $subroute);
+        $this->assertSame('/sub1/sub2', $subSubroute->getPath());
     }
 
     public function testComplexParentRoute(): void
@@ -105,9 +104,9 @@ final class RouteTest extends TestCase
 
         $sub2RouteDef = new RouteDef(
             self::class,
-            conf: new ParentRouteConf([
+            subroutes: [
                 '' => $subSub2RouteDef,
-            ]),
+            ],
         );
         $rootRoute = Route::createRootRoute([
             '' => $sub1RouteDef,

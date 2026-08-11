@@ -7,7 +7,7 @@ namespace LM\WebFramework\Http\Routing\Exception;
 use Exception;
 use Throwable;
 
-final class SubRouteCannotAddRoleConfException extends Exception
+final class SubrouteCannotAddRoleConfException extends Exception
 {
     const string MSG_FMT = "Unless explicitely authorized, a sub-route cannot add roles its parent does not have. Child node '%s' requires role '%s'.";
 
