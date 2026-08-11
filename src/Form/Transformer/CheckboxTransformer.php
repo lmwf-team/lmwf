@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace LM\WebFramework\Form\Transformer;
 
+use UnexpectedValueException;
+
 final class CheckboxTransformer implements IFormTransformer
 {
     public function __construct(
@@ -11,11 +13,15 @@ final class CheckboxTransformer implements IFormTransformer
     ) {
     }
 
-    public function transformSubmittedData(array $postedData, array $uploadedFiles): bool
+    #[Override]
+    public function transformSubmittedData(array $parsedPayload, array $uploadedFiles): bool
     {
-        if (!key_exists($this->name, $postedData)) {
+        if (!key_exists($this->name, $parsedPayload)) {
             return false;
         }
-        return 'on' === $postedData[$this->name] ? true : false;
+        if ('on' === $parsedPayload[$this->name]) {
+            return true;
+        }
+        throw new UnexpectedValueException("Unexpected value submitted for field with name {$this->name}.");
     }
 }

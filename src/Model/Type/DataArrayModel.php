@@ -6,6 +6,9 @@ namespace LM\WebFramework\Model\Type;
 
 use InvalidArgumentException;
 
+/**
+ * Default implementation of the ArrayModel abstract class.
+ */
 final class DataArrayModel extends ArrayModel
 {
     public function addProperty(string $key, IModel $model): self

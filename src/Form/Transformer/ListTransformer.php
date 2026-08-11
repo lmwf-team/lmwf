@@ -19,9 +19,10 @@ final class ListTransformer implements IFormTransformer
     ) {
     }
 
-    public function transformSubmittedData(array $requestParsedBody, array $uploadedFiles): array
+    #[Override]
+    public function transformSubmittedData(array $parsedPayload, array $uploadedFiles): array
     {
-        $data = $requestParsedBody[$this->name] ?? null;
+        $data = $parsedPayload[$this->name] ?? null;
         if (null === $data) {
             return [];
         }

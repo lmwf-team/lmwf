@@ -10,6 +10,8 @@ use UnexpectedValueException;
 use voku\helper\ASCII;
 
 /**
+ * @todo Add tests with some sort of fuzzing.
+ * @todo Do not use dependency?
  * @todo web namespace?
  */
 final class Slug implements Stringable

@@ -6,22 +6,11 @@ namespace LM\WebFramework\Form\Transformer;
 
 use LM\WebFramework\Form\Exceptions\MissingInputException;
 
-final class StringTransformer implements IFormTransformer
+final class StringTransformer extends AbstractStringTransformer implements IFormTransformer
 {
-    public function __construct(
-        private string $name,
-    ) {
-    }
-
-    /**
-     * @return string|null The submitted, non-empty string, or null if the string is empty.
-     */
-    public function transformSubmittedData(array $postedData, array $uploadedFiles): ?string
+    #[Override]
+    public function transformSubmittedData(array $parsedPayload, array $uploadedFiles): ?string
     {
-        if (!key_exists($this->name, $postedData)) {
-            throw new MissingInputException($this->name);
-        }
-        $submittedString = $postedData[$this->name];
-        return '' !== $submittedString ? $submittedString : null;
+        return parent::extractTextInput($parsedPayload);
     }
 }

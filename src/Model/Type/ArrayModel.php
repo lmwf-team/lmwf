@@ -4,10 +4,16 @@ declare(strict_types=1);
 
 namespace LM\WebFramework\Model\Type;
 
+/**
+ * Model for data consisting of properties identified with a key.
+ * 
+ * The model specifies the keys, and the model for each of its properties.
+ */
 abstract class ArrayModel extends AbstractModel
 {
     /**
-     * @param IModel[] $properties An associative list of properties.
+     * @param array<string, IModel> $properties An associative list of properties.
+     * @param bool $isNullable Whether this model is nullable.
      * @todo Check that property keys are strings.
      */
     public function __construct(

@@ -51,7 +51,7 @@ final class FormFactory
     }
 
     /**
-     * @todo To delete probably.
+     * @todo To delete?
      */
     public function createTransformer(
         array|FormFieldConf $conf,
@@ -102,18 +102,22 @@ final class FormFactory
         bool $withCsrf = false,
     ): ArrayTransformer {
         $fieldTransformers = [];
+        $fieldDefaults = [];
         foreach ($formConf as $key => $fieldConf) {
             $fieldTransformers[$key] = $this->createTransformer(
                 $fieldConf,
                 $key,
                 false,
             );
+            if (null !== $fieldConf->default) {
+                $fieldDefaults[$key] = $fieldConf->default;
+            }
         }
         return new ArrayTransformer(
             $fieldTransformers,
             $withCsrf ? $this->csrfTransformer : null,
+            $fieldDefaults,
             $name,
-            [],
         );
     }
 }

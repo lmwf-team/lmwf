@@ -7,21 +7,13 @@ namespace LM\WebFramework\Form\Transformer;
 use DateTimeImmutable;
 use LM\WebFramework\Form\Exceptions\MissingInputException;
 
-final class DateTimeTransformer implements IFormTransformer
+final class DateTimeTransformer extends AbstractStringTransformer implements IFormTransformer
 {
-    public function __construct(
-        private string $name,
-    ) {
-    }
-
-    public function transformSubmittedData(array $postedData, array $uploadedFiles): ?DateTimeImmutable
+    #[Override]
+    public function transformSubmittedData(array $parsedPayload, array $uploadedFiles): ?DateTimeImmutable
     {
-        if (!key_exists($this->name, $postedData)) {
-            throw new MissingInputException();
-        }
+        $tmpFormData = parent::extractTextInput($parsedPayload);
 
-        $submittedString = $postedData[$this->name];
-
-        return '' !== $submittedString ? new DateTimeImmutable($submittedString) : null;
+        return null !== $tmpFormData ? new DateTimeImmutable($submittedString) : null;
     }
 }

@@ -7,14 +7,19 @@ namespace LM\WebFramework\Model\Type;
 use InvalidArgumentException;
 
 /**
+ * An ArrayModel where there must be a property identifying the entity amongst
+ * others entities of the same model, as well as the model among other models.
+ * 
  * @todo Disallow sub EntityModel sub properties that are not contained within
  * a ForeignEntityModel?
  */
 final class EntityModel extends ArrayModel
 {
     /**
-     * @param string $prefix The model slug identifier.
+     * @param string $identifier A snake_case identifier for the model.
      * @param IModel[] $properties An associative list of properties.
+     * @param string $idKey The key of the property identifying entities of the
+     * same model.
      * @param bool $isNullable Whether the entity is nullable.
      * @todo Check that property keys are strings.
      */

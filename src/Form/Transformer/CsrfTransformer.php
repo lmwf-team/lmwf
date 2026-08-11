@@ -17,12 +17,13 @@ final class CsrfTransformer implements IFormTransformer
     ) {
     }
 
-    public function transformSubmittedData(array $postedData, array $uploadedFiles): string
+    #[Override]
+    public function transformSubmittedData(array $parsedPayload, array $uploadedFiles): string
     {
-        if (!key_exists(self::CSRF_FORM_ELEMENT_NAME, $postedData)) {
+        if (!key_exists(self::CSRF_FORM_ELEMENT_NAME, $parsedPayload)) {
             throw new MissingInputException(self::CSRF_FORM_ELEMENT_NAME);
         }
-        if ($this->session->getCsrf() !== $postedData[self::CSRF_FORM_ELEMENT_NAME]) {
+        if ($this->session->getCsrf() !== $parsedPayload[self::CSRF_FORM_ELEMENT_NAME]) {
             throw new WrongCsrfException();
         }
 

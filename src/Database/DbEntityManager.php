@@ -42,7 +42,7 @@ final class DbEntityManager
     }
 
     /**
-     * Transform DB Data into App Data.
+     * Convert a variable in DB Data format into App Data format.
      *
      * The following order of priority applies when converting the DB data into
      * app data: bool, int, DateTime, and finally string.
@@ -74,6 +74,9 @@ final class DbEntityManager
     }
 
     /**
+     * Convert the result of a database query as a list of rows into app data
+     * format.
+     * 
      * @todo Create type for dbRows, as a list of associative arrays?
      * @todo Throw exception is passed array is empty.
      * @param array[] $dbRows A list of associative arrays each storing a
@@ -91,7 +94,6 @@ final class DbEntityManager
 
         foreach ($model->getProperties() as $key => $property) {
             $value = null;
-
 
             if ($property instanceof ForeignEntityModel) {
                 /**
