@@ -110,3 +110,14 @@ input[type=submit] {
     padding: 1rem;
     font-size: 2rem;
 }
+
+/**
+ * First Level Container
+ */
+
+.first-level-container {
+    margin-left: 20%;
+    margin-right: 20%;
+    padding: 1rem;
+    background: #ffffff;
+}
