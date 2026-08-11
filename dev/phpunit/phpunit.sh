@@ -3,4 +3,4 @@
 set -euo pipefail
 
 BASEDIR=$(dirname $0)
-vendor/bin/phpunit -c "$BASEDIR/phpunit.xml"
+phpunit -c "$BASEDIR/phpunit.xml"

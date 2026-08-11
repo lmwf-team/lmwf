@@ -1,13 +1,13 @@
 services:
   lmwf_dsn:
-    image: php:8.4-cli
+    build:
+      context: ./docker/lmwf
+    command: sleep infinity
     volumes:
       - .:/app
     working_dir: /app
   composer_dsn:
-    image: composer
-    command: composer install
-    depends_on:
-      - lmwf_dsn
+    command: sleep infinity
+    image: composer:latest
     volumes:
-      - .:/app
+      - ./vendor:/app/vendor

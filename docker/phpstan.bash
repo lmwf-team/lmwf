@@ -2,4 +2,4 @@
 
 set -euo pipefail
 
-docker compose run --rm lmwf_dsn vendor/bin/phpstan analyse -c dev/phpstan/phpstan.neon
+docker compose exec lmwf_dsn vendor/bin/phpstan analyse -c dev/phpstan/phpstan.neon --memory-limit 256M

@@ -6,7 +6,7 @@
         }
     ],
     "name": "lmwf-team/lmwf",
-    "description": "Lightweight web framework that doesn’t require tons of dependencies and keeps you in control.",
+    "description": "Lightweight web framework that doesn't require tons of dependencies and keeps you in control.",
     "autoload": {
         "psr-4": {
             "LM\\WebFramework\\": "src/"
@@ -25,6 +25,7 @@
     },
     "require-dev": {
         "phpstan/phpstan": "^2.1",
-        "phpunit/phpunit": "^13.0"
+        "phpunit/phpunit": "^13.0",
+        "squizlabs/php_codesniffer": "*"
     }
 }

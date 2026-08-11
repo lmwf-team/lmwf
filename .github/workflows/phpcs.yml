@@ -8,7 +8,7 @@ permissions:
   contents: read
 
 jobs:
-  php-codesniffer-jn:
+  phpcs-jn:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -16,4 +16,4 @@ jobs:
       - uses: ./.github/actions/set-up-repository
 
       - name: Run phpcs
-        run: ./dev/php_codesniffer/php_codesniffer.sh
+        run: ./dev/phpcs/phpcs.sh
