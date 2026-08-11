@@ -35,7 +35,7 @@ final class FileTransformer implements IFormTransformer
      * @throws MissingInputException If no file was uploaded.
      * @todo Do not save the image here, just extract the a UploadedFileInterface or an array of it.
      */
-    public function extractValueFromRequest(array $formRawData, array $uploadedFiles): null|array|string
+    public function transformSubmittedData(array $formRawData, array $uploadedFiles): null|array|string
     {
         if (!key_exists($this->name, $uploadedFiles)) {
             return $this->extractPreviousFilename($formRawData);

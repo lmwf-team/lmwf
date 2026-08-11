@@ -11,7 +11,7 @@ final class CheckboxTransformer implements IFormTransformer
     ) {
     }
 
-    public function extractValueFromRequest(array $formRawData, array $uploadedFiles): bool
+    public function transformSubmittedData(array $formRawData, array $uploadedFiles): bool
     {
         if (!isset($formRawData[$this->name])) {
             return false;

@@ -17,7 +17,7 @@ final class CsrfTransformer implements IFormTransformer
     ) {
     }
 
-    public function extractValueFromRequest(array $formRawData, array $uploadedFiles): string
+    public function transformSubmittedData(array $formRawData, array $uploadedFiles): string
     {
         if (!isset($formRawData[self::CSRF_FORM_ELEMENT_NAME])) {
             throw new MissingInputException(self::CSRF_FORM_ELEMENT_NAME);

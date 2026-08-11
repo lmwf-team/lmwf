@@ -2,6 +2,6 @@
 
 namespace LM\WebFramework\Model\Type;
 
-class DataArrayModel extends ArrayModel
+final class DataArrayModel extends ArrayModel
 {
 }

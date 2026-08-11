@@ -15,11 +15,18 @@ use LM\WebFramework\Model\Type\EntityListModel;
 use LM\WebFramework\Model\Type\EntityModel;
 use LM\WebFramework\Model\Type\ForeignEntityModel;
 use LM\WebFramework\Model\Type\IntModel;
+use LM\WebFramework\Model\Type\JsonModel;
 use LM\WebFramework\Model\Type\ListModel;
 use LM\WebFramework\Model\Type\StringModel;
 
 /**
- * Validator for type model data.
+ * Validator for app data.
+ * 
+ * This class is instanciated with a model. It can then validate that
+ * the app data it is passed conforms to the model or not, and what
+ * the violations are.
+ * 
+ * @todo Rename ValidatorFactory or to ArrayValidator or to EntityValidator?
  */
 final class Validator
 {
@@ -57,6 +64,10 @@ final class Validator
 
             case StringModel::class:
                 $this->validator = new StringValidator($model);
+                break;
+            
+            case JsonModel::class:
+                $this->validator = new JsonValidator();
                 break;
 
             default:

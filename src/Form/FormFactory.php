@@ -14,6 +14,7 @@ use LM\WebFramework\Form\Transformer\DateTimeTransformer;
 use LM\WebFramework\Form\Transformer\FileTransformer;
 use LM\WebFramework\Form\Transformer\IFormTransformer;
 use LM\WebFramework\Form\Transformer\IntTransformer;
+use LM\WebFramework\Form\Transformer\JsonTransformer;
 use LM\WebFramework\Form\Transformer\ListTransformer;
 use LM\WebFramework\Form\Transformer\StringTransformer;
 use LM\WebFramework\Model\Type\ArrayModel;
@@ -23,11 +24,12 @@ use LM\WebFramework\Model\Type\EntityListModel;
 use LM\WebFramework\Model\Type\ForeignEntityModel;
 use LM\WebFramework\Model\Type\IModel;
 use LM\WebFramework\Model\Type\IntModel;
+use LM\WebFramework\Model\Type\JsonModel;
 use LM\WebFramework\Model\Type\ListModel;
 use LM\WebFramework\Model\Type\StringModel;
 
 /**
- * Automatically creates a Form object from a model definition.
+ * Creates a form transformer from a model.
  */
 final class FormFactory
 {
@@ -80,6 +82,9 @@ final class FormFactory
         }
         if ($model instanceof BoolModel) {
             return new CheckboxTransformer($name);
+        }
+        if ($model instanceof JsonModel) {
+            return new JsonTransformer($name);
         }
 
         throw new DomainException('No transformer found for ' . get_class($model) . '.');

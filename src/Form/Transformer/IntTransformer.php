@@ -16,7 +16,7 @@ final class IntTransformer implements IFormTransformer
     /**
      * @return int|null The submitted, non-empty string, or null if the integer is empty.
      */
-    public function extractValueFromRequest(array $formRawData, array $uploadedFiles): ?int
+    public function transformSubmittedData(array $formRawData, array $uploadedFiles): ?int
     {
         if (!key_exists($this->name, $formRawData)) {
             throw new MissingInputException($this->name);

@@ -19,7 +19,10 @@ final class ArrayTransformer implements IFormTransformer
     ) {
     }
 
-    public function extractValueFromRequest(array $requestParsedBody, array $uploadedFiles): array
+    /**
+     * @return mixed[] An empty array if no data was submitted, or an associate arrays of transformed submitted data mapped by $formElements keys.
+     */
+    public function transformSubmittedData(array $requestParsedBody, array $uploadedFiles): array
     {
         $data = null === $this->name ? $requestParsedBody : $requestParsedBody[$this->name] ?? null;
         if (null === $data) {
@@ -31,7 +34,7 @@ final class ArrayTransformer implements IFormTransformer
 
         $values = [];
         foreach ($this->formElements as $key => $transformer) {
-            $values[$key] = $transformer->extractValueFromRequest($data, $uploadedFiles);
+            $values[$key] = $transformer->transformSubmittedData($data, $uploadedFiles);
         }
         foreach ($values as $key => $v) {
             if (null === $v && key_exists($key, $this->defaultCallbacks)) {
@@ -39,7 +42,7 @@ final class ArrayTransformer implements IFormTransformer
             }
         }
         if (null !== $this->csrf) {
-            $this->csrf->extractValueFromRequest($data, $uploadedFiles);
+            $this->csrf->transformSubmittedData($data, $uploadedFiles);
         }
         return $values;
     }

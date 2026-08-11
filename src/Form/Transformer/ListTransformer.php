@@ -19,7 +19,7 @@ final class ListTransformer implements IFormTransformer
     ) {
     }
 
-    public function extractValueFromRequest(array $requestParsedBody, array $uploadedFiles): array
+    public function transformSubmittedData(array $requestParsedBody, array $uploadedFiles): array
     {
         $data = $requestParsedBody[$this->name] ?? null;
         if (null === $data) {
@@ -33,12 +33,12 @@ final class ListTransformer implements IFormTransformer
             if ($this->nodeModel instanceof IScalarModel) {
                 $value[] = $this->formFactory
                     ->createTransformer($this->nodeModel, $this->nodeConfig, name: $name)
-                    ->extractValueFromRequest($element, $uploadedFiles)
+                    ->transformSubmittedData($element, $uploadedFiles)
                 ;
             } else {
                 $value[] = $this->formFactory
                     ->createTransformer($this->nodeModel, $this->nodeConfig, csrf: false)
-                    ->extractValueFromRequest($element, $uploadedFiles)
+                    ->transformSubmittedData($element, $uploadedFiles)
                 ;
             }
 
