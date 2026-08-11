@@ -27,6 +27,7 @@
         "phpunit/phpunit": "^11",
         "phpstan/phpstan": "^1.11",
         "ergebnis/phpstan-rules": "^2.2",
-        "friendsofphp/php-cs-fixer": "^3.66"
+        "friendsofphp/php-cs-fixer": "^3.66",
+        "spaze/phpstan-disallowed-calls": "^3.4"
     }
 }

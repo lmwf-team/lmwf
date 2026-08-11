@@ -1,0 +1,19 @@
+name: PHPStan
+
+on:
+  push:
+    branches: [ "master" ]
+
+permissions:
+  contents: read
+
+jobs:
+  phpunit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/set-up-repository
+
+      - name: Run static analysis
+        run: vendor/bin/phpstan -qn --no-progress
