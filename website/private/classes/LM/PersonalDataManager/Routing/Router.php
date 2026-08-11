@@ -15,7 +15,7 @@ class Router implements IRouter
         if ('home' === $_GET['page']) {
             return new HomeController;
         } elseif ('login' === $_GET['page']) {
-            'login' => new LoginController;
+            return new LoginController;
         } elseif ('testsp' === $_GET['page']) {
             return new TestSpController;
         } else {
