@@ -24,7 +24,7 @@ class DatabaseConnection {
 		$userLine = $username;
 		$passwordLine = $password;
 		$additionalParameters = array(\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION);
-		$this->pdo = new \PDO($hostLine.$databaseNameline.$charsetLine,
+		$this->pdo = new \PDO($hostLine.$databaseNameLine.$charsetLine,
 			                 $userLine,
 			                 $passwordLine,
 			                 $additionalParameters);
