@@ -5,5 +5,9 @@
         "psr-4": {
             "LM\\WebFramework\\": "src/"
         }
+    },
+    "require": {
+        "php-di/php-di": "^7.0",
+        "guzzlehttp/guzzle": "^7.8"
     }
 }
