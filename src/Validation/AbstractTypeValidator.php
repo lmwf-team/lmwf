@@ -35,6 +35,7 @@ abstract readonly class AbstractTypeValidator implements ITypeValidator
     ) {
     }
 
+    #[\Override]
     public function validate(mixed $value): null|TypeViolation|ValueViolation
     {
         if (null !== $value) {

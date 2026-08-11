@@ -23,6 +23,7 @@ final class DbEntityManagerTest extends TestCase
 {
     private DbEntityManager $em;
 
+    #[\Override]
     public function setUp(): void
     {
         $this->em = new DbEntityManager();

@@ -28,6 +28,7 @@ final class HttpRequestHandlerTest extends TestCase
     private HttpRequestHandler $handler;
     private ContainerInterface $container;
 
+    #[\Override]
     public function setUp(): void
     {
         $this->container = Kernel::initBare([
@@ -138,6 +139,7 @@ final class HttpRequestHandlerTest extends TestCase
 
 final class ResourceNotFoundController implements IController
 {
+    #[\Override]
     public function generateResponse(
         ServerRequestInterface $request,
         array $serverParams,
@@ -148,6 +150,7 @@ final class ResourceNotFoundController implements IController
 
 final class MethodNotSupportedController implements IController
 {
+    #[\Override]
     public function generateResponse(
         ServerRequestInterface $request,
         array $serverParams,
@@ -158,6 +161,7 @@ final class MethodNotSupportedController implements IController
 
 final class NotAuthenticatedController implements IController
 {
+    #[\Override]
     public function generateResponse(
         ServerRequestInterface $request,
         array $serverParams,
@@ -168,6 +172,7 @@ final class NotAuthenticatedController implements IController
 
 final class ServerErrorController implements IController
 {
+    #[\Override]
     public function generateResponse(
         ServerRequestInterface $request,
         array $serverParams,
@@ -178,6 +183,7 @@ final class ServerErrorController implements IController
 
 final class HomeController implements IRoutedController
 {
+    #[\Override]
     public function generateResponse(
         Route $route,
         ServerRequestInterface $request,
@@ -188,6 +194,7 @@ final class HomeController implements IRoutedController
 
 final class MyController implements IRoutedController
 {
+    #[\Override]
     public function generateResponse(
         Route $route,
         ServerRequestInterface $request,

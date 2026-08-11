@@ -41,6 +41,7 @@ final class StringModel extends AbstractModel implements ILengthModel, IScalarMo
         return $this->enumConstraint;
     }
 
+    #[\Override]
     public function getRangeConstraint(): ?IRangeConstraint
     {
         return $this->rangeConstraint;

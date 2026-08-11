@@ -46,6 +46,7 @@ final readonly class SearchQuery
         $this->keywords = ($keywords);
     }
 
+    #[\Override]
     public function __toString(): string
     {
         $words = [];

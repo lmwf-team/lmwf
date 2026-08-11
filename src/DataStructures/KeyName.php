@@ -53,6 +53,7 @@ final class KeyName implements Stringable
         return $stringConverted;
     }
 
+    #[\Override]
     public function __toString(): string
     {
         return $this->value;

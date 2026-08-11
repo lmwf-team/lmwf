@@ -37,6 +37,7 @@ final readonly class IndividualViolation implements Stringable, IConstraintViola
         return $this->message;
     }
 
+    #[\Override]
     public function __toString(): string
     {
         return $this->message;

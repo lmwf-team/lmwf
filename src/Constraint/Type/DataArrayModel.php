@@ -11,6 +11,7 @@ use InvalidArgumentException;
  */
 final class DataArrayModel extends ArrayModel
 {
+    #[\Override]
     public function addProperty(string $key, IModel $model): self
     {
         if (key_exists($key, $this->getProperties())) {
@@ -26,6 +27,7 @@ final class DataArrayModel extends ArrayModel
      * @todo Find a better name?
      * @todo Use clone?
      */
+    #[\Override]
     public function prune(array $propertiesToKeep): self
     {
         return new self(
@@ -34,6 +36,7 @@ final class DataArrayModel extends ArrayModel
         );
     }
 
+    #[\Override]
     public function removeProperty(string $keyToRemove): self
     {
         if (key_exists($keyToRemove, $this->getProperties())) {

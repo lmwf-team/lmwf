@@ -55,6 +55,7 @@ abstract readonly class ImmutableArray implements ArrayAccess, Countable, IArray
     /**
      * @return int<0, max>
      */
+    #[\Override]
     public function count(): int
     {
         return count($this->data);
@@ -68,6 +69,7 @@ abstract readonly class ImmutableArray implements ArrayAccess, Countable, IArray
         return array_keys($this->data);
     }
 
+    #[\Override]
     public function getIterator(): Traversable
     {
 
@@ -259,6 +261,7 @@ abstract readonly class ImmutableArray implements ArrayAccess, Countable, IArray
     /**
      * @param TKey $offset
      */
+    #[\Override]
     public function offsetGet(mixed $offset): mixed
     {
         foreach ($this->data as $key => $value) {
@@ -279,6 +282,7 @@ abstract readonly class ImmutableArray implements ArrayAccess, Countable, IArray
      *
      * @param TKey $offset
      */
+    #[\Override]
     public function offsetExists(mixed $offset): bool
     {
         foreach ($this->data as $key => $_) {
@@ -290,11 +294,13 @@ abstract readonly class ImmutableArray implements ArrayAccess, Countable, IArray
         return false;
     }
 
+    #[\Override]
     public function offsetSet(mixed $offset, mixed $value): void
     {
         throw new BadMethodCallException(self::class . ' objects are immutable.');
     }
 
+    #[\Override]
     public function offsetUnset(mixed $offset): void
     {
         throw new BadMethodCallException(self::class . ' objects are immutable.');
@@ -304,6 +310,7 @@ abstract readonly class ImmutableArray implements ArrayAccess, Countable, IArray
      * @return TArray
      * @todo Delete?
      */
+    #[\Override]
     public function toArray(): array
     {
         return $this->data;

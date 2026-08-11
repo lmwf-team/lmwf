@@ -9,6 +9,7 @@ use PHPUnit\Framework\TestCase;
 
 final class ConfFileTest extends TestCase
 {
+    #[\Override]
     public function setUp(): void
     {
         parent::setUp();
@@ -74,6 +75,7 @@ final class ConfFileTest extends TestCase
         self::assertEquals($conf->httpConf->errorControllers->notFoundFqcn, 'Controllers\NotFoundController');
     }
 
+    #[\Override]
     public function tearDown(): void
     {
         set_error_handler(null);

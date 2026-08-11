@@ -21,6 +21,7 @@ final readonly class SlugDefaultCallable implements IDefaultCallable
     ) {
     }
 
+    #[\Override]
     public function generateValue(array $formData): mixed
     {
         $slugSourceFieldValue = $formData[$this->slugSourceFieldId];

@@ -17,11 +17,13 @@ abstract class AbstractModel implements IModel
         $this->notNullConstraint = $isNullable ? null : new NotNullConstraint();
     }
 
+    #[\Override]
     public function getNotNullConstraint(): ?INotNullConstraint
     {
         return $this->notNullConstraint;
     }
 
+    #[\Override]
     public function isNullable(): bool
     {
         return null === $this->notNullConstraint;

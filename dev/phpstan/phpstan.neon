@@ -15,10 +15,12 @@ parameters:
                 - expr.resultUnused
                 - argument.type
             path: ../../tests
+    checkMissingCallableSignature: true
+    checkMissingOverrideMethodAttribute: true
     reportUnsafeArrayStringKeyCasting: 'prevent'
+    treatPhpDocTypesAsCertain: false
     stubFiles:
         - stubs/ContainerInterface.stub
-    treatPhpDocTypesAsCertain: false
     ergebnis:
         noPhpstanIgnore:
             enabled: false

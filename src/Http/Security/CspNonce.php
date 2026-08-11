@@ -18,6 +18,7 @@ final readonly class CspNonce implements Stringable
         $this->nonce = base64_encode(random_bytes(16));
     }
 
+    #[\Override]
     public function __toString(): string
     {
         return $this->nonce;

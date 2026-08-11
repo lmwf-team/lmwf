@@ -35,6 +35,7 @@ final class Slug implements Stringable
         }
     }
 
+    #[\Override]
     public function __toString(): string
     {
         return $this->value;

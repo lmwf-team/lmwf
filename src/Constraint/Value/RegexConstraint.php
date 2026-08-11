@@ -11,6 +11,7 @@ final class RegexConstraint implements IRegexConstraint
     ) {
     }
 
+    #[\Override]
     public function getRegex(): string
     {
         return $this->regex;

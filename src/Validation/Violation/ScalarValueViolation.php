@@ -29,6 +29,7 @@ final readonly class ScalarValueViolation implements Stringable, ValueViolation
         return $this->message;
     }
 
+    #[\Override]
     public function __toString(): string
     {
         return $this->message;

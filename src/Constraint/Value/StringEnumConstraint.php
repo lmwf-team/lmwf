@@ -14,6 +14,7 @@ final readonly class StringEnumConstraint implements IEnumConstraint
     ) {
     }
 
+    #[\Override]
     public function getValues(): array
     {
         return $this->allowedValues;

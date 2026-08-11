@@ -29,6 +29,7 @@ final class IntModel extends AbstractModel implements ILengthModel, IScalarModel
         );
     }
 
+    #[\Override]
     public function getRangeConstraint(): ?IRangeConstraint
     {
         return $this->rangeConstraint;
