@@ -37,6 +37,9 @@ abstract class ArrayModel extends AbstractModel
         return $this->properties;
     }
 
+    /**
+     * @param list<string> $propertiesToKeep
+     */
     abstract public function prune(array $propertiesToKeep): self;
 
     abstract public function removeProperty(string $keyToRemove): self;

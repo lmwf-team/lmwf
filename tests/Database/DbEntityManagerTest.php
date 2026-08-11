@@ -49,7 +49,7 @@ final class DbEntityManagerTest extends TestCase
         $expected = [
             'name' => 'Georges',
         ];
-        self::assertEquals($expected, $this->em->toDbValue($appObject, ignoreProperties: ['id']));
+        self::assertEquals($expected, $this->em->toDbValue($appObject, propertiesToIgnore: ['id']));
     }
 
     public function testInvalidDbDataException(): void
@@ -419,7 +419,7 @@ final class DbEntityManagerTest extends TestCase
             ],
         ]);
 
-        self::assertEquals($expected, $this->em->convertDbRowsToList($dbRows, $personModel));
+        self::assertEquals($expected, $this->em->convertDbRowsToEntityList($dbRows, $personModel));
     }
 
     public function testPruning(): void

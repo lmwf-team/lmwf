@@ -19,14 +19,25 @@ use UnexpectedValueException;
  * An immutable array consists of key-value pairs named properties. Keys are
  * either integers or strings (the only admissible key types in PHP), and values
  * can be any data type.
+ * 
+ * @template TKey
+ * @implements ArrayAccess<TKey, mixed> 
+ * @implements IArrayable<TKey, mixed>
+ * @implements IteratorAggregate<TKey, mixed>
  */
 abstract readonly class ImmutableArray implements ArrayAccess, Countable, IArrayable, IteratorAggregate
 {
+    /**
+     * @param array<TKey, mixed> $data
+     */
     public function __construct(
         protected array $data,
     ) {
     }
 
+    /**
+     * @param mixed $value
+     */
     public function contains(mixed $value): bool
     {
         foreach ($this->data as $datum) {
@@ -38,13 +49,16 @@ abstract readonly class ImmutableArray implements ArrayAccess, Countable, IArray
         return false;
     }
 
+    /**
+     * @return positive-int
+     */
     public function count(): int
     {
         return count($this->data);
     }
 
     /**
-     * @return array<int|string, mixed>
+     * @return list<TKey>
      */
     public function keys(): array
     {
@@ -56,41 +70,73 @@ abstract readonly class ImmutableArray implements ArrayAccess, Countable, IArray
         return new ArrayIterator($this->data);
     }
 
+    /**
+     * @param TKey $key
+     */
     public function getAppList(mixed $key): AppList
     {
         return $this[$key];
     }
 
+
+    /**
+     * @param TKey $key
+     */
     public function getAppObject(mixed $key): AppObject
     {
         return $this[$key];
     }
 
+
+    /**
+     * @param TKey $key
+     * @return mixed[]
+     */
     public function getArray(mixed $key): array
     {
         return $this[$key];
     }
 
+
+    /**
+     * @param TKey $key
+     * @return IArrayable<TKey, mixed>
+     */
     public function getArrayable(mixed $key): IArrayable
     {
         return $this[$key];
     }
 
+
+    /**
+     * @param TKey $key
+     */
     public function getBool(mixed $key): bool
     {
         return $this[$key];
     }
 
+
+    /**
+     * @param TKey $key
+     */
     public function getFloat(mixed $key): float
     {
         return $this[$key];
     }
 
+
+    /**
+     * @param TKey $key
+     */
     public function getInt(mixed $key): int
     {
         return $this[$key];
     }
 
+    /**
+     * @param TKey $key
+     */
     public function getNullableObject(mixed $key, string $fqcn): mixed
     {
         $value = $this[$key];
@@ -102,6 +148,9 @@ abstract readonly class ImmutableArray implements ArrayAccess, Countable, IArray
         return $value;
     }
 
+    /**
+     * @param TKey $key
+     */
     public function getNullableScalar(mixed $key, string $type): mixed
     {
         $value = $this[$key];
@@ -113,11 +162,17 @@ abstract readonly class ImmutableArray implements ArrayAccess, Countable, IArray
         return $value;
     }
 
+    /**
+     * @param TKey $key
+     */
     public function getString(mixed $key): string
     {
         return $this[$key];
     }
 
+    /**
+     * @param TKey $offset
+     */
     public function offsetGet(mixed $offset): mixed
     {
         foreach ($this->data as $key => $value) {
@@ -135,6 +190,8 @@ abstract readonly class ImmutableArray implements ArrayAccess, Countable, IArray
      *
      * For instance, an object with the property key '3' will return false if
      * given an offset of 3.
+     * 
+     * @param TKey $offset
      */
     public function offsetExists(mixed $offset): bool
     {
@@ -147,16 +204,27 @@ abstract readonly class ImmutableArray implements ArrayAccess, Countable, IArray
         return false;
     }
 
+
+    /**
+     * @param TKey $offset
+     */
     public function offsetSet(mixed $offset, mixed $value): void
     {
         throw new BadMethodCallException(self::class . ' objects are immutable.');
     }
 
+
+    /**
+     * @param TKey $offset
+     */
     public function offsetUnset(mixed $offset): void
     {
         throw new BadMethodCallException(self::class . ' objects are immutable.');
     }
 
+    /**
+     * @return array<TKey, null|object|scalar>
+     */
     public function toArray(): array
     {
         $data = [];

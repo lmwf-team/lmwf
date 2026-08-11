@@ -23,11 +23,14 @@ use LM\WebFramework\Constraint\Type\EntityListModel;
 use LM\WebFramework\Constraint\Type\IModel;
 use LM\WebFramework\Constraint\Type\ListModel;
 use LM\WebFramework\Constraint\Type\StringModel;
+use LM\WebFramework\Validation\EntityValidator;
 use LM\WebFramework\Validation\Validator;
 use UnexpectedValueException;
 
 /**
  * @todo Could be renamed to DbEntityFactory / DbArrayFactory.
+ * 
+ * @phpstan-type dbrow array<string, null|scalar>
  */
 final class DbEntityManager
 {
@@ -71,7 +74,7 @@ final class DbEntityManager
      *
      * @todo Create type for dbRows, as a list of associative arrays?
      * @todo Throw exception is passed array is empty.
-     * @param list<array> $dbRows A list of associative arrays each storing a
+     * @param list<dbrow> $dbRows A list of associative arrays each storing a
      * different row.
      * @param EntityModel $model The model of each row.
      * @param int $index The row identifier of the main entity.
@@ -123,6 +126,10 @@ final class DbEntityManager
         return CollectionFactory::createDeepAppObject($transientAppObject);
     }
 
+    /**
+     * @param list<dbrow> $dbRows
+     * @return list<AppObject>
+     */
     public function convertDbEntityList(array $dbRows, EntityListModel $entityListModel, int|string|null $referenceId): array
     {
         $itemModel = $entityListModel->getItemModel();
@@ -145,35 +152,23 @@ final class DbEntityManager
      * For now, ListModel objects can only have an scalar item model. Hence
      * why the type of getItemModel() is not checked yet, look at commit
      * 6f25edc4af219c2f9753d9e4586f4dea843b4f70 to see how it was done.
+     * 
+     * @param list<null|scalar> $dbDataList
+     * @return list<mixed>
      */
-    public function convertDbList(array $dbRows, ListModel $listModel): array
+    public function convertDbList(array $dbDataList, ListModel $listModel): array
     {
         $itemModel = $listModel->getItemModel();
         $appData = [];
-        foreach ($dbRows as $row) {
+        foreach ($dbDataList as $row) {
             $appData[] = $this->convertDbScalar($row, $itemModel);
         }
         return $appData;
     }
 
-    public function convertDbRowsToList(array $dbRows, IModel $itemModel): AppList
-    {
-        if ($itemModel instanceof EntityModel) {
-            return $this->convertDbRowsToEntityList($dbRows, $itemModel);
-        }
-        $appData = [];
-        foreach ($dbRows as $rowNo => $row) {
-            if ($itemModel instanceof IScalarModel) {
-                $appData[] = $this->convertDbScalar($row, $itemModel);
-            } elseif ($itemModel instanceof ForeignEntityModel) {
-                $appData[] = $this->convertDbRowsToAppObject($dbRows, $itemModel->getEntityModel(), $rowNo);
-            } elseif ($itemModel instanceof ListModel) {
-                $appData[] = $this->convertDbList($row, $itemModel);
-            }
-        }
-        return new AppList($appData);
-    }
-
+    /**
+     * @param list<dbrow> $dbRows
+     */
     public function convertDbRowsToEntityList(array $dbRows, EntityModel $itemModel): AppList
     {
         $appData = [];
@@ -198,8 +193,8 @@ final class DbEntityManager
      */
     public function pruneAppObject(AppObject $appObject, EntityModel $model): AppObject
     {
-        $cvs = (new Validator($model))->validate($appObject->toArray());
-        if (count($cvs) > 0) {
+        $validationResult = new EntityValidator($model)->validate($appObject->toArray());
+        if (null !== $validationResult) {
             throw new InvalidArgumentException('Given app object does not adhere to the given model.');
         }
         $data = [];
@@ -215,14 +210,16 @@ final class DbEntityManager
 
     /**
      * Ignores list (ordered arrays).
+     * 
+     * @param list<string> $propertiesToIgnore
      *
      * @throws UnexpectedValueException If some of the properties are set to be persisted and are not scalar.
      * @throws InvalidArgumentException If appData is a list.
      */
-    public function toDbValue(mixed $appData, string $prefix = '', array $ignoreProperties = []): mixed
+    public function toDbValue(mixed $appData, string $prefix = '', array $propertiesToIgnore = []): mixed
     {
         if ($appData instanceof AppObject) {
-            return $this->toDbValue($appData->toArray(), $prefix, $ignoreProperties);
+            return $this->toDbValue($appData->toArray(), $prefix, $propertiesToIgnore);
         } elseif (is_bool($appData)) {
             return $appData ? 1 : 0;
         } elseif ($appData instanceof DateTimeImmutable) {
@@ -233,7 +230,7 @@ final class DbEntityManager
                 throw new InvalidArgumentException('Not supported.');
             } else {
                 foreach ($appData as $pName => $pValue) {
-                    if (!in_array($pName, $ignoreProperties, strict: true)) {
+                    if (!in_array($pName, $propertiesToIgnore, strict: true)) {
                         if (is_array($pValue)) {
                             if (!array_is_list($pValue)) {
                                 $dbArray += $this->toDbValue($pValue, $pName);

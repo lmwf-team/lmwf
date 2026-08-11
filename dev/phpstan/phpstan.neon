@@ -18,6 +18,8 @@ parameters:
             path: ../../tests
     treatPhpDocTypesAsCertain: false
     ergebnis:
+        noPhpstanIgnore:
+            enabled: false
         declareStrictTypes:
             enabled: true
         noNamedArgument:

@@ -7,10 +7,12 @@ namespace LM\WebFramework\DataStructures;
 use InvalidArgumentException;
 
 /**
- * Immutable list guaranteed to have zero-indexed sequential property keys.
- *
+ * Immutable list of heterogeneous data, guaranteed to have zero-indexed
+ * sequential property keys.
+ * 
+ * @extends ImmutableArray<int>
  */
-readonly class AppList extends ImmutableArray
+final readonly class AppList extends ImmutableArray
 {
     /**
      * @param list<mixed> $data

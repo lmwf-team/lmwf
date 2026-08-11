@@ -9,11 +9,17 @@ use LM\WebFramework\DataStructures\AppObject;
 
 class CollectionFactory
 {
+    /**
+     * @param list<mixed> $list
+     */
     public static function createDeepAppList(array $list): AppList
     {
         return new AppList(self::convertProperties($list));
     }
 
+    /**
+     * @param array<non-decimal-int-string, mixed> $object
+     */
     public static function createDeepAppObject(array $object): AppObject
     {
         return new AppObject(self::convertProperties($object));
@@ -22,6 +28,7 @@ class CollectionFactory
     /**
      * Used by the class to convert properties into objects of corresponding
      * DataStructures class.
+     * @param mixed[] $array
      * @return array<AppList|AppObject>
      */
     private static function convertProperties(array $array): array

@@ -84,12 +84,12 @@ final readonly class RouteDefParser
     }
 
     /**
-     * @param string $routeArray
+     * @param array<string, string> $routeDefConf
      */
-    private function parseFqcn(array $routeArray, string $key): ?string
+    private function parseFqcn(array $routeDefConf, string $key): ?string
     {
-        if (key_exists($key, $routeArray)) {
-            return str_replace('.', '\\', $routeArray[$key]);
+        if (key_exists($key, $routeDefConf)) {
+            return str_replace('.', '\\', $routeDefConf[$key]);
         } else {
             return null;
         }

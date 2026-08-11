@@ -25,8 +25,6 @@ final class DataArrayModel extends ArrayModel
     /**
      * @todo Find a better name?
      * @todo Use clone?
-     * 
-     * @param list<string> $propertiesToKeep
      */
     public function prune(array $propertiesToKeep): self
     {

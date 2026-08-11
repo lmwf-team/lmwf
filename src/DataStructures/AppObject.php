@@ -9,16 +9,16 @@ use OutOfBoundsException;
 
 /**
  * Immutable array consisting of key-value pairs named properties. Keys are
- * necessarily string, and values can be any data type (except associative
- * arrays as they are turned into AppObject).
+ * necessarily string, and values can be any data type.
  *
  * @todo Force a certain naming style for property keys?
+ * 
+ * @extends ImmutableArray<non-decimal-int-string>
  */
 final readonly class AppObject extends ImmutableArray
 {
     /**
-     * @todo Add back @param array<string, mixed> and report to PHPStan that
-     * `treatPhpDocTypesAsCertain: false` is ignored in that case.
+     * @param array<non-decimal-int-string, mixed> $array
      */
     public function __construct(array $array)
     {

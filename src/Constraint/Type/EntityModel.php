@@ -17,7 +17,7 @@ final class EntityModel extends ArrayModel
 {
     /**
      * @param string $identifier A snake_case identifier for the model.
-     * @param list<IModel> $properties An associative list of properties.
+     * @param array<non-decimal-int-string, IModel> $properties An associative list of properties.
      * @param string $idKey The key of the property identifying entities of the
      * same model.
      * @param bool $isNullable Whether the entity is nullable.

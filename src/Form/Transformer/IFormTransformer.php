@@ -26,7 +26,7 @@ interface IFormTransformer
      * string and not to null.
      *
      * @param array<string, mixed> $parsedPayload
-     * @param array<string, array|UploadedFileInterface> $uploadedFiles
+     * @param array<string, array<string, UploadedFileInterface>|UploadedFileInterface> $uploadedFiles
      * @return mixed The submitted value converted to the app data format, or
      * null if the user submitted a value evaluating to null.
      * @throws \LM\WebFramework\Form\Exceptions\MissingInputException If no value was submitted for the field.

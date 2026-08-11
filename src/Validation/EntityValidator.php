@@ -6,7 +6,6 @@ namespace LM\WebFramework\Validation;
 
 use LM\WebFramework\Constraint\Type\ArrayModel;
 use LM\WebFramework\Validation\Violation\DictValueViolation;
-use LM\WebFramework\Validation\Violation\IndividualViolation;
 use LM\WebFramework\Validation\Violation\MissingItemViolation;
 use LM\WebFramework\Validation\Violation\TypeViolation;
 use LM\WebFramework\Validation\Violation\ValueViolation;
