@@ -1,0 +1,2 @@
+Database : shift-two_pdm
+MySQL Host : mysql-example.org
