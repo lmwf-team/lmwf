@@ -1,5 +1,5 @@
 services:
-  php_dsn:
+  lmwf_dsn:
     build:
       context: ./docker
     volumes:

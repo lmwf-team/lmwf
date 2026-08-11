@@ -33,7 +33,7 @@ final class HttpRequestHandler
         private SessionManager $session,
     ) {
     }
-    
+
     public function sendResponse(ResponseInterface $response): void
     {
         http_response_code($response->getStatusCode());

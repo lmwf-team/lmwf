@@ -2,19 +2,44 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Http;
+namespace LM\WebFramework\Http\Routing;
 
-use LM\WebFramework\Configuration\Configuration;
 use LM\WebFramework\Http\Error\RoutingError;
 use LM\WebFramework\Http\Model\RouteInfo;
 use LM\WebFramework\Http\Model\RouteInfoFactory;
+use LM\WebFramework\Http\Routing\Exception\RouteNotFoundException;
+use Uri\WhatWg\Url;
 
-final class Router
+final readonly class Router
 {
-    private readonly RouteInfoFactory $mainRoute;
+    private RouteInfoFactory $mainRoute;
 
-    public function __construct(Configuration $conf) {
-        $this->mainRoute = new RouteInfoFactory($conf->getRoutes());
+    public function __construct(
+        private Route $rootRoute,
+    ) {
+    }
+
+    /**
+     * @param string $path An arbitrary string made of segments separated by one or more forward slashes.
+     */
+    public function getRouteFromUrl(string $path): ?Route
+    {
+        $segs = array_filter(explode('/', $path), fn($value) => '' !== $value) |> array_values(...);
+        $nSegs = count($segs);
+        if (0 === $nSegs) {
+            return $this->rootRoute;
+        }
+        $i = 0;
+        $route = $this->rootRoute;
+        while ($i < $nSegs) {
+            $seg = $segs[$i];
+            if (!key_exists($seg, $route->routes)) {
+                throw new RouteNotFoundException("No route could be found for path: {$path}.");
+            }
+            $route = $route->routes[$seg];
+            $i++;
+        }
+        return $route;
     }
 
     /**
