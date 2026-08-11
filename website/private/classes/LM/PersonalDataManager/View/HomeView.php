@@ -2,25 +2,30 @@
 
 namespace LM\PersonalDataManager\View;
 
-use LM\WebFramework\View\IView;
-
-class HomeView implements IView
+class HomeView extends TemplateView
 {
+	private $breadcrumb;
+
+	public function __construct()
+	{
+		$this->breadcrumb = array(
+			'Home' => 'index.php',
+		);
+	}
 	public function display(): void
 	{
 ?>
 <!DOCTYPE html>
 <html>
 	<head>
-		<meta charset="utf-8">
-		<title>Home</title>
+		<?php $this->displayHtmlHeadContent('Login') ?>
 	</head>
 	<body>
-		<header>
-			<h1>Home</h1>
-		</header>
+		<?php $this->displayPageHeader('Login', $this->breadcrumb) ?>
 		<main>
-			<p>Personal Data Manager is the essential tool to help you manage your life! <a href="index.php?page=login">Log in!</a></p>
+			<div class="main-black-transparent-background">
+				<p>Personal Data Manager is the essential tool to help you manage your life! <a href="index.php?page=login">Log in!</a></p>
+			</div>
 		</main>
 	</body>
 </html>

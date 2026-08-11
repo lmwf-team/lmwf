@@ -6,6 +6,23 @@ use LM\WebFramework\View\IView;
 
 abstract class TemplateView implements IView
 {
+	public function displayAllBreadcrumbLis(array $breadcrumb): void
+	{
+		foreach ($breadcrumb as $name => $link) {
+			$this->displaySingleBreadcrumbLi($name, $link);
+		}
+	}
+
+	public function displaySingleBreadcrumbLi(string $name, string $link): void
+	{
+?>
+<li>
+	<a href="<?= $link ?>">
+		<?= $name ?>
+	</a>
+</li>
+<?php
+	}
 	public function displayHtmlHeadContent(string $pageTitle): void
 	{
 ?>
@@ -15,7 +32,7 @@ abstract class TemplateView implements IView
 <?php
 	}
 
-	public function displayPageHeader(string $pageHeader): void
+	public function displayPageHeader(string $pageHeader, array $breadcrumb): void
 	{
 ?>
 	<header>
@@ -27,16 +44,7 @@ abstract class TemplateView implements IView
 		<div class="main-black-transparent-background">
 			<nav>
 				<ol class="breadcrumb">
-					<li>
-						<a href="index.php">
-							Home
-						</a>
-					</li>
-					<li>
-						<a href="index.php?page=login">
-							Login
-						</a>
-					</li>
+					<?php $this->displayAllBreadcrumbLis($breadcrumb) ?>
 				</ol>
 			</nav>
 		</div>

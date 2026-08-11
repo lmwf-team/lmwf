@@ -4,6 +4,16 @@ namespace LM\PersonalDataManager\View;
 
 class LoginView extends TemplateView
 {
+	private $breadcrumb;
+
+	public function __construct()
+	{
+		$this->breadcrumb = array(
+			'Home' => 'index.php',
+			'Log In' => 'index.php?page=login',
+		);
+	}
+
 	public function display(): void
 	{
 ?>
@@ -13,7 +23,7 @@ class LoginView extends TemplateView
 		<?php $this->displayHtmlHeadContent('Login') ?>
 	</head>
 	<body>
-		<?php $this->displayPageHeader('Login') ?>
+		<?php $this->displayPageHeader('Login', $this->breadcrumb) ?>
 		<main>
 			<div class="main-black-transparent-background">
 				<form>
