@@ -16,4 +16,4 @@ jobs:
       - uses: ./.github/actions/set-up-repository
 
       - name: Run phpcs
-        run: ./check-php-style
+        run: ./check-php-style.sh
