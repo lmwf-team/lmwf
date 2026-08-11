@@ -31,10 +31,10 @@ final readonly class ImgFormat
     public function scale(int $sizeX, int $sizeY): array
     {
         $scaleFactor = max($this->minSizeX / $sizeX, $this->minSizeY / $sizeY);
-        
+
         $newSizeX = (int) max(1, round($sizeX * $scaleFactor));
         $newSizeY = (int) max(1, round($sizeY * $scaleFactor));
-        
+
         return [
             $newSizeX >= 1 ? $newSizeX : 1,
             $newSizeY >= 1 ? $newSizeY : 1,

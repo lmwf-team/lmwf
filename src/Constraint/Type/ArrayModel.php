@@ -31,7 +31,7 @@ abstract class ArrayModel extends AbstractModel
     /**
      * This guarantees each property has a unique key in the context of the
      * model.
-     * 
+     *
      * @return array<string, \LMWF\Constraint\Type\IModel> An
      * associative array of properties.
      */

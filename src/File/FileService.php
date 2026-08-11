@@ -13,7 +13,7 @@ use UnexpectedValueException;
 final class FileService
 {
     const int IMG_RANDOM_NUMBER_MAX = 9999;
-    
+
     /**
      * @var list<string>
      */
@@ -51,7 +51,7 @@ final class FileService
             imagecopyresized($thumbnailImg, $originalImg, 0, 0, 0, 0, $newSizeX, $newSizeY, $sizeX, $sizeY);
 
             $folderName = new Slug($formatId);
-            
+
             imagewebp(
                 $thumbnailImg,
                 "{$this->conf->getPathOfUploadedFiles()}/{$folderName}/{$filename}",

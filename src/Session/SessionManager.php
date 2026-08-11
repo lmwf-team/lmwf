@@ -78,7 +78,7 @@ final class SessionManager
     {
         $absKey = self::CUSTOM_PREFIX . $key;
 
-		/** @phpstan-ignore assign.propertyType */
+        /** @phpstan-ignore assign.propertyType */
         $this->sessionData[self::CUSTOM_PREFIX . $key] = $value;
     }
 

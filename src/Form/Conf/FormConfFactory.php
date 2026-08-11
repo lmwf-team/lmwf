@@ -112,7 +112,7 @@ readonly class FormConfFactory
      */
     private function getType(array $fieldConfParams, ?IModel $model): FormFieldType
     {
-        if( key_exists(self::TYPE_KN, $fieldConfParams)) {
+        if (key_exists(self::TYPE_KN, $fieldConfParams)) {
             return FormFieldType::fromString($fieldConfParams[self::TYPE_KN]);
         } elseif (null !== $model) {
             return $this->getTypeFromModel($model);
