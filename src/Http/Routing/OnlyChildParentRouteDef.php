@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace LM\WebFramework\Http\Routing;
 
-use InvalidArgumentException;
 use LM\WebFramework\Http\Routing\Exception\OnlyChildMustTakeAtLeastOneArgument;
 
+/**
+ * A route that does not accept any parameters, but instead passes them to its
+ * child route if any parameters are passed.
+ */
 final readonly class OnlyChildParentRouteDef extends RouteDef
 {
     /**

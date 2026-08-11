@@ -36,7 +36,7 @@ final class HttpRequestHandlerTest extends TestCase
                         'VISITOR'
                     ],
                     [
-                        'my' => new ParameterizedRoute(
+                        'my' => new ParentRoute(
                             MyController::class,
                             [
                                 'VISITOR'

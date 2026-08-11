@@ -7,15 +7,23 @@ namespace LM\WebFramework\Http\Routing;
 use InvalidArgumentException;
 
 /**
+ * Instantiation of a RouteDef, based on a given path.
+ *
+ * A path (in the HTTP sense) is split into segments. Starting from the left,
+ * one or more segments are associated with a route definition, and for those
+ * segments, referred to as the "relevant segments", a route is instantiated.
+ *
  * @todo Add name to a Route? Not great because name is often dynamic.
- * @todo Embed request?
- * @todo Should include query data.
+ * @todo Embed request? Probably best to only rely on path.
+ * @todo Should include query data. Probably best to only rely on path.
  */
 final readonly class Route
 {
     /**
-     * @param string[] $roles
-     * @param array<string, self> $routes
+     * @param RouteDef $routeDef The associated route definition.
+     * @param string[] $relevantSegs the associated path segments of the path
+     * that instantiated the current route. For a parameterised route, only the
+     * segments corresponding to the arguments are passed.
      * @todo PathSegList?
      */
     public function __construct(
@@ -54,7 +62,13 @@ final readonly class Route
 
     public function getPath(): string
     {
-        return  '/' . implode('/', $this->relevantSegs);
+        if (null === $this->parent) {
+            return '/';
+        } elseif ('/' === $this->parent->getPath()) {
+            return '/' . implode('/', $this->relevantSegs);
+        } else {
+            return $this->parent->getPath() . '/' . implode('/', $this->relevantSegs);
+        }
     }
 
     /**
