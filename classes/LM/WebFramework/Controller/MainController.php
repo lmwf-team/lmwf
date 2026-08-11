@@ -33,7 +33,7 @@ class MainController
             $request = new DefaultPostRequest($_SERVER, $_POST);
         }
 
-        if ($request instanceof IRequest {
+        if ($request instanceof IRequest) {
             $controller->doGet($request);
         } elseif ($request instanceof IPostRequest) {
             $controller->doPost($request);
