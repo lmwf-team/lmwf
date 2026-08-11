@@ -15,7 +15,7 @@ final readonly class Router
 {
     /**
      * Convert an ABSOLUTE path to a list of path segments, CONVERTS "" to "/".
-     * 
+     *
      * A "path segment" is defined in the context of lmwf as the
      * URL-decoded part of each path segment of the given absolute path.
      *

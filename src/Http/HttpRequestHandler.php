@@ -35,7 +35,7 @@ final class HttpRequestHandler
 
     /**
      * Generates a response from globals.
-     * 
+     *
      * @todo Use pipe operator!
      * */
     public function respondToOngoingRequest(): void

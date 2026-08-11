@@ -74,7 +74,7 @@ final class RouteTest extends TestCase
     {
         $subRouteDef = new RouteDef(self::class);
         $rootRoute = Route::createRootRoute(['sub' => $subRouteDef]);
-        
+
         $subRoute = new Route($subRouteDef, 'sub', parent: $rootRoute);
         $this->assertSame('/sub', $subRoute->getPath());
     }
@@ -91,7 +91,7 @@ final class RouteTest extends TestCase
         $rootRoute = Route::createRootRoute([
             'sub1' => $subRouteDef,
         ]);
-        
+
         $subRoute = new Route($subRouteDef, 'sub1', parent: $rootRoute);
         $subSubRoute = new Route($subSubRouteDef, 'sub2', parent: $subRoute);
         $this->assertSame('/sub1/sub2', $subSubRoute->getPath());

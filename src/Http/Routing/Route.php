@@ -89,7 +89,7 @@ final readonly class Route
 
     /**
      * Compute the absolute path from the root route up to this route.
-     * 
+     *
      * This will always have a leading slash.
      */
     public function getPath(): string

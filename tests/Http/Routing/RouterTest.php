@@ -71,7 +71,7 @@ final class RouterTest extends TestCase
     public function testParameterizedRouteWithBadParams4(): void
     {
         $router = new Router();
-        
+
         $routeDef = new RouteDef(self::class, [], new ParamRouteConf(nArgsLowerLimit: 1, nArgsUpperLimit: 1));
 
         $this->expectException(RouteNotFoundException::class);

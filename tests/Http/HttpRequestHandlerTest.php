@@ -35,7 +35,9 @@ final class HttpRequestHandlerTest extends TestCase
                     new ParentRouteConf([
                         '' => new RouteDef(HomeController::class),
                         'my' => new RouteDef(
-                            MyController::class, ['VISITOR']),
+                            MyController::class,
+                            ['VISITOR']
+                        ),
                     ]),
                 ),
                 true,
@@ -50,9 +52,9 @@ final class HttpRequestHandlerTest extends TestCase
                 ServerErrorController::class,
             ),
             SessionManager::class => new SessionManager([]),
-        ],
+        ],);
         // new LoggerConsole(),
-    );
+
         $this->handler = $container->get(HttpRequestHandler::class);
     }
 
@@ -140,7 +142,6 @@ final class HomeController implements IRoutedController
         array $routeParams,
         array $serverParams,
     ): ResponseInterface {
-        var_dump('yo');
         return new Response(200);
     }
 }

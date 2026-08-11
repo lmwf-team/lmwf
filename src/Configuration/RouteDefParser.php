@@ -81,7 +81,7 @@ final readonly class RouteDefParser
                 new ParentRouteConf($routes),
             );
         }
-        
+
         $fqcnIfParams = $this->parseFqcn($route, self::FQCN_IF_PARAMS_KN);
         return new RouteDef(
             $fqcn,
