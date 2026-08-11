@@ -6,6 +6,7 @@ namespace LM\WebFramework\Configuration;
 
 use LM\WebFramework\DataStructures\AppObject;
 use LM\WebFramework\DataStructures\Factory\CollectionFactory;
+use LM\WebFramework\ErrorHandling\LogLevel;
 
 /**
  * @todo Add appName setting.
@@ -15,6 +16,7 @@ final class Configuration
     public const string APP_PATH_KEY = "appPath";
     public const string HANLDE_EXCEPTIONS = "handleExceptions";
     public const string LANGUAGE_KEY = "language";
+    public const string LOG_LEVEL_KEY = "logLevel";
 
     private AppObject $confData;
 
@@ -121,6 +123,16 @@ final class Configuration
     public function getLanguage(): string
     {
         return $this->confData[self::LANGUAGE_KEY];
+    }
+
+    public function getLogLevel(): LogLevel
+    {
+        $logLevelStr = $this->getSetting(self::LOG_LEVEL_KEY) ?? "NOTICE";
+        switch ($logLevelStr) {
+            case "NOTICE":
+                return LogLevel::NOTICE;
+        }
+        throw new \InvalidArgumentException("Log level \"{$logLevelStr}\" specified in configuration is unknown.");
     }
 
     /**

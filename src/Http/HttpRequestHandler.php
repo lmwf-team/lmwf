@@ -12,6 +12,7 @@ use LM\WebFramework\Controller\Exception\AccessDenied;
 use LM\WebFramework\Controller\Exception\AlreadyAuthenticated;
 use LM\WebFramework\Controller\Exception\RequestedResourceNotFound;
 use LM\WebFramework\Controller\Exception\RequestedRouteNotFound;
+use LM\WebFramework\ErrorHandling\Logger;
 use LM\WebFramework\Http\Error\RoutingError;
 use LM\WebFramework\Http\Exception\UnsupportedMethodException;
 use LM\WebFramework\Http\Routing\Exception\RouteNotFoundException;
@@ -104,21 +105,28 @@ final class HttpRequestHandler
     {
         $path = $request->getUri()->getPath();
         $segs = Router::getSegmentsFromPath($path);
+        Logger::notice("Found segments are \"" . implode(",", $segs) . "\".");
         $params = [];
     
         if (!$this->conf->handleExceptions()) {
+            Logger::notice("Exceptions are not handled by the app.");
             return $this->generateResponseFromRoute($request, $segs);
         }
 
         try {
+            Logger::notice("Exceptions are handled by the app.");
             return $this->generateResponseFromRoute($request, $segs);
         } catch (RouteNotFoundException|RequestedResourceNotFound) {
+            Logger::notice("Resource requested by user was not found.");
             $fqcn = $this->conf->getErrorNotFoundControllerFQCN();
         } catch (AlreadyAuthenticated) {
+            Logger::notice("User cannot access this route, already authenticated.");
             $fqcn = $this->conf->getErrorLoggedInControllerFQCN();
         } catch (AccessDenied) {
+            Logger::notice("User is not authorized.");
             $fqcn = $this->conf->getErrorNotLoggedInControllerFQCN();
         } catch (UnsupportedMethodException) {
+            Logger::notice("HTTP method is not supported.");
             $fqcn = $this->conf->getErrorMethodNotSupportedFQCN();
         } catch (Throwable $t) {
             $fqcn = $this->conf->getServerErrorControllerFQCN();
@@ -127,6 +135,7 @@ final class HttpRequestHandler
             ];
         }
 
+        Logger::notice("Actual controller FQCN is \"{$fqcn}\".");
         $controller = $this->container->get($fqcn);
         $response = $controller->generateResponse($request, $segs, $params);
 
@@ -142,12 +151,14 @@ final class HttpRequestHandler
             throw new UnsupportedMethodException();
         }
         $route = (new Router())->getRouteFromSegs($this->rootRoute, null, $segs);
+        Logger::notice("Request matches controller \"{$route->getFqcn()}\".");
         $controller = $this->container->get($route->getFqcn());
 
         // @todo Add real role system
         $roles = $this->session->isUserLoggedIn() ? ['ADMIN'] : ['VISITOR'];
 
         if (count($route->getRoles()) > 0) {
+            Logger::notice("Route roles are \"" . implode(",", $route->getRoles()) . "\".");
             $isAllowed = false;
             foreach ($roles as $role) {
                 if (in_array($role, $route->getRoles(), strict: true)) {

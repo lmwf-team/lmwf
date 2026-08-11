@@ -8,6 +8,7 @@ use DI\ContainerBuilder;
 use LM\WebFramework\Configuration\Configuration;
 use LM\WebFramework\DataStructures\Factory\CollectionFactory;
 use LM\WebFramework\ErrorHandling\LoggedException;
+use LM\WebFramework\ErrorHandling\LogLevel;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Throwable;
@@ -31,6 +32,12 @@ final class Kernel
             $language,
             $runtimeConfig,
         );
+
+        if ($config->getLogLevel() === LogLevel::NOTICE) {
+            error_reporting(E_ERROR | E_WARNING | E_PARSE | E_NOTICE);
+        } else {
+            error_reporting(E_ERROR | E_WARNING | E_PARSE);
+        }
         
         $cb = new ContainerBuilder();
         if (!$config->isDev()) {
