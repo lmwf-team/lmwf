@@ -38,5 +38,5 @@ interface, e.g. IRouter.
  consistent with the rest of the framework's files.
  * PHP documentation needs to be applied and package names need to be
  determined.
-
+ * Strict typing.
 All the code the PSR-1, PSR-2 and PSR-4.
