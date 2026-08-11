@@ -1,5 +1,5 @@
 services:
-    lm_web_framework_dsn:
+    php_dsn:
         build:
             context: ./docker
         volumes:
