@@ -4,6 +4,8 @@ namespace LM\WebFramework\Database;
 
 use DateTimeImmutable;
 use InvalidArgumentException;
+use LM\WebFramework\Database\Exceptions\InvalidDbDataException;
+use LM\WebFramework\Database\Exceptions\NullDbDataNotAllowedException;
 use LM\WebFramework\DataStructures\AppObject;
 use LM\WebFramework\Model\IModel;
 use UnexpectedValueException;
@@ -32,34 +34,39 @@ class DbEntityManager
         if (is_array($dbData)) {
             if (null !== $model->getArrayDefinition()) {
                 $appArray = [];
+
+                $nValidNull = 0;
+                $nInvalidNull = 0;
                 foreach ($model->getArrayDefinition() as $key => $property) {
-                    if (null !== $property->getArrayDefinition()) {
-                        // echo "<br>";
-                        // var_dump($key, get_class($property), gettype($dbData));
-
-                        // Could be used to consider an array of null values as a null value.
-                        // foreach ($property->getArrayDefinition() as $subkey => $subproperty) {
-                        //     var_dump($dbData[$key . self::SEP . $subkey]);
-                        // }
-                        $appArray[$key] = $this->toAppData($dbData, $property, $key);
-                    } elseif (null !== $property->getListNodeModel()) {
-                        $subPrefix = 's' === substr($key, strlen($key) - 1) ? $subPrefix = substr($key, 0, strlen($key) - 1) : $key;
-
-                        $appArray[$key] = $this->toAppData($dbData[$key], $property, $subPrefix);
-                    } else {
-                        // echo "<br>";
-                        // var_dump($key, get_class($property), $prefix . self::SEP . $key, $dbData[$prefix . self::SEP . $key]);
-                        $appArray[$key] = $this->toAppData(
-                            $dbData[$prefix . self::SEP . $key],
-                            $property,
-                        );
+                    try {
+                        if (null !== $property->getArrayDefinition()) {
+                            $appData = $this->toAppData($dbData, $property, $key);
+                        } elseif (null !== $property->getListNodeModel()) {
+                            $subPrefix = 's' === substr($key, strlen($key) - 1) ? $subPrefix = substr($key, 0, strlen($key) - 1) : $key;
+                            $appData = $this->toAppData($dbData[$key], $property, $subPrefix);
+                        } else {
+                            $appData = $this->toAppData(
+                                $dbData[$prefix . self::SEP . $key],
+                                $property,
+                            );
+                        }
+                    } catch (NullDbDataNotAllowedException $e) {
+                        $appData = $e;
+                        $nInvalidNull++;
                     }
+                    if (null === $appData) {
+                        $nValidNull++;
+                    }
+                    $appArray[$key] = $appData;
                 }
-                if (count($appArray) === count(array_filter($appArray, fn ($value) => null === $value))) {
-                    return null;
-                } else {
-                    return new AppObject($appArray);
+
+                if ($nInvalidNull > 0) {
+                    if (count($appArray) == $nValidNull + $nInvalidNull) {
+                        return $this->toAppData(null, $model, $prefix);
+                    }
+                    throw new InvalidDbDataException($dbData, $model, $prefix);
                 }
+                return new AppObject($appArray);
             } elseif (null !== $model->getListNodeModel()) {
                 $appArray = [];
                 foreach ($dbData as $row) {
@@ -87,12 +94,10 @@ class DbEntityManager
             if ($model->isNullable()) {
                 return null;
             }
+            throw new NullDbDataNotAllowedException($dbData, $model, $prefix);
         }
 
-        throw new InvalidArgumentException(
-            '$dbData is not of any type supported by the "' . get_class($model) . "\" with prefix \"{$prefix}\".\n" .
-            var_export($dbData, true)
-        );
+        throw new InvalidDbDataException($dbData, $model, $prefix);
     }
 
     /**
