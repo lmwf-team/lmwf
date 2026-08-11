@@ -10,6 +10,7 @@ use LM\WebFramework\DataStructures\Factory\CollectionFactory;
 final class Configuration
 {
     public const string APP_PATH_KEY = "appPath";
+    public const string HANLDE_EXCEPTIONS = "handleExceptions";
     public const string LANGUAGE_KEY = "language";
 
     private AppObject $confData;
@@ -33,8 +34,6 @@ final class Configuration
 
         return new self(
             $configData,
-            $confFolderPath,
-            $language,
         );
     }
 
@@ -42,7 +41,10 @@ final class Configuration
      * @todo Create model for configuration, and check it is valid? (Would make testing harder.)
      * @todo Accept an array and create a model from it?
      */
-    public function __construct(array $confData) {
+    public function __construct(array $confData, bool $handleExceptions = true) {
+        $confData += [
+            self::HANLDE_EXCEPTIONS => $handleExceptions,
+        ];
         $this->confData = CollectionFactory::createDeepAppObject($confData);
     }
 
@@ -170,6 +172,11 @@ final class Configuration
             $data = $data[$key];
         }
         return $data;
+    }
+
+    public function handleExceptions(): bool
+    {
+        return $this->confData->getBool(self::HANLDE_EXCEPTIONS);
     }
 
     public function hasSetting(string $key): bool

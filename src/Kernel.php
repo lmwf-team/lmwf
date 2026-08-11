@@ -34,7 +34,6 @@ final class Kernel
         
         $cb = new ContainerBuilder();
         if (!$config->isDev()) {
-            // @todo Put folder in config
             $cb->enableCompilation("{$config->getPathOfAppDirectory()}/var/cache");
         }
         $container = $cb

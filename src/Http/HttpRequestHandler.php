@@ -108,6 +108,10 @@ final class HttpRequestHandler
         $segs = $this->getPathSegments($path);
         $params = [];
     
+        if (!$this->conf->handleExceptions()) {
+            return $this->generateResponseFromRoute($request);
+        }
+
         try {
             return $this->generateResponseFromRoute($request);
         } catch (RouteNotFoundException|RequestedResourceNotFound) {
@@ -158,15 +162,11 @@ final class HttpRequestHandler
             }
         }
 
-        if ($route instanceof Route) {
-            $response = $controller->generateResponse(
-                $request,
-                0 === $route->nArgs ? [] : array_slice($segs, -$route->nArgs),
-                [],
-            );
-        } else {
-            $response = $controller->generateResponse($request, [], []);
-        }
+        $response = $controller->generateResponse(
+            $request,
+            0 === $route->nArgs ? [] : array_slice($segs, -$route->nArgs),
+            [],
+        );
 
         return $this->addCspSources($response);
     }
