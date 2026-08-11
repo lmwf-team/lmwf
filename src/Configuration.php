@@ -94,9 +94,17 @@ final class Configuration
         return $this->language;
     }
 
-    public function getLoggingPrefix(): string
+    /**
+     * @todo Sghould implement PSR LoggerInterface.
+     */
+    public function getLoggerFqcn(): ?string
     {
-        return $this->getSetting('loggingPrefix');
+        return $this->getNullableSetting('loggerFqcn');
+    }
+
+    public function getNullableSetting(string $key): ?string
+    {
+        return $this->configData[$key];
     }
 
     public function getPathOfAppDirectory(): string

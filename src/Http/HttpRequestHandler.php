@@ -11,7 +11,6 @@ use LM\WebFramework\Controller\Exception\AlreadyAuthenticated;
 use LM\WebFramework\Controller\Exception\RequestedResourceNotFound;
 use LM\WebFramework\Controller\Exception\RequestedRouteNotFound;
 use LM\WebFramework\Controller\IResponseGenerator;
-use LM\WebFramework\Logging\Logger;
 use LM\WebFramework\Session\SessionManager;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -23,7 +22,6 @@ final class HttpRequestHandler
     public function __construct(
         private Configuration $configuration,
         private ContainerInterface $container,
-        private Logger $logger,
         private SessionManager $session,
     ) {
     }
@@ -53,7 +51,9 @@ final class HttpRequestHandler
                 ->generateResponse($request, $this->extractRouteParams($request))
             ;
         } catch (Throwable $t) {
-            $this->logger->log($t->__toString());
+            if (null !== $this->configuration->getLoggerFqcn()) {
+                $this->container->get( $this->configuration->getLoggerFqcn())->log($t->__toString());
+            }
             $response = $this->container->get($this->configuration->getServerErrorControllerFQCN())
                 ->generateResponse($request, $this->extractRouteParams($request))
             ;
