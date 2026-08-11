@@ -19,15 +19,15 @@ class Configuration
     }
 
     public function getErrorLoggedInControllerFQCN(): string {
-        return $this->getSetting('route_error_logged_in_controller_fqcn');
+        return $this->getSetting('routeErrorAlreadyLoggedInControllerFQCN');
     }
 
     public function getErrorNotFoundControllerFQCN(): string {
-        return $this->getSetting('route_error_404_controller_fqcn');
+        return $this->getSetting('routeError404ControllerFQCN');
     }
 
     public function getErrorNotLoggedInControllerFQCN(): string {
-        return $this->getSetting('route_error_not_logged_in_controller_fqcn');
+        return $this->getSetting('routeErrorNotLoggedInControllerFQCN');
     }
 
     public function getHomeUrl(): string {
