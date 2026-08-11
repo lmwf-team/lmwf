@@ -4,43 +4,70 @@ declare(strict_types=1);
 
 namespace LM\WebFramework\Tests\Validation;
 
+use DomainException;
 use InvalidArgumentException;
-use LM\WebFramework\Model\Constraints\RangeConstraint;
-use LM\WebFramework\Model\Type\AbstractModel;
-use LM\WebFramework\Model\Type\BoolModel;
-use LM\WebFramework\Model\Type\EntityModel;
-use LM\WebFramework\Model\Type\ForeignEntityModel;
-use LM\WebFramework\Model\Type\IntModel;
-use LM\WebFramework\Model\Type\StringModel;
+use LM\WebFramework\Constraint\Value\RangeConstraint;
+use LM\WebFramework\Constraint\Type\AbstractModel;
+use LM\WebFramework\Constraint\Type\BoolModel;
+use LM\WebFramework\Constraint\Type\DateTimeModel;
+use LM\WebFramework\Constraint\Type\EntityListModel;
+use LM\WebFramework\Constraint\Type\EntityModel;
+use LM\WebFramework\Constraint\Type\ForeignEntityModel;
+use LM\WebFramework\Constraint\Type\IModel;
+use LM\WebFramework\Constraint\Type\IntModel;
+use LM\WebFramework\Constraint\Type\ListModel;
+use LM\WebFramework\Constraint\Type\StringModel;
+use LM\WebFramework\Validation\AbstractTypeValidator;
+use LM\WebFramework\Validation\BoolValidator;
+use LM\WebFramework\Validation\DateTimeValidator;
+use LM\WebFramework\Validation\EntityValidator;
+use LM\WebFramework\Validation\ForeignEntityValidator;
+use LM\WebFramework\Validation\IntValidator;
+use LM\WebFramework\Validation\ListValidator;
+use LM\WebFramework\Validation\StringValidator;
 use LM\WebFramework\Validation\Validator;
+use LM\WebFramework\Validation\ValidatorFactory;
+use LM\WebFramework\Validation\Violation\DictValueViolation;
+use LM\WebFramework\Validation\Violation\TypeViolation;
+use LM\WebFramework\Validation\Violation\ValueViolation;
 use PHPUnit\Framework\TestCase;
 
 final class ValidatorTest extends TestCase
 {
-    public function testNullable(): void
+    public function testNullHandlingForNonEntities(): void
     {
-        self::assertEmpty((new Validator(new BoolModel(true)))->validate(null), 'Null should be allowed.');
-        self::assertNotEmpty((new Validator(new BoolModel()))->validate(null), 'Null should NOT be allowed.');
-        self::assertNotEmpty((new Validator(new BoolModel()))->validate(null), 'Null should NOT be allowed.');
+        self::assertInstanceOf(TypeViolation::class, new BoolValidator(new BoolModel())->validate(null));
+        self::assertNull(new BoolValidator(new BoolModel(isNullable: true))->validate(null));
+
+        self::assertInstanceOf(TypeViolation::class, new StringValidator(new StringModel())->validate(null));
+        self::assertNull(new StringValidator(new StringModel(isNullable: true))->validate(null));
+
+        self::assertInstanceOf(TypeViolation::class, new DateTimeValidator(new DateTimeModel())->validate(null));
+        self::assertNull(new DateTimeValidator(new DateTimeModel(isNullable: true))->validate(null));
+
+        self::assertInstanceOf(TypeViolation::class, new IntValidator(new IntModel())->validate(null));
+        self::assertNull(new IntValidator(new IntModel(isNullable: true))->validate(null));
+
+        self::assertInstanceOf(TypeViolation::class, new ListValidator(new ListModel(new IntModel(),))->validate(null));
+        self::assertNull(new ListValidator(new ListModel(new IntModel(), isNullable: true))->validate(null));
     }
 
     public function testUnsupportedModel(): void
     {
-        $this->expectException(InvalidArgumentException::class);
-        new Validator(new class () extends AbstractModel {
+        $this->expectException(DomainException::class);
+        new ValidatorFactory()->create(new class () extends AbstractModel {
         });
     }
 
     public function testStringValidator(): void
     {
         $myString = 'Hello';
-        self::assertEmpty((new Validator(new StringModel()))->validate($myString));
-        self::assertNotEmpty((new Validator(new StringModel(7, 10)))->validate($myString));
-        self::assertEmpty((new Validator(new StringModel(regex: '[a-zA-Z]+')))->validate($myString));
-        self::assertNotEmpty((new Validator(new StringModel(regex: '[0-9]+')))->validate($myString));
 
-        $this->expectException(InvalidArgumentException::class);
-        new RangeConstraint(10, 5);
+        self::assertNull((new StringValidator(new StringModel()))->validate($myString));
+        self::assertInstanceOf(ValueViolation::class, new StringValidator(new StringModel(7, 10))->validate($myString));
+
+        self::assertNull((new StringValidator(new StringModel(regex: '[a-zA-Z]+')))->validate($myString));
+        self::assertInstanceOf(ValueViolation::class, new StringValidator(new StringModel(regex: '[0-9]+'))->validate($myString));
     }
 
     public function testEntityValidator(): void
@@ -73,8 +100,8 @@ final class ValidatorTest extends TestCase
             ],
             'id',
         );
-        self::assertNotEmpty((new Validator($model))->validate($entity));
+        self::assertInstanceOf(DictValueViolation::class, new EntityValidator($model)->validate($entity));
         $entity['sub_entity_id'] = 'hi';
-        self::assertEmpty((new Validator($model))->validate($entity));
+        self::assertNull((new EntityValidator($model))->validate($entity));
     }
 }

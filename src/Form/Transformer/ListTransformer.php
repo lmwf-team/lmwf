@@ -7,18 +7,21 @@ namespace LM\WebFramework\Form\Transformer;
 use LM\WebFramework\Form\Conf\FormFieldConf;
 use LM\WebFramework\Form\Exceptions\ExtractionException;
 use LM\WebFramework\Form\FormFactory;
-use LM\WebFramework\Model\Type\IModel;
-use LM\WebFramework\Model\Type\IScalarModel;
+use LM\WebFramework\Constraint\Type\IModel;
+use LM\WebFramework\Constraint\Type\IScalarModel;
 
 final class ListTransformer implements IFormTransformer
 {
     public function __construct(
-        private array|FormFieldConf $nodeConf,
+        private FormFieldConf $nodeConf,
         private FormFactory $formFactory,
         private string $name,
     ) {
     }
 
+    /**
+     * @return mixed[]
+    */
     #[\Override]
     public function transformSubmittedData(array $parsedPayload, array $uploadedFiles): array
     {

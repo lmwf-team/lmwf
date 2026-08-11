@@ -9,14 +9,14 @@ use LM\WebFramework\Database\DbEntityManager;
 use LM\WebFramework\Database\Exceptions\InvalidDbDataException;
 use LM\WebFramework\Database\Exceptions\NullDbDataNotAllowedException;
 use LM\WebFramework\DataStructures\Factory\CollectionFactory;
-use LM\WebFramework\Model\Type\BoolModel;
-use LM\WebFramework\Model\Type\DateTimeModel;
-use LM\WebFramework\Model\Type\EntityModel;
-use LM\WebFramework\Model\Type\ForeignEntityModel;
-use LM\WebFramework\Model\Type\IntModel;
-use LM\WebFramework\Model\Type\EntityListModel;
-use LM\WebFramework\Model\Type\ListModel;
-use LM\WebFramework\Model\Type\StringModel;
+use LM\WebFramework\Constraint\Type\BoolModel;
+use LM\WebFramework\Constraint\Type\DateTimeModel;
+use LM\WebFramework\Constraint\Type\EntityModel;
+use LM\WebFramework\Constraint\Type\ForeignEntityModel;
+use LM\WebFramework\Constraint\Type\IntModel;
+use LM\WebFramework\Constraint\Type\EntityListModel;
+use LM\WebFramework\Constraint\Type\ListModel;
+use LM\WebFramework\Constraint\Type\StringModel;
 use PHPUnit\Framework\TestCase;
 
 final class DbEntityManagerTest extends TestCase

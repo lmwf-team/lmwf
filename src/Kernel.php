@@ -35,9 +35,10 @@ final class Kernel
      * @param ?string $confFolderPath The path to the folder containing the
      * app configuration files, null if all the configuration is provided with
      * $confData.
-     * @param array $confData An array of configuration data to initialize the
+     * @param array<string, mixed> $confData An array of configuration data to initialize the
      * configuration, to complement the configuration read from a file or
      * replace it if no path was specified.
+     * @param array<string, object> $containerDefinitions
      * @param ?LoggerInterface $logger A logger to initialize the Log class
      * with.
      */
@@ -76,6 +77,8 @@ final class Kernel
      * Initialize only the container and only with the provided definitions.
      *
      * The Log class is not initialized nor is the PHP error handler set.
+     * 
+     * @param array<string, object> $containerDefinitions
      */
     public static function initBare(array $containerDefinitions): ContainerInterface
     {

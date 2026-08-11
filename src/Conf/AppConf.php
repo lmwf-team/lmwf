@@ -52,6 +52,8 @@ final class AppConf
      *
      * @todo Add JSON_THROW_ON_ERROR everywhere, and automatically check its presence.
      * @todo Rename to "createFromFolderPath" or something like it.
+     * 
+     * @param array<string, mixed> $confData
      */
     public static function createFromEnvFile(
         string $confFolderPath,

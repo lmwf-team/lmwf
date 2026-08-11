@@ -99,8 +99,6 @@ final class HttpRequestHandler
         $response = $controller->generateResponse(
             $route,
             $request,
-            $route->params,
-            [],
         );
 
         return $response;

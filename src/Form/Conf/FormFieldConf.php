@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace LM\WebFramework\Form\Conf;
 
 use Closure;
-use LM\WebFramework\Model\Constraints\IRangeConstraint;
-use LM\WebFramework\Model\Type\IModel;
+use LM\WebFramework\Constraint\Value\IRangeConstraint;
+use LM\WebFramework\Constraint\Type\IModel;
 use Traversable;
 
 readonly class FormFieldConf
@@ -17,7 +17,7 @@ readonly class FormFieldConf
      * @param ?Closure $default A function to call with the submitted data to
      * set the value of the field in case no value was submitted.
      * @param FormFieldType $type The input type of the field.
-     * @param null|array|Traversable $values All the values allowed for the field.
+     * @param null|array{'text': string, 'value': int|string}[]|Traversable $values All the values allowed for the field.
      * @todo Use enum for type, with support for file and image to determine accept?
      * @todo For $values, create struct for items? (with keys 'value' and 'text' or 'label')
      */

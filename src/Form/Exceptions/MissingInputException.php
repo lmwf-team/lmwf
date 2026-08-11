@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace LM\WebFramework\Form\Exceptions;
 
+use Throwable;
+
 /**
  * Thrown when the submittable could not find any value from the request.
  */
 class MissingInputException extends ExtractionException
 {
-    public function __construct(?string $inputName = null, $previous = null)
+    public function __construct(?string $inputName = null, ?Throwable $previous = null)
     {
         parent::__construct(null !== $inputName ? $inputName . ' is missing ' : null, previous: $previous);
     }

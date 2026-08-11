@@ -15,6 +15,7 @@ interface IController
      * and displayed by the error page, but actually it might have
      * sufficed to have created an IErrorController interface or
      * something like it.
+     * @param array<string, string> $serverParams
      */
     public function generateResponse(
         ServerRequestInterface $request,

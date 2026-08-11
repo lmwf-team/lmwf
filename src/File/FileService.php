@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace LM\WebFramework\File;
 
 use LM\WebFramework\Conf\AppConf;
-use LM\WebFramework\Model\Constraints\IUploadedImageConstraint;
+use LM\WebFramework\Constraint\Value\IUploadedImageConstraint;
 
 final class FileService
 {
@@ -18,6 +18,8 @@ final class FileService
      * @todo Assume that filenames are one-byte encoded.
      * @todo Assume that filenames are in lowercase.
      * @todo Hard-coded file extensions.
+     * 
+     * @return string[]
      */
     public function getUploadedImages(bool $includeThumbnails = true): array
     {

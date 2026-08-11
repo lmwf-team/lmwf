@@ -4,16 +4,14 @@ declare(strict_types=1);
 
 namespace LM\WebFramework\Validation;
 
+use LM\WebFramework\Validation\Violation\TypeViolation;
+use LM\WebFramework\Validation\Violation\ValueViolation;
+
 /**
- * Validator for app data.
- *
- * Validates that the app data it is passed conforms to the model it
- * is instantiated with, by returning a potentially empty list of
- * validation failures.
- *
- * @todo Rename to IAppDataValidator?
+ * Ensures that the given app data is of the model's allowed types and satisfies
+ * other constraints of the model.
  */
 interface ITypeValidator
 {
-    public function validate(mixed $data): array;
+    public function validate(mixed $data): null|TypeViolation|ValueViolation;
 }

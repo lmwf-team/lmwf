@@ -169,8 +169,6 @@ final class HomeController implements IRoutedController
     public function generateResponse(
         Route $route,
         ServerRequestInterface $request,
-        array $routeParams,
-        array $serverParams,
     ): ResponseInterface {
         return new Response(200);
     }
@@ -181,8 +179,6 @@ final class MyController implements IRoutedController
     public function generateResponse(
         Route $route,
         ServerRequestInterface $request,
-        array $routeParams,
-        array $serverParams,
     ): ResponseInterface {
         return new Response(200, body: $route->getPath());
     }

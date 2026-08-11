@@ -4,33 +4,39 @@ declare(strict_types=1);
 
 namespace LM\WebFramework\Validation;
 
-use LM\WebFramework\Validation\ConstraintViolation\ConstraintViolation;
-use LM\WebFramework\Model\Type\IntModel;
+use LM\WebFramework\Validation\Violation\IndividualViolation;
+use LM\WebFramework\Constraint\Type\IntModel;
+use LM\WebFramework\Validation\Violation\ScalarValueViolation;
+use LM\WebFramework\Validation\Violation\TypeViolation;
+use LM\WebFramework\Validation\Violation\ValueViolation;
+use Override;
 
-final class IntValidator implements ITypeValidator
+final readonly class IntValidator extends AbstractTypeValidator
 {
     public function __construct(
         private IntModel $model,
     ) {
+        parent::__construct($model->getNotNullConstraint());
     }
 
-    public function validate(mixed $value): array
+    #[Override]
+    public function validateNonNullValue(array|bool|float|int|object|string $value): null|TypeViolation|ValueViolation
     {
-        $cvs = [];
-        $rangeConstraint = $this->model->getRangeConstraint();
         if (!is_int($value)) {
-            $cvs = [
-                new ConstraintViolation($this->model, 'Value must be an integer.'),
-            ];
-        } elseif (null !== $rangeConstraint) {
+            return new TypeViolation($this->model);
+        }
+
+        $rangeConstraint = $this->model->getRangeConstraint();
+        $violations = [];
+        if (null !== $rangeConstraint) {
             if (null !== $rangeConstraint->getLowerLimit() && $value < $rangeConstraint->getLowerLimit()) {
-                $cvs[] = new ConstraintViolation($rangeConstraint, 'Value must be higher than ' . $rangeConstraint->getLowerLimit() . '.');
+                $violations[] = new IndividualViolation($rangeConstraint, 'Value must be higher than ' . $rangeConstraint->getLowerLimit() . '.');
             }
 
             if (null !== $rangeConstraint->getUpperLimit() && $value > $rangeConstraint->getUpperLimit()) {
-                $cvs[] = new ConstraintViolation($rangeConstraint, 'Value must be lower than ' . $rangeConstraint->getUpperLimit() . '.');
+                $violations[] = new IndividualViolation($rangeConstraint, 'Value must be lower than ' . $rangeConstraint->getUpperLimit() . '.');
             }
         }
-        return $cvs;
+        return [] === $violations ? null : new ScalarValueViolation($violations);
     }
 }

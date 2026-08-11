@@ -4,38 +4,42 @@ declare(strict_types=1);
 
 namespace LM\WebFramework\Validation;
 
-use LM\WebFramework\Model\Type\ArrayModel;
-use LM\WebFramework\Validation\ConstraintViolation\ConstraintViolation;
+use LM\WebFramework\Constraint\Type\ArrayModel;
+use LM\WebFramework\Validation\Violation\DictValueViolation;
+use LM\WebFramework\Validation\Violation\IndividualViolation;
+use LM\WebFramework\Validation\Violation\MissingItemViolation;
+use LM\WebFramework\Validation\Violation\TypeViolation;
+use LM\WebFramework\Validation\Violation\ValueViolation;
 
-final class EntityValidator implements ITypeValidator
+final readonly class EntityValidator extends AbstractTypeValidator
 {
     public function __construct(
         private ArrayModel $model,
     ) {
+        parent::__construct($model->getNotNullConstraint());
     }
 
-    public function validate(mixed $value): array
+    #[\Override]
+    public function validateNonNullValue(array|bool|float|int|object|string $value): null|TypeViolation|DictValueViolation
     {
         if (!is_array($value)) {
-            return [
-                new ConstraintViolation($this->model, 'Value must be an associative array.'),
-            ];
+            return new TypeViolation($this->model);
         }
 
+        $validatorFactory = new ValidatorFactory();
         $violations = [];
         foreach ($this->model->getProperties() as $key => $model) {
-            if (key_exists($key, $value)) {
-                $propertyViolations = (new Validator($model))->validate($value[$key]);
-            } else {
-                $propertyViolations = [
-                    new ConstraintViolation($this->model, "Property {$key} is not defined."),
-                ];
-            }
-            if (count($propertyViolations) > 0) {
-                $violations[$key] = $propertyViolations;
+            $validationResult = key_exists($key, $value) ?
+                $validatorFactory->create($model)->validate($value[$key]) :
+                new MissingItemViolation($model);
+            if ($validationResult instanceof TypeViolation or $validationResult instanceof ValueViolation) {
+                $violations[$key] = $validationResult;
             }
         }
 
-        return $violations;
+        if ([] === $violations) {
+            return null;
+        }
+        return new DictValueViolation($this->model, $violations);
     }
 }

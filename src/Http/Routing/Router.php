@@ -44,6 +44,7 @@ final readonly class Router
 
     /**
      * @todo Create SegsList type?
+     * @param string[] $nextSegs
      */
     public function getRouteFromSegs(
         RouteDef $routeDef,

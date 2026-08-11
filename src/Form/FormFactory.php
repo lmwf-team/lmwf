@@ -20,16 +20,15 @@ use LM\WebFramework\Form\Transformer\IntTransformer;
 use LM\WebFramework\Form\Transformer\JsonTransformer;
 use LM\WebFramework\Form\Transformer\ListTransformer;
 use LM\WebFramework\Form\Transformer\StringTransformer;
-use LM\WebFramework\Model\Type\ArrayModel;
-use LM\WebFramework\Model\Type\BoolModel;
-use LM\WebFramework\Model\Type\DateTimeModel;
-use LM\WebFramework\Model\Type\EntityListModel;
-use LM\WebFramework\Model\Type\ForeignEntityModel;
-use LM\WebFramework\Model\Type\IModel;
-use LM\WebFramework\Model\Type\IntModel;
-use LM\WebFramework\Model\Type\JsonModel;
-use LM\WebFramework\Model\Type\ListModel;
-use LM\WebFramework\Model\Type\StringModel;
+use LM\WebFramework\Constraint\Type\ArrayModel;
+use LM\WebFramework\Constraint\Type\BoolModel;
+use LM\WebFramework\Constraint\Type\DateTimeModel;
+use LM\WebFramework\Constraint\Type\EntityListModel;
+use LM\WebFramework\Constraint\Type\ForeignEntityModel;
+use LM\WebFramework\Constraint\Type\IModel;
+use LM\WebFramework\Constraint\Type\IntModel;
+use LM\WebFramework\Constraint\Type\ListModel;
+use LM\WebFramework\Constraint\Type\StringModel;
 
 /**
  * Creates a form transformer from a model.
@@ -45,6 +44,9 @@ final class FormFactory
     ) {
     }
 
+    /**
+     * @param array<string, array<string, mixed>> $formConfParams
+     */
     public function createForm(ArrayModel $model, array $formConfParams = []): ArrayTransformer
     {
         $formConf = $this->formConfFactory->createConf($model, $formConfParams);
@@ -53,6 +55,7 @@ final class FormFactory
 
     /**
      * @todo To delete?
+     * @param array<string, FormFieldConf>|FormFieldConf $conf
      */
     public function createTransformer(
         array|FormFieldConf $conf,
@@ -75,8 +78,6 @@ final class FormFactory
         // @todo Add List, EntityList, and Json to FormFieldType
         if ($fieldConf->model instanceof ListModel || $fieldConf->model instanceof EntityListModel) {
             return new ListTransformer($fieldConf, $this, $name);
-        } elseif ($fieldConf->model instanceof JsonModel) {
-            return new JsonTransformer($name);
         } elseif (in_array($fieldConf->type, [FormFieldType::Text, FormFieldType::Textarea, FormFieldType::Pwd], strict: true)) {
             return new StringTransformer($name);
         } elseif (FormFieldType::Img === $fieldConf->type) {

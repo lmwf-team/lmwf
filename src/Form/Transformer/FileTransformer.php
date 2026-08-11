@@ -10,7 +10,7 @@ use LM\WebFramework\DataStructures\Slug;
 use LM\WebFramework\ErrorHandling\Log;
 use LM\WebFramework\Form\Exceptions\IllegalUserInputException;
 use LM\WebFramework\Form\Exceptions\MissingInputException;
-use LM\WebFramework\Model\Constraints\IUploadedImageConstraint;
+use LM\WebFramework\Constraint\Value\IUploadedImageConstraint;
 use Psr\Http\Message\UploadedFileInterface;
 use UnexpectedValueException;
 
@@ -42,6 +42,8 @@ final readonly class FileTransformer implements IFormTransformer
     /**
      * Save and convert the submitted file and return its path, or return the
      * previously submitted file.
+     * 
+     * @return null|string[]|string
      */
     #[\Override]
     public function transformSubmittedData(array $parsedPayload, array $uploadedFiles): null|array|string
@@ -66,6 +68,8 @@ final readonly class FileTransformer implements IFormTransformer
 
     /**
      * @todo Handle multiple filenames.
+     * 
+     * @param array<string, mixed> $parsedPayload
      */
     private function extractPreviousFilename(array $parsedPayload): ?string
     {

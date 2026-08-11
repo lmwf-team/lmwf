@@ -14,24 +14,24 @@ final class Log
     /**
      * @param null|LoggerInterface $logger A PSR-3 compliant logger. If null, deactivate logging.
      */
-    public static function init(?LoggerInterface $logger)
+    public static function init(?LoggerInterface $logger): void
     {
         self::$logger = $logger;
     }
 
-    public static function log(string $msg, string $level)
+    public static function log(string $msg, string $level): void
     {
         if (null !== self::$logger) {
             self::$logger->log($level, $msg);
         }
     }
 
-    public static function debug(string $msg)
+    public static function debug(string $msg): void
     {
         self::log($msg, LogLevel::DEBUG);
     }
 
-    public static function info(string $msg)
+    public static function info(string $msg): void
     {
         self::log($msg, LogLevel::INFO);
     }
@@ -46,7 +46,7 @@ final class Log
     //     self::log($msg, LogLevel::WARNING);
     // }
 
-    public static function error(string $msg)
+    public static function error(string $msg): void
     {
         self::log($msg, LogLevel::ERROR);
     }

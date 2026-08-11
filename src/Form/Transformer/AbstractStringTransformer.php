@@ -15,6 +15,7 @@ abstract class AbstractStringTransformer
     }
 
     /**
+     * @param array<string, mixed> $parsedPayload
      * @return string|null The submitted, non-empty string, or null if the string is empty.
      * @throws MissingInputException If no input bears the specified name.
      * @throws UnexpectedValueException If the value associated with the input is not a string.

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace LM\WebFramework\Tests\Validation;
 
-use LM\WebFramework\Model\Type\EntityModel;
-use LM\WebFramework\Model\Type\IntModel;
-use LM\WebFramework\Model\Type\StringModel;
+use LM\WebFramework\Constraint\Type\EntityModel;
+use LM\WebFramework\Constraint\Type\IntModel;
+use LM\WebFramework\Constraint\Type\StringModel;
 use PHPUnit\Framework\TestCase;
 
 final class ModelTest extends TestCase

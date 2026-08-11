@@ -18,8 +18,14 @@ final class SessionManager
 
     public const MESSAGES = 'messages';
 
+    /**
+     * @var mixed[]
+     */
     private array $sessionData;
 
+    /**
+     * @param null|mixed[] $sessionData
+     */
     public function __construct(?array $sessionData = null)
     {
         if (null !== $sessionData || Kernel::CLI_ID === php_sapi_name()) {
@@ -78,6 +84,9 @@ final class SessionManager
         }
     }
 
+    /**
+     * @return string[]
+     */
     public function getAndDeleteMessages(): array
     {
         $messages = $this->sessionData[self::MESSAGES] ?? [];

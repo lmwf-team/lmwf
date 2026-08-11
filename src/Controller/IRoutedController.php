@@ -21,7 +21,5 @@ interface IRoutedController
     public function generateResponse(
         Route $route,
         ServerRequestInterface $request,
-        array $routeParams, // @todo To remove
-        array $serverParams, // @todo To remove also?
     ): ResponseInterface;
 }

@@ -9,13 +9,13 @@ use DomainException;
 use InvalidArgumentException;
 use LM\WebFramework\DataStructures\Slug;
 use LM\WebFramework\ErrorHandling\Log;
-use LM\WebFramework\Model\Type\ArrayModel;
-use LM\WebFramework\Model\Type\BoolModel;
-use LM\WebFramework\Model\Type\DateTimeModel;
-use LM\WebFramework\Model\Type\ILengthModel;
-use LM\WebFramework\Model\Type\IModel;
-use LM\WebFramework\Model\Type\IntModel;
-use LM\WebFramework\Model\Type\StringModel;
+use LM\WebFramework\Constraint\Type\ArrayModel;
+use LM\WebFramework\Constraint\Type\BoolModel;
+use LM\WebFramework\Constraint\Type\DateTimeModel;
+use LM\WebFramework\Constraint\Type\ILengthModel;
+use LM\WebFramework\Constraint\Type\IModel;
+use LM\WebFramework\Constraint\Type\IntModel;
+use LM\WebFramework\Constraint\Type\StringModel;
 use UnexpectedValueException;
 
 /**
@@ -34,6 +34,10 @@ readonly class FormConfFactory
     public const TYPE_KN = 'type';
     public const VALUES_KN = 'values';
 
+    /**
+     * @param array<string, array<string, mixed>> $formConfParams
+     * @return array<string, FormFieldConf>
+     */
     public function createConf(ArrayModel $model, array $formConfParams): array
     {
         $formConf = [];
@@ -54,6 +58,9 @@ readonly class FormConfFactory
         return $formConf;
     }
 
+    /**
+     * @param $fieldConfParams array<string, mixed>
+     */
     private function createFormFieldConf(?IModel $model, array $fieldConfParams): FormFieldConf
     {
         $defaultFn = key_exists(self::DEFAULT_KN, $fieldConfParams) ? $this->getCallback($fieldConfParams[self::DEFAULT_KN]) : null;

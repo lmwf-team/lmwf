@@ -4,43 +4,71 @@ declare(strict_types=1);
 
 namespace LM\WebFramework\Validation;
 
-use LM\WebFramework\Validation\ConstraintViolation\ConstraintViolation;
-use LM\WebFramework\Model\Type\StringModel;
+use LM\WebFramework\Constraint\Value\IEnumConstraint;
+use LM\WebFramework\Constraint\Value\IRegexConstraint;
+use LM\WebFramework\Validation\Violation\IndividualViolation;
+use LM\WebFramework\Constraint\Type\StringModel;
+use LM\WebFramework\Validation\Violation\ScalarValueViolation;
+use LM\WebFramework\Validation\Violation\TypeViolation;
+use Override;
 
-final class StringValidator implements ITypeValidator
+final readonly class StringValidator extends AbstractTypeValidator
 {
     public function __construct(
         private StringModel $model,
     ) {
+        parent::__construct($model->getNotNullConstraint());
     }
 
-    public function validate(mixed $value): array
+    #[Override]
+    public function validateNonNullValue(array|bool|float|int|object|string $value): null|TypeViolation|ScalarValueViolation
     {
         if (!is_string($value)) {
-            return [
-                new ConstraintViolation(
-                    $this->model,
-                    'Data must be a string.',
-                ),
-            ];
+            return new TypeViolation($this->model);
         }
-        $cvs = [];
+        $violations = [];
 
         if (null !== $this->model->getRangeConstraint()) {
-            $rangeValidator = new RangeValidator($this->model->getRangeConstraint());
-            $cvs += $rangeValidator->validateString($value);
+            $violations += new RangeValidator($this->model->getRangeConstraint())->validateString($value);
         }
 
         if (null !== $this->model->getRegexConstraint()) {
-            $regexValidator = new RegexValidator($this->model->getRegexConstraint());
-            $cvs += $regexValidator->validateString($value);
+            $violations += $this->isRegexValid($value, $this->model->getRegexConstraint());
         }
 
         if (null !== $this->model->getEnumConstraint()) {
-            $enumValidator = new EnumValidator($this->model->getEnumConstraint());
-            $cvs += $enumValidator->validate($value);
+            $violations += $this->validateEnum($value, $this->model->getEnumConstraint());
         }
 
-        return $cvs;
+        if ([] === $violations) {
+            return null;
+        }
+        return new ScalarValueViolation($violations);
+    }
+
+    /**
+     * @return IndividualViolation[]
+     */
+    private function validateEnum(string $value, IEnumConstraint $constraint): array
+    {
+        if (!in_array($value, $constraint->getValues(), true)) {
+            return [
+                new IndividualViolation($constraint),
+            ];
+        }
+        return [];
+    }
+
+    /**
+     * @return IndividualViolation[]
+     */
+    public function isRegexValid(string $value, IRegexConstraint $constraint): array
+    {
+        if (1 !== preg_match('/' . $constraint->getRegex() . '/', $value)) {
+            return [
+                new IndividualViolation($constraint),
+            ];
+        }
+        return [];
     }
 }

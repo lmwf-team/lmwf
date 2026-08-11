@@ -11,6 +11,9 @@ final class SubrouteCannotAddRoleConfException extends Exception
 {
     const string MSG_FMT = "Unless explicitely authorized, a sub-route cannot add roles its parent does not have. Child node '%s' requires role '%s'.";
 
+    /**
+     * @param array<string, mixed> $route
+     */
     public function __construct(
         array $route,
         string $role,

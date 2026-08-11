@@ -4,27 +4,23 @@ declare(strict_types=1);
 
 namespace LM\WebFramework\Validation;
 
-use LM\WebFramework\Validation\ConstraintViolation\ConstraintViolation;
-use LM\WebFramework\Model\Type\BoolModel;
+use LM\WebFramework\Constraint\Type\BoolModel;
+use LM\WebFramework\Validation\Violation\TypeViolation;
 
-final class BoolValidator implements ITypeValidator
+final readonly class BoolValidator extends AbstractTypeValidator
 {
     public function __construct(
         private BoolModel $model,
     ) {
+        parent::__construct($model->getNotNullConstraint());
     }
 
-    public function validate(mixed $value): array
+    #[\Override]
+    public function validateNonNullValue(array|bool|float|int|object|string $value): null|TypeViolation
     {
         if (!is_bool($value)) {
-            return [
-                new ConstraintViolation(
-                    $this->model,
-                    'Data must be a boolean.',
-                ),
-            ];
+            return new TypeViolation($this->model);
         }
-
-        return [];
+        return null;
     }
 }
