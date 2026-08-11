@@ -1,22 +1,24 @@
 includes:
-    - ./vendor/ergebnis/phpstan-rules/rules.neon
-    - ./vendor/phpstan/phpstan-strict-rules/rules.neon
-    - ./vendor/spaze/phpstan-disallowed-calls/extension.neon
+    - ../../vendor/ergebnis/phpstan-rules/rules.neon
+    - ../../vendor/phpstan/phpstan-strict-rules/rules.neon
+    - ../../vendor/spaze/phpstan-disallowed-calls/extension.neon
 parameters:
-    level: 8
+    level: 9
     paths:
-        - ./src
-        - ./tests
+        - ../../src
+        - ../../tests
     bootstrapFiles:
-        - ./vendor/autoload.php
+        - ../../vendor/autoload.php
     ignoreErrors:
         -
             identifiers:
                 - expr.resultUnused
                 - method.resultUnused
                 - argument.type
-            path: ./tests
+            path: ../../tests
     reportUnsafeArrayStringKeyCasting: 'prevent'
+    stubFiles:
+        - stubs/ContainerInterface.stub
     treatPhpDocTypesAsCertain: false
     ergebnis:
         noPhpstanIgnore:

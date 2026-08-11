@@ -40,18 +40,6 @@ final class DbEntityManagerTest extends TestCase
         self::assertEquals(new DateTimeImmutable($date), $this->em->convertDbScalar($date, new DateTimeModel()));
     }
 
-    public function testConversionToDbValue(): void
-    {
-        $appObject = CollectionFactory::createDeepAppObject([
-            'id' => 0,
-            'name' => 'Georges',
-        ]);
-        $expected = [
-            'name' => 'Georges',
-        ];
-        self::assertEquals($expected, $this->em->toDbValue($appObject, propertiesToIgnore: ['id']));
-    }
-
     public function testInvalidDbDataException(): void
     {
         $this->expectException(InvalidDbDataException::class);

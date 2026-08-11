@@ -18,6 +18,7 @@ use LMWF\Conf\Http\RouteDef;
 use LMWF\Kernel;
 use LMWF\Session\SessionManager;
 use PHPUnit\Framework\TestCase;
+use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -25,10 +26,11 @@ final class HttpRequestHandlerTest extends TestCase
 {
     private CspNonce $cspNonce;
     private HttpRequestHandler $handler;
+    private ContainerInterface $container;
 
     public function setUp(): void
     {
-        $container = Kernel::initBare([
+        $this->container = Kernel::initBare([
             HttpConf::class => new HttpConf(
                 new RouteDef(
                     null,
@@ -60,8 +62,18 @@ final class HttpRequestHandlerTest extends TestCase
             SessionManager::class => new SessionManager([]),
         ],);
 
-        $this->handler = $container->get(HttpRequestHandler::class);
-        $this->cspNonce = $container->get(CspNonce::class);
+        $this->handler = $this->getService(HttpRequestHandler::class);
+        $this->cspNonce = $this->container->get(CspNonce::class);
+    }
+
+    /**
+     * @template T
+     * @param class-string<T> $serviceFqcn
+     * @return T
+     */
+    public function getService(string $serviceFqcn): mixed
+    {
+        return $this->container->get($serviceFqcn);
     }
 
     public function testCspHeaders(): void

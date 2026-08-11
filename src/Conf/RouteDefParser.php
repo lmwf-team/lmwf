@@ -8,6 +8,9 @@ use LMWF\Conf\Exception\SettingNotFoundException;
 use LMWF\Conf\Http\RouteDef;
 use LMWF\Conf\Http\SubrouteCannotAddRoleConfException;
 use LMWF\Conf\Http\UnauthorizedAttributeConfException;
+use LMWF\DataStructures\AppObject;
+use Symfony\Component\DependencyInjection\Loader\Configurator\App;
+use UnexpectedValueException;
 
 final readonly class RouteDefParser
 {
@@ -29,12 +32,12 @@ final readonly class RouteDefParser
     const string AMBIGUOUS_DEF_MSG_FMT = 'A route definition cannot both defines ' . self::ROUTES_KN . ' and ' . self::ARGS_MIN_KN . ' or ' . self::ARGS_MAX_KN . '.';
 
     /**
-     * @param array<string, mixed> $route The JSON-decoded route as an associative array.
+     * @param AppObject<mixed> $route The JSON-decoded route as an associative array.
      * @param null|list<string> $parentRoles The parent roles if defined, null if the current route is the root route.
      * @param bool $allowOverridingParentRoles If true, a subroute can add role its parent does not have.
      */
     public function parse(
-        array $route,
+        AppObject $route,
         ?array $parentRoles = null,
         bool $allowOverridingParentRoles = false,
     ): RouteDef {
@@ -51,12 +54,15 @@ final readonly class RouteDefParser
 
         // Verify and set roles.
         $roles = $parentRoles;
-        if (key_exists(self::ROLES_KN, $route)) {
-            $roles = $route[self::ROLES_KN];
+        if ($route->hasProperty(self::ROLES_KN)) {
+            $roles = $route->getAppList(self::ROLES_KN)->toArray();
+            if (!array_is_list($roles)) {
+                throw new UnexpectedValueException();
+            }
             if (!$allowOverridingParentRoles && null !== $parentRoles) {
                 foreach ($roles as $role) {
                     if (!in_array($role, $parentRoles, strict: true)) {
-                        throw new SubrouteCannotAddRoleConfException($route, $role);
+                        throw new SubrouteCannotAddRoleConfException($fqcn);
                     }
                 }
             }
@@ -66,8 +72,11 @@ final readonly class RouteDefParser
 
         // Set subroutes.
         $subroutes = [];
-        if (key_exists(self::ROUTES_KN, $route)) {
-            foreach ($route[self::ROUTES_KN] as $subrouteSeg => $subroute) {
+        if ($route->hasProperty(self::ROUTES_KN)) {
+            foreach ($route->getAppObject(self::ROUTES_KN) as $subrouteSeg => $subroute) {
+                if (!$subroute instanceof AppObject) {
+                    throw new UnexpectedValueException('Subroute configuration is expected to be an AppObject.');
+                }
                 $subroutes[$subrouteSeg] = $this->parse($subroute, $roles);
             }
         }
@@ -83,12 +92,12 @@ final readonly class RouteDefParser
     }
 
     /**
-     * @param array<string, string> $routeDefConf
+     * @param non-decimal-int-string $key
      */
-    private function parseFqcn(array $routeDefConf, string $key): ?string
+    private function parseFqcn(AppObject $parsedRouteDefConf, string $key): ?string
     {
-        if (key_exists($key, $routeDefConf)) {
-            return str_replace('.', '\\', $routeDefConf[$key]);
+        if ($parsedRouteDefConf->hasProperty($key)) {
+            return str_replace('.', '\\', $parsedRouteDefConf->getString($key));
         } else {
             return null;
         }

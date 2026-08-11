@@ -30,7 +30,7 @@ final class ListTransformer implements IFormTransformer
             return [];
         }
         if (!is_array($data)) {
-            throw new ExtractionException('Une erreur s’est produite.');
+            throw new ExtractionException('Unexpected type for data to be transformed.');
         }
         $value = [];
         foreach (array_keys($data) as $fieldId) {

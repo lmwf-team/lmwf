@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace LMWF\Session;
 
+use UnexpectedValueException;
+
 /**
  * @todo Should be moved to Http? Would make it easier to Http to access the
  * session, but Session does not need to access Http. Besides, Form only
@@ -22,33 +24,45 @@ final class SessionManager
     public const MESSAGES = 'messages';
 
     /**
-     * @var array<string, mixed>
+     * @var array<mixed>
      */
-    private array $sessionData;
+    private array $data;
 
     /**
      * @todo Magic string.
-     * @param null|array<string, mixed> $sessionData
+     * @param null|array<string, scalar> $data
      */
-    public function __construct(?array $sessionData = null)
+    public function __construct(?array $data = null)
     {
-        if (null !== $sessionData || 'cli' === php_sapi_name()) {
-            $this->sessionData = $sessionData ?? [];
+        if (null !== $data || 'cli' === php_sapi_name()) {
+            $this->data = $data ?? [];
         } else {
             session_start();
-            $this->sessionData =& $_SESSION;
+            $this->data =& $_SESSION;
         }
     }
 
     public function getCsrf(): string
     {
-        return $this->sessionData[self::CSRF] ?? $this->sessionData[self::CSRF] = bin2hex(random_bytes(self::CSRF_N_BYTES));
+        if (key_exists(self::CSRF, $this->data)) {
+            $csrf = $this->data[self::CSRF];
+            if (!is_string($csrf)) {
+                throw new UnexpectedValueException("Expected session-stored CSRF to be string.");
+            }
+            return $csrf;
+        }
+        $this->data[self::CSRF] = $csrf = bin2hex(random_bytes(self::CSRF_N_BYTES));
+        return $csrf;
     }
 
     public function getCurrentUsername(): ?string
     {
         if ($this->isUserLoggedIn()) {
-            return $this->sessionData[self::CURRENT_USERNAME_KEY];
+            $currentUsername = $this->data[self::CURRENT_USERNAME_KEY];
+            if (!is_null($currentUsername) && !is_string($currentUsername)) {
+                throw new UnexpectedValueException("Expected session-stored username to either be a string or a null.");
+            }
+            return $currentUsername;
         } else {
             return null;
         }
@@ -56,12 +70,16 @@ final class SessionManager
 
     public function getCustom(string $key): string
     {
-        return $this->sessionData[self::CUSTOM_PREFIX . $key];
+        $value = $this->data[self::CUSTOM_PREFIX . $key];
+        if (!is_string($value)) {
+            throw new UnexpectedValueException("Expected session value with key '$key' to be a string.");
+        }
+        return $value;
     }
 
     public function isUserLoggedIn(): bool
     {
-        return key_exists(self::CURRENT_USERNAME_KEY, $this->sessionData) && null !== $this->sessionData[self::CURRENT_USERNAME_KEY];
+        return key_exists(self::CURRENT_USERNAME_KEY, $this->data) && null !== $this->data[self::CURRENT_USERNAME_KEY];
     }
 
     /**
@@ -69,24 +87,21 @@ final class SessionManager
      */
     public function setCurrentUsername(?string $username): void
     {
-        $this->sessionData[self::CURRENT_USERNAME_KEY] = $username;
+        $this->data[self::CURRENT_USERNAME_KEY] = $username;
     }
 
     public function setCustom(string $key, mixed $value): void
     {
-        $absKey = self::CUSTOM_PREFIX . $key;
-
-        /** @phpstan-ignore assign.propertyType */
-        $this->sessionData[self::CUSTOM_PREFIX . $key] = $value;
+        $this->data[self::CUSTOM_PREFIX . $key] = $value;
     }
 
-    public function addMessage(string $message): void
+    public function addMessage(string $msg): void
     {
-        if (key_exists(self::MESSAGES, $this->sessionData)) {
-            $this->sessionData[self::MESSAGES][] = $message;
+        if (key_exists(self::MESSAGES, $this->data)) {
+            $this->data[self::MESSAGES][] = $msg;
         } else {
-            $this->sessionData[self::MESSAGES] = [
-                $message,
+            $this->data[self::MESSAGES] = [
+                $msg,
             ];
         }
     }
@@ -96,8 +111,21 @@ final class SessionManager
      */
     public function getAndDeleteMessages(): array
     {
-        $messages = $this->sessionData[self::MESSAGES] ?? [];
-        $this->sessionData[self::MESSAGES] = [];
-        return $messages;
+        if (key_exists(self::MESSAGES, $this->data)) {
+            $msgs = $this->data[self::MESSAGES];
+            if (!array_is_list($msgs)) {
+                throw new UnexpectedValueException("Expected list of messages in session to be a list.");
+            }
+            foreach ($msgs as $msg) {
+                if (!is_string($msg)) {
+                    throw new UnexpectedValueException("Expected list of messages in session to only contain strings.");
+                }
+            }
+            $this->data[self::MESSAGES] = [];
+            return $msgs;
+        }
+
+        $this->data[self::MESSAGES] = [];
+        return [];
     }
 }

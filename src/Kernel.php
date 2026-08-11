@@ -11,6 +11,7 @@ use LMWF\ErrorHandling\Log;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use ErrorException;
+use LMWF\DataStructures\Factory\CollectionFactory;
 
 /**
  * Provides static methods to initialize the Dependency Injection container,
@@ -48,10 +49,13 @@ final class Kernel
         array $containerDefinitions = [],
         ?LoggerInterface $logger = null,
     ): ContainerInterface {
-        $conf = null === $confFolderPath ? new AppConf($confData) : AppConf::createFromEnvFile(
-            $confFolderPath,
-            $confData,
-        );
+        $conf = null === $confFolderPath ?
+            new AppConf(CollectionFactory::createDeepAppObject($confData)) :
+            AppConf::createFromEnvFile(
+                $confFolderPath,
+                $confData,
+            )
+        ;
 
         $cb = new ContainerBuilder();
         if (!$conf->isDev) {

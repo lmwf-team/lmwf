@@ -74,9 +74,7 @@ final readonly class AppConf
             'confFolderPath' => $confFolderPath,
         ];
 
-        return new self(
-            $confData,
-        );
+        return new self(CollectionFactory::createDeepAppObject($confData));
     }
 
     /**
@@ -86,39 +84,43 @@ final readonly class AppConf
      * @todo Create model for configuration, and check it is valid? (Would make testing harder.)
      * @todo Accept an array and create a model from it?
      *
-     * @param array<string, mixed> $confData
+     * @param AppObject<mixed> $confParams
      */
-    public function __construct(array $confData)
+    public function __construct(AppObject $confParams)
     {
-        $this->handleExceptions = $confData['handleExceptions'];
-        $this->isDev = $confData['isDev'];
+        $this->handleExceptions = $confParams->getBool('handleExceptions');
+        $this->isDev = $confParams->getBool('isDev');
 
-        $this->homeUrl = $confData['homeUrl'];
-        $this->language = $confData['language'];
-        $this->appRootPath = $confData['appRootPath'];
-        $this->uploadRelPath = $confData['uploadRelPath'];
-        $this->publicRelPath = $confData['publicRelPath'];
+        $this->homeUrl = $confParams->getString('homeUrl');
+        $this->language = $confParams->getString('language');
+        $this->appRootPath = $confParams->getString('appRootPath');
+        $this->uploadRelPath = $confParams->getString('uploadRelPath');
+        $this->publicRelPath = $confParams->getString('publicRelPath');
 
-        $this->thumbnailFormats = array_map(fn ($formatConf) => new ImgFormat(
-            $formatConf['minSizeX'],
-            $formatConf['minSizeY'],
-            $formatConf['webpQuality'],
-        ), $confData['thumbnailFormats']);
+        $this->thumbnailFormats = $confParams
+            ->getAppObject('thumbnailFormats')
+            ->map(fn ($formatConf) => new ImgFormat(
+                $formatConf->getInt('minSizeX'),
+                $formatConf->getInt('minSizeY'),
+                $formatConf->getInt('webpQuality'),
+            ))
+            ->toArray()
+        ;
 
         $this->httpConf = new HttpConf(
-            (new RouteDefParser())->parse($confData['rootRoute']),
+            (new RouteDefParser())->parse($confParams->getAppObject('rootRoute')),
             $this->handleExceptions,
-            $confData['csp'],
+            $confParams['csp'],
             new ErrorControllerConf(
-                str_replace('.', '\\', $confData['errorControllers']['alreadyLoggedInFqcn']),
-                str_replace('.', '\\', $confData['errorControllers']['defaultErrorFqcn']),
-                str_replace('.', '\\', $confData['errorControllers']['methodNotSupportedFqcn']),
-                str_replace('.', '\\', $confData['errorControllers']['notFoundFqcn']),
-                str_replace('.', '\\', $confData['errorControllers']['notLoggedInFqcn']),
+                str_replace('.', '\\', $confParams['errorControllers']['alreadyLoggedInFqcn']),
+                str_replace('.', '\\', $confParams['errorControllers']['defaultErrorFqcn']),
+                str_replace('.', '\\', $confParams['errorControllers']['methodNotSupportedFqcn']),
+                str_replace('.', '\\', $confParams['errorControllers']['notFoundFqcn']),
+                str_replace('.', '\\', $confParams['errorControllers']['notLoggedInFqcn']),
             ),
         );
 
-        $this->confData = CollectionFactory::createDeepAppObject($confData);
+        $this->confData = CollectionFactory::createDeepAppObject($confParams);
     }
 
     public function getBoolSetting(string $key): bool

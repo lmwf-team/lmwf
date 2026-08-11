@@ -11,20 +11,30 @@ use UnexpectedValueException;
 class CollectionFactory
 {
     /**
-     * @param list<array<mixed>> $list
+     * @param list<mixed> $list
      */
     public static function createDeepAppList(array $list): AppList
     {
         $data = [];
-        foreach ($list as $row) {
-            if (is_array($row)) {
-                if (array_is_list($row)) {
-                    $data[] = self::createDeepAppList($row);
+        foreach ($list as $item) {
+            if (is_array($item)) {
+                if (array_is_list($item)) {
+                    $data[] = self::createDeepAppList($item);
                 } else {
-                    $data[] = self::createDeepAppObject($row);
+                    $onlyStringKeys = true;
+                    foreach ($item as $key => $_) {
+                        if (is_int($key)) {
+                            $onlyStringKeys = false;
+                            break;
+                        }
+                    }
+                    if ($onlyStringKeys) {
+                        // @phpstan-ignore argument.type
+                        $data[] = self::createDeepAppObject($item);
+                    }
                 }
             } else {
-                $data[] = $row;
+                $data[] = $item;
             }
         }
 
@@ -43,7 +53,20 @@ class CollectionFactory
                 if (array_is_list($value)) {
                     $data[$property] = self::createDeepAppList($value);
                 } else {
-                    $data[$property] = self::createDeepAppObject($value);
+                    // @todo Duplicate section of code with createDeepAppList
+                    $onlyStringKeys = true;
+                    foreach ($value as $key => $_) {
+                        if (is_int($key)) {
+                            $onlyStringKeys = false;
+                            break;
+                        }
+                    }
+                    if ($onlyStringKeys) {
+                        // @phpstan-ignore argument.type
+                        $data[$property] = self::createDeepAppObject($value);
+                    } else {
+                        $data[$property] = $value;
+                    }
                 }
             } else {
                 $data[$property] = $value;
@@ -68,6 +91,18 @@ class CollectionFactory
         $decoded = json_decode($fileContent, associative: true, flags: JSON_THROW_ON_ERROR);
         if (!is_array($decoded)) {
             throw new UnexpectedValueException("Expected the decoded JSON to be an associative array.");
+        }
+
+        // @todo duplicated code, again.
+        $onlyStringKeys = true;
+        foreach ($decoded as $key => $_) {
+            if (is_int($key)) {
+                $onlyStringKeys = false;
+                break;
+            }
+        }
+        if (!$onlyStringKeys) {
+            throw new UnexpectedValueException('Not all of the keys of the parsed JSON were strings.');
         }
         return $decoded;
     }

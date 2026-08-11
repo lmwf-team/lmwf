@@ -32,6 +32,8 @@ use LMWF\File\FileService;
 
 /**
  * Creates a form transformer from a model.
+ * 
+ * @phpstan-import-type fieldconfparams from FormConfFactory
  */
 final class FormFactory
 {
@@ -45,7 +47,7 @@ final class FormFactory
     }
 
     /**
-     * @param array<string, array<string, mixed>> $formConfParams
+     * @param array<string, fieldconfparams> $formConfParams
      */
     public function createForm(ArrayModel $model, array $formConfParams = []): ArrayTransformer
     {

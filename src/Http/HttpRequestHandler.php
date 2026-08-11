@@ -22,8 +22,16 @@ use Throwable;
 
 final class HttpRequestHandler
 {
-    public const SUPPORTED_METHODS = ['GET', 'HEAD', 'POST', 'READ', 'PUT', 'PATCH', 'OPTIONS', 'DELETE'];
-    public const UNEXISTING_ROUTE = 1000;
+    public const SUPPORTED_METHODS = [
+        'GET',
+        'HEAD',
+        'POST',
+        'READ',
+        'PUT',
+        'PATCH',
+        'OPTIONS',
+        'DELETE',
+    ];
 
     public function __construct(
         private ContainerInterface $container,
@@ -35,16 +43,13 @@ final class HttpRequestHandler
     }
 
     /**
-     * Generates a response from globals.
-     *
-     * @todo Use pipe operator!
+     * Generates and send back an HTTP response from PHP globals.
      * */
     public function respondToOngoingRequest(): void
     {
-        // @todo Kind of a hack
-        $request = ServerRequest::fromGlobals();
-        $response = $this->generateResponse($request);
-        $this->sendResponse($response);
+        ServerRequest::fromGlobals()
+            |> $this->generateResponse(...)
+            |> $this->sendResponse(...);
     }
 
     /**

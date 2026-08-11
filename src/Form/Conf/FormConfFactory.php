@@ -20,10 +20,20 @@ use UnexpectedValueException;
 
 /**
  * @todo Create FormConf class? Inheriting AppObject or using traits?
+ * @phpstan-import-type fieldvalues from FormFieldConf
+ * @phpstan-type fieldconfparams array{
+ *   label: string,
+ *   autocomplete?: null|string,
+ *   default?: array{slug: non-decimal-int-string},
+ *   id?: string,
+ *   ignore?: bool,
+ *   required?: bool,
+ *   type?: string,
+ *   values?: null|fieldvalues,
+ * }
  */
-readonly class FormConfFactory
+final readonly class FormConfFactory
 {
-    public const ACCEPT_KN = 'accept';
     public const AUTOCOMPLETE_KN = 'autocomplete';
     public const DEFAULT_KN = 'default';
     public const DEFAULT_SLUG_KN = 'slug';
@@ -35,7 +45,7 @@ readonly class FormConfFactory
     public const VALUES_KN = 'values';
 
     /**
-     * @param array<string, array<string, mixed>> $formConfParams
+     * @param array<string, fieldconfparams> $formConfParams
      * @return array<string, FormFieldConf>
      */
     public function createConf(ArrayModel $model, array $formConfParams): array
@@ -59,7 +69,7 @@ readonly class FormConfFactory
     }
 
     /**
-     * @param array<string, mixed> $fieldConfParams
+     * @param fieldconfparams $fieldConfParams
      */
     private function createFormFieldConf(?IModel $model, array $fieldConfParams): FormFieldConf
     {
@@ -108,7 +118,7 @@ readonly class FormConfFactory
     }
 
     /**
-     * @param array<string, mixed> $fieldConfParams
+     * @param fieldconfparams $fieldConfParams
      */
     private function getType(array $fieldConfParams, ?IModel $model): FormFieldType
     {

@@ -8,7 +8,7 @@ namespace LMWF\DataStructures;
  * @template TKey
  * @template TValue
  */
-interface IArrayable extends IDistinguishable
+interface IArrayable
 {
     /**
      * @return array<TKey, TValue>

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace LMWF\Database;
 
 use DateTimeImmutable;
+use DateTimeInterface;
 use InvalidArgumentException;
 use LMWF\Database\Exceptions\InvalidDbDataException;
 use LMWF\Database\Exceptions\NullDbDataNotAllowedException;
@@ -20,18 +21,71 @@ use LMWF\Constraint\Type\IScalarModel;
 use LMWF\Constraint\Type\EntityListModel;
 use LMWF\Constraint\Type\ListModel;
 use LMWF\Constraint\Type\StringModel;
-use LMWF\Validation\EntityValidator;
 use UnexpectedValueException;
 
 /**
  * @todo Could be renamed to DbEntityFactory / DbArrayFactory.
- *
+ 
  * @phpstan-type dbscalar int|float|null|string
  * @phpstan-type dbrow array<string, dbscalar>
  */
 final class DbEntityManager
 {
     public const SEP = '_';
+
+    /**
+     * Converts array with App Data format into array ready to be passed to 
+     * PDO::execute.
+     * 
+     * @todo Wait for PHPStan to support recursive types to define apparray type.
+     * @todo Wait for PHPStan to understand that concatenation of non-decimal-int-string is non-decimal-int-string.
+     * 
+     * @param array<string, mixed> $appArray
+     * @param non-decimal-int-string $prefix
+     * @param list<non-decimal-int-string> $propertiesToIgnore
+     * @return dbrow
+     */
+    public function convertAppArrayIntoDbArray(
+        iterable $appArray,
+        string $prefix = '',
+        array $propertiesToIgnore = [],
+    ): array {
+        $dbArray = [];
+        foreach ($appArray as $pName => $pValue) {
+            if (in_array($pName, $propertiesToIgnore, strict: true)) {
+                continue;
+            }
+            if (is_array($pValue)) {
+                if (array_is_list($pValue) && [] !== $pValue) {
+                    throw new UnexpectedValueException('Cannot convert an app data list into DB data.');
+                }
+                // @phpstan-ignore argument.type
+                $dbArray += $this->convertAppArrayIntoDbArray($pValue, prefix: $prefix . $pName);
+            } else {
+                $dbArray[$prefix . $pName] = $this->convertAppVarToDbScalar($pValue);
+            }
+        }
+        // @phpstan-ignore return.type
+        return $dbArray;
+    }
+
+    /**
+     * Converts a scalar under app data format into a scalar ready to be bound
+     * to a PDOStatement parameter.
+     * 
+     * For instance, it will convert boolens into 0 and 1.
+     */
+    public function convertAppVarToDbScalar(mixed $appVar): int|float|null|string
+    {
+        if (is_bool($appVar)) {
+            return $appVar ? 1 : 0;
+        } elseif ($appVar instanceof DateTimeInterface) {
+            return $appVar->format('Y-m-d H:i:s');
+        } elseif (is_int($appVar) || is_float($appVar) || is_null($appVar) || is_string($appVar)) {
+            return $appVar;
+        }
+        throw new InvalidArgumentException("Could not convert App variable with type " . gettype($appVar) . " into DB scalar.");
+    }
 
     /**
      * Convert a variable in DB Data format into App Data format.
@@ -184,45 +238,6 @@ final class DbEntityManager
             }
         }
         return new AppList($appData);
-    }
-
-    /**
-     * Ignores list (ordered arrays).
-     *
-     * @param list<string> $propertiesToIgnore
-     *
-     * @throws UnexpectedValueException If some of the properties are set to be persisted and are not scalar.
-     * @throws InvalidArgumentException If appData is a list.
-     */
-    public function toDbValue(mixed $appData, string $prefix = '', array $propertiesToIgnore = []): mixed
-    {
-        if ($appData instanceof AppObject) {
-            return $this->toDbValue($appData->toArray(), $prefix, $propertiesToIgnore);
-        } elseif (is_bool($appData)) {
-            return $appData ? 1 : 0;
-        } elseif ($appData instanceof DateTimeImmutable) {
-            return $appData->format('Y-m-d H:i:s');
-        } elseif (is_array($appData)) {
-            $dbArray = [];
-            if (array_is_list($appData)) {
-                throw new InvalidArgumentException('Not supported.');
-            } else {
-                foreach ($appData as $pName => $pValue) {
-                    if (!in_array($pName, $propertiesToIgnore, strict: true)) {
-                        if (is_array($pValue)) {
-                            if (!array_is_list($pValue)) {
-                                $dbArray += $this->toDbValue($pValue, $pName);
-                            }
-                        } else {
-                            $dbArray[$prefix . $pName] = $this->toDbValue($pValue);
-                        }
-                    }
-                }
-            }
-            return $dbArray;
-        } else {
-            return $appData;
-        }
     }
 
     /**

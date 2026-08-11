@@ -13,7 +13,7 @@ use OutOfBoundsException;
  *
  * @todo Force a certain naming style for property keys?
  *
- * @extends ImmutableArray<string, array<string, mixed>>
+ * @extends ImmutableArray<non-decimal-int-string, array<non-decimal-int-string, mixed>>
  */
 final readonly class AppObject extends ImmutableArray
 {
@@ -27,15 +27,20 @@ final readonly class AppObject extends ImmutableArray
         }
         foreach ($array as $key => $value) {
             if (!is_string($key)) {
-                throw new InvalidArgumentException("Property keys of AppObjects MUST be strings, got key {$key} for {$value}.");
+                throw new InvalidArgumentException("Property keys of AppObjects MUST be strings, which is not the case of the key '{$key}'.");
             }
         }
 
         parent::__construct($array);
     }
 
+    public function map(callable $callback): static
+    {
+        return new self(array_map($callback, $this->data));
+    }
+
     /**
-     * @param string $key The key of the property.
+     * @param non-decimal-int-string $key The key of the property.
      * @return bool Whether the AppObject instance has the specified property.
      */
     public function hasProperty(string $key): bool
@@ -46,7 +51,7 @@ final readonly class AppObject extends ImmutableArray
     /**
      * Create a new AppObject with the specified property removed.
      *
-     * @param string $keyToRemove The key of the property to remove.
+     * @param non-decimal-int-string $keyToRemove The key of the property to remove.
      * @return AppObject Another AppObject with the same data as this one, but
      * with the specified key removed.
      */
@@ -76,16 +81,28 @@ final readonly class AppObject extends ImmutableArray
     }
 
     /**
-     * @param mixed $mixed The value to compare the AppObject with.
-     * @return bool Whether the given value is another AppObject with an
-     * identical content.
+     * @todo Could return true even if two objects are not of the same class but
+     * both inherit from AppObject.
+     * 
+     * @param self $value
      */
-    public function isEqual(mixed $mixed): bool
+    public function isEqual(self $value): bool
     {
-        if (!($mixed instanceof AppObject)) {
+        if (count($value) !== count($this)) {
             return false;
         }
 
-        return parent::isEqual($mixed);
+        foreach ($value as $key => $item) {
+            if (!$this->offsetExists($key)) {
+                return false;
+            }
+            if ($item instanceof self && !$item->isEqual($this->getAppObject($key))) {
+                return false;
+            } elseif ($this->data[$key] !== $item) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

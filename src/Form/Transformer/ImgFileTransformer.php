@@ -64,7 +64,11 @@ final readonly class ImgFileTransformer implements IFormTransformer
     {
         if (key_exists($this->name . self::PREVIOUS_SUFFIX, $parsedPayload)) {
             Log::info("Extracting previously uploaded file for {$this->name}.");
-            $filename = Filename::fromString($parsedPayload[$this->name . self::PREVIOUS_SUFFIX]);
+            $previouslySubmittedFileFilename = $parsedPayload[$this->name . self::PREVIOUS_SUFFIX];
+            if (!is_string($previouslySubmittedFileFilename)) {
+                throw new UnexpectedValueException('Previously submitted file filename was expected to be a string.');
+            }
+            $filename = Filename::fromString($previouslySubmittedFileFilename);
             return $filename->getFilename();
         } else {
             return null;

@@ -72,6 +72,8 @@ final readonly class Route
 
     /**
      * The FQCN of the controller associated with this route.
+     * 
+     * @return null|class-string<\LMWF\Http\Controller\IRoutedController>
      */
     public function getFqcn(): ?string
     {

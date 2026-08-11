@@ -10,6 +10,7 @@ use BadMethodCallException;
 use Countable;
 use IteratorAggregate;
 use IteratorIterator;
+use LMWF\DataStructures\Exceptions\UnexpectedPropertyType;
 use OutOfBoundsException;
 use Traversable;
 use UnexpectedValueException;
@@ -21,11 +22,12 @@ use UnexpectedValueException;
  * either integers or strings (the only admissible key types in PHP), and values
  * can be any data type.
  *
- * @template TKey
+ * @template TKey of int|non-decimal-int-string
  * @template TArray of array<TKey, mixed>
  * @implements ArrayAccess<TKey, mixed>
  * @implements IArrayable<TKey, mixed>
  * @implements IteratorAggregate<TKey, mixed>
+ * @phpstan-consistent-constructor
  */
 abstract readonly class ImmutableArray implements ArrayAccess, Countable, IArrayable, IteratorAggregate
 {
@@ -80,18 +82,26 @@ abstract readonly class ImmutableArray implements ArrayAccess, Countable, IArray
     /**
      * @param TKey $key
      */
-    public function getAppList(mixed $key): AppList
+    public function getAppList(int|string $key): AppList
     {
-        return $this[$key];
+        $value = $this[$key];
+        if ($value instanceof AppList) {
+            return $value;
+        }
+        throw new UnexpectedPropertyType($key, AppList::class);
     }
 
 
     /**
      * @param TKey $key
      */
-    public function getAppObject(mixed $key): AppObject
+    public function getAppObject(int|string $key): AppObject
     {
-        return $this[$key];
+        $value = $this[$key];
+        if ($value instanceof AppObject) {
+            return $value;
+        }
+        throw new UnexpectedPropertyType($key, AppObject::class);
     }
 
 
@@ -99,9 +109,13 @@ abstract readonly class ImmutableArray implements ArrayAccess, Countable, IArray
      * @param TKey $key
      * @return mixed[]
      */
-    public function getArray(mixed $key): array
+    public function getArray(int|string $key): array
     {
-        return $this[$key];
+        $value = $this[$key];
+        if (is_array($value)) {
+            return $value;
+        }
+        throw new UnexpectedPropertyType($key, 'array');
     }
 
 
@@ -109,73 +123,100 @@ abstract readonly class ImmutableArray implements ArrayAccess, Countable, IArray
      * @param TKey $key
      * @return IArrayable<TKey, mixed>
      */
-    public function getArrayable(mixed $key): IArrayable
+    public function getArrayable(int|string $key): IArrayable
     {
-        return $this[$key];
+        $value = $this[$key];
+        if ($value instanceof IArrayable) {
+            return $value;
+        }
+        throw new UnexpectedPropertyType($key, IArrayable::class);
     }
 
 
     /**
      * @param TKey $key
      */
-    public function getBool(mixed $key): bool
+    public function getBool(int|string $key): bool
     {
-        return $this[$key];
+        $value = $this[$key];
+        if (is_bool($value)) {
+            return $value;
+        }
+        throw new UnexpectedPropertyType($key, 'bool');
     }
 
 
     /**
      * @param TKey $key
      */
-    public function getFloat(mixed $key): float
+    public function getFloat(int|string $key): float
     {
-        return $this[$key];
+        $value = $this[$key];
+        if (is_float($value)) {
+            return $value;
+        }
+        throw new UnexpectedPropertyType($key, 'float');
     }
 
 
     /**
      * @param TKey $key
      */
-    public function getInt(mixed $key): int
+    public function getInt(int|string $key): int
     {
-        return $this[$key];
+        $value = $this[$key];
+        if (is_int($value)) {
+            return $value;
+        }
+        throw new UnexpectedPropertyType($key, 'int');
     }
 
     /**
      * @param TKey $key
      */
-    public function getNullableObject(mixed $key, string $fqcn): mixed
+    public function getNullableObject(int|string $key, string $fqcn): mixed
     {
         $value = $this[$key];
 
-        if (null !== $value && get_class($value) !== $fqcn) {
-            throw new UnexpectedValueException('Requested property value is not of the desired type.');
+        if (null === $value || (is_object($value) && get_class($value) === $fqcn)) {
+            return $value;
         }
 
-        return $value;
+        throw new UnexpectedPropertyType($key, "?$fqcn");
     }
 
     /**
      * @param TKey $key
      */
-    public function getNullableScalar(mixed $key, string $type): mixed
+    public function getNullableScalar(int|string $key, string $type): mixed
     {
         $value = $this[$key];
 
-        if (null !== $value && gettype($value) !== $type) {
-            throw new UnexpectedValueException('Requested property value is not of the desired type.');
+        if (null === $value || gettype($value) === $type) {
+            return $value;
         }
 
-        return $value;
+        throw new UnexpectedPropertyType($key, "?$type");
     }
 
     /**
      * @param TKey $key
      */
-    public function getString(mixed $key): string
+    public function getString(int|string $key): string
     {
-        return $this[$key];
+        $value = $this[$key];
+
+        if (is_string($value)) {
+            return $value;
+        }
+    
+        throw new UnexpectedPropertyType($key, "string");
     }
+
+    /**
+     * @param callable(mixed): mixed $callback
+     */
+    public abstract function map(callable $callback): static;
 
     /**
      * @param TKey $offset
@@ -202,7 +243,7 @@ abstract readonly class ImmutableArray implements ArrayAccess, Countable, IArray
      */
     public function offsetExists(mixed $offset): bool
     {
-        foreach ($this->data as $key => $_value) {
+        foreach ($this->data as $key => $_) {
             if ($key === $offset) {
                 return true;
             }
@@ -211,26 +252,19 @@ abstract readonly class ImmutableArray implements ArrayAccess, Countable, IArray
         return false;
     }
 
-
-    /**
-     * @param TKey $offset
-     */
     public function offsetSet(mixed $offset, mixed $value): void
     {
         throw new BadMethodCallException(self::class . ' objects are immutable.');
     }
 
-
-    /**
-     * @param TKey $offset
-     */
     public function offsetUnset(mixed $offset): void
     {
         throw new BadMethodCallException(self::class . ' objects are immutable.');
     }
 
     /**
-     * @return array<TKey, null|object|scalar>
+     * @return array<TKey, mixed>
+     * @todo Delete?
      */
     public function toArray(): array
     {
@@ -239,33 +273,5 @@ abstract readonly class ImmutableArray implements ArrayAccess, Countable, IArray
             $data[$pName] = $pValue instanceof IArrayable ? $pValue->toArray() : $pValue;
         }
         return $data;
-    }
-
-    /**
-     * @todo Could return true even if two objects are not of the same class but
-     * both inherit from ImmutableArray.
-     */
-    public function isEqual(mixed $value): bool
-    {
-        if (!($value instanceof self)) {
-            return false;
-        }
-
-        if (count($value) !== count($this)) {
-            return false;
-        }
-
-        foreach ($value as $key => $item) {
-            if (!$this->offsetExists($key)) {
-                return false;
-            }
-            if ($item instanceof IDistinguishable && !$item->isEqual($this->data[$key])) {
-                return false;
-            } elseif ($this->data[$key] !== $item) {
-                return false;
-            }
-        }
-
-        return true;
     }
 }

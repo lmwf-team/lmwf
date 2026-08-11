@@ -7,9 +7,6 @@ namespace LMWF\Http\Controller;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-/**
- * @todo Move Controller repo to Http namespace.
- */
 interface IController
 {
     /**

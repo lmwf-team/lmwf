@@ -26,12 +26,7 @@ final readonly class AppList extends ImmutableArray
         parent::__construct($data);
     }
 
-    public function implode(string $separator): string
-    {
-        return implode($separator, $this->data);
-    }
-
-    public function map(callable $callback): self
+    public function map(callable $callback): static
     {
         return new self(array_map($callback, $this->data));
     }

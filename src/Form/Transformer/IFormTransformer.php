@@ -25,7 +25,7 @@ interface IFormTransformer
      * in the HTML form at all. A string left blank will evaluate to an empty
      * string and not to null.
      *
-     * @param array<string, mixed> $parsedPayload
+     * @param array<mixed, mixed> $parsedPayload
      * @param array<string, array<string, UploadedFileInterface>|UploadedFileInterface> $uploadedFiles
      * @return mixed The submitted value converted to the app data format, or
      * null if the user submitted a value evaluating to null.

@@ -37,20 +37,25 @@ abstract readonly class AbstractTypeValidator implements ITypeValidator
 
     public function validate(mixed $value): null|TypeViolation|ValueViolation
     {
-        if (null === $value) {
-            if (null !== $this->notNullConstraint) {
-                return new TypeViolation(
-                    $this->notNullConstraint,
-                    'Data is not allowed to be null.',
-                );
-            }
-            return null;
+        if (null !== $value) {
+            /**
+             * This is because PHPStan does not yet distinguish between the
+             * mixed data type and the non-nullable mixed data type.
+             * @phpstan-ignore argument.type
+             */
+            return $this->validateNonNullValue($value);
         }
-        return $this->validateNonNullValue($value);
+        if (null !== $this->notNullConstraint) {
+            return new TypeViolation(
+                $this->notNullConstraint,
+                'Data is not allowed to be null.',
+            );
+        }
+        return null;
     }
 
     /**
-     * @param list<mixed>|bool|float|int|object|string $value
+     * @param object|array<mixed>|string|float|int|bool $value
      */
     abstract public function validateNonNullValue(array|bool|float|int|object|string $value): null|TypeViolation|ValueViolation;
 }
