@@ -72,7 +72,6 @@ final class AppObjectTest extends TestCase
                 ],
             ],
         ]);
-        var_dump($appArray['bro']);
     }
 
     public function testWithEmptyArray(): void
