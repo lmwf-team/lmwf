@@ -67,7 +67,7 @@ final class HttpRequestHandler
             $this->generateResponseFromRouteException($request, $controllerResult) :
             $controllerResult
         ;
-        
+
         return $this->addCspSources($response);
     }
 

@@ -12,6 +12,6 @@ final readonly class RoutingParamIssue
         public RoutingParamIssueCode $code,
         public RouteDef $routeDef,
         public int $actualNArgs,
-        ) {
+    ) {
     }
 }
