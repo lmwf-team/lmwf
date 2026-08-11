@@ -28,7 +28,7 @@ use LM\WebFramework\Model\Type\StringModel;
  *
  * @todo Rename ValidatorFactory or to ArrayValidator or to EntityValidator?
  */
-final class Validator
+final readonly class Validator
 {
     private ITypeValidator $validator;
 
@@ -80,8 +80,6 @@ final class Validator
      * model.
      *
      * @param mixed $value The app value to validate.
-     * @return array<string, ConstraintViolation[]> A list of ConstraintViolations, one for
-     * each constraint violation.
      */
     public function validate(mixed $value): array
     {

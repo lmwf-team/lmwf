@@ -19,7 +19,7 @@ final class ListValidator implements ITypeValidator
     {
         if (!is_array($data) || !array_is_list($data)) {
             return [
-                new ConstraintViolation($this->constraint, 'Value must be a list.'),
+                new ConstraintViolation($this->constraint, 'Value must be a list or an array.'),
             ];
         }
         return [];
