@@ -244,7 +244,7 @@ final class DbEntityManager
                 throw new InvalidArgumentException('Not supported.');
             } else {
                 foreach ($appData as $pName => $pValue) {
-                    if (!in_array($pName, $ignoreProperties, true)) {
+                    if (!in_array($pName, $ignoreProperties, strict: true)) {
                         if (is_array($pValue)) {
                             if (!$this->isOrdered($pValue)) {
                                 $dbArray += $this->toDbValue($pValue, $pName);

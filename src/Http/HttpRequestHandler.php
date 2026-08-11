@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace LM\WebFramework\Http;
 
 use GuzzleHttp\Psr7\ServerRequest;
-use LM\WebFramework\Configuration\HttpConf;
+use LM\WebFramework\Conf\HttpConf;
 use LM\WebFramework\Controller\Exception\AccessDenied;
 use LM\WebFramework\Controller\Exception\AlreadyAuthenticated;
 use LM\WebFramework\Controller\Exception\RequestedResourceNotFound;
@@ -100,7 +100,7 @@ final class HttpRequestHandler
         $response = $controller->generateResponse(
             $route,
             $request,
-            $route->parameters,
+            $route->params,
             [],
         );
 

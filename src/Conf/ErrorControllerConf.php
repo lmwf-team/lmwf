@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Configuration;
+namespace LM\WebFramework\Conf;
 
 final readonly class ErrorControllerConf
 {

@@ -6,9 +6,10 @@ namespace LM\WebFramework\Form;
 
 use DomainException;
 use InvalidArgumentException;
-use LM\WebFramework\Configuration\Configuration;
+use LM\WebFramework\Conf\AppConf;
 use LM\WebFramework\Form\Conf\FormConfFactory;
 use LM\WebFramework\Form\Conf\FormFieldConf;
+use LM\WebFramework\Form\Conf\FormFieldType;
 use LM\WebFramework\Form\Transformer\ArrayTransformer;
 use LM\WebFramework\Form\Transformer\CheckboxTransformer;
 use LM\WebFramework\Form\Transformer\CsrfTransformer;
@@ -38,7 +39,7 @@ final class FormFactory
     public const CSRF_FORM_ELEMENT_NAME = '_csrf';
 
     public function __construct(
-        private Configuration $conf,
+        private AppConf $conf,
         private CsrfTransformer $csrfTransformer,
         private FormConfFactory $formConfFactory,
     ) {
@@ -65,35 +66,28 @@ final class FormFactory
     }
 
     public function createFieldTransformer(
-        FormFieldConf $conf,
+        FormFieldConf $fieldConf,
         ?string $name = null,
     ): IFormTransformer {
         if (null === $name) {
             throw new InvalidArgumentException('A name must be provided for non-array transformers.');
         }
-        if ($conf->model instanceof ListModel || $conf->model instanceof EntityListModel) {
-            return new ListTransformer($conf, $this, $name);
-        }
-        if ($conf->model instanceof StringModel) {
-            if (null !== $conf->model->getUploadedImageConstraint()) {
-                return new FileTransformer($this->conf->getPathOfUploadedFiles(), $name);
-            }
+        // @todo Add List, EntityList, and Json to FormFieldType
+        if ($fieldConf->model instanceof ListModel || $fieldConf->model instanceof EntityListModel) {
+            return new ListTransformer($fieldConf, $this, $name);
+        } elseif ($fieldConf->model instanceof JsonModel) {
+            return new JsonTransformer($name);
+        } elseif (FormFieldType::Text === $fieldConf->type || FormFieldType::Textarea === $fieldConf->type) { 
             return new StringTransformer($name);
-        }
-        if ($conf->model instanceof IntModel) {
-            return new IntTransformer($name);
-        }
-        if ($conf->model instanceof DateTimeModel) {
+        } elseif (FormFieldType::Img === $fieldConf->type) {
+            return new FileTransformer($this->conf->getPathOfUploadedFiles(), $name);
+        } elseif (FormFieldType::Checkbox === $fieldConf->type) {
+            return new CheckboxTransformer($name);
+        } elseif (FormFieldType::Date === $fieldConf->model) {
             return new DateTimeTransformer($name);
         }
-        if ($conf->model instanceof BoolModel) {
-            return new CheckboxTransformer($name);
-        }
-        if ($conf->model instanceof JsonModel) {
-            return new JsonTransformer($name);
-        }
 
-        throw new DomainException('No transformer found for ' . get_class($conf->model) . '.');
+        throw new DomainException("No transformer found for field with name {$name}.");
     }
 
     public function createFormTransformer(

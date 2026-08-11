@@ -11,7 +11,7 @@ use LM\WebFramework\Model\Constraints\IUploadedImageConstraint;
 use LM\WebFramework\Model\Constraints\RangeConstraint;
 use LM\WebFramework\Model\Constraints\RegexConstraint;
 
-final class StringModel extends AbstractModel implements IScalarModel
+final class StringModel extends AbstractModel implements ILengthModel, IScalarModel
 {
     private ?IEnumConstraint $enumConstraint;
 

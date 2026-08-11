@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Configuration;
+namespace LM\WebFramework\Conf;
 
-use LM\WebFramework\Configuration\Exception\SettingNotFoundException;
+use LM\WebFramework\Conf\Exception\SettingNotFoundException;
 use LM\WebFramework\Http\Routing\Exception\InvalidRouteConfException;
 use LM\WebFramework\Http\Routing\Exception\SubrouteCannotAddRoleConfException;
 use LM\WebFramework\Http\Routing\Exception\UnauthorizedAttributeConfException;

@@ -7,7 +7,7 @@ namespace LM\WebFramework\Model\Type;
 use LM\WebFramework\Model\Constraints\IRangeConstraint;
 use LM\WebFramework\Model\Constraints\RangeConstraint;
 
-final class IntModel extends AbstractModel implements IScalarModel
+final class IntModel extends AbstractModel implements ILengthModel, IScalarModel
 {
     public const MAX = 32767;
 

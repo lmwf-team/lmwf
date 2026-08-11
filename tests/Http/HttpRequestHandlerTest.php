@@ -6,8 +6,8 @@ namespace LM\WebFramework\Tests\Http;
 
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\ServerRequest;
-use LM\WebFramework\Configuration\HttpConf;
-use LM\WebFramework\Configuration\ErrorControllerConf;
+use LM\WebFramework\Conf\HttpConf;
+use LM\WebFramework\Conf\ErrorControllerConf;
 use LM\WebFramework\Controller\Exception\AlreadyAuthenticated;
 use LM\WebFramework\Controller\IController;
 use LM\WebFramework\Controller\IRoutedController;

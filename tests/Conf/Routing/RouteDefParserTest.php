@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace LM\WebFramework\Tests\Conf\Routing;
 
-use LM\WebFramework\Configuration\RouteDefParser;
+use LM\WebFramework\Conf\RouteDefParser;
 use LM\WebFramework\Http\Routing\Exception\InvalidRouteConfException;
 use LM\WebFramework\Http\Routing\Exception\SubrouteCannotAddRoleConfException;
 use LM\WebFramework\Http\Routing\Exception\UnauthorizedAttributeConfException;

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Configuration;
+namespace LM\WebFramework\Conf;
 
 use InvalidArgumentException;
-use LM\WebFramework\Configuration\Exception\CouldNotReadFileException;
+use LM\WebFramework\Conf\Exception\CouldNotReadFileException;
 use LM\WebFramework\DataStructures\AppObject;
 use LM\WebFramework\DataStructures\Factory\CollectionFactory;
 
@@ -19,7 +19,7 @@ use LM\WebFramework\DataStructures\Factory\CollectionFactory;
  *
  * @todo Add appName setting.
  */
-final class Configuration
+final class AppConf
 {
     public const string DIST_FN = "lmwf_app.json";
     public const string LOCAL_FN = ".lmwf_app.local.json";

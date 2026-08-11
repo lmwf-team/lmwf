@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace LM\WebFramework\File;
 
-use LM\WebFramework\Configuration\Configuration;
+use LM\WebFramework\Conf\AppConf;
 use LM\WebFramework\Model\Constraints\IUploadedImageConstraint;
 
 final class FileService
 {
     public function __construct(
-        private Configuration $conf,
+        private AppConf $conf,
     ) {
     }
 

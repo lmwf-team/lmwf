@@ -33,7 +33,7 @@ final readonly class Route
 
     /**
      * @param RouteDef $def The associated route definition.
-     * @param string[] $parameters the associated path segments of the path
+     * @param string[] $params the associated path segments of the path
      * that instantiated the current route. For a parameterised route, only the
      * segments corresponding to the arguments are passed.
      * @todo PathSegList?
@@ -41,10 +41,10 @@ final readonly class Route
     public function __construct(
         public RouteDef $def,
         public string $seg,
-        public array $parameters = [],
+        public array $params = [],
         public ?Route $parent = null,
     ) {
-        $nArgs = count($parameters);
+        $nArgs = count($params);
 
         if ($nArgs < $def->nArgsLowerLimit) {
             throw new DomainException("Instantiation of a route has a number of arguments below the minimum in the route definition ({$nArgs} < {$def->nArgsLowerLimit}).");
@@ -52,7 +52,7 @@ final readonly class Route
             throw new DomainException("Instantiation of a route has a number of arguments above the maximum in the route definition ({$nArgs} > {$def->nArgsUpperLimit}).");
         }
 
-        foreach ($parameters as $seg) {
+        foreach ($params as $seg) {
             if (!is_string($seg)) {
                 throw new InvalidArgumentException("A path segment must be a string.");
             }
@@ -74,7 +74,7 @@ final readonly class Route
      */
     public function getFqcn(): ?string
     {
-        if (null !== $this->def->fqcnIfParams && count($this->parameters) > 0) {
+        if (null !== $this->def->fqcnIfParams && count($this->params) > 0) {
             return $this->def->fqcnIfParams;
         } else {
             return $this->def->fqcn;
@@ -87,10 +87,10 @@ final readonly class Route
      */
     public function getParamOrNull(int $index): ?string
     {
-        if ($index >= count($this->parameters)) {
+        if ($index >= count($this->params)) {
             return null;
         }
-        return $this->parameters[$index];
+        return $this->params[$index];
     }
 
     /**
@@ -104,8 +104,8 @@ final readonly class Route
         if (null !== $this->parent) {
             $path .= "{$this->parent->getPath()}/{$this->seg}";
         }
-        if (count($this->parameters) > 0) {
-            $path .= '/' . implode('/', $this->parameters);
+        if (count($this->params) > 0) {
+            $path .= '/' . implode('/', $this->params);
         }
         return $path;
     }

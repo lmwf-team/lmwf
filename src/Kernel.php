@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace LM\WebFramework;
 
 use DI\ContainerBuilder;
-use LM\WebFramework\Configuration\Configuration;
-use LM\WebFramework\Configuration\HttpConf;
+use LM\WebFramework\Conf\AppConf;
+use LM\WebFramework\Conf\HttpConf;
 use LM\WebFramework\ErrorHandling\Log;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
@@ -29,7 +29,7 @@ final class Kernel
         array $runtimeConfig = [],
         ?LoggerInterface $logger = null,
     ): ContainerInterface {
-        $conf = Configuration::createFromEnvFile(
+        $conf = AppConf::createFromEnvFile(
             $projectRootPath,
             $runtimeConfig,
         );
@@ -40,7 +40,7 @@ final class Kernel
         }
         $container = $cb
             ->addDefinitions([
-                Configuration::class => $conf,
+                AppConf::class => $conf,
                 HttpConf::class => $conf->httpConf,
             ])
             ->build()
@@ -55,10 +55,10 @@ final class Kernel
         array $containerDefinitions = [],
         ?LoggerInterface $logger = null,
     ): ContainerInterface {
-        $conf = new Configuration($confData);
+        $conf = new AppConf($confData);
 
         $containerDefinitions += [
-                Configuration::class => $conf,
+                AppConf::class => $conf,
                 HttpConf::class => $conf->httpConf,
         ];
 

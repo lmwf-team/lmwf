@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace LM\WebFramework\Form\Conf;
 
 use Closure;
-use Traversable;
+use LM\WebFramework\Model\Constraints\RangeConstraint;
 use LM\WebFramework\Model\Type\IModel;
+use Traversable;
 
 readonly class FormFieldConf
 {
     /**
-     * @param IModel $model The data model for the field's value.
+     * @param ?IModel $model The data model for the field's value.
      * @param string $label The label to describe to the user the field.
      * @param ?Closure $closure A function to call with the submitted data to
      * set the value of the field in case no value was submitted.
@@ -21,12 +22,14 @@ readonly class FormFieldConf
      * @todo For $values, create struct for items? (with keys 'value' and 'text' or 'label')
      */
     public function __construct(
-        public IModel $model,
+        public ?IModel $model,
         public string $label,
         public ?string $autocomplete,
         public ?Closure $default,
-        public ?bool $isRequired,
-        public ?string $type,
+        public ?string $id,
+        public bool $isRequired,
+        public ?RangeConstraint $rangeConstraint,
+        public FormFieldType $type,
         public null|array|Traversable $values,
     ) {
     }

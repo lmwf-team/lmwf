@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use LM\WebFramework\Configuration\Configuration;
+use LM\WebFramework\Conf\AppConf;
 use PHPUnit\Framework\Attributes\WithoutErrorHandler;
 use PHPUnit\Framework\TestCase;
 
@@ -20,21 +20,21 @@ final class ConfFileTest extends TestCase
     public function testNoDistFile(): void
     {
         $this->expectException(ErrorException::class);
-        Configuration::createFromEnvFile(__DIR__ . "/resources/no_dist_files");
+        AppConf::createFromEnvFile(__DIR__ . "/resources/no_dist_files");
     }
 
     #[WithoutErrorHandler]
     public function testNoFiles(): void
     {
         $this->expectException(ErrorException::class);
-        Configuration::createFromEnvFile(__DIR__ . "/resources/no_files");
+        AppConf::createFromEnvFile(__DIR__ . "/resources/no_files");
     }
 
     #[WithoutErrorHandler]
     public function testEmptyConf(): void
     {
         $this->expectException(ErrorException::class);
-        Configuration::createFromEnvFile(__DIR__ . "/resources/empty_conf");
+        AppConf::createFromEnvFile(__DIR__ . "/resources/empty_conf");
     }
 
     #[WithoutErrorHandler]
@@ -42,7 +42,7 @@ final class ConfFileTest extends TestCase
     {
         $jsonDist = json_decode(file_get_contents(__DIR__ . "/resources/valid_conf/lmwf_app.json"), true, flags: JSON_THROW_ON_ERROR);
         $jsonLocal = json_decode(file_get_contents(__DIR__ . "/resources/valid_conf/.lmwf_app.local.json"), true, flags: JSON_THROW_ON_ERROR);
-        $conf = Configuration::createFromEnvFile(
+        $conf = AppConf::createFromEnvFile(
             __DIR__ . "/resources/valid_conf",
             [
                 'handleExceptions' => true,
@@ -66,7 +66,7 @@ final class ConfFileTest extends TestCase
     public function testValidConf2(): void
     {
         $jsonLocal = json_decode(file_get_contents(__DIR__ . "/resources/valid_conf/.lmwf_app.local.json"), true, flags: JSON_THROW_ON_ERROR);
-        $conf = Configuration::createFromEnvFile(
+        $conf = AppConf::createFromEnvFile(
             __DIR__ . "/resources/valid_conf",
             [
                 'handleExceptions' => true,

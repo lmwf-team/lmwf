@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace LM\WebFramework\Configuration\Exception;
+namespace LM\WebFramework\Conf\Exception;
 
 use OutOfBoundsException;
 
