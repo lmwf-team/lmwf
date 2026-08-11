@@ -14,6 +14,7 @@ use LM\WebFramework\Session\SessionManager;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Throwable;
 
 class HttpRequestHandler
 {
@@ -63,15 +64,20 @@ class HttpRequestHandler
                 ->get($this->configuration->getErrorNotFoundControllerFQCN())
                 ->generateResponse($request, $this->extractRouteParams($request))
             ;
-        }catch (AlreadyAuthenticated) {
+        } catch (AlreadyAuthenticated) {
             return $this->container
                 ->get($this->configuration->getErrorLoggedInControllerFQCN())
                 ->generateResponse($request, $this->extractRouteParams($request))
             ;
-        }catch (AccessDenied) {
+        } catch (AccessDenied) {
             return $this->container
                 ->get($this->configuration->getErrorNotLoggedInControllerFQCN())
                 ->generateResponse($request, $this->extractRouteParams($request))
+            ;
+        } catch (Throwable $t) {
+            return $this->container
+                ->get($this->configuration->getServerErrorControllerFQCN())
+                ->generateResponse($request, array_merge($this->extractRouteParams($request), [$t]))
             ;
         }
     }

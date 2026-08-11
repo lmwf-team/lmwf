@@ -50,6 +50,10 @@ class Configuration
         return $this->env['routes'];
     }
 
+    public function getServerErrorControllerFQCN(): string {
+        return $this->getSetting('serverErrorControllerFQCN');
+    }
+
     public function getSetting(string $key): string {
         return $this->env[$key];
     }
