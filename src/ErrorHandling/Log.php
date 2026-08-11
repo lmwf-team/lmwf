@@ -31,28 +31,28 @@ final class Log
         self::log($msg, LogLevel::DEBUG);
     }
 
-    public static function notice(string $msg)
-    {
-        self::log($msg, LogLevel::NOTICE);
-    }
-
     public static function info(string $msg)
     {
         self::log($msg, LogLevel::INFO);
     }
 
-    public static function warn(string $msg)
-    {
-        self::log($msg, LogLevel::WARNING);
-    }
+    // public static function notice(string $msg)
+    // {
+    //     self::log($msg, LogLevel::NOTICE);
+    // }
+
+    // public static function warn(string $msg)
+    // {
+    //     self::log($msg, LogLevel::WARNING);
+    // }
 
     public static function error(string $msg)
     {
         self::log($msg, LogLevel::ERROR);
     }
 
-    public static function critical(string $msg)
-    {
-        self::log($msg, LogLevel::CRITICAL);
-    }
+    // public static function critical(string $msg)
+    // {
+    //     self::log($msg, LogLevel::CRITICAL);
+    // }
 }
