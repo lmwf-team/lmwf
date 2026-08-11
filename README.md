@@ -41,4 +41,5 @@ interface, e.g. IRouter.
  * Strict typing.
  * Wrap request infomation into immutable object?
  * Hungarian notation?
+ * Implement view inheritance system?
 All the code the PSR-1, PSR-2 and PSR-4.
