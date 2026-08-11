@@ -4,5 +4,9 @@
     "dist": {
         "url": "https://github.com/lmwf-team/lmwf/archive/master.zip",
         "type": "zip"
+    },
+    "dev": {
+        "url": "https://github.com/lmwf-team/lmwf/archive/dev.zip",
+        "type": "zip"
     }
 }
