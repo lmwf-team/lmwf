@@ -8,6 +8,8 @@ use LM\WebFramework\Http\Routing\RouteDef;
 
 final class HttpConf
 {
+    const string NONCE_SPECIFIER = '{NONCE}';
+
     public function __construct(
         public readonly RouteDef $rootRoute,
         public readonly bool $handleExceptions,

@@ -10,6 +10,7 @@ use LM\WebFramework\Configuration\HttpConf;
 use LM\WebFramework\Controller\Exception\AlreadyAuthenticated;
 use LM\WebFramework\Controller\IController;
 use LM\WebFramework\Controller\IRoutedController;
+use LM\WebFramework\Http\Security\CspNonce;
 use LM\WebFramework\Http\HttpRequestHandler;
 use LM\WebFramework\Http\Routing\Route;
 use LM\WebFramework\Http\Routing\RouteDef;
@@ -22,6 +23,7 @@ use Psr\Http\Message\ServerRequestInterface;
 
 final class HttpRequestHandlerTest extends TestCase
 {
+    private CspNonce $cspNonce;
     private HttpRequestHandler $handler;
 
     public function setUp(): void
@@ -44,6 +46,7 @@ final class HttpRequestHandlerTest extends TestCase
                     'default-src' => [
                         "'self'",
                         "example.com",
+                        "{NONCE}"
                     ],
                 ],
                 ResourceNotFoundController::class,
@@ -57,6 +60,7 @@ final class HttpRequestHandlerTest extends TestCase
         // new LoggerConsole(),
 
         $this->handler = $container->get(HttpRequestHandler::class);
+        $this->cspNonce = $container->get(CspNonce::class);
     }
 
     public function testCspHeaders(): void
@@ -70,7 +74,7 @@ final class HttpRequestHandlerTest extends TestCase
         foreach ($absPaths as $p) {
             $request = new ServerRequest('GET', $p);
             $response = $this->handler->generateResponse($request);
-            $this->assertEquals("default-src 'self' example.com;", $response->getHeaderLine('Content-Security-Policy'));
+            $this->assertEquals("default-src 'self' example.com nonce-{$this->cspNonce};", $response->getHeaderLine('Content-Security-Policy'));
         }
     }
 

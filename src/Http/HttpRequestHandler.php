@@ -14,6 +14,7 @@ use LM\WebFramework\Http\Exception\UnsupportedMethodException;
 use LM\WebFramework\Http\Routing\Exception\RouteNotFoundException;
 use LM\WebFramework\Http\Routing\RouteDef;
 use LM\WebFramework\Http\Routing\Router;
+use LM\WebFramework\Http\Security\CspNonce;
 use LM\WebFramework\Session\SessionManager;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -30,6 +31,7 @@ final class HttpRequestHandler
         private HttpConf $conf,
         private Router $router,
         private SessionManager $session,
+        private CspNonce $cspNonce,
     ) {
     }
 
@@ -40,6 +42,7 @@ final class HttpRequestHandler
      * */
     public function respondToOngoingRequest(): void
     {
+        // @todo Kind of a hack
         $request = ServerRequest::fromGlobals();
         $response = $this->generateResponse($request);
         $this->sendResponse($response);
@@ -52,15 +55,15 @@ final class HttpRequestHandler
     {
         if (!$this->conf->handleExceptions) {
             Log::info("Exceptions are not handled by the app.");
-            return $this->generateResponseFromRoute($request);
+            return $this->addCspSources($this->generateResponseFromRoute($request));
         }
 
         Log::info("Exceptions are handled by the app.");
         $serverParamsIfException = [];
         try {
-            return $this->generateResponseFromRoute($request);
+            return $this->addCspSources($this->generateResponseFromRoute($request));
         } catch (Throwable $t) {
-            return $this->generateResponseFromRouteException($request, $t);
+            return $this->addCspSources($this->generateResponseFromRouteException($request, $t));
         }
     }
 
@@ -101,7 +104,7 @@ final class HttpRequestHandler
             [],
         );
 
-        return $this->addCspSources($response);
+        return $response;
     }
 
     public function generateResponseFromRouteException(
@@ -136,7 +139,7 @@ final class HttpRequestHandler
             ],
         );
 
-        return $this->addCspSources($response);
+        return $response;
     }
 
     private function addCspSources(ResponseInterface $response): ResponseInterface
@@ -147,6 +150,9 @@ final class HttpRequestHandler
 
         $cspHeaderValue = '';
         foreach ($this->conf->csp as $directive => $values) {
+            if (in_array(HttpConf::NONCE_SPECIFIER, $values)) {
+                $values = array_map(fn ($value) => HttpConf::NONCE_SPECIFIER === $value ? "'nonce-{$this->cspNonce}'" : $value, $values);
+            }
             $cspHeaderValue .= $directive . ' ' . implode(' ', $values) . ';';
         }
         return $response->withAddedHeader('Content-Security-Policy', $cspHeaderValue);
