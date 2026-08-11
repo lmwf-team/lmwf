@@ -94,7 +94,7 @@ final class FileTransformer implements IFormTransformer
 
             return pathinfo($destinationPath)['basename'];
         } elseif (1 == $file->getError()) {
-            return IUploadedImageConstraint::FILE_TOO_BIG;
+            return IUploadedImageConstraint::FILE_TOO_BIG_ERROR;
         } elseif (4 === $file->getError()) {
             return null;
         } else {
