@@ -40,10 +40,12 @@ final class HttpRequestHandlerTest extends TestCase
                     ],
                 ),
                 true,
-                null,
-                null,
-                null,
-                null,
+                [
+                    'default-src' => [
+                        "'self'",
+                        "example.com",
+                    ],
+                ],
                 ResourceNotFoundController::class,
                 AlreadyAuthenticated::class,
                 ResourceNotFoundController::class,
@@ -57,19 +59,18 @@ final class HttpRequestHandlerTest extends TestCase
         $this->handler = $container->get(HttpRequestHandler::class);
     }
 
-    public function testWithNeverSupportedMethod(): void
+    public function testCspHeaders(): void
     {
-        $neverSupportedMethods = [
-            'CONNECT',
-            'TRACE',
-            'something',
+        $absPaths = [
+            '/my',
+            '/',
+            '',
         ];
 
-        foreach ($neverSupportedMethods as $method) {
-            $request = new ServerRequest($method, '');
+        foreach ($absPaths as $p) {
+            $request = new ServerRequest('GET', $p);
             $response = $this->handler->generateResponse($request);
-            $this->assertEmpty($response->getBody()->__toString());
-            $this->assertEquals(501, $response->getStatusCode());
+            $this->assertEquals("default-src 'self' example.com;", $response->getHeaderLine('Content-Security-Policy'));
         }
     }
 
@@ -85,6 +86,22 @@ final class HttpRequestHandlerTest extends TestCase
             $request = new ServerRequest('GET', $p);
             $response = $this->handler->generateResponse($request);
             $this->assertEquals(200, $response->getStatusCode(), "Expected 200 for {$p}, got {$response->getStatusCode()}.");
+        }
+    }
+
+    public function testWithNeverSupportedMethod(): void
+    {
+        $neverSupportedMethods = [
+            'CONNECT',
+            'TRACE',
+            'something',
+        ];
+
+        foreach ($neverSupportedMethods as $method) {
+            $request = new ServerRequest($method, '');
+            $response = $this->handler->generateResponse($request);
+            $this->assertEmpty($response->getBody()->__toString());
+            $this->assertEquals(501, $response->getStatusCode());
         }
     }
 

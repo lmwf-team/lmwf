@@ -141,20 +141,15 @@ final class HttpRequestHandler
 
     private function addCspSources(ResponseInterface $response): ResponseInterface
     {
-        $cspValues = [];
-        if (null !== $this->conf->cspDefaultSources) {
-            $cspValues[] = "default-src {$this->conf->cspDefaultSources}";
+        if (0 === count($this->conf->csp)) {
+            return $response;
         }
-        if (null !== $this->conf->cspFontSources) {
-            $cspValues[] = "font-src {$this->conf->cspFontSources}";
+
+        $cspHeaderValue = '';
+        foreach ($this->conf->csp as $directive => $values) {
+            $cspHeaderValue .= $directive . ' ' . implode(' ', $values) . ';';
         }
-        if (null !== $this->conf->cspObjectSources) {
-            $cspValues[] = "object-src {$this->conf->cspObjectSources}";
-        }
-        if (null !== $this->conf->cspStyleSources) {
-            $cspValues[] = "style-src {$this->conf->cspStyleSources}";
-        }
-        return $response->withAddedHeader('Content-Security-Policy', implode(';', $cspValues));
+        return $response->withAddedHeader('Content-Security-Policy', $cspHeaderValue);
     }
 
     public function sendResponse(ResponseInterface $response): void

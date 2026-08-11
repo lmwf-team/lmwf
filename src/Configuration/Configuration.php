@@ -100,10 +100,7 @@ final class Configuration
         $this->httpConf = new HttpConf(
             (new RouteDefParser())->parse($confData['rootRoute']),
             $this->handleExceptions,
-            implode(' ', $confData['cspDefaultSources']),
-            implode(' ', $confData['cspFontSources']),
-            implode(' ', $confData['cspObjectSources']),
-            implode(' ', $confData['cspStyleSources']),
+            $confData['csp'],
             $confData['routeError404ControllerFQCN'],
             $confData['routeErrorAlreadyLoggedInControllerFQCN'],
             $confData['routeErrorNotLoggedInControllerFQCN'],

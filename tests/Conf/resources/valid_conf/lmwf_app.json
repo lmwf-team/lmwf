@@ -1,9 +1,6 @@
 {
     "appRootPath": "",
-    "cspDefaultSources": [],
-    "cspFontSources": [],
-    "cspObjectSources": [],
-    "cspStyleSources": [],
+    "csp": [],
     "homeUrl": "",
     "language": "en",
     "publicPath": "",
