@@ -23,6 +23,6 @@ enum FormFieldType: string
                 return $case;
             }
         }
-        throw new OutOfBoundsException();
+        throw new OutOfBoundsException("Cannot find field type matching '$value'.");
     }
 }

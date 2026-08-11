@@ -87,7 +87,7 @@ final class FormFactory
             return new DateTimeTransformer($name);
         }
 
-        throw new DomainException("No transformer found for field with name {$name}.");
+        throw new DomainException("No transformer found for field with name {$name} of type {$fieldConf->type->value}.");
     }
 
     public function createFormTransformer(
