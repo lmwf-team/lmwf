@@ -31,7 +31,9 @@ class SuccessNotice extends TemplateView
 	<body>
 		<?php $this->displayPageHeader($this->title, $this->breadcrumb) ?>
 		<main>
-			<p class="success-notice-content"><?= $this->content ?></p>
+			<div class="main-content-container">
+				<p class="success-notice-content"><?= $this->content ?></p>
+			</div>
 		</main>
 	</body>
 </html>
