@@ -43,7 +43,13 @@ final class SessionManager
 
     public function addMessage(string $message): void
     {
-        isset($_SESSION[self::MESSAGES]) ? $_SESSION[self::MESSAGES][] = $message : $_SESSION[self::MESSAGES] = [$message];
+        if (key_exists(self::MESSAGES, $_SESSION)) {
+            $_SESSION[self::MESSAGES][] = $message;
+        } else {
+            $_SESSION[self::MESSAGES] = [
+                $message,
+            ];
+        }
     }
 
     public function getAndDeleteMessages(): array
