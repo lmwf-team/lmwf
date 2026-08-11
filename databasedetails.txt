@@ -1,2 +1,4 @@
 Database: shift-two_pdm
 MySQL Host: mysql-example.org
+Username: shift-two_pdm
+Password: pompompidou
