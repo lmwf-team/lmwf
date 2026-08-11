@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace LM\WebFramework\Model\Type;
 
+use InvalidArgumentException;
+
 final class ForeignEntityModel extends AbstractModel
 {
     public function __construct(
@@ -12,7 +14,9 @@ final class ForeignEntityModel extends AbstractModel
         private string $referenceKeyInParent,
         bool $isNullable = false,
     ) {
-        // @todo isNullable should be extracted from entityModel?
+        if ($entityModel->isNullable()) {
+            throw new InvalidArgumentException('The entity model of a foreign entity model cannot be nullable.');
+        }
         parent::__construct($isNullable);
     }
 
