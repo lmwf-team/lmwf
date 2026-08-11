@@ -6,6 +6,7 @@ namespace LM\WebFramework\Tests\DataStructures;
 
 use InvalidArgumentException;
 use LM\WebFramework\DataStructures\AppObject;
+use OutOfBoundsException;
 use PHPUnit\Framework\TestCase;
 
 final class AppObjectTest extends TestCase
@@ -33,5 +34,22 @@ final class AppObjectTest extends TestCase
         $this->assertIsList($appObject['items']);
         $this->assertInstanceOf(AppObject::class, $appObject['items'][0]);
         $this->assertInstanceOf(AppObject::class, $appObject['items'][1]);
+    }
+
+    public function testNonExistingProperty(): void
+    {
+        $this->expectException(OutOfBoundsException::class);
+        $appArray = new AppObject([
+            'id' => 4,
+            'items' => [
+                [
+                    'name' => 'Item 1',
+                ],
+                [
+                    'name' => 'Item 2',
+                ],
+            ],
+        ]);
+        $appArray['bro'];
     }
 }

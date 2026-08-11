@@ -70,6 +70,9 @@ final class AppObject implements ArrayAccess, Countable, IteratorAggregate
     public function attributeGet(string $offset): mixed
     {
         $keyName = (new KeyName($offset))->__toString();
+        if (!key_exists($keyName, $this->data)) {
+            throw new OutOfBoundsException('The given property does not belong to this AppObject.');
+        }
         return $this->data[$keyName];
     }
 
@@ -126,7 +129,7 @@ final class AppObject implements ArrayAccess, Countable, IteratorAggregate
 
     public function offsetGet(mixed $offset): mixed
     {
-        return isset($this->data[$offset]) ? $this->data[$offset] : $this->attributeGet($offset);
+        return key_exists($offset, $this->data) ? $this->data[$offset] : $this->attributeGet($offset);
     }
 
     public function offsetSet(mixed $offset, mixed $value): void
