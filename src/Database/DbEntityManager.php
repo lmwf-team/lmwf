@@ -31,7 +31,11 @@ final class DbEntityManager
 {
     const SEP = '_';
 
-    private function isOrdered(array $array): bool {
+    /**
+     * @todo Could be removed? (And array_is_list could be used instead.)
+     */
+    private function isOrdered(array $array): bool
+    {
         return count($array) === count(array_filter($array, fn($key) => is_int($key), ARRAY_FILTER_USE_KEY));
     }
 
@@ -223,9 +227,10 @@ final class DbEntityManager
      * @throws UnexpectedValueException If some of the properties are set to be persisted and are not scalar.
      * @throws InvalidArgumentException If appData is a list.
      */
-    public function toDbValue(mixed $appData, string $prefix = ''): mixed {
+    public function toDbValue(mixed $appData, string $prefix = '', array $ignoreProperties = []): mixed
+    {
         if ($appData instanceof AppObject) {
-            return $this->toDbValue($appData->toArray(), $prefix);
+            return $this->toDbValue($appData->toArray(), $prefix, $ignoreProperties);
         } elseif (is_bool($appData)) {
             return $appData ? 1 : 0;
         } elseif ($appData instanceof DateTimeImmutable) {
@@ -236,12 +241,14 @@ final class DbEntityManager
                 throw new InvalidArgumentException('Not supported.');
             } else {
                 foreach ($appData as $pName => $pValue) {
-                    if (is_array($pValue)) {
-                        if (!$this->isOrdered($pValue)) {
-                            $dbArray += $this->toDbValue($pValue, $pName);
+                    if (!in_array($pName, $ignoreProperties, true)) {
+                        if (is_array($pValue)) {
+                            if (!$this->isOrdered($pValue)) {
+                                $dbArray += $this->toDbValue($pValue, $pName);
+                            }
+                        } else {
+                            $dbArray[$prefix . $pName] = $this->toDbValue($pValue);
                         }
-                    } else {
-                        $dbArray[$prefix . $pName] = $this->toDbValue($pValue);
                     }
                 }
             }

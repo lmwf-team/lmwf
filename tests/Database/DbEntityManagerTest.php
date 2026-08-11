@@ -30,8 +30,6 @@ final class DbEntityManagerTest extends TestCase
 
     public function testScalarTypes(): void
     {
-        
-
         $this->assertTrue($this->em->convertDbScalar(1, new BoolModel()));
         $this->assertFalse($this->em->convertDbScalar(0, new BoolModel()));
         $this->assertNull($this->em->convertDbScalar(null, new BoolModel(isNullable: true)));
@@ -40,6 +38,18 @@ final class DbEntityManagerTest extends TestCase
 
         $date = '2024-07-13';
         $this->assertEquals(new DateTimeImmutable($date), $this->em->convertDbScalar($date, new DateTimeModel()));
+    }
+
+    public function testConversionToDbValue(): void
+    {
+        $appObject = new AppObject([
+            'id' => 0,
+            'name' => 'Georges',
+        ]);
+        $expected = [
+            'name' => 'Georges',
+        ];
+        $this->assertEquals($expected, $this->em->toDbValue($appObject, ignoreProperties: ['id']));
     }
 
     public function testInvalidDbDataException(): void
