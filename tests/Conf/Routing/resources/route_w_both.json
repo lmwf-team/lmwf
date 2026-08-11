@@ -1,5 +1,4 @@
 {
-    "fqcn": "Controller",
     "roles": [
         "ADMIN",
         "VISITOR"

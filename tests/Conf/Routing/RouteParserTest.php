@@ -6,13 +6,11 @@ namespace LM\WebFramework\Tests\Conf\Routing;
 
 use LM\WebFramework\Configuration\RouteDefParser;
 use LM\WebFramework\Http\Routing\Exception\InvalidRouteConfException;
-use LM\WebFramework\Http\Routing\Exception\OnlyChildCannotHaveSiblingsException;
-use LM\WebFramework\Http\Routing\Exception\OnlyChildMustTakeAtLeastOneArgument;
 use LM\WebFramework\Http\Routing\Exception\SubRouteCannotAddRoleConfException;
 use LM\WebFramework\Http\Routing\Exception\UnauthorizedAttributeConfException;
-use LM\WebFramework\Http\Routing\ParameterizedRoute;
-use LM\WebFramework\Http\Routing\ParentRoute;
 use LM\WebFramework\Http\Routing\RouteDef;
+use LM\WebFramework\Http\Routing\RouteConf\ParamRouteConf;
+use LM\WebFramework\Http\Routing\RouteConf\ParentRouteConf;
 use PHPUnit\Framework\TestCase;
 use TypeError;
 
@@ -26,53 +24,37 @@ final class RouteParserTest extends TestCase
 
     public function testParsing(): void
     {
-        $expected = new ParentRoute(
-            "App\Controller\RouteController",
-            roles: ["ADMIN", "VISITOR"],
-            routes: [
-                'test' => new ParentRoute(
-                    "App\Controller\TestController",
-                    ["ADMIN", "VISITOR"],
-                ),
-            ],
-        );
-        $actualRoute = $this->parseJson(__DIR__ . "/resources/route.json");
-        $this->assertEquals($expected, $actualRoute);
+        $homeRouteDef = new RouteDef('HomeController', ["ADMIN", 'VISITOR']);
+        $testRouteDef = new RouteDef("TestController", ["ADMIN", "VISITOR"]);
+        $rootRouteDef = new RouteDef(null, ["ADMIN", "VISITOR"], new ParentRouteConf([
+            '' => $homeRouteDef,
+            'test' => $testRouteDef,
+        ]));
+        $actualRouteDef = $this->parseJson(__DIR__ . "/resources/route.json");
+        $this->assertEquals($rootRouteDef, $actualRouteDef);
     }
 
     public function testParsingWithParams(): void
     {
-        $expected = new ParameterizedRoute("Controller");
+        $expected = new RouteDef('Controller');
         $this->assertEquals($expected, $this->parseJson(__DIR__ . "/resources/route_w_params_0.json"));
         $this->assertEquals($expected, $this->parseJson(__DIR__ . "/resources/route_w_params_1.json"));
         $this->assertEquals($expected, $this->parseJson(__DIR__ . "/resources/route_w_params_2.json"));
 
-        $expected2 = new ParameterizedRoute("Controller", roles: ["VISITOR"], minArgs: 1, maxArgs: 5);
+        $expected2 = new RouteDef("Controller", ["VISITOR"], new ParamRouteConf(1, 5));
         $this->assertEquals($expected2, $this->parseJson(__DIR__ . "/resources/route_w_params_3.json"));
     }
 
     public function testParsingWithBoth(): void
     {
-        $expected = new ParentRoute(
-            "Controller",
+        $expected = new RouteDef(
+            null,
             ["ADMIN", "VISITOR"],
-            routes: [
-                'sub' => new ParameterizedRoute("Controller", roles: ["ADMIN"], minArgs: 0, maxArgs: 3),
-            ],
+            new ParentRouteConf([
+                'sub' => new RouteDef("Controller", ["ADMIN"], new ParamRouteConf(0, 3)),
+            ]),
         );
         $this->assertEquals($expected, $this->parseJson(__DIR__ . "/resources/route_w_both.json"));
-    }
-
-    public function testParsingInvalidOnlyChild0(): void
-    {
-        $this->expectException(OnlyChildCannotHaveSiblingsException::class);
-        $this->parseJson(__DIR__ . "/resources/invalid_only_child_0.json");
-    }
-
-    public function testParsingInvalidOnlyChild1(): void
-    {
-        $this->expectException(OnlyChildMustTakeAtLeastOneArgument::class);
-        $this->parseJson(__DIR__ . "/resources/invalid_only_child_1.json");
     }
 
     public function testParsingInvalidRoute(): void

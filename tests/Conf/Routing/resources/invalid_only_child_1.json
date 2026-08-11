@@ -1,8 +1,0 @@
-{
-    "fqcn": "Controller",
-    "roles": [],
-    "route": {
-        "fqcn": "SubController",
-        "maxArgs": 0
-    }
-}

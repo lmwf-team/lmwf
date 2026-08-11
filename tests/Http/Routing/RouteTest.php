@@ -14,12 +14,6 @@ use DomainException;
 
 final class RouteTest extends TestCase
 {
-    public function createRootRoute(array $routes): Route
-    {
-        $rootRouteDef = new RouteDef(null, conf: new ParentRouteConf($routes));
-        return new Route($rootRouteDef, '');
-    }
-
     public function testInvalidRootRouteWithSeg(): void
     {
         $this->expectException(DomainException::class);
@@ -48,7 +42,7 @@ final class RouteTest extends TestCase
     public function testRootRoute(): void
     {
         $homeRouteDef = new RouteDef(self::class);
-        $rootRoute = $this->createRootRoute(['' => $homeRouteDef]);
+        $rootRoute = Route::createRootRoute(['' => $homeRouteDef]);
         $homeRoute = new Route($homeRouteDef, '', parent: $rootRoute);
         $this->assertSame('', $rootRoute->getPath());
         $this->assertSame('/', $homeRoute->getPath());
@@ -71,7 +65,7 @@ final class RouteTest extends TestCase
             self::class,
             conf: new ParamRouteConf(nArgsLowerLimit: 1, nArgsUpperLimit: 1),
         );
-        $rootRoute = $this->createRootRoute(['' => $homeRouteDef]);
+        $rootRoute = Route::createRootRoute(['' => $homeRouteDef]);
         $homeRoute = new Route($homeRouteDef, '', ['test-param'], parent: $rootRoute);
         $this->assertSame('//test-param', $homeRoute->getPath());
     }
@@ -79,7 +73,7 @@ final class RouteTest extends TestCase
     public function testParentRoute(): void
     {
         $subRouteDef = new RouteDef(self::class);
-        $rootRoute = $this->createRootRoute(['sub' => $subRouteDef]);
+        $rootRoute = Route::createRootRoute(['sub' => $subRouteDef]);
         
         $subRoute = new Route($subRouteDef, 'sub', parent: $rootRoute);
         $this->assertSame('/sub', $subRoute->getPath());
@@ -94,7 +88,7 @@ final class RouteTest extends TestCase
                 'sub2' => $subSubRouteDef,
             ]),
         );
-        $rootRoute = $this->createRootRoute([
+        $rootRoute = Route::createRootRoute([
             'sub1' => $subRouteDef,
         ]);
         
@@ -115,7 +109,7 @@ final class RouteTest extends TestCase
                 '' => $subSub2RouteDef,
             ]),
         );
-        $rootRoute = $this->createRootRoute([
+        $rootRoute = Route::createRootRoute([
             '' => $sub1RouteDef,
             'sub2' => $sub2RouteDef,
         ]);

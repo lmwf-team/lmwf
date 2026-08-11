@@ -24,6 +24,15 @@ use LM\WebFramework\Http\Routing\RouteConf\ParentRouteConf;
 final readonly class Route
 {
     /**
+     * @param array<string, RouteDef>
+     */
+    public static function createRootRoute(array $routes): self
+    {
+        $rootRouteDef = new RouteDef(null, conf: new ParentRouteConf($routes));
+        return new self($rootRouteDef, '');
+    }
+
+    /**
      * @param RouteDef $routeDef The associated route definition.
      * @param string[] $parameters the associated path segments of the path
      * that instantiated the current route. For a parameterised route, only the

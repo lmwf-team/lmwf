@@ -6,7 +6,6 @@ namespace LM\WebFramework\Configuration;
 
 use LM\WebFramework\Configuration\Exception\SettingNotFoundException;
 use LM\WebFramework\Http\Routing\Exception\InvalidRouteConfException;
-use LM\WebFramework\Http\Routing\Exception\OnlyChildCannotHaveSiblingsException;
 use LM\WebFramework\Http\Routing\Exception\SubRouteCannotAddRoleConfException;
 use LM\WebFramework\Http\Routing\Exception\UnauthorizedAttributeConfException;
 use LM\WebFramework\Http\Routing\RouteConf\ParamRouteConf;
@@ -66,37 +65,41 @@ final readonly class RouteDefParser
         }
 
         // Parse FQCN.
-        $fqcn = $this->parseFqcn($route[self::FQCN_KN]);
+        $fqcn = $this->parseFqcn($route, self::FQCN_KN);
 
-        if (key_exists(self::ARGS_MIN_KN, $route) || key_exists(self::ARGS_MAX_KN, $route)) {
-            if (key_exists(self::ROUTES_KN, $route)) {
+        if (key_exists(self::ROUTES_KN, $route)) {
+            if (key_exists(self::ARGS_MIN_KN, $route) || key_exists(self::ARGS_MAX_KN, $route)) {
                 throw new InvalidRouteConfException(self::AMBIGUOUS_DEF_MSG_FMT);
             }
-            $fqcnIfParams = key_exists(self::FQCN_IF_PARAMS_KN, $route) ? $this->parseFqcn($route[self::FQCN_IF_PARAMS_KN]) : null;
+            $routes = [];
+            foreach ($route[self::ROUTES_KN] ?? [] as $subRouteId => $subRoute) {
+                $routes[$subRouteId] = $this->parse($subRoute, $roles);
+            }
             return new RouteDef(
                 $fqcn,
                 $roles,
-                new ParamRouteConf(
-                    $route[self::ARGS_MIN_KN] ?? 0,
-                    $route[self::ARGS_MAX_KN] ?? 0,
-                    $fqcnIfParams,
-                ),
+                new ParentRouteConf($routes),
             );
         }
-
-        $routes = [];
-        foreach ($route[self::ROUTES_KN] ?? [] as $subRouteId => $subRoute) {
-            $routes[$subRouteId] = $this->parse($subRoute, $roles);
-        }
+        
+        $fqcnIfParams = $this->parseFqcn($route, self::FQCN_IF_PARAMS_KN);
         return new RouteDef(
             $fqcn,
             $roles,
-            new ParentRouteConf($routes),
+            new ParamRouteConf(
+                $route[self::ARGS_MIN_KN] ?? 0,
+                $route[self::ARGS_MAX_KN] ?? 0,
+                $fqcnIfParams,
+            ),
         );
     }
 
-    private function parseFqcn(string $fqcn): string
+    private function parseFqcn(array $routeArray, string $key): ?string
     {
-        return str_replace('.', '\\', $fqcn);
+        if (key_exists($key, $routeArray)) {
+            return str_replace('.', '\\', $routeArray[$key]);
+        } else {
+            return null;
+        }
     }
 }
