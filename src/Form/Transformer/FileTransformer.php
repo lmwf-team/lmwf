@@ -136,6 +136,8 @@ final readonly class FileTransformer implements IFormTransformer
                 return IUploadedImageConstraint::FILE_TOO_BIG_ERROR;
 
             case UPLOAD_ERR_NO_FILE:
+                return null;
+                
             case UPLOAD_ERR_CANT_WRITE:
             case UPLOAD_ERR_EXTENSION:
             case UPLOAD_ERR_NO_TMP_DIR:
