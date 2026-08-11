@@ -1,0 +1,13 @@
+includes:
+#    - vendor/spaze/phpstan-disallowed-calls/extension.neon
+#    - vendor/ergebnis/phpstan-rules/rules.neon
+parameters:
+    level: 1
+    paths:
+        - ../../src
+        - ../../tests
+    bootstrapFiles:
+        - ../../vendor/autoload.php
+#    ergebnis:
+#        declareStrictTypes:
+#            enabled: true

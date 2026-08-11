@@ -16,4 +16,4 @@ jobs:
       - uses: ./.github/actions/set-up-repository
 
       - name: Run test suite
-        run: phpunit/run-tests.sh
+        run: vendor/bin/phpunit -c dev/phpunit/phpunit.xml

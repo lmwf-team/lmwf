@@ -1,4 +1,4 @@
-name: Check PHP style
+name: PHPStan
 
 on:
   push:
@@ -8,12 +8,12 @@ permissions:
   contents: read
 
 jobs:
-  php-style-check-jn:
+  phpstan-jn:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - uses: ./.github/actions/set-up-repository
 
-      - name: Run phpcs
-        run: ./check-php-style.sh
+      - name: Run PHPStan
+        run: vendor/bin/phpstan analyse -c dev/phpstan/phpstan.neon -qn --no-progress

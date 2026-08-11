@@ -1,4 +1,4 @@
-name: PHPStan
+name: PHP_CodeSniffer
 
 on:
   push:
@@ -8,16 +8,12 @@ permissions:
   contents: read
 
 jobs:
-  phpunit:
+  php-codesniffer-jn:
     runs-on: ubuntu-latest
     steps:
-      - uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.4'
-
       - uses: actions/checkout@v4
-
+      
       - uses: ./.github/actions/set-up-repository
 
-      - name: Run static analysis
-        run: vendor/bin/phpstan -qn --no-progress
+      - name: Run phpcs
+        run: ./dev/php_codesniffer/php_codesniffer.sh

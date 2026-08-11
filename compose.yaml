@@ -1,25 +1,13 @@
 services:
   lmwf_dsn:
-    build:
-      context: ./docker
+    image: php:8.4-cli
     volumes:
-      - .:/usr/src/myapp
-    tty: true
-    post_start:
-      - command: /usr/local/init.sh
-  phpcs_dsn:
-    build:
-      dockerfile: docker/phpcs/Dockerfile
-    tty: true
-    working_dir: /usr/src/lmwf
+      - .:/app
+    working_dir: /app
+  composer_dsn:
+    image: composer
+    command: composer install
+    depends_on:
+      - lmwf_dsn
     volumes:
-      - ./src:/usr/src/lmwf/src
-      - ./tests:/usr/src/lmwf/tests
-  phpunit_dsn:
-    image: jitesoft/phpunit:8.4
-    command: sleep infinity
-    volumes:
-      - "./phpunit:/app/phpunit"
-      - "./src:/app/src"
-      - "./tests:/app/tests"
-      - "./vendor:/app/vendor"
+      - .:/app
