@@ -34,8 +34,6 @@ final class HttpRequestHandler
      */
     public function generateResponse(ServerRequestInterface $request): ResponseInterface
     {
-        $cspValue = "default-src {$this->configuration->getCSPDefaultSources()}; object-src {$this->configuration->getCSPObjectSources()}";
-        
         $response = null;
         try {
             $response = $this
@@ -60,6 +58,8 @@ final class HttpRequestHandler
                 ->generateResponse($request, $this->extractRouteParams($request))
             ;
         }
+
+        $cspValue = "default-src {$this->configuration->getCSPDefaultSources()}; object-src {$this->configuration->getCSPObjectSources()}; style-src {$this->configuration->getCSPObjectSources()}";
         return $response->withAddedHeader('Content-Security-Policy', $cspValue);
     }
 

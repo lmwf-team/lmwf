@@ -46,11 +46,19 @@ final class Configuration
     }
 
     /**
-     * @return string List of valid CSP origins
+     * @return string List of valid CSP object origins
      */
     public function getCSPObjectSources(): string
     {
         return $this->configData->getAppList('cspObjectSources')->implode(' ');
+    }
+
+    /**
+     * @return string List of valid CSP style origins
+     */
+    public function getCSPStyleSources(): string
+    {
+        return $this->configData->getAppList('cspStyleSources')->implode(' ');
     }
 
     public function getErrorLoggedInControllerFQCN(): string
