@@ -130,7 +130,7 @@ final class HttpRequestHandler
         if (!in_array($request->getMethod(), self::SUPPORTED_METHODS, true)) {
             throw new UnsupportedMethodException();
         }
-        
+
         $route = (new Router())->getRouteFromPath($this->conf->rootRoute, $request->getUri()->getPath());
         Logger::notice("Request matches controller \"{$route->getFqcn()}\".");
         $controller = $this->container->get($route->getFqcn());

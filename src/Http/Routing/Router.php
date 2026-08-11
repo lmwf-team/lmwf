@@ -57,14 +57,14 @@ final readonly class Router
             array_unshift($nextSegs, $currentSeg);
             return new Route($routeDef, $nextSegs, $parentRoute, $nArgs);
         } elseif ($routeDef instanceof ParentRoute) {
+            $route = new Route($routeDef, [$currentSeg], $parentRoute);
             if ([] === $nextSegs) {
-                return new Route($routeDef, [$currentSeg], $parentRoute);
+                return $route;
             }
             $seg = $nextSegs[0];
             if (!key_exists($seg, $routeDef->routes)) {
                 throw new RouteNotFoundException("No child route could be found for segment: {$seg}.");
             }
-            $route = new Route($routeDef, [$seg], $parentRoute);
             return $this->getRouteFromSegs($routeDef->routes[$seg], $route, $seg, array_slice($nextSegs, 1));
         } elseif ($routeDef instanceof OnlyChildParentRouteDef) {
             $relevantSegs = [$currentSeg];

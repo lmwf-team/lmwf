@@ -18,7 +18,7 @@ final class RouteTest extends TestCase
         $routeDef = new ParentRoute(self::class, routes: [
             'sub' => $subRouteDef,
         ]);
-        $route = new Route($routeDef, []);
+        $route = new Route($routeDef, ['']);
         $subRoute = new Route($subRouteDef, ['sub'], $route);
         $this->assertSame('/sub', $subRoute->getPath());
     }
