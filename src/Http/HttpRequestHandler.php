@@ -15,6 +15,8 @@ use LM\WebFramework\Controller\Exception\RequestedRouteNotFound;
 use LM\WebFramework\Http\Error\RoutingError;
 use LM\WebFramework\Http\Exception\UnsupportedMethodException;
 use LM\WebFramework\Http\Routing\Exception\RouteNotFoundException;
+use LM\WebFramework\Http\Routing\ParameterizedRoute;
+use LM\WebFramework\Http\Routing\ParentRoute;
 use LM\WebFramework\Http\Routing\Route;
 use LM\WebFramework\Http\Routing\RouteDefParser;
 use LM\WebFramework\Http\Routing\Router;
@@ -30,7 +32,7 @@ final class HttpRequestHandler
     public const SUPPORTED_METHODS = ['GET', 'HEAD', 'POST', 'READ', 'PUT', 'PATCH', 'OPTIONS', 'DELETE'];
     public const UNEXISTING_ROUTE = 1000;
 
-    private Router $router;
+    private ParameterizedRoute|ParentRoute $rootRoute;
 
     public function __construct(
         private Configuration $conf,
@@ -38,7 +40,7 @@ final class HttpRequestHandler
         private SessionManager $session,
         RouteDefParser $routeParser,
     ) {
-        $this->router = new Router($routeParser->parse($conf->getRoutes()->toArray(), allowOverridingParentRoles: true));
+        $this->rootRoute = $routeParser->parse($conf->getRoutes()->toArray(), allowOverridingParentRoles: true);
     }
 
     public function sendResponse(ResponseInterface $response): void
@@ -137,7 +139,7 @@ final class HttpRequestHandler
         if (!in_array($request->getMethod(), self::SUPPORTED_METHODS, true)) {
             throw new UnsupportedMethodException();
         }
-        $route = $this->router->getRouteFromPath($path);
+        $route = new Router()->getRouteFromPath($this->rootRoute, $path);
         $controller = $this->container->get($route->getFqcn());
 
         // @todo Add real role system

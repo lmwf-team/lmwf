@@ -10,7 +10,7 @@ final readonly class ParentRoute extends RouteDef
 {
     /**
      * @param string[] $roles
-     * @param array<string, self> $routes
+     * @param array<string, ParameterizedRoute|ParentRoute> $routes
      */
     public function __construct(
         string $fqcn,

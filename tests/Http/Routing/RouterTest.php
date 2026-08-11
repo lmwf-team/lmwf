@@ -22,154 +22,190 @@ final class RouterTest extends TestCase
     {
         $routeDef = new ParentRoute(self::class);
         $route = new Route($routeDef);
-        $router = new Router($routeDef);
-        $this->assertEquals($route, $router->getRouteFromPath(''));
-        $this->assertEquals($route, $router->getRouteFromPath('/'));
-        $this->assertEquals($route, $router->getRouteFromPath('//'));
-        $this->assertEquals($route, $router->getRouteFromPath('//'));
+        $router = new Router();
+        $this->assertEquals($route, $router->getRouteFromPath($routeDef, ''));
+        $this->assertEquals($route, $router->getRouteFromPath($routeDef, '/'));
+        $this->assertEquals($route, $router->getRouteFromPath($routeDef, '//'));
+        $this->assertEquals($route, $router->getRouteFromPath($routeDef, '//'));
     }
     
     public function testParameterizedRoute(): void
     {
-        $route = new ParameterizedRoute(self::class, minArgs: 1, maxArgs: 1);
-        $expected = new Route($route, nArgs: 1);
-        $router = new Router($route);
-        $this->assertEquals($expected, $router->getRouteFromPath('test'));
-        $this->assertEquals($expected, $router->getRouteFromPath('/test'));
-        $this->assertEquals($expected, $router->getRouteFromPath('//test'));
-        $this->assertEquals($expected, $router->getRouteFromPath('test/'));
-        $this->assertEquals($expected, $router->getRouteFromPath('/test/'));
-        $this->assertEquals($expected, $router->getRouteFromPath('//test/'));
-        $this->assertEquals($expected, $router->getRouteFromPath('test//'));
-        $this->assertEquals($expected, $router->getRouteFromPath('/test//'));
-        $this->assertEquals($expected, $router->getRouteFromPath('//test//'));
+        $routeDef = new ParameterizedRoute(self::class, minArgs: 1, maxArgs: 1);
+        $expected = new Route($routeDef, nArgs: 1);
+        $router = new Router();
+        $this->assertEquals($expected, $router->getRouteFromPath($routeDef, 'test'));
+        $this->assertEquals($expected, $router->getRouteFromPath($routeDef, '/test'));
+        $this->assertEquals($expected, $router->getRouteFromPath($routeDef, '//test'));
+        $this->assertEquals($expected, $router->getRouteFromPath($routeDef, 'test/'));
+        $this->assertEquals($expected, $router->getRouteFromPath($routeDef, '/test/'));
+        $this->assertEquals($expected, $router->getRouteFromPath($routeDef, '//test/'));
+        $this->assertEquals($expected, $router->getRouteFromPath($routeDef, 'test//'));
+        $this->assertEquals($expected, $router->getRouteFromPath($routeDef, '/test//'));
+        $this->assertEquals($expected, $router->getRouteFromPath($routeDef, '//test//'));
     }
     
     public function testParameterizedRouteWithBadParams0(): void
     {
-        $route = new ParameterizedRoute(self::class, minArgs: 1, maxArgs: 1);
-        $router = new Router($route);
+        $routeDef = new ParameterizedRoute(self::class, minArgs: 1, maxArgs: 1);
+        $router = new Router();
 
         $this->expectException(RouteNotFoundException::class);
-        $router->getRouteFromPath('');
+        $router->getRouteFromPath($routeDef, '');
     }
     
     public function testParameterizedRouteWithBadParams1(): void
     {
-        $route = new ParameterizedRoute(self::class, minArgs: 1, maxArgs: 1);
-        $router = new Router($route);
+        $routeDef = new ParameterizedRoute(self::class, minArgs: 1, maxArgs: 1);
+        $router = new Router();
 
         $this->expectException(RouteNotFoundException::class);
-        $router->getRouteFromPath('/');
+        $router->getRouteFromPath($routeDef, '/');
     }
     
     public function testParameterizedRouteWithBadParams2(): void
     {
-        $route = new ParameterizedRoute(self::class, minArgs: 1, maxArgs: 1);
-        $router = new Router($route);
+        $routeDef = new ParameterizedRoute(self::class, minArgs: 1, maxArgs: 1);
+        $router = new Router();
 
         $this->expectException(RouteNotFoundException::class);
-        $router->getRouteFromPath('//');
+        $router->getRouteFromPath($routeDef, '//');
     }
     
     public function testParameterizedRouteWithBadParams3(): void
     {
-        $route = new ParameterizedRoute(self::class, minArgs: 1, maxArgs: 1);
-        $router = new Router($route);
+        $routeDef = new ParameterizedRoute(self::class, minArgs: 1, maxArgs: 1);
+        $router = new Router();
 
         $this->expectException(RouteNotFoundException::class);
-        $router->getRouteFromPath('test/prout');
+        $router->getRouteFromPath($routeDef, 'test/prout');
     }
     
     public function testParameterizedRouteWithBadParams4(): void
     {
-        $route = new ParameterizedRoute(self::class, minArgs: 1, maxArgs: 1);
-        $router = new Router($route);
+        $routeDef = new ParameterizedRoute(self::class, minArgs: 1, maxArgs: 1);
+        $router = new Router();
 
         $this->expectException(RouteNotFoundException::class);
-        $router->getRouteFromPath('/test/prout');
+        $router->getRouteFromPath($routeDef, '/test/prout');
     }
     
     public function testParameterizedRouteWithBadParams5(): void
     {
-        $route = new ParameterizedRoute(self::class, minArgs: 1, maxArgs: 1);
-        $router = new Router($route);
+        $routeDef = new ParameterizedRoute(self::class, minArgs: 1, maxArgs: 1);
+        $router = new Router();
 
         $this->expectException(RouteNotFoundException::class);
-        $router->getRouteFromPath('//test/prout');
+        $router->getRouteFromPath($routeDef, '//test/prout');
     }
     
     public function testParameterizedRouteWithBadParams6(): void
     {
-        $route = new ParameterizedRoute(self::class, minArgs: 1, maxArgs: 1);
-        $router = new Router($route);
+        $routeDef = new ParameterizedRoute(self::class, minArgs: 1, maxArgs: 1);
+        $router = new Router();
 
         $this->expectException(RouteNotFoundException::class);
-        $router->getRouteFromPath('/test/prout/');
+        $router->getRouteFromPath($routeDef, '/test/prout/');
     }
     
     public function testParameterizedRouteWithBadParams7(): void
     {
-        $route = new ParameterizedRoute(self::class, minArgs: 1, maxArgs: 1);
-        $router = new Router($route);
+        $routeDef = new ParameterizedRoute(self::class, minArgs: 1, maxArgs: 1);
+        $router = new Router();
 
         $this->expectException(RouteNotFoundException::class);
-        $router->getRouteFromPath('/test/prout//');
+        $router->getRouteFromPath($routeDef, '/test/prout//');
     }
     
     public function testNonExistingRoute(): void
     {
-        $route = new ParentRoute(self::class, routes: []);
-        $router = new Router($route);
+        $routeDef = new ParentRoute(self::class, routes: []);
+        $router = new Router();
         $this->expectException(RouteNotFoundException::class);
-        $router->getRouteFromPath('test');
-        $router->getRouteFromPath('/test');
+        $router->getRouteFromPath($routeDef, 'test');
+        $router->getRouteFromPath($routeDef, '/test');
     }
 
     public function testSubRoute(): void
     {
         $subsubRouteDef = new ParentRoute(self::class);
         $subsubRoute = new Route($subsubRouteDef);
-        $subRouteDef = new ParentRoute(self::class, routes: ['sub' => $subsubRouteDef]);
+        $subsubRouteDef2 = new ParameterizedRoute(self::class, maxArgs: 3);
+        $subsubRoute2 = new Route($subsubRouteDef2, nArgs: 2);
+        $subRouteDef = new ParentRoute(
+            self::class,
+            routes: [
+                'sub' => $subsubRouteDef,
+                'sub2' => $subsubRouteDef2,
+            ],
+        );
         $subRoute = new Route($subRouteDef);
-        $route = new ParentRoute(self::class, routes: ['test' => $subRouteDef]);
-        $router = new Router($route);
-        $this->assertEquals($subRoute, $router->getRouteFromPath('test'));
-        $this->assertEquals($subRoute, $router->getRouteFromPath('test/'));
-        $this->assertEquals($subRoute, $router->getRouteFromPath('test//'));
-        $this->assertEquals($subRoute, $router->getRouteFromPath('/test'));
-        $this->assertEquals($subRoute, $router->getRouteFromPath('/test/'));
-        $this->assertEquals($subRoute, $router->getRouteFromPath('/test//'));
-        $this->assertEquals($subRoute, $router->getRouteFromPath('//test'));
-        $this->assertEquals($subRoute, $router->getRouteFromPath('//test/'));
-        $this->assertEquals($subRoute, $router->getRouteFromPath('//test//'));
-        $this->assertEquals($subsubRoute, $router->getRouteFromPath('test/sub'));
-        $this->assertEquals($subsubRoute, $router->getRouteFromPath('test/sub/'));
-        $this->assertEquals($subsubRoute, $router->getRouteFromPath('test/sub//'));
-        $this->assertEquals($subsubRoute, $router->getRouteFromPath('/test/sub'));
-        $this->assertEquals($subsubRoute, $router->getRouteFromPath('/test/sub/'));
-        $this->assertEquals($subsubRoute, $router->getRouteFromPath('/test/sub//'));
-        $this->assertEquals($subsubRoute, $router->getRouteFromPath('//test/sub'));
-        $this->assertEquals($subsubRoute, $router->getRouteFromPath('//test/sub/'));
-        $this->assertEquals($subsubRoute, $router->getRouteFromPath('//test/sub//'));
-        $this->assertEquals($subsubRoute, $router->getRouteFromPath('test//sub'));
-        $this->assertEquals($subsubRoute, $router->getRouteFromPath('test//sub/'));
-        $this->assertEquals($subsubRoute, $router->getRouteFromPath('test//sub//'));
-        $this->assertEquals($subsubRoute, $router->getRouteFromPath('/test//sub'));
-        $this->assertEquals($subsubRoute, $router->getRouteFromPath('/test//sub/'));
-        $this->assertEquals($subsubRoute, $router->getRouteFromPath('/test//sub//'));
-        $this->assertEquals($subsubRoute, $router->getRouteFromPath('//test//sub'));
-        $this->assertEquals($subsubRoute, $router->getRouteFromPath('//test//sub/'));
-        $this->assertEquals($subsubRoute, $router->getRouteFromPath('//test//sub//'));
-        $this->assertEquals($subsubRoute, $router->getRouteFromPath('test///sub'));
-        $this->assertEquals($subsubRoute, $router->getRouteFromPath('test///sub/'));
-        $this->assertEquals($subsubRoute, $router->getRouteFromPath('test///sub//'));
-        $this->assertEquals($subsubRoute, $router->getRouteFromPath('/test///sub'));
-        $this->assertEquals($subsubRoute, $router->getRouteFromPath('/test///sub/'));
-        $this->assertEquals($subsubRoute, $router->getRouteFromPath('/test///sub//'));
-        $this->assertEquals($subsubRoute, $router->getRouteFromPath('//test///sub'));
-        $this->assertEquals($subsubRoute, $router->getRouteFromPath('//test///sub/'));
-        $this->assertEquals($subsubRoute, $router->getRouteFromPath('//test///sub//'));
+        $routeDef = new ParentRoute(self::class, routes: ['test' => $subRouteDef]);
+        $router = new Router();
+        $this->assertEquals($subRoute, $router->getRouteFromPath($routeDef, 'test'));
+        $this->assertEquals($subRoute, $router->getRouteFromPath($routeDef, 'test/'));
+        $this->assertEquals($subRoute, $router->getRouteFromPath($routeDef, 'test//'));
+        $this->assertEquals($subRoute, $router->getRouteFromPath($routeDef, '/test'));
+        $this->assertEquals($subRoute, $router->getRouteFromPath($routeDef, '/test/'));
+        $this->assertEquals($subRoute, $router->getRouteFromPath($routeDef, '/test//'));
+        $this->assertEquals($subRoute, $router->getRouteFromPath($routeDef, '//test'));
+        $this->assertEquals($subRoute, $router->getRouteFromPath($routeDef, '//test/'));
+        $this->assertEquals($subRoute, $router->getRouteFromPath($routeDef, '//test//'));
+        $this->assertEquals($subsubRoute, $router->getRouteFromPath($routeDef, 'test/sub'));
+        $this->assertEquals($subsubRoute, $router->getRouteFromPath($routeDef, 'test/sub/'));
+        $this->assertEquals($subsubRoute, $router->getRouteFromPath($routeDef, 'test/sub//'));
+        $this->assertEquals($subsubRoute, $router->getRouteFromPath($routeDef, '/test/sub'));
+        $this->assertEquals($subsubRoute, $router->getRouteFromPath($routeDef, '/test/sub/'));
+        $this->assertEquals($subsubRoute, $router->getRouteFromPath($routeDef, '/test/sub//'));
+        $this->assertEquals($subsubRoute, $router->getRouteFromPath($routeDef, '//test/sub'));
+        $this->assertEquals($subsubRoute, $router->getRouteFromPath($routeDef, '//test/sub/'));
+        $this->assertEquals($subsubRoute, $router->getRouteFromPath($routeDef, '//test/sub//'));
+        $this->assertEquals($subsubRoute, $router->getRouteFromPath($routeDef, 'test//sub'));
+        $this->assertEquals($subsubRoute, $router->getRouteFromPath($routeDef, 'test//sub/'));
+        $this->assertEquals($subsubRoute, $router->getRouteFromPath($routeDef, 'test//sub//'));
+        $this->assertEquals($subsubRoute, $router->getRouteFromPath($routeDef, '/test//sub'));
+        $this->assertEquals($subsubRoute, $router->getRouteFromPath($routeDef, '/test//sub/'));
+        $this->assertEquals($subsubRoute, $router->getRouteFromPath($routeDef, '/test//sub//'));
+        $this->assertEquals($subsubRoute, $router->getRouteFromPath($routeDef, '//test//sub'));
+        $this->assertEquals($subsubRoute, $router->getRouteFromPath($routeDef, '//test//sub/'));
+        $this->assertEquals($subsubRoute, $router->getRouteFromPath($routeDef, '//test//sub//'));
+        $this->assertEquals($subsubRoute, $router->getRouteFromPath($routeDef, 'test///sub'));
+        $this->assertEquals($subsubRoute, $router->getRouteFromPath($routeDef, 'test///sub/'));
+        $this->assertEquals($subsubRoute, $router->getRouteFromPath($routeDef, 'test///sub//'));
+        $this->assertEquals($subsubRoute, $router->getRouteFromPath($routeDef, '/test///sub'));
+        $this->assertEquals($subsubRoute, $router->getRouteFromPath($routeDef, '/test///sub/'));
+        $this->assertEquals($subsubRoute, $router->getRouteFromPath($routeDef, '/test///sub//'));
+        $this->assertEquals($subsubRoute, $router->getRouteFromPath($routeDef, '//test///sub'));
+        $this->assertEquals($subsubRoute, $router->getRouteFromPath($routeDef, '//test///sub/'));
+        $this->assertEquals($subsubRoute, $router->getRouteFromPath($routeDef, '//test///sub//'));
+
+        $this->assertEquals($subsubRoute2, $router->getRouteFromPath($routeDef, 'test/sub2/param1/param2'));
+        $this->assertEquals($subsubRoute2, $router->getRouteFromPath($routeDef, 'test/sub2/param1/param2/'));
+        $this->assertEquals($subsubRoute2, $router->getRouteFromPath($routeDef, 'test/sub2/param1/param2//'));
+        $this->assertEquals($subsubRoute2, $router->getRouteFromPath($routeDef, '/test/sub2/param1/param2'));
+        $this->assertEquals($subsubRoute2, $router->getRouteFromPath($routeDef, '/test/sub2/param1/param2/'));
+        $this->assertEquals($subsubRoute2, $router->getRouteFromPath($routeDef, '/test/sub2/param1/param2//'));
+        $this->assertEquals($subsubRoute2, $router->getRouteFromPath($routeDef, '//test/sub2/param1/param2'));
+        $this->assertEquals($subsubRoute2, $router->getRouteFromPath($routeDef, '//test/sub2/param1/param2/'));
+        $this->assertEquals($subsubRoute2, $router->getRouteFromPath($routeDef, '//test/sub2/param1/param2//'));
+        $this->assertEquals($subsubRoute2, $router->getRouteFromPath($routeDef, 'test//sub2/param1/param2'));
+        $this->assertEquals($subsubRoute2, $router->getRouteFromPath($routeDef, 'test//sub2/param1/param2/'));
+        $this->assertEquals($subsubRoute2, $router->getRouteFromPath($routeDef, 'test//sub2/param1/param2//'));
+        $this->assertEquals($subsubRoute2, $router->getRouteFromPath($routeDef, '/test//sub2/param1/param2'));
+        $this->assertEquals($subsubRoute2, $router->getRouteFromPath($routeDef, '/test//sub2/param1/param2/'));
+        $this->assertEquals($subsubRoute2, $router->getRouteFromPath($routeDef, '/test//sub2/param1/param2//'));
+        $this->assertEquals($subsubRoute2, $router->getRouteFromPath($routeDef, '//test//sub2/param1/param2'));
+        $this->assertEquals($subsubRoute2, $router->getRouteFromPath($routeDef, '//test//sub2/param1/param2/'));
+        $this->assertEquals($subsubRoute2, $router->getRouteFromPath($routeDef, '//test//sub2/param1/param2//'));
+        $this->assertEquals($subsubRoute2, $router->getRouteFromPath($routeDef, 'test///sub2/param1/param2'));
+        $this->assertEquals($subsubRoute2, $router->getRouteFromPath($routeDef, 'test///sub2/param1/param2/'));
+        $this->assertEquals($subsubRoute2, $router->getRouteFromPath($routeDef, 'test///sub2/param1/param2//'));
+        $this->assertEquals($subsubRoute2, $router->getRouteFromPath($routeDef, '/test///sub2/param1/param2'));
+        $this->assertEquals($subsubRoute2, $router->getRouteFromPath($routeDef, '/test///sub2/param1/param2/'));
+        $this->assertEquals($subsubRoute2, $router->getRouteFromPath($routeDef, '/test///sub2/param1/param2//'));
+        $this->assertEquals($subsubRoute2, $router->getRouteFromPath($routeDef, '//test///sub2/param1/param2'));
+        $this->assertEquals($subsubRoute2, $router->getRouteFromPath($routeDef, '//test///sub2/param1/param2/'));
+        $this->assertEquals($subsubRoute2, $router->getRouteFromPath($routeDef, '//test///sub2/param1/param2//'));
     }
 
     // public function testFindController(): void
