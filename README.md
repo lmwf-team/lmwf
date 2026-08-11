@@ -6,6 +6,10 @@
 
 Lightweight web framework that doesn’t require tons of dependencies and keeps you in control.
 
+# Security
+
+ - Deactivate `display_errors` and `display_warnings`. `lmwf` does not take care of that for you.
+
 ## TODO
 
  - Check test coverage

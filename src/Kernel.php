@@ -21,6 +21,7 @@ final class Kernel
     public static function initialize(
         string $projectRootPath,
         string $language,
+        array $runtimeConfig = [],
     ): ?ContainerInterface {
 
         if (self::CLI_ID !== php_sapi_name()) {
@@ -29,7 +30,11 @@ final class Kernel
             set_error_handler(self::getFailProofExceptionHandler());
         }
 
-        $config = self::createConfiguration($projectRootPath, $language);
+        $config = self::createConfiguration(
+            $projectRootPath,
+            $language,
+            $runtimeConfig,
+        );
         
         $cb = (new ContainerBuilder());
         if (!$config->isDev()) {
@@ -67,38 +72,22 @@ final class Kernel
             set_exception_handler(
                 function (Throwable $exception) use ($config, $container, $request)
                 {
-                    $throwExceptionRegardless= false;
-                    try {
-                        if (null !== $config->getLoggerFqcn()) {
-                            $container->get($config->getLoggerFqcn())->log($exception);
-                        }
-                        
-                        if ($config->isDev()) {
-                            $throwExceptionRegardless = true;
-                            throw $exception;
-                        } else {
-                            try {
-                                $response = $container->get(HttpRequestHandler::class)->generateErrorResponse($request, $exception);
-                                self::sendResponse($response);
-                            } catch (Throwable $t) {
-                                $container->get($config->getLoggerFqcn())->log($t);
-                                throw $t;
-                            }
-                        }
-                        exit();
-                    } catch (Throwable $t) {
-                        if ($throwExceptionRegardless) {
+                    if (null !== $config->getLoggerFqcn()) {
+                        $container->get($config->getLoggerFqcn())->log($exception);
+                    }
+                    
+                    if ($config->isDev()) {
+                        throw $exception;
+                    } else {
+                        try {
+                            $response = $container->get(HttpRequestHandler::class)->generateErrorResponse($request, $exception);
+                            self::sendResponse($response);
+                        } catch (Throwable $t) {
+                            $container->get($config->getLoggerFqcn())->log($t);
                             throw $t;
-                        } else {
-                            echo("An error just happened.");
-                            self::getFailProofErrorHandler()(
-                                $t->getCode(),
-                                $t->getMessage(),
-                                $t->getFile(),
-                                $t->getLine(),
-                            );
                         }
                     }
+                    exit();
                 }
             );
 
@@ -113,11 +102,14 @@ final class Kernel
     /**
      * @todo Add JSON_THROW_ON_ERROR everywhere, and automatically check its presence.
      */
-    public static function createConfiguration(string $configFolderPath, string $language): Configuration
-    {
+    public static function createConfiguration(
+        string $configFolderPath,
+        string $language,
+        array $configData = [],
+    ): Configuration {
         $env = file_get_contents("$configFolderPath/.env.json");
         $envLocal = file_get_contents("$configFolderPath/.env.json.local");
-        $configData = false !== $envLocal ? json_decode($envLocal, true, flags: JSON_THROW_ON_ERROR) : [];
+        $configData += false !== $envLocal ? json_decode($envLocal, true, flags: JSON_THROW_ON_ERROR) : [];
         $configData += false !== $env ? json_decode($env, true, flags: JSON_THROW_ON_ERROR) : [];
         $configData = (new CollectionFactory())->createDeepAppObject($configData);
 
