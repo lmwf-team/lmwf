@@ -1,9 +1,9 @@
 <?php
 
-namespace LM;
+namespace LM\WebFramework;
 
-use LM\Controller\IPageController;
-use LM\Controller\HomeController;
+use LM\WebFramework\Controller\IPageController;
+use LM\PersonalDataManager\Controller\HomeController;
 
 class Router
 {

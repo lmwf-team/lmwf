@@ -1,8 +1,9 @@
 <?php
 
-namespace LM\Controller;
+namespace LM\PersonalDataManager\Controller;
 
-use LM\View\HomeView;
+use LM\PersonalDataManager\View\HomeView;
+use LM\WebFramework\Controller\IPageController;
 
 class HomeController implements IPageController
 {

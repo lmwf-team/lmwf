@@ -15,7 +15,7 @@ require_once(PDM_FUNCTIONS . 'autoLoadClass.php');
 spl_autoload_register( autoLoadClass );
 
 // Request processing
-$router = new LM\Router;
+$router = new LM\WebFramework\Router;
 $controller = $router->getControllerFromRequest();
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {

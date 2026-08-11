@@ -1,6 +1,8 @@
 <?php
 
-namespace LM\View;
+namespace LM\PersonalDataManager\View;
+
+use LM\WebFramework\View\IView;
 
 class HomeView implements IView
 {

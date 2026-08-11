@@ -1,6 +1,6 @@
 <?php
 
-namespace LM\View;
+namespace LM\WebFramework\View;
 
 interface IView
 {
