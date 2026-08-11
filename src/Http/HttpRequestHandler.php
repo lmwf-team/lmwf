@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace LM\WebFramework\Http;
 
-use GuzzleHttp\Psr7\ServerRequest;
 use LM\WebFramework\AccessControl\Clearance;
 use LM\WebFramework\Configuration;
 use LM\WebFramework\Controller\Exception\AccessDenied;
@@ -15,6 +14,7 @@ use LM\WebFramework\Controller\IResponseGenerator;
 use LM\WebFramework\Logging\Logger;
 use LM\WebFramework\Session\SessionManager;
 use Psr\Container\ContainerInterface;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
 
@@ -29,31 +29,18 @@ final class HttpRequestHandler
     }
 
     /**
-     * Handles the entire process of responding to an HTTP request with an HTTP
-     * response.
-     * 
-     * Start the session, instantiate a request object from the PHP globals,
-     * pass it to various methods and send back the resulting response and
-     * headers.
+     * Handles the entire process of responding to an HTTP request and return an
+     * HTTP response.
      */
-    public function processRequest(): void
-    {   
-        session_start();
-
-        $request = ServerRequest::fromGlobals();
-
-        $controller = $this->findController($request);
-
-        $response = $controller->generateResponse($request, $this->extractRouteParams($request));
-
-        header("Content-Security-Policy: default-src {$this->configuration->getCSPDefaultSources()}; object-src {$this->configuration->getCSPObjectSources()}");
-
-        if (302 === $response->getStatusCode()) {
-            header('Location: ' . $response->getHeaderLine('Location'));
-        } else {
-            http_response_code($response->getStatusCode());
-            echo $response->getBody()->__toString(); 
-        }
+    public function generateResponse(ServerRequestInterface $request): ResponseInterface
+    {
+        $cspValue = "default-src {$this->configuration->getCSPDefaultSources()}; object-src {$this->configuration->getCSPObjectSources()}";
+        
+        return $this
+            ->findController($request)
+            ->generateResponse($request, $this->extractRouteParams($request))
+            ->withAddedHeader('Content-Security-Policy', $cspValue)
+        ;
     }
 
     /**

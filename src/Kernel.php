@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace LM\WebFramework;
 
 use DI\ContainerBuilder;
+use GuzzleHttp\Psr7\ServerRequest;
 use LM\WebFramework\Http\HttpRequestHandler;
 use Psr\Container\ContainerInterface;
 use RuntimeException;
@@ -36,7 +37,20 @@ final class Kernel
         if (self::CLI_ID === php_sapi_name()) {
             return $container;
         } else {
-            $container->get(HttpRequestHandler::class)->processRequest();
+            $request = ServerRequest::fromGlobals();
+
+            $response = $container->get(HttpRequestHandler::class)->generateResponse($request);
+
+            session_start();
+
+            http_response_code($response->getStatusCode());
+
+            foreach ($response->getHeaders() as $headerName => $headerValues) {
+                header($headerName . ': ' . implode(', ', $headerValues));
+            };
+
+            echo $response->getBody()->__toString(); 
+
             return null;
         }
     }
