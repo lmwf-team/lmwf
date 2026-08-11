@@ -10,6 +10,7 @@ use LM\WebFramework\Conf\HttpConf;
 use LM\WebFramework\ErrorHandling\Log;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
+use ErrorException;
 
 /**
  * Initialises the Dependency Injection container, the configuration as well as
@@ -46,6 +47,7 @@ final class Kernel
             ->build()
         ;
         Log::init($logger);
+        self::initErrorHandler();
 
         return $container;
     }
@@ -68,6 +70,7 @@ final class Kernel
             ->build()
         ;
         Log::init($logger);
+        self::initErrorHandler();
 
         return $container;
     }
@@ -82,7 +85,20 @@ final class Kernel
             ->build()
         ;
         Log::init($logger);
+        self::initErrorHandler();
 
         return $container;
+    }
+
+    private static function initErrorHandler(): void
+    {
+        set_error_handler(function (
+            int $severity,
+            string $message,
+            string $file,
+            int $line
+        ): bool {
+            throw new ErrorException($message, 0, $severity, $file, $line);
+        });
     }
 }
