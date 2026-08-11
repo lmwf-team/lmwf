@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace LM\WebFramework\Form\Conf;
 
+use Closure;
 use DomainException;
 use InvalidArgumentException;
 use LM\WebFramework\DataStructures\Slug;
@@ -25,8 +26,7 @@ readonly class FormConfFactory
     public const ACCEPT_KN = 'accept';
     public const AUTOCOMPLETE_KN = 'autocomplete';
     public const DEFAULT_KN = 'default';
-    public const DERIVE_KN = 'derive';
-    public const DERIVE_SLUG_KN = 'slug';
+    public const DEFAULT_SLUG_KN = 'slug';
     public const ID_KN = 'id';
     public const IGNORE_KN = 'ignore';
     public const LABEL_KN = 'label';
@@ -56,8 +56,8 @@ readonly class FormConfFactory
 
     private function createFormFieldConf(?IModel $model, array $fieldConfParams): FormFieldConf
     {
-        $defaultFn = $fieldConfParams[self::DEFAULT_KN] ?? null;
-        $isRequired = $fieldConfParams[self::REQUIRED_KN] ?? !$model?->isNullable() ?? true;
+        $defaultFn = key_exists(self::DEFAULT_KN, $fieldConfParams) ? $this->getCallback($fieldConfParams[self::DEFAULT_KN]) : null;
+        $isRequired = null !== $defaultFn ? false : $fieldConfParams[self::REQUIRED_KN] ?? !$model?->isNullable() ?? true;
 
         $rangeConstraint = null;
         if ($model instanceof ILengthModel and null !== $model->getRangeConstraint()) {
@@ -77,6 +77,17 @@ readonly class FormConfFactory
             $type,
             $fieldConfParams[self::VALUES_KN] ?? null,
         );
+    }
+
+    private function getCallback(array|Closure $callbackConf): Closure
+    {
+        if ($callbackConf instanceof Closure) {
+            return $callbackConf;
+        }
+        $slugCallbackConf = $callbackConf[self::DEFAULT_SLUG_KN];
+        return function ($values) use ($slugCallbackConf) {
+            return null !== $values[$slugCallbackConf] ? (new Slug($values[$slugCallbackConf], true))->__toString() : null;
+        };
     }
 
     private function getTypeFromModel(IModel $model): FormFieldType

@@ -42,15 +42,20 @@ final class ArrayTransformer implements IFormTransformer
         }
 
         $formData = [];
-        foreach ($this->fieldTransformers as $key => $transformer) {
-            $formData[$key] = $transformer->transformSubmittedData(
+        $nullFieldNames = [];
+        foreach ($this->fieldTransformers as $fieldName => $fieldTransformer) {
+            $formData[$fieldName] = $fieldTransformer->transformSubmittedData(
                 $relevantParsedBody,
                 $uploadedFiles,
             );
+            if (null === $formData[$fieldName]) {
+                $nullFieldNames[] = $fieldName;
+            }
         }
-        foreach ($formData as $key => $value) {
-            if (null === $value && key_exists($key, $this->fieldDefaults)) {
-                $formData[$key] = $this->fieldDefaults[$key]($formData);
+        foreach ($nullFieldNames as $fieldName) {
+            $fieldDefaultFn = $this->fieldDefaults[$fieldName];
+            if (null !== $fieldDefaultFn) {
+                $formData[$fieldName] = $fieldDefaultFn($formData);
             }
         }
         if (null !== $this->csrf) {

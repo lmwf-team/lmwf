@@ -97,15 +97,13 @@ final class FormFactory
     ): ArrayTransformer {
         $fieldTransformers = [];
         $fieldDefaults = [];
-        foreach ($formConf as $key => $fieldConf) {
-            $fieldTransformers[$key] = $this->createTransformer(
+        foreach ($formConf as $fieldName => $fieldConf) {
+            $fieldTransformers[$fieldName] = $this->createTransformer(
                 $fieldConf,
-                $key,
+                $fieldName,
                 false,
             );
-            if (null !== $fieldConf->default) {
-                $fieldDefaults[$key] = $fieldConf->default;
-            }
+            $fieldDefaults[$fieldName] = $fieldConf->default;
         }
         return new ArrayTransformer(
             $fieldTransformers,
