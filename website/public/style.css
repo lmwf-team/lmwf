@@ -90,3 +90,23 @@ label {
 input[type=submit] {
     display: block;
 }
+
+/**
+ * Notices
+ */
+
+.success-notice-content {
+    background: #e80000;
+    color: #005400;
+    font-weight: 700;
+    padding: 1rem;
+    font-size: 2rem;
+}
+
+.success-notice-content {
+    background: #00e800;
+    color: #540000;
+    font-weight: 700;
+    padding: 1rem;
+    font-size: 2rem;
+}

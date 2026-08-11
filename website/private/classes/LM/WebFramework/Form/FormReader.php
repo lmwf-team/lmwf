@@ -7,6 +7,7 @@ use \LM\Model\Password;
 
 class FormReader
 {
+	private $generalErrors;
 	private $errors;
 	private $passwords;
 	private $postData;
@@ -15,9 +16,15 @@ class FormReader
 	public function __construct(array $postData)
 	{
 		$this->errors = array();
+		$this->generalErrors = array();
 		$this->passwords = array();
 		$this->postData = $postData;
 		$this->usernames = array();
+	}
+
+	public function addGeneralError(string $error): void
+	{
+		$this->generalErrors[] = $error;
 	}
 
 	public function readUsername(string $fieldName): void
@@ -43,6 +50,11 @@ class FormReader
 	public function getError(string $fieldName): string
 	{
 		return $this->errors[$fieldName];
+	}
+
+	public function getGeneralErrors(): array
+	{
+		return $this->generalErrors;
 	}
 
 	public function getPassword(string $fieldName): Password

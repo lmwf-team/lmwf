@@ -30,6 +30,15 @@ class LoginView extends TemplateView
 		<?php $this->displayPageHeader('Login', $this->breadcrumb) ?>
 		<main>
 			<div class="main-content-container">
+				<!-- TODO: Should it be able to display multiple errors or
+				should we limit this to only one general error? -->
+				<?php if (0 !== sizeof($this->formReader->getGeneralErrors())) : ?>
+				<ul>
+				<?php foreach ($this->formReader->getGeneralErrors() as $currentError) : ?>
+					<li><?= $currentError ?></li>
+				<?php endforeach ?>
+				<?php endif ?>
+				</ul>
 				<form action="index.php?page=login" method="post">
 					<dl class="no-margin-top">
 						<dt>
