@@ -2,28 +2,39 @@
 
 namespace LM\PersonalDataManager\View;
 
-use LM\WebFramework\View\IView;
-
-class LoginView implements IView
+class LoginView extends TemplateView
 {
 	public function display(): void
 	{
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 	<head>
-		<meta charset="utf-8">
-		<title>Login</title>
+		<?php $this->displayHtmlHeadContent('Login') ?>
 	</head>
 	<body>
-		<header>
-			<h1>Login</h1>
-			<nav>
-				<a href="index.php">Home</a> / Login
-			</nav>
-		</header>
+		<?php $this->displayPageHeader('Login') ?>
 		<main>
-			<p>Log in!</p>
+			<form>
+				<dl>
+					<dt>
+						<label for="username">
+							Username: 
+						</label>
+					</dt>
+					<dd>
+						<input autocomplete="username" autofocus id="username" inputmode="verbatim" maxlength="<?= PDM_USERNAME_MAX_LENGTH ?>" name="username" required type="text">
+					</dd>
+					<dt>
+						<label for="password">
+							Password: 
+						</label>
+					</dt>
+					<dd>
+						<input autocomplete="current-password" id="password" inputmode="verbatim" maxlength="<?= PDM_PASSWORD_MAX_LENGTH ?>" name="password" required type="password">
+					</dd>
+				<input type="submit" value="Log in">
+			</form>
 		</main>
 	</body>
 </html>
