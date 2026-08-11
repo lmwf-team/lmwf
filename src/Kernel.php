@@ -6,6 +6,7 @@ namespace LM\WebFramework;
 
 use DI\ContainerBuilder;
 use LM\WebFramework\Configuration\Configuration;
+use LM\WebFramework\Configuration\HttpConf;
 use LM\WebFramework\DataStructures\Factory\CollectionFactory;
 use LM\WebFramework\ErrorHandling\LoggedException;
 use LM\WebFramework\ErrorHandling\LogLevel;
@@ -29,23 +30,23 @@ final class Kernel
     ): ContainerInterface {
         $config = Configuration::createFromEnvFile(
             $projectRootPath,
-            $language,
             $runtimeConfig,
         );
 
-        if ($config->getLogLevel() === LogLevel::NOTICE) {
+        if ($config->logLevel === LogLevel::NOTICE) {
             error_reporting(E_ERROR | E_WARNING | E_PARSE | E_NOTICE);
         } else {
             error_reporting(E_ERROR | E_WARNING | E_PARSE);
         }
 
         $cb = new ContainerBuilder();
-        if (!$config->isDev()) {
-            $cb->enableCompilation("{$config->getPathOfAppDirectory()}/var/cache");
+        if (!$config->isDev) {
+            $cb->enableCompilation("{$config->appRootPath}/var/cache");
         }
         $container = $cb
             ->addDefinitions([
                 Configuration::class => $config,
+                HttpConf::class => $config->httpConf,
             ])
             ->build()
         ;
@@ -61,8 +62,21 @@ final class Kernel
 
         $containerDefinitions += [
                 Configuration::class => $conf,
+                HttpConf::class => $conf->httpConf,
         ];
 
+        $cb = new ContainerBuilder();
+        $container = $cb
+            ->addDefinitions($containerDefinitions)
+            ->build()
+        ;
+
+        return $container;
+    }
+
+    public static function initBare(
+        array $containerDefinitions = [],
+    ): ContainerInterface {
         $cb = new ContainerBuilder();
         $container = $cb
             ->addDefinitions($containerDefinitions)

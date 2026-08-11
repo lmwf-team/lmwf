@@ -1,0 +1,5 @@
+{
+    "isDev": true,
+    "language": "fr",
+    "routeError404ControllerFQCN": "Test"
+}

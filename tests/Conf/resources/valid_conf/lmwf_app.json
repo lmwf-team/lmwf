@@ -1,0 +1,19 @@
+{
+    "appRootPath": "",
+    "cspDefaultSources": [],
+    "cspFontSources": [],
+    "cspObjectSources": [],
+    "cspStyleSources": [],
+    "homeUrl": "",
+    "language": "en",
+    "loggerFqcn": "",
+    "logLevel": "NOTICE",
+    "publicPath": "",
+    "rootRoute": {},
+    "routeError404ControllerFQCN": "",
+    "routeErrorNotLoggedInControllerFQCN": "",
+    "routeErrorAlreadyLoggedInControllerFQCN": "",
+    "routeErrorMethodNotSupportedFQCN": "",
+    "serverErrorControllerFQCN": "",
+    "uploadRelPath": "/upload"
+}

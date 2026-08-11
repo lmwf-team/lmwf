@@ -6,8 +6,13 @@ namespace LM\WebFramework\Tests\Http;
 
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\ServerRequest;
+use LM\WebFramework\Configuration\HttpConf;
+use LM\WebFramework\Configuration\IHttpConf;
+use LM\WebFramework\Controller\Exception\AlreadyAuthenticated;
 use LM\WebFramework\Controller\IController;
 use LM\WebFramework\Controller\IRoutedController;
+use LM\WebFramework\DataStructures\AppObject;
+use LM\WebFramework\DataStructures\Factory\CollectionFactory;
 use LM\WebFramework\Http\HttpRequestHandler;
 use LM\WebFramework\Http\Routing\Route;
 use LM\WebFramework\Kernel;
@@ -22,35 +27,42 @@ final class HttpRequestHandlerTest extends TestCase
 
     public function setUp(): void
     {
-        $container = Kernel::initWithRuntimeConf([
-            'routeError404ControllerFQCN' => ResourceNotFoundController::class,
-            'routeMethodNotSupportedFQCN' => MethodNotSupportedController::class,
-            'serverErrorControllerFQCN' => ServerErrorController::class,
-            'handleExceptions' => true,
-            'rootRoute' => [
-                'fqcn' => HomeController::class,
-                'roles' => [
-                    'ADMIN',
-                    'VISITOR'
-                ],
-                'routes' => [
-                    'my' => [
-                        'fqcn' => MyController::class,
-                        'roles' => [
-                            'VISITOR'
-                        ]
+        $container = Kernel::initBare([
+            HttpConf::class => new HttpConf(
+                new AppObject([
+                    'fqcn' => HomeController::class,
+                    'roles' => [
+                        'ADMIN',
+                        'VISITOR'
                     ],
-                    'only-child-parent' => [
-                        'fqcn' => MyController::class,
-                        'route' => [
+                    'routes' => [
+                        'my' => [
                             'fqcn' => MyController::class,
-                            'minArgs' => 1,
-                            'maxArgs' => 1,
+                            'roles' => [
+                                'VISITOR'
+                            ]
+                        ],
+                        'only-child-parent' => [
+                            'fqcn' => MyController::class,
+                            'route' => [
+                                'fqcn' => MyController::class,
+                                'minArgs' => 1,
+                                'maxArgs' => 1,
+                            ]
                         ]
                     ]
-                ]
-            ],
-        ], [
+                ]),
+                true,
+                null,
+                null,
+                null,
+                null,
+                ResourceNotFoundController::class,
+                AlreadyAuthenticated::class,
+                ResourceNotFoundController::class,
+                MethodNotSupportedController::class,
+                ServerErrorController::class,
+            ),
             SessionManager::class => new SessionManager([]),
         ]);
         $this->handler = $container->get(HttpRequestHandler::class);

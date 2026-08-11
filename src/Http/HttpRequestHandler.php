@@ -8,6 +8,8 @@ use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\ServerRequest;
 use InvalidArgumentException;
 use LM\WebFramework\Configuration\Configuration;
+use LM\WebFramework\Configuration\HttpConf;
+use LM\WebFramework\Configuration\IHttpConf;
 use LM\WebFramework\Controller\Exception\AccessDenied;
 use LM\WebFramework\Controller\Exception\AlreadyAuthenticated;
 use LM\WebFramework\Controller\Exception\RequestedResourceNotFound;
@@ -34,12 +36,12 @@ final class HttpRequestHandler
     private RouteDef $rootRoute;
 
     public function __construct(
-        private Configuration $conf,
+        private HttpConf $conf,
         private ContainerInterface $container,
         private SessionManager $session,
         RouteDefParser $routeParser,
     ) {
-        $this->rootRoute = $routeParser->parse($conf->getRoutes()->toArray(), allowOverridingParentRoles: true);
+        $this->rootRoute = $routeParser->parse($conf->rootRoute->toArray(), allowOverridingParentRoles: true);
     }
 
     public function sendResponse(ResponseInterface $response): void
@@ -108,7 +110,7 @@ final class HttpRequestHandler
         Logger::notice("Found segments are \"" . implode(",", $segs) . "\".");
         $params = [];
 
-        if (!$this->conf->handleExceptions()) {
+        if (!$this->conf->handleExceptions) {
             Logger::notice("Exceptions are not handled by the app.");
             return $this->generateResponseFromRoute($request, $segs);
         }
@@ -118,18 +120,18 @@ final class HttpRequestHandler
             return $this->generateResponseFromRoute($request, $segs);
         } catch (RouteNotFoundException | RequestedResourceNotFound) {
             Logger::notice("Resource requested by user was not found.");
-            $fqcn = $this->conf->getErrorNotFoundControllerFQCN();
+            $fqcn = $this->conf->routeError404ControllerFQCN;
         } catch (AlreadyAuthenticated) {
             Logger::notice("User cannot access this route, already authenticated.");
-            $fqcn = $this->conf->getErrorLoggedInControllerFQCN();
+            $fqcn = $this->conf->routeErrorAlreadyLoggedInControllerFQCN;
         } catch (AccessDenied) {
             Logger::notice("User is not authorized.");
-            $fqcn = $this->conf->getErrorNotLoggedInControllerFQCN();
+            $fqcn = $this->conf->routeErrorNotLoggedInControllerFQCN;
         } catch (UnsupportedMethodException) {
             Logger::notice("HTTP method is not supported.");
-            $fqcn = $this->conf->getErrorMethodNotSupportedFQCN();
+            $fqcn = $this->conf->routeErrorMethodNotSupportedFQCN;
         } catch (Throwable $t) {
-            $fqcn = $this->conf->getServerErrorControllerFQCN();
+            $fqcn = $this->conf->serverErrorControllerFQCN;
             $params = [
                 'throwable_hash' => hash('sha256', $t->__toString()),
             ];
@@ -184,17 +186,17 @@ final class HttpRequestHandler
     private function addCspSources(ResponseInterface $response): ResponseInterface
     {
         $cspValues = [];
-        if ($this->conf->hasSetting('cspDefaultSources')) {
-            $cspValues[] = "default-src {$this->conf->getCSPDefaultSources()}";
+        if (null !== $this->conf->cspDefaultSources) {
+            $cspValues[] = "default-src {$this->conf->cspDefaultSources}";
         }
-        if ($this->conf->hasSetting('cspFontSources')) {
-            $cspValues[] = "font-src {$this->conf->getCSPFontSources()}";
+        if (null !== $this->conf->cspFontSources) {
+            $cspValues[] = "font-src {$this->conf->cspFontSources}";
         }
-        if ($this->conf->hasSetting('cspObjectSources')) {
-            $cspValues[] = "object-src {$this->conf->getCSPObjectSources()}";
+        if (null !== $this->conf->cspObjectSources) {
+            $cspValues[] = "object-src {$this->conf->cspObjectSources}";
         }
-        if ($this->conf->hasSetting('cspStyleSources')) {
-            $cspValues[] = "style-src {$this->conf->getCSPStyleSources()}";
+        if (null !== $this->conf->cspStyleSources) {
+            $cspValues[] = "style-src {$this->conf->cspStyleSources}";
         }
         return $response->withAddedHeader('Content-Security-Policy', implode(';', $cspValues));
     }
