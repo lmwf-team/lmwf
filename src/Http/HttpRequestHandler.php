@@ -6,6 +6,9 @@ use GuzzleHttp\Psr7\ServerRequest;
 use LM\WebFramework\AccessControl\Clearance;
 use LM\WebFramework\Configuration;
 use LM\WebFramework\Controller\ControllerInterface;
+use LM\WebFramework\Controller\Exception\AccessDenied;
+use LM\WebFramework\Controller\Exception\AlreadyAuthenticated;
+use LM\WebFramework\Controller\Exception\RequestedRouteNotFound;
 use LM\WebFramework\Session\SessionManager;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -51,21 +54,31 @@ class HttpRequestHandler
      * @todo Make sure HTTP response is valid and complete.
      */
     public function generateResponse(ServerRequestInterface $request): ResponseInterface {
-        $controller = $this->getController($request);
-
-        return $controller->generateResponse($request, $this->extractRouteParams($request));
+        try {
+            $controller = $this->getController($request);
+            return $controller->generateResponse($request, $this->extractRouteParams($request));
+        } catch (RequestedResourceNotFound) {
+            return $this->container->get($this->configuration->getErrorNotFoundControllerFQCN());
+        }catch (AlreadyAuthenticated) {
+            return $this->container->get($this->configuration->getErrorLoggedInControllerFQCN());
+        }catch (AccessDenied) {
+            return $this->container->get($this->configuration->getErrorNotLoggedInControllerFQCN());
+        }
     }
 
+    /**
+     * @todo Access control should be defined in configuration.
+     */
     public function getController(ServerRequestInterface $request): ControllerInterface {
         $routeId = $this->extractRouteParams($request)[0];
         if (!key_exists($routeId, $this->configuration->getRoutes())) {
-            return $this->container->get($this->configuration->getErrorNotFoundControllerFQCN());
+            throw new RequestedRouteNotFound();
         }
         $controller = $this->container->get($this->configuration->getRoutes()[$routeId]);
         if (Clearance::VISITORS === $controller->getAccessControl() && $this->session->isUserLoggedIn()) {
-            return $this->container->get($this->configuration->getErrorLoggedInControllerFQCN());
+            throw new AlreadyAuthenticated();
         } elseif (Clearance::ADMINS === $controller->getAccessControl() && !$this->session->isUserLoggedIn()) {
-            return $this->container->get($this->configuration->getErrorNotLoggedInControllerFQCN());
+            throw new AccessDenied();
         }
         return $controller;
     }
