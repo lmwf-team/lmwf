@@ -2,6 +2,9 @@
 
 namespace LM;
 
+use LM\Controller\IPageController;
+use LM\Controller\HomeController;
+
 class Router
 {
     public function getControllerFromRequest(): IPageController

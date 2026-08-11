@@ -2,6 +2,7 @@
 
 // TODO: php doc
 // TODO: namespaces for autoLoadClass?
+// TODO: good html, semantics, accessibility WAI
 
 // Constants definition
 define('PDM_PAGE', 'page');

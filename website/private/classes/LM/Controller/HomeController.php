@@ -2,10 +2,13 @@
 
 namespace LM\Controller;
 
+use LM\View\HomeView;
+
 class HomeController implements IPageController
 {
 	public function doGet(): void {
-		echo 'get request';
+		$view = new HomeView;
+		$view->display();
 	}
 
 	public function doPost(): void {
