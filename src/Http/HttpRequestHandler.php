@@ -12,6 +12,7 @@ use LM\WebFramework\Controller\Exception\AccessDenied;
 use LM\WebFramework\Controller\Exception\AlreadyAuthenticated;
 use LM\WebFramework\Controller\Exception\RequestedResourceNotFound;
 use LM\WebFramework\Controller\Exception\RequestedRouteNotFound;
+use LM\WebFramework\Http\Error\RoutingError;
 use LM\WebFramework\Kernel;
 use LM\WebFramework\Session\SessionManager;
 use Psr\Container\ContainerInterface;
@@ -100,18 +101,19 @@ final class HttpRequestHandler
     
         $pathSegments = $this->getPathSegments($request->getRequestTarget());
 
-        /// @todo Magic strings
-        $route = $this->router->getRouteInfo(
-            $pathSegments,
-            $this->session->isUserLoggedIn() ? 'admins' : 'visitors',
-        );
+        $route = $this->router->getRouteInfo($pathSegments);
+        if ($route instanceof RoutingError) {
+            // @todo Customizable error page
+            return new Response(404);
+        } else {
+            $controller = $this->container->get($route['class']);
+        }
 
-        /// @todo Create RouteInfo class.
-        $controller = $this->container->get($route['class']);
+        // @todo Check user is authorized
 
         $response = $this->addCspSources($controller->generateResponse(
             $request,
-            0 === $route['n_args'] ? [] : array_slice($pathSegments, -$route['n_args']),
+            0 === $route->nArgs ? [] : array_slice($pathSegments, -$route->nArgs),
             [],
         ));
 

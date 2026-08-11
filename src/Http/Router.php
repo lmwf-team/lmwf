@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace LM\WebFramework\Http;
 
 use LM\WebFramework\Configuration\Configuration;
+use LM\WebFramework\Http\Error\RoutingError;
 use LM\WebFramework\Http\Model\RouteInfo;
 use LM\WebFramework\Http\Model\RouteInfoFactory;
 
@@ -50,8 +51,3 @@ final class Router
         return $route->routes[$nArgs];
     }
 }
-
-enum RoutingError {
-    case RouteNotFound;
-    case UnsupportedArgs;
-};
