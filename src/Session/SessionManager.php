@@ -15,7 +15,7 @@ final class SessionManager
     const MESSAGES = 'messages';
 
     public function getCurrentMemberUsername(): ?string {
-        if (isset($_SESSION[self::CURRENT_MEMBER_USERNAME]) && null !== $_SESSION[self::CURRENT_MEMBER_USERNAME]) {
+        if ($this->isUserLoggedIn()) {
             return $_SESSION[self::CURRENT_MEMBER_USERNAME];
         } else {
             return null;
@@ -23,9 +23,12 @@ final class SessionManager
     }
 
     public function isUserLoggedIn(): bool {
-        return isset($_SESSION[self::CURRENT_MEMBER_USERNAME]) && null !== $_SESSION[self::CURRENT_MEMBER_USERNAME];
+        return key_exists(self::CURRENT_MEMBER_USERNAME, $_SESSION) && null !== $_SESSION[self::CURRENT_MEMBER_USERNAME];
     }
 
+    /**
+     * @todo Should not accept null.
+     */
     public function setCurrentMemberUsername(?string $username): void {
         $_SESSION[self::CURRENT_MEMBER_USERNAME] = $username;
     }
