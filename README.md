@@ -39,4 +39,6 @@ interface, e.g. IRouter.
  * PHP documentation needs to be applied and package names need to be
  determined.
  * Strict typing.
+ * Wrap request infomation into immutable object?
+ * Hungarian notation?
 All the code the PSR-1, PSR-2 and PSR-4.
