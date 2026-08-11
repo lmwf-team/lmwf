@@ -1,12 +1,9 @@
-# Simple workflow for deploying static content to GitHub Pages
-name: Deploy static content to Pages
+name: Documentation
 
 on:
-  # Runs on pushes targeting the default branch
   push:
     branches: ["master"]
 
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
@@ -33,6 +30,8 @@ jobs:
         uses: actions/checkout@v4
 
       - uses: ./.github/actions/set-up-repository
+        with:
+          tools: phpdoc
 
       - name: Install Graphviz
         run: |
@@ -43,6 +42,10 @@ jobs:
       - name: Run deptrac
         continue-on-error: true # Deptrac returns 1 for some reason, even when there is no issue...
         run: vendor/bin/deptrac analyse --formatter=graphviz-image --output docs/diagram.png
+      - name: Run phpdoc
+        run: |
+          cp dev/phpdoc/phpdoc.dist.xml .
+          phpdoc
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact

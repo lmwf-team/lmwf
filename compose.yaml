@@ -12,3 +12,8 @@ services:
     working_dir: /app
     volumes:
       - ./vendor:/app/vendor
+  phpdoc_dsn:
+    image: phpdoc/phpdoc:latest
+    working_dir: /data
+    volumes:
+      - ./src:/data # phpdoc defines a volume at /data, se we can’t select a subfolder
