@@ -7,6 +7,7 @@ namespace LM\WebFramework\Form\Transformer;
 use LM\WebFramework\Form\Exceptions\ExtractionException;
 use LM\WebFramework\Form\FormFactory;
 use LM\WebFramework\Model\Type\IModel;
+use LM\WebFramework\Model\Type\IScalarModel;
 
 final class ListTransformer implements IFormTransformer
 {
@@ -18,7 +19,8 @@ final class ListTransformer implements IFormTransformer
     ) {
     }
 
-    public function extractValueFromRequest(array $requestParsedBody, array $uploadedFiles): array {
+    public function extractValueFromRequest(array $requestParsedBody, array $uploadedFiles): array
+    {
         $data = $requestParsedBody[$this->name] ?? null;
         if (null === $data) {
             return [];
@@ -28,14 +30,14 @@ final class ListTransformer implements IFormTransformer
         }
         $value = [];
         foreach ($data as $name => $element) {
-            if (null !== $this->nodeModel->getArrayDefinition()) {
+            if ($this->nodeModel instanceof IScalarModel) {
                 $value[] = $this->formFactory
-                    ->createTransformer($this->nodeModel, $this->nodeConfig, csrf: false)
+                    ->createTransformer($this->nodeModel, $this->nodeConfig, name: $name)
                     ->extractValueFromRequest($element, $uploadedFiles)
                 ;
             } else {
                 $value[] = $this->formFactory
-                    ->createTransformer($this->nodeModel, $this->nodeConfig, name: $name)
+                    ->createTransformer($this->nodeModel, $this->nodeConfig, csrf: false)
                     ->extractValueFromRequest($element, $uploadedFiles)
                 ;
             }
