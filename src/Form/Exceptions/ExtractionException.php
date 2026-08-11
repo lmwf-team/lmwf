@@ -25,7 +25,8 @@ class ExtractionException extends InvalidArgumentException
     /**
      * @return string A message to display to the user.
      */
-    public function getUserErrorMessage(): string {
+    public function getUserErrorMessage(): string
+    {
         return $this->userErrorMessage;
     }
 }

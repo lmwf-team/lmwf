@@ -14,10 +14,10 @@ final class SearchEngine
      * @param array<\LM\WebFramework\DataStructures\Searchable> $searchables
      */
     public function rankResult(
-            SearchQuery $query,
-            array $result,
-            array $searchables,
-        ): float {
+        SearchQuery $query,
+        array $result,
+        array $searchables,
+    ): float {
         $rank = .0;
         foreach ($searchables as $s) {
             if (key_exists($s->getName(), $result) && is_string($result[$s->getName()])) {
@@ -28,7 +28,7 @@ final class SearchEngine
                     }
                 }
                 $ratio = $k / $query->getTotalLength();
-                $rank += (exp($ratio**2) - 1) / (exp(1) - 1) * $s->getImportance();
+                $rank += (exp($ratio ** 2) - 1) / (exp(1) - 1) * $s->getImportance();
             }
         }
         return $rank;

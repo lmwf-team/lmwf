@@ -9,11 +9,13 @@ namespace LM\WebFramework\Form\Exceptions;
  */
 class MissingInputException extends ExtractionException
 {
-    public function __construct(?string $inputName = null, $previous = null) {
+    public function __construct(?string $inputName = null, $previous = null)
+    {
         parent::__construct(null !== $inputName ? $inputName . ' is missing ' : null, previous: $previous);
     }
 
-    public function getUserErrorMessage(): string {
+    public function getUserErrorMessage(): string
+    {
         return 'Une erreur s’est produite. ' . self::class;
     }
 }

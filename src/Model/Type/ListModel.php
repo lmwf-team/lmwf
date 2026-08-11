@@ -20,7 +20,7 @@ final class ListModel extends AbstractModel
         parent::__construct($isNullable);
     }
 
-    public function getItemModel() : IScalarModel|EntityModel|ListModel
+    public function getItemModel(): IScalarModel|EntityModel|ListModel
     {
         return $this->itemModel;
     }

@@ -41,14 +41,15 @@ final class Form implements IFormExtractor
         $this->ignoreValueOf = $ignoreValueOf;
     }
 
-    public function extractFromRequest(array $requestParsedBody, ?array $uploadedFiles = null): FormArray {
+    public function extractFromRequest(array $requestParsedBody, ?array $uploadedFiles = null): FormArray
+    {
         $formDatas = [];
         foreach ($this->children as $child) {
             if ($child->getName() === $this->ignoreValueOf) {
                 $child->extractFromRequest($requestParsedBody, $uploadedFiles ?? []);
             } else {
                 if ($child instanceof Form) {
-                    
+
                 }
                 $formDatas[$child->getName()] = $child->extractFromRequest($requestParsedBody, $uploadedFiles ?? []);
             }

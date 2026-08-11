@@ -31,7 +31,7 @@ final class Configuration
     {
         return $this->configData[$key];
     }
-    
+
     public function getConfigAppData(): AppObject
     {
         return $this->configData;

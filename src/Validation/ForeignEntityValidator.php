@@ -10,7 +10,7 @@ final class ForeignEntityValidator implements ITypeValidator
 {
     public function __construct(
         private ForeignEntityModel $model,
-    ) {  
+    ) {
     }
 
     /**

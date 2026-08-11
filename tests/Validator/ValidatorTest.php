@@ -27,9 +27,9 @@ final class ValidatorTest extends TestCase
     public function testUnsupportedModel(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        new Validator(new class extends AbstractModel {});
+        new Validator(new class () extends AbstractModel {});
     }
-    
+
     public function testStringValidator(): void
     {
         $myString = 'Hello';
@@ -37,7 +37,7 @@ final class ValidatorTest extends TestCase
         $this->assertNotEmpty((new Validator(new StringModel(7, 10)))->validate($myString));
         $this->assertEmpty((new Validator(new StringModel(regex: '[a-zA-Z]+')))->validate($myString));
         $this->assertNotEmpty((new Validator(new StringModel(regex: '[0-9]+')))->validate($myString));
-        
+
         $this->expectException(InvalidArgumentException::class);
         new RangeConstraint(10, 5);
     }

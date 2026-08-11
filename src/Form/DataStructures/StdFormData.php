@@ -16,11 +16,13 @@ final class StdFormData implements IFormData
     ) {
     }
 
-    public function getContent(): mixed {
+    public function getContent(): mixed
+    {
         return $this->content;
     }
 
-    public function getData(?array $hereWeGo = null): mixed {
+    public function getData(?array $hereWeGo = null): mixed
+    {
         if (is_array($this->content)) {
             $appArray = [];
             foreach ($hereWeGo ?? $this->content as $k => $v) {
@@ -37,35 +39,43 @@ final class StdFormData implements IFormData
         return $this->content;
     }
 
-    public function getArrayValue(): array {
+    public function getArrayValue(): array
+    {
         return $this->content;
     }
 
-    public function getBoolValue(): ?bool {
+    public function getBoolValue(): ?bool
+    {
         return is_bool($this->content) ? $this->content : null;
     }
 
-    public function getChild(string $name): ?StdFormData {
+    public function getChild(string $name): ?StdFormData
+    {
         return $this->content[$name] ?? null;
     }
 
-    public function getStringValue(): ?string {
+    public function getStringValue(): ?string
+    {
         return is_string($this->content) ? $this->content : null;
     }
 
-    public function getErrors(): array {
+    public function getErrors(): array
+    {
         return $this->errors;
     }
 
-    public function getValue(): mixed {
+    public function getValue(): mixed
+    {
         return $this->content;
     }
 
-    public function hasErrors(): bool {
+    public function hasErrors(): bool
+    {
         return count($this->errors) > 0;
     }
 
-    public function isNull(): bool {
+    public function isNull(): bool
+    {
         return null === $this->content;
     }
 }

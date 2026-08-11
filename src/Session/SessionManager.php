@@ -6,15 +6,16 @@ namespace LM\WebFramework\Session;
 
 final class SessionManager
 {
-    const CSRF = 'csrf';
+    public const CSRF = 'csrf';
 
-    const CSRF_N_BYTES = 32;
+    public const CSRF_N_BYTES = 32;
 
-    const CURRENT_MEMBER_USERNAME = "cmu";
+    public const CURRENT_MEMBER_USERNAME = "cmu";
 
-    const MESSAGES = 'messages';
+    public const MESSAGES = 'messages';
 
-    public function getCurrentMemberUsername(): ?string {
+    public function getCurrentMemberUsername(): ?string
+    {
         if ($this->isUserLoggedIn()) {
             return $_SESSION[self::CURRENT_MEMBER_USERNAME];
         } else {
@@ -22,7 +23,8 @@ final class SessionManager
         }
     }
 
-    public function isUserLoggedIn(): bool {
+    public function isUserLoggedIn(): bool
+    {
         return key_exists(self::CURRENT_MEMBER_USERNAME, $_SESSION) && null !== $_SESSION[self::CURRENT_MEMBER_USERNAME];
     }
 

@@ -41,7 +41,7 @@ final class ListTransformer implements IFormTransformer
                     ->extractValueFromRequest($element, $uploadedFiles)
                 ;
             }
-            
+
         }
 
         return $value;

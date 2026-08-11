@@ -14,7 +14,8 @@ final class DateTimeTransformer implements IFormTransformer
     ) {
     }
 
-    public function extractValueFromRequest(array $formRawData, array $uploadedFiles): ?DateTimeImmutable {
+    public function extractValueFromRequest(array $formRawData, array $uploadedFiles): ?DateTimeImmutable
+    {
         if (!key_exists($this->name, $formRawData)) {
             throw new MissingInputException();
         }

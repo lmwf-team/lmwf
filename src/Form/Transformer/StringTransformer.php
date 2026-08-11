@@ -16,7 +16,8 @@ final class StringTransformer implements IFormTransformer
     /**
      * @return string|null The submitted, non-empty string, or null if the string is empty.
      */
-    public function extractValueFromRequest(array $formRawData, array $uploadedFiles): ?string {
+    public function extractValueFromRequest(array $formRawData, array $uploadedFiles): ?string
+    {
         if (!key_exists($this->name, $formRawData)) {
             throw new MissingInputException($this->name);
         }

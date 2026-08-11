@@ -18,23 +18,28 @@ final class Page
     ) {
     }
 
-    public function getParent(): ?Page {
+    public function getParent(): ?Page
+    {
         return $this->parent;
     }
 
-    public function getName(): string {
+    public function getName(): string
+    {
         return $this->name;
     }
 
-    public function getUrl(): string {
+    public function getUrl(): string
+    {
         return $this->url;
     }
 
-    public function isIndexed(): bool {
+    public function isIndexed(): bool
+    {
         return $this->isIndexed;
     }
 
-    public function isPartOfHierarchy(): bool {
+    public function isPartOfHierarchy(): bool
+    {
         return $this->isPartOfHierarchy;
     }
 }

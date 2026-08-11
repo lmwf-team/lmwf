@@ -25,7 +25,7 @@ final class DateTimeValidator implements ITypeValidator
                 ),
             ];
         }
-        
+
         return [];
     }
 }

@@ -15,7 +15,7 @@ use UnexpectedValueException;
 
 /**
  * Immutable array.
- * 
+ *
  * An immutable array consists of key-value pairs named properties. Keys are
  * either integers or strings, and values can be any data type.
  */
@@ -112,7 +112,7 @@ abstract class ImmutableArray implements ArrayAccess, Countable, IArrayable, Ite
     /**
      * Built-in method that checks that given offset exists in the array and is
      * STRICTLY the same.
-     * 
+     *
      * For instance, an object with the property key '3' will return false if
      * given an offset of 3.
      */
@@ -123,7 +123,7 @@ abstract class ImmutableArray implements ArrayAccess, Countable, IArrayable, Ite
                 return true;
             }
         }
-        
+
         return false;
     }
 

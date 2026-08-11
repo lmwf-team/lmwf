@@ -48,7 +48,7 @@ final class StringModel extends AbstractModel implements IScalarModel
     {
         return $this->rangeConstraint;
     }
-    
+
     public function getRegexConstraint(): ?IRegexConstraint
     {
         return $this->regexConstraint;

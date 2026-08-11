@@ -18,11 +18,13 @@ final class ConstraintViolation implements Stringable
     ) {
     }
 
-    public function getMessage(): string {
+    public function getMessage(): string
+    {
         return $this->message;
     }
 
-    public function __toString(): string {
+    public function __toString(): string
+    {
         return $this->message;
     }
 }

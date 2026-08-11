@@ -24,7 +24,7 @@ final class BoolValidator implements ITypeValidator
                 ),
             ];
         }
-        
+
         return [];
     }
 }

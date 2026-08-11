@@ -13,7 +13,8 @@ final class Filename implements Stringable
 
     private string $filenameNoExtension;
 
-    public function __construct(string $filename) {
+    public function __construct(string $filename)
+    {
         $parts = explode('.', $filename);
         $nParts = count($parts);
         if ($nParts < 2) {
@@ -23,15 +24,18 @@ final class Filename implements Stringable
         $this->filenameNoExtension = substr($filename, 0, strlen($filename) - strlen($this->extension) - 1);
     }
 
-    public function getExtension(): string {
+    public function getExtension(): string
+    {
         return $this->extension;
     }
 
-    public function getFilenameNoExtension(): string {
+    public function getFilenameNoExtension(): string
+    {
         return $this->filenameNoExtension;
     }
 
-    public function __toString(): string {
+    public function __toString(): string
+    {
         return $this->filenameNoExtension . '.' . $this->extension;
     }
 }

@@ -16,7 +16,8 @@ final class Slug implements Stringable
 {
     private string $value;
 
-    public function __construct(string $value, bool $transform = false, bool $allowEmpty = false) {
+    public function __construct(string $value, bool $transform = false, bool $allowEmpty = false)
+    {
         if ($transform) {
             $this->value = substr(ASCII::to_slugify($value, language: 'fr'), 0, SlugModelFactory::SLUG_MAX_LENGTH);
         } else {

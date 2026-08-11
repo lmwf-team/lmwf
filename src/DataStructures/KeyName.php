@@ -9,14 +9,14 @@ use Stringable;
 
 final class KeyName implements Stringable
 {
-    const INPUT_SEPARATORS = [
+    public const INPUT_SEPARATORS = [
         ' ',
         ' ',
         '-',
         ',',
     ];
 
-    const CAMEL_BACK_ATTRIBUTE_REGEX = '/^[a-z]+([A-Z][a-z]*)*$/';
+    public const CAMEL_BACK_ATTRIBUTE_REGEX = '/^[a-z]+([A-Z][a-z]*)*$/';
 
     private string $value;
 
@@ -42,7 +42,8 @@ final class KeyName implements Stringable
         return $stringConverted;
     }
 
-    public function __toString(): string {
+    public function __toString(): string
+    {
         return $this->value;
     }
 }

@@ -10,14 +10,15 @@ use LM\WebFramework\Session\SessionManager;
 
 final class CsrfTransformer implements IFormTransformer
 {
-    const CSRF_FORM_ELEMENT_NAME = '_csrf';
+    public const CSRF_FORM_ELEMENT_NAME = '_csrf';
 
     public function __construct(
         private SessionManager $session,
     ) {
     }
 
-    public function extractValueFromRequest(array $formRawData, array $uploadedFiles): string {
+    public function extractValueFromRequest(array $formRawData, array $uploadedFiles): string
+    {
         if (!isset($formRawData[self::CSRF_FORM_ELEMENT_NAME])) {
             throw new MissingInputException(self::CSRF_FORM_ELEMENT_NAME);
         }

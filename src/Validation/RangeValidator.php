@@ -14,7 +14,8 @@ final class RangeValidator implements IStringValidator, IIntValidator
     ) {
     }
 
-    public function validateInt(int $value): array {
+    public function validateInt(int $value): array
+    {
         $violations = [];
         if (null !== $this->constraint->getUpperLimit() && $value > $this->constraint->getUpperLimit()) {
             $violations[] =  new ConstraintViolation($this->constraint, "$value is higher than set maximum.");
@@ -25,7 +26,8 @@ final class RangeValidator implements IStringValidator, IIntValidator
         return $violations;
     }
 
-    public function validateString(string $value): array {
+    public function validateString(string $value): array
+    {
         $violations = [];
         if (null !== $this->constraint->getUpperLimit() && mb_strlen($value) > $this->constraint->getUpperLimit()) {
             $violations[] =  new ConstraintViolation($this->constraint, "$value is higher than set maximum.");

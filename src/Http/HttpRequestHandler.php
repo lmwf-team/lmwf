@@ -85,7 +85,7 @@ final class HttpRequestHandler
 
     /**
      * Return a controller corresponding to the given HTTP request.
-     * 
+     *
      * @todo Access control should be defined in configuration.
      * @param ServerRequestInterface The HTTP request.
      * @return IResponseGenerator The Controller associated with the specified

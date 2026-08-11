@@ -47,11 +47,11 @@ final class EntityModel extends AbstractModel
     {
         return $this->idKey;
     }
- 
+
     /**
      * @return array<string, \LM\WebFramework\Model\Type\IModel> An
      * associative array of  properties.
-     * 
+     *
      * This guarantees each property has a unique key in the context of the
      * model.
      */
@@ -78,8 +78,7 @@ final class EntityModel extends AbstractModel
         string $referenceKeyInChild,
         string $referenceKeyInParent,
         bool $isNullable,
-    ): self
-    {
+    ): self {
         $m = new self(
             $this->getIdentifier(),
             $this->getProperties(),

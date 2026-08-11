@@ -31,7 +31,7 @@ use LM\WebFramework\Model\Type\StringModel;
  */
 final class FormFactory
 {
-    const CSRF_FORM_ELEMENT_NAME = '_csrf';
+    public const CSRF_FORM_ELEMENT_NAME = '_csrf';
 
     public function __construct(
         private Configuration $config,

@@ -9,11 +9,11 @@ use LM\WebFramework\Model\Constraints\RangeConstraint;
 
 final class IntModel extends AbstractModel implements IScalarModel
 {
-    const MAX = 32767;
+    public const MAX = 32767;
 
-    const MAX_UNSIGNED = 65535;
+    public const MAX_UNSIGNED = 65535;
 
-    const MIN = -32767;
+    public const MIN = -32767;
 
     private ?IRangeConstraint $rangeConstraint;
 

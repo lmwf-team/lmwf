@@ -6,7 +6,7 @@ use InvalidArgumentException;
 
 /**
  * Immutable list guaranteed to have zero-indexed sequential property keys.
- * 
+ *
  */
 class AppList extends ImmutableArray
 {

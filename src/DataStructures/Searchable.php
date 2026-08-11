@@ -20,11 +20,13 @@ final class Searchable
         }
     }
 
-    public function getName(): string {
+    public function getName(): string
+    {
         return $this->name;
     }
 
-    public function getImportance(): float {
+    public function getImportance(): float
+    {
         return $this->importance;
     }
 }

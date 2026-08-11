@@ -12,9 +12,10 @@ use RuntimeException;
 
 final class Kernel
 {
-    const CLI_ID = 'cli';
+    public const CLI_ID = 'cli';
 
-    public static function initialize(string $projectRootPath, string $language): ?ContainerInterface {
+    public static function initialize(string $projectRootPath, string $language): ?ContainerInterface
+    {
         set_error_handler(function ($errNo, $errStr, $errFile, $errLine) {
             $msg = "$errNo, $errStr in $errFile on line $errLine";
             throw new RuntimeException($msg, $errNo);
@@ -26,7 +27,7 @@ final class Kernel
         if (!$config->isDev()) {
             $cb->enableCompilation("$projectRootPath/var/cache");
         }
-    
+
         $container = $cb
             ->addDefinitions([
                 Configuration::class => $config,
@@ -48,7 +49,7 @@ final class Kernel
                 header($headerName . ': ' . implode(', ', $headerValues));
             };
 
-            echo $response->getBody()->__toString(); 
+            echo $response->getBody()->__toString();
 
             return null;
         }

@@ -31,19 +31,19 @@ use UnexpectedValueException;
  */
 final class DbEntityManager
 {
-    const SEP = '_';
+    public const SEP = '_';
 
     /**
      * @todo Could be removed? (And array_is_list could be used instead.)
      */
     private function isOrdered(array $array): bool
     {
-        return count($array) === count(array_filter($array, fn($key) => is_int($key), ARRAY_FILTER_USE_KEY));
+        return count($array) === count(array_filter($array, fn ($key) => is_int($key), ARRAY_FILTER_USE_KEY));
     }
 
     /**
      * Transform DB Data into App Data.
-     * 
+     *
      * The following order of priority applies when converting the DB data into
      * app data: bool, int, DateTime, and finally string.
      *
@@ -131,12 +131,12 @@ final class DbEntityManager
         return (new CollectionFactory())->createDeepAppObject($transientAppObject);
     }
 
-    public function convertDbEntityList(array $dbRows, EntityListModel $entityListModel, int|string|null $referenceId) : array
+    public function convertDbEntityList(array $dbRows, EntityListModel $entityListModel, int|string|null $referenceId): array
     {
         $itemModel = $entityListModel->getItemModel();
         $appItems = [];
         $ids = [];
-        
+
         foreach ($dbRows as $rowIndex => $row) {
             $rowReferenceId = $row[$itemModel->getEntityModel()->getIdentifier() . self::SEP . $itemModel->getReferencedKeyInChild()];
             $rowId = $row[$itemModel->getEntityModel()->getIdentifier() . self::SEP . $itemModel->getEntityModel()->getIdKey()];
@@ -203,7 +203,7 @@ final class DbEntityManager
 
     /**
      * Verifies and filter out any extra property from an AppObject.
-     * 
+     *
      * @param AppObject $appObject The AppObject instance to check and prune.
      * @param EntityModel $model The model that the AppObject should adhere to.
      * @return AppObject A verified AppObject trimmed of any extra property.
@@ -266,7 +266,7 @@ final class DbEntityManager
     /**
      * Perform an outer join on two result sets, as if the two were issued from
      * an outer join request.
-     * 
+     *
      * @param array[] $dbRowsLeft A list of rows returned from the database.
      * @param array[] $dbRowsRight A list of rows returned from the database.
      * @return array[] A list of rows with $dbRowsRight appended to $dbRowsLeft,
@@ -281,7 +281,7 @@ final class DbEntityManager
         }
 
         $emptyRow = array_map(fn () => null, $dbRowsLeft[0] + $dbRowsRight[0]);
-    
+
         $dbRows = [];
 
         for ($i = 0; $i < max(count($dbRowsLeft), count($dbRowsRight)); $i++) {

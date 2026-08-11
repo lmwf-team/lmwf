@@ -6,7 +6,6 @@ namespace LM\WebFramework\Controller;
 
 use LM\WebFramework\AccessControl\Clearance;
 
-
 interface IController extends IResponseGenerator
 {
     public function getAccessControl(): Clearance;

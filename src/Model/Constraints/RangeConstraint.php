@@ -19,11 +19,13 @@ final class RangeConstraint implements IRangeConstraint
         }
     }
 
-    public function getLowerLimit(): ?int {
+    public function getLowerLimit(): ?int
+    {
         return $this->lowerLimit;
     }
 
-    public function getUpperLimit(): ?int {
+    public function getUpperLimit(): ?int
+    {
         return $this->upperLimit;
     }
 }

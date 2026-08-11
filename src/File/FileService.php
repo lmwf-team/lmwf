@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace LM\WebFramework\File;
+
 use LM\WebFramework\Configuration;
 use LM\WebFramework\Model\Constraints\IUploadedImageConstraint;
 
@@ -18,7 +19,8 @@ final class FileService
      * @todo Assume that filenames are in lowercase.
      * @todo Hard-coded file extensions.
      */
-    public function getUploadedImages(bool $includeThumbnails = true): array {
+    public function getUploadedImages(bool $includeThumbnails = true): array
+    {
         $listOfFiles = scandir($this->configuration->getPathOfUploadedFiles());
 
         if (!$includeThumbnails) {

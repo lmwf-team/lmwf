@@ -8,7 +8,7 @@ use Psr\Http\Message\ServerRequestInterface;
 
 class RequestAbstraction
 {
-    const string REDIRECT_URL_KEY = 'route_params';
+    public const string REDIRECT_URL_KEY = 'route_params';
 
     private AppList $routeParams;
 

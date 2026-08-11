@@ -11,7 +11,7 @@ use OutOfBoundsException;
  * Immutable array consisting of key-value pairs named properties. Keys are
  * necessarily string, and values can be any data type (except associative
  * arrays as they are turned into AppObject).
- * 
+ *
  * @todo Force a certain naming style for property keys?
  */
 final class AppObject extends ImmutableArray
@@ -45,7 +45,7 @@ final class AppObject extends ImmutableArray
 
     /**
      * Create a new AppObject with the specified property removed.
-     * 
+     *
      * @param string $keyToRemove The key of the property to remove.
      * @return AppObject Another AppObject with the same data as this one, but
      * with the specified key removed.
@@ -85,7 +85,7 @@ final class AppObject extends ImmutableArray
         if (!($mixed instanceof AppObject)) {
             return false;
         }
-        
+
         return parent::isEqual($mixed);
     }
 }

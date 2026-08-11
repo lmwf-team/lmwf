@@ -38,11 +38,11 @@ final class Validator
             case BoolModel::class:
                 $this->validator = new BoolValidator($model);
                 break;
-            
+
             case DateTimeModel::class:
                 $this->validator = new DateTimeValidator($model);
                 break;
-            
+
             case IntModel::class:
                 $this->validator = new IntValidator($model);
                 break;
@@ -51,20 +51,20 @@ final class Validator
             case ListModel::class:
                 $this->validator = new ListValidator($model);
                 break;
-            
+
             case StringModel::class:
                 $this->validator = new StringValidator($model);
                 break;
 
             default:
-                throw new InvalidArgumentException('Model not supported.');            
+                throw new InvalidArgumentException('Model not supported.');
         }
     }
 
     /**
      * Check that the given app datum satisfies the constraints specified in the
      * model.
-     * 
+     *
      * @param mixed $value The app value to validate.
      * @return ConstraintViolation[] A list of ConstraintViolations, one for
      * each constraint violation.

@@ -13,7 +13,7 @@ use Psr\Http\Message\UploadedFileInterface;
 
 final class FileTransformer implements IFormTransformer
 {
-    const PREVIOUS_SUFFIX = '_previous';
+    public const PREVIOUS_SUFFIX = '_previous';
 
     private bool $createThumbnails;
 
@@ -35,7 +35,8 @@ final class FileTransformer implements IFormTransformer
      * @throws MissingInputException If no file was uploaded.
      * @todo Do not save the image here, just extract the a UploadedFileInterface or an array of it.
      */
-    public function extractValueFromRequest(array $formRawData, array $uploadedFiles): null|array|string {
+    public function extractValueFromRequest(array $formRawData, array $uploadedFiles): null|array|string
+    {
         if (!key_exists($this->name, $uploadedFiles)) {
             return $this->extractPreviousFilename($formRawData);
         }
@@ -53,7 +54,8 @@ final class FileTransformer implements IFormTransformer
         }
     }
 
-    private function extractPreviousFilename(array $formRawData): null|string {
+    private function extractPreviousFilename(array $formRawData): null|string
+    {
         if (key_exists($this->name . self::PREVIOUS_SUFFIX, $formRawData)) {
             $oldFilename = pathinfo($formRawData[$this->name . self::PREVIOUS_SUFFIX]);
             if ('.' !== $oldFilename['dirname']) {
@@ -65,7 +67,8 @@ final class FileTransformer implements IFormTransformer
         }
     }
 
-    private function saveUploadedImage(UploadedFileInterface $file): null|string {
+    private function saveUploadedImage(UploadedFileInterface $file): null|string
+    {
 
         if (0 === $file->getError()) {
             $extension = 'webp';
@@ -79,7 +82,7 @@ final class FileTransformer implements IFormTransformer
                 $i++;
             }
 
-            if('png' !== $extension) {
+            if ('png' !== $extension) {
                 $streamGdImg = imagecreatefromstring($file->getStream()->getContents());
                 imagewebp($streamGdImg, $destinationPath, 95);
             } else {
@@ -102,7 +105,8 @@ final class FileTransformer implements IFormTransformer
         }
     }
 
-    private function createThumbnail(Filename $originalPath, string $suffix, int $minWidth, int $minHeight, int $quality) {
+    private function createThumbnail(Filename $originalPath, string $suffix, int $minWidth, int $minHeight, int $quality)
+    {
         $originalImg = imagecreatefromstring(file_get_contents($originalPath->__toString()));
 
         list($width, $height) = [imagesx($originalImg), imagesy($originalImg)];

@@ -17,7 +17,8 @@ final class FormArray implements IFormData
     ) {
     }
 
-    public function getContent(): array {
+    public function getContent(): array
+    {
         $data = [];
         foreach ($this->submissions as $key => $s) {
             $data[$key] = $s->getContent();
@@ -26,18 +27,21 @@ final class FormArray implements IFormData
         return $data;
     }
 
-    public function getChild(string $name): ?IFormData {
+    public function getChild(string $name): ?IFormData
+    {
         return $this->submissions[$name] ?? null;
     }
 
     /**
      * @return array<IFormData>
      */
-    public function getChildren(): array {
+    public function getChildren(): array
+    {
         return $this->submissions;
     }
 
-    public function getErrors(): array {
+    public function getErrors(): array
+    {
         $errors = [];
         foreach ($this->submissions as $key => $formValue) {
             $errors[$key] = $formValue->getErrors();
@@ -45,11 +49,13 @@ final class FormArray implements IFormData
         return $errors;
     }
 
-    public function getValue(): mixed {
+    public function getValue(): mixed
+    {
         return $this->submissions;
     }
 
-    public function hasErrors(): bool {
+    public function hasErrors(): bool
+    {
         foreach ($this->submissions as $formData) {
             if ($formData->hasErrors()) {
                 return true;

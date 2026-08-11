@@ -9,27 +9,28 @@ namespace LM\WebFramework\DataStructures;
  */
 final class SearchQuery
 {
-    CONST ACCEPTED_DELIMITERS = [
+    public const ACCEPTED_DELIMITERS = [
         ',',
         ';',
         ' ',
     ];
 
-    CONST ACCEPTED_MODIFIERS = [
+    public const ACCEPTED_MODIFIERS = [
         '\'',
         '’',
     ];
 
-    CONST MODIFIER = '"';
+    public const MODIFIER = '"';
 
-    CONST SEPARATOR = ' ';
+    public const SEPARATOR = ' ';
 
     /**
      * @todo Use Ds\Set.
      */
     private array $keywords;
 
-    public function __construct(string $query) {
+    public function __construct(string $query)
+    {
         $convertedModifiers = str_replace(self::ACCEPTED_MODIFIERS, self::MODIFIER, $query);
         $modifiedQuery = explode(self::MODIFIER, $convertedModifiers);
         $keywords = [];
@@ -46,7 +47,8 @@ final class SearchQuery
         $this->keywords = ($keywords);
     }
 
-    public function __toString(): string {
+    public function __toString(): string
+    {
         $words = [];
         foreach ($this->keywords as $kw) {
             if ($this->isModified($kw)) {
@@ -62,7 +64,8 @@ final class SearchQuery
     /**
      * @return array<string>
      */
-    public function getKeywords(): array {
+    public function getKeywords(): array
+    {
         return $this->keywords;
     }
 
@@ -70,7 +73,8 @@ final class SearchQuery
      * @return int The total number of characters of all the keywords, separators
      * between keywords excluded.
      */
-    public function getTotalLength(): int {
+    public function getTotalLength(): int
+    {
         $length = 0;
         foreach ($this->keywords as $kw) {
             $length += mb_strlen($kw);
@@ -78,7 +82,8 @@ final class SearchQuery
         return $length;
     }
 
-    private function isModified(string $keyword): bool {
+    private function isModified(string $keyword): bool
+    {
         foreach (self::ACCEPTED_DELIMITERS as $del) {
             if (str_contains($keyword, $del)) {
                 return true;
