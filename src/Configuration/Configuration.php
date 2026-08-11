@@ -44,7 +44,7 @@ final class Configuration
     public readonly string $language;
     public readonly string $appRootPath;
     public readonly string $uploadRelPath;
-    public readonly string $publicPath;
+    public readonly string $publicRelPath;
 
 
     /**
@@ -88,6 +88,8 @@ final class Configuration
     }
 
     /**
+     * The path is the absolute path on the server file system. The relative
+     * path is the path on the file system relative to the app root.
      * @todo Create model for configuration, and check it is valid? (Would make testing harder.)
      * @todo Accept an array and create a model from it?
      */
@@ -100,7 +102,7 @@ final class Configuration
         $this->language = $confData['language'];
         $this->appRootPath = $confData['appRootPath'];
         $this->uploadRelPath = $confData['uploadRelPath'];
-        $this->publicPath = $confData['publicPath'];
+        $this->publicRelPath = $confData['publicRelPath'];
 
         $this->httpConf = new HttpConf(
             (new RouteDefParser())->parse($confData['rootRoute']),
@@ -130,7 +132,7 @@ final class Configuration
 
     public function getPathOfUploadedFiles(): string
     {
-        return $this->appRootPath . '/' . $this->uploadRelPath;
+        return "$this->appRootPath/$this->uploadRelPath";
     }
 
     /**

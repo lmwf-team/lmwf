@@ -3,7 +3,7 @@
     "csp": [],
     "homeUrl": "",
     "language": "en",
-    "publicPath": "",
+    "publicRelPath": "",
     "rootRoute": {
         "fqcn": "App.Controller.HomeController",
         "roles": []
@@ -15,5 +15,5 @@
         "notFoundFqcn": "",
         "notLoggedInFqcn": ""
     },
-    "uploadRelPath": "/upload"
+    "uploadRelPath": "public/upload"
 }
