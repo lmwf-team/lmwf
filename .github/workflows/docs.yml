@@ -47,9 +47,12 @@ jobs:
           cp dev/phpdoc/phpdoc.dist.xml .
           phpdoc
       - uses: actions/download-artifact@v5
+        continue-on-error: true
+        id: download
         with:
           name: coverage
       - name: Generate JSON file for coverage badge
+        if: ${{ steps.download.outcome == 'success' }}
         run: ./dev/phpunit/coverage.php
       - name: Setup Pages
         uses: actions/configure-pages@v5
