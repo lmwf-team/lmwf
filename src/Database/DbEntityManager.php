@@ -21,6 +21,7 @@ use LM\WebFramework\Model\Type\EntityListModel;
 use LM\WebFramework\Model\Type\IModel;
 use LM\WebFramework\Model\Type\ListModel;
 use LM\WebFramework\Model\Type\StringModel;
+use LM\WebFramework\Validation\Validator;
 use UnexpectedValueException;
 
 /**
@@ -189,6 +190,31 @@ final class DbEntityManager
             }
         }
         return $appData;
+    }
+
+    /**
+     * Verifies and filter out any extra property from an AppObject.
+     * 
+     * @param AppObject $appObject The AppObject instance to check and prune.
+     * @param EntityModel $model The model that the AppObject should adhere to.
+     * @return AppObject A verified AppObject trimmed of any extra property.
+     * @todo Good location for this method?
+     */
+    public function pruneAppObject(AppObject $appObject, EntityModel $model): AppObject
+    {
+        $cvs = (new Validator($model))->validate($appObject->toArray());
+        if (count($cvs) > 0) {
+            throw new InvalidArgumentException('Given app object does not adhere to the given model.');
+        }
+        $data = [];
+        foreach ($model->getProperties() as $key => $property) {
+            if ($property instanceof ForeignEntityModel && null !== $appObject[$key]) {
+                $data[$key] = $this->pruneAppObject($appObject[$key], $property->getEntityModel());
+            } else {
+                $data[$key] = $appObject[$key];
+            }
+        }
+        return new AppObject($data);
     }
 
     /**

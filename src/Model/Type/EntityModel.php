@@ -6,6 +6,11 @@ namespace LM\WebFramework\Model\Type;
 
 use InvalidArgumentException;
 
+/**
+ * @todo Make identifier optional?
+ * @todo Disallow sub EntityModel sub properties that are not contained within
+ * a ForeignEntityModel?
+ */
 final class EntityModel extends AbstractModel
 {
     /**

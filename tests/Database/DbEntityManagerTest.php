@@ -411,4 +411,37 @@ final class DbEntityManagerTest extends TestCase
 
         $this->assertEquals($expected, $this->em->convertDbRowsToList($dbRows, $personModel));
     }
+
+    public function testPruning(): void
+    {
+        $model = (new EntityModel(
+            'my_model',
+            [
+                'id' => new StringModel(),
+                'sub_entity_id' => new StringModel(isNullable: true),
+            ],
+        ))->addItselfAsProperty('sub_entity', 'id', 'sub_entity_id', true);
+
+        $appObject = new AppObject([
+            'id' => 'entity-00',
+            'sub_entity_id' => 'entity-01',
+            'sub_entity' => [
+                'id' => 'entity-01',
+                'sub_entity_id' => null,
+                'sub_entity' => null,
+                'extra' => 333,
+            ],
+            'extra' => false,
+        ]);
+        $expected = new AppObject([
+            'id' => 'entity-00',
+            'sub_entity_id' => 'entity-01',
+            'sub_entity' => [
+                'id' => 'entity-01',
+                'sub_entity_id' => null,
+                'sub_entity' => null,
+            ],
+        ]);
+        $this->assertEquals($expected, $this->em->pruneAppObject($appObject, $model));
+    }
 }
