@@ -59,7 +59,6 @@ final class HttpRequestHandlerTest extends TestCase
             ),
             SessionManager::class => new SessionManager([]),
         ],);
-        // new LoggerConsole(),
 
         $this->handler = $container->get(HttpRequestHandler::class);
         $this->cspNonce = $container->get(CspNonce::class);
