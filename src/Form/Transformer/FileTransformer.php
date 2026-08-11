@@ -66,7 +66,7 @@ class FileTransformer implements IFormTransformer
 
     private function saveUploadedImage(UploadedFileInterface $file): null|string {
         if (0 === $file->getError()) {
-            $extension = 'image/png' === $file->getClientMediaType() ? 'png' : 'webp';
+            $extension = 'webp';
             $uploadedFileName = pathinfo($file->getClientFilename(), PATHINFO_FILENAME);
             $newFilename = (new Slug($uploadedFileName, true, true))->__toString();
             $destinationPath = "{$this->destinationFolder}/{$newFilename}.$extension";
