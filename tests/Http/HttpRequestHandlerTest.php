@@ -26,6 +26,7 @@ final class HttpRequestHandlerTest extends TestCase
             'routeError404ControllerFQCN' => ResourceNotFoundController::class,
             'routeMethodNotSupportedFQCN' => MethodNotSupportedController::class,
             'serverErrorControllerFQCN' => ServerErrorController::class,
+            'handleExceptions' => true,
             'rootRoute' => [
                 'fqcn' => HomeController::class,
                 'roles' => [
@@ -37,6 +38,14 @@ final class HttpRequestHandlerTest extends TestCase
                         'fqcn' => MyController::class,
                         'roles' => [
                             'VISITOR'
+                        ]
+                    ],
+                    'only-child-parent' => [
+                        'fqcn' => MyController::class,
+                        'route' => [
+                            'fqcn' => MyController::class,
+                            'minArgs' => 1,
+                            'maxArgs' => 1,
                         ]
                     ]
                 ]
@@ -93,6 +102,26 @@ final class HttpRequestHandlerTest extends TestCase
             $response = $this->handler->generateResponse($request);
             $this->assertEquals(200, $response->getStatusCode(), "Expected 200 for {$p}, got {$response->getStatusCode()}.");
         }
+    }
+
+    public function testOnlyChild(): void
+    {
+        $path = '/only-child-parent/child';
+
+        $request = new ServerRequest('GET', $path);
+        $response = $this->handler->generateResponse($request);
+        $this->assertEquals(200, $response->getStatusCode(), "Expected 200 for {$path}, got {$response->getStatusCode()}.");
+        $this->assertEquals($path, $response->getBody()->getContents());
+    }
+
+    public function testOnlyChildParent(): void
+    {
+        $path = '/only-child-parent';
+
+        $request = new ServerRequest('GET', $path);
+        $response = $this->handler->generateResponse($request);
+        $this->assertEquals(200, $response->getStatusCode(), "Expected 200 for {$path}, got {$response->getStatusCode()}.");
+        $this->assertEquals($path, $response->getBody()->getContents());
     }
 
     public function testWithNonExistingRoutes(): void
@@ -163,6 +192,6 @@ final class MyController implements IRoutedController
         array $routeParams,
         array $serverParams,
     ): ResponseInterface {
-        return new Response(200);
+        return new Response(200, body: $route->getPath());
     }
 }

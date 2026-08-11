@@ -15,9 +15,7 @@ use LM\WebFramework\Controller\Exception\RequestedRouteNotFound;
 use LM\WebFramework\Http\Error\RoutingError;
 use LM\WebFramework\Http\Exception\UnsupportedMethodException;
 use LM\WebFramework\Http\Routing\Exception\RouteNotFoundException;
-use LM\WebFramework\Http\Routing\ParameterizedRoute;
-use LM\WebFramework\Http\Routing\ParentRoute;
-use LM\WebFramework\Http\Routing\Route;
+use LM\WebFramework\Http\Routing\RouteDef;
 use LM\WebFramework\Http\Routing\RouteDefParser;
 use LM\WebFramework\Http\Routing\Router;
 use LM\WebFramework\Session\SessionManager;
@@ -32,7 +30,7 @@ final class HttpRequestHandler
     public const SUPPORTED_METHODS = ['GET', 'HEAD', 'POST', 'READ', 'PUT', 'PATCH', 'OPTIONS', 'DELETE'];
     public const UNEXISTING_ROUTE = 1000;
 
-    private ParameterizedRoute|ParentRoute $rootRoute;
+    private RouteDef $rootRoute;
 
     public function __construct(
         private Configuration $conf,

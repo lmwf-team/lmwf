@@ -12,7 +12,7 @@ final readonly class Router
     /**
      * @param string $path An arbitrary string made of segments separated by one or more forward slashes.
      */
-    public function getRouteFromPath(ParameterizedRoute|ParentRoute $route, string $path): Route
+    public function getRouteFromPath(RouteDef $route, string $path): Route
     {
         $segs = array_values(array_filter(explode('/', $path), fn($value) => '' !== $value));
         return $this->getRouteFromSegs($route, null, $segs);
@@ -23,7 +23,7 @@ final readonly class Router
      * @param int $i The index of the next path segment.
      * @todo Create SegsList type?
      */
-    public function getRouteFromSegs(ParameterizedRoute|ParentRoute $routeDef, ?Route $parentRoute, array $segs, int $i = 0): Route
+    public function getRouteFromSegs(RouteDef $routeDef, ?Route $parentRoute, array $segs, int $i = 0): Route
     {
         $nSegs = count($segs);
 
@@ -47,6 +47,14 @@ final readonly class Router
             }
             $route = new Route($routeDef, $relevantSegs, $parentRoute);
             return $this->getRouteFromSegs($routeDef->routes[$seg], $route, $segs, $i + 1);
+        } elseif ($routeDef instanceof OnlyChildParentRouteDef) {
+            $relevantSegs = 0 === $i ? [] : [$segs[$i - 1]];
+            $route = new Route($routeDef, $relevantSegs, $parentRoute);
+            if ($i === $nSegs) {
+                return $route;
+            } else {
+                return $this->getRouteFromSegs($routeDef->onlyChild, $route, array_slice($segs, $i), 0);
+            }
         }
         throw new LogicException("A route definition can only be a ParentRoute or an Route.");
     }

@@ -14,7 +14,7 @@ final readonly class Route
      * @todo PathSegList?
      */
     public function __construct(
-        public ParameterizedRoute|ParentRoute $routeDef,
+        public RouteDef $routeDef,
         public array $relevantSegs,
         public ?Route $parent = null,
         public int $nArgs = 0,
@@ -52,7 +52,11 @@ final readonly class Route
         if ([] === $this->relevantSegs) {
             return '/';
         }
-        return $this->parent?->getPath() . implode('/', $this->relevantSegs);
+        $path = $this->parent?->getPath();
+        if ('/' !== $path) {
+            $path .= '/';
+        }
+        return  $path . implode('/', $this->relevantSegs);
     }
 
     /**
