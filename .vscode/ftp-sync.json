@@ -1,0 +1,20 @@
+{
+    "remotePath": "./",
+    "host": "ftp-example.org",
+    "username": "shift-two_pdm",
+    "password": "MIAOU",
+    "port": 21,
+    "secure": false,
+    "protocol": "ftp",
+    "uploadOnSave": true,
+    "passive": false,
+    "debug": false,
+    "privateKeyPath": null,
+    "passphrase": null,
+    "ignore": [
+        "\\.vscode",
+        "\\.git",
+        "\\.DS_Store",
+        "\\sass"
+    ]
+}
