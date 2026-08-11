@@ -26,9 +26,16 @@ final class HttpRequestHandlerTest extends TestCase
             'serverErrorControllerFQCN' => ServerErrorController::class,
             'rootRoute' => [
                 'fqcn' => HomeController::class,
+                'roles' => [
+                    'ADMIN',
+                    'VISITOR'
+                ],
                 'routes' => [
                     'my' => [
                         'fqcn' => MyController::class,
+                        'roles' => [
+                            'VISITOR'
+                        ]
                     ]
                 ]
             ],

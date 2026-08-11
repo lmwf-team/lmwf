@@ -38,7 +38,7 @@ final class HttpRequestHandler
         private SessionManager $session,
         RouteParser $routeParser,
     ) {
-        $this->router = new Router($routeParser->parse($conf->getRoutes()->toArray()));
+        $this->router = new Router($routeParser->parse($conf->getRoutes()->toArray(), allowOverridingParentRoles: true));
     }
 
     public function sendResponse(ResponseInterface $response): void
