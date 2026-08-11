@@ -32,7 +32,7 @@ jobs:
 
       - uses: ./.github/actions/set-up-repository
         with:
-          tools: phpdoc
+          php-tools: phpdoc
 
       - name: Install Graphviz
         run: |
@@ -47,8 +47,9 @@ jobs:
         run: |
           cp dev/phpdoc/phpdoc.dist.xml .
           phpdoc
-      - uses: actions/download-artifact@v8
+      - uses: actions/download-artifact@v7
         continue-on-error: true
+        id: download
         with:
           name: coverage
           run-id: ${{ github.event.workflow_run.id }}
