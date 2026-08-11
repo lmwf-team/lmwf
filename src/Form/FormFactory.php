@@ -19,6 +19,7 @@ use LM\WebFramework\Model\Type\BoolModel;
 use LM\WebFramework\Model\Type\DateTimeModel;
 use LM\WebFramework\Model\Type\EntityListModel;
 use LM\WebFramework\Model\Type\EntityModel;
+use LM\WebFramework\Model\Type\ForeignEntityModel;
 use LM\WebFramework\Model\Type\IModel;
 use LM\WebFramework\Model\Type\IntModel;
 use LM\WebFramework\Model\Type\ListModel;
@@ -44,8 +45,11 @@ final class FormFactory
         return $this->createTransformer($model, $config, null, true);
     }
 
-    public function createTransformer(IModel $model, array $config = [], ?string $name = null, bool $csrf = false): IFormTransformer {
-        if ($model instanceof EntityModel) {
+    public function createTransformer(IModel $model, array $config = [], ?string $name = null, bool $csrf = false): IFormTransformer
+    {
+        if ($model instanceof ForeignEntityModel) {
+            return $this->createTransformer($model->getEntityModel(), $config, $name, $csrf);
+        } elseif ($model instanceof EntityModel) {
             $formElements = [];
             $defaultCallbacks = [];
             foreach ($model->getProperties() as $key => $property) {
