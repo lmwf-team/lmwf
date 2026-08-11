@@ -14,7 +14,7 @@ final class ListModel extends AbstractModel
 {
     public function __construct(
         private IScalarModel $itemModel,
-        private ?IRangeConstraint $rangeConstraint,
+        private ?IRangeConstraint $rangeConstraint = null,
         bool $isNullable = false,
     ) {
         parent::__construct($isNullable);
