@@ -5,9 +5,13 @@ declare(strict_types=1);
 namespace LMWF\Tests\Http\Routing;
 
 use DomainException;
+use InvalidArgumentException;
 use LMWF\Http\Routing\Exception\RouteNotFoundException;
 use LMWF\Http\Routing\Route;
 use LMWF\Conf\Http\RouteDef;
+use LMWF\Http\Controller\Issue\RouteNotFoundIssue;
+use LMWF\Http\Controller\Issue\RoutingParamIssue;
+use LMWF\Http\Controller\Issue\RoutingParamIssueCode;
 use LMWF\Http\Routing\Router;
 use PHPUnit\Framework\TestCase;
 
@@ -43,86 +47,81 @@ final class RouterTest extends TestCase
         self::assertEquals($subroute, $router->getRouteFromPath($rootRoute->def, "/{$subrouteId}"));
     }
 
-    public function testParameterizedRouteWithBadParams0(): void
+    public function testRootRouteWithZeroMinParams(): void
     {
+        $routeDef = new RouteDef(null, [], nArgsUpperLimit: 1);
         $router = new Router();
 
-        $routeDef = new RouteDef(null, []);
-
-        $this->expectException(RouteNotFoundException::class);
+        $this->expectException(DomainException::class);
         $router->getRouteFromPath($routeDef, '');
     }
 
-    public function testParameterizedRouteWithBadParams2(): void
+    /**
+     * If the root route does not define any child, we should get an exception
+     * from the router as it makes it impossible for any path to match any
+     * route (since a path is at least composed of two segments).
+     */
+    public function testRootRouteWithZeroParams(): void
     {
+        $routeDef = new RouteDef(null, []);
         $router = new Router();
 
-        $routeDef = new RouteDef(null, nArgsLowerLimit: 1, nArgsUpperLimit: 2);
-
-        self::assertEquals(new Route($routeDef, '', ['', '']), $router->getRouteFromPath($routeDef, '//'));
-        self::assertEquals(new Route($routeDef, '', ['test']), $router->getRouteFromPath($routeDef, '/test'));
-        $this->expectException(RouteNotFoundException::class);
-        $router->getRouteFromPath($routeDef, '///');
+        $this->expectException(DomainException::class);
+        $router->getRouteFromPath($routeDef, '');
     }
 
-    public function testParameterizedRouteWithBadParams4(): void
+    public function testRootRouteWithNoChild(): void
     {
-        $router = new Router();
-
-        $routeDef = new RouteDef(self::class, nArgsLowerLimit: 1, nArgsUpperLimit: 1);
-
-        $this->expectException(RouteNotFoundException::class);
-        $router->getRouteFromPath($routeDef, '/test/prout');
+        $this->expectException(DomainException::class);
+        Route::createRootRouteDef([]);
     }
 
-    public function testParameterizedRouteWithBadParams5(): void
-    {
-        $router = new Router();
-
-        $routeDef = new RouteDef(self::class, nArgsLowerLimit: 1, nArgsUpperLimit: 1);
-
-        $this->expectException(RouteNotFoundException::class);
-        $router->getRouteFromPath($routeDef, '//test/prout');
-    }
-
-    public function testParameterizedRouteWithBadParams6(): void
+    public function testRootRouteWithOneParamOnly(): void
     {
         $router = new Router();
 
         $routeDef = new RouteDef(self::class, nArgsLowerLimit: 1, nArgsUpperLimit: 1);
 
-        $this->expectException(RouteNotFoundException::class);
-        $router->getRouteFromPath($routeDef, '/test/prout/');
+        $this->assertEquals(
+            new RoutingParamIssue(RoutingParamIssueCode::TooManyParams, $routeDef, 2),
+            $router->getRouteFromPath($routeDef, '/param1/param2'),
+        );
+        $this->assertEquals(
+            new RoutingParamIssue(RoutingParamIssueCode::TooManyParams, $routeDef, 2),
+            $router->getRouteFromPath($routeDef, '/param1/'),
+        );
+        $this->assertEquals(
+            new Route($routeDef, '', ['param1']),
+            $router->getRouteFromPath($routeDef, '/param1'),
+        );
     }
 
-    public function testParameterizedRouteWithBadParams7(): void
-    {
-        $router = new Router();
-
-        $routeDef = new RouteDef(self::class, nArgsLowerLimit: 1, nArgsUpperLimit: 1);
-
-        $this->expectException(RouteNotFoundException::class);
-        $router->getRouteFromPath($routeDef, '/test/prout//');
-    }
-
+    /**
+     * An exception should be thrown by the parser if the passed path is not a
+     * valid absolute path, or an empty string.
+     */
     public function testNonAbsolutePath(): void
     {
         $router = new Router();
-
-        $rootRoute = Route::createRootRouteDef([]);
+        $routeDef = new RouteDef(null, nArgsLowerLimit: 1, nArgsUpperLimit: 1);
 
         $this->expectException(DomainException::class);
-        $router->getRouteFromPath($rootRoute->def, 'test');
+
+        $router->getRouteFromPath($routeDef, 'test');
     }
 
     public function testNonExistingRoute(): void
     {
         $router = new Router();
 
-        $rootRoute = Route::createRootRouteDef([]);
+        $rootRoute = Route::createRootRouteDef([
+            '' => new RouteDef(null, [])
+        ]);
 
-        $this->expectException(RouteNotFoundException::class);
-        $router->getRouteFromPath($rootRoute->def, '/test');
+        $this->assertEquals(
+            new RouteNotFoundIssue('test'),
+            $router->getRouteFromPath($rootRoute->def, '/test'),
+        );
     }
 
     public function testSubroute(): void
@@ -143,5 +142,20 @@ final class RouterTest extends TestCase
         self::assertEquals($sub1Route, $router->getRouteFromPath($rootRoute->def, '/sub1'));
         self::assertEquals($sub2Route, $router->getRouteFromPath($rootRoute->def, '/sub2/param1/param2'));
         self::assertEquals($sub2RouteNoParams, $router->getRouteFromPath($rootRoute->def, '/sub2'));
+    }
+
+
+
+    public function testRootRouteWithOneToTwoParams(): void
+    {
+        $routeDef = new RouteDef(null, nArgsLowerLimit: 1, nArgsUpperLimit: 2);
+        $router = new Router();
+
+        self::assertEquals(new Route($routeDef, '', ['']), $router->getRouteFromPath($routeDef, ''));
+        self::assertEquals(new Route($routeDef, '', ['']), $router->getRouteFromPath($routeDef, '/'));
+        self::assertEquals(new Route($routeDef, '', ['', '']), $router->getRouteFromPath($routeDef, '//'));
+        self::assertEquals(new Route($routeDef, '', ['param1']), $router->getRouteFromPath($routeDef, '/param1'));
+        self::assertEquals(new Route($routeDef, '', ['param1', '']), $router->getRouteFromPath($routeDef, '/param1/'));
+        self::assertEquals(new RoutingParamIssue(RoutingParamIssueCode::TooManyParams, $routeDef, 3), $router->getRouteFromPath($routeDef, '/param1/param2/param3'));
     }
 }

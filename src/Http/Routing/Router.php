@@ -5,13 +5,12 @@ declare(strict_types=1);
 namespace LMWF\Http\Routing;
 
 use DomainException;
+use InvalidArgumentException;
 use LMWF\Conf\Http\RouteDef;
 use LMWF\ErrorHandling\Log;
 use LMWF\Http\Controller\Issue\RouteNotFoundIssue;
 use LMWF\Http\Controller\Issue\RoutingParamIssue;
 use LMWF\Http\Controller\Issue\RoutingParamIssueCode;
-use LMWF\Http\Routing\Exception\RouteNotFoundException;
-use LogicException;
 
 final readonly class Router
 {
@@ -41,6 +40,9 @@ final readonly class Router
      */
     public function getRouteFromPath(RouteDef $routeDef, string $path): Route|RoutingParamIssue|RouteNotFoundIssue
     {
+        if ([] === $routeDef->subroutes && 0 === $routeDef->nArgsLowerLimit) {
+            throw new DomainException('Invalid root route definition: it MUST either defines chilren or accepts at least one parameter.');
+        }
         $segs = self::getSegs($path);
         Log::debug('Segments are: [' . implode(',', $segs) . ']');
         return $this->getRouteFromSegs($routeDef, null, $segs[0], array_slice($segs, 1));
@@ -57,7 +59,6 @@ final readonly class Router
         array $nextSegs,
     ): Route|RoutingParamIssue|RouteNotFoundIssue {
         Log::debug("Current seg is '{$currentSeg}', next segs are: [" . implode(', ', $nextSegs) . "].");
-
 
         $nArgs = count($nextSegs);
         if ($routeDef->nArgsLowerLimit > $nArgs) {

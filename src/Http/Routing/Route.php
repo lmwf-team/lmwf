@@ -24,11 +24,14 @@ use LMWF\Http\Routing\Exception\RootRouteWithDefaultControllerException;
 final readonly class Route
 {
     /**
-     * @param array<string, RouteDef> $routes
+     * @param non-empty-array<string, RouteDef> $routes
      */
-    public static function createRootRouteDef(array $routes): self
+    public static function createRootRouteDef(array $subroutes): self
     {
-        $rootRouteDef = new RouteDef(null, subroutes: $routes);
+        if ([] === $subroutes) {
+            throw new DomainException('You must define subroutes for the root route.');
+        }
+        $rootRouteDef = new RouteDef(null, subroutes: $subroutes);
         return new self($rootRouteDef, '');
     }
 
