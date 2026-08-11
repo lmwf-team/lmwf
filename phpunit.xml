@@ -13,11 +13,6 @@
          failOnWarning="true"
          stopOnFailure="false"
          >
-    <coverage>
-        <report>
-            <xml outputDirectory="xml-coverage"/>
-        </report>
-    </coverage>
 
     <source ignoreIndirectDeprecations="true">
         <include>

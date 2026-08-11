@@ -5,29 +5,12 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Debug test casee",
+            "name": "Debug test case",
             "type": "php",
             "request": "launch",
-            "program": "phpunit ${file}",
+            "program": "phpunit ${relativeFile}",
             "cwd": "${workspaceRoot}/.",
-            "externalConsole": false,
             "port": 9003
-        },
-        {
-            "name": "Launch built-in server and Debug",
-            "type": "php",
-            "request": "launch",
-            "noDebug": false,
-            "runtimeArgs": [
-                "-S",
-                "localhost:8000",
-                "-t",
-                "."
-            ],
-            "cwd": "${workspaceRoot}/.",
-            "serverReadyAction": {
-                "action": "openExternally"
-            }
         },
         {
             "name": "Listen for Xdebug",
