@@ -4,16 +4,11 @@ declare(strict_types=1);
 
 namespace LM\WebFramework\Tests\DataStructures;
 
-use InvalidArgumentException;
 use LM\WebFramework\Configuration\Configuration;
 use LM\WebFramework\Configuration\Exception\SettingNotFoundException;
-use LM\WebFramework\DataStructures\AppList;
-use LM\WebFramework\DataStructures\AppObject;
 use LM\WebFramework\DataStructures\Factory\CollectionFactory;
-use OutOfBoundsException;
+use LM\WebFramework\Http\HttpRequestHandler;
 use PHPUnit\Framework\TestCase;
-use TypeError;
-use UnexpectedValueException;
 
 final class HttpRequestHandlerTest extends TestCase
 {
@@ -28,13 +23,11 @@ final class HttpRequestHandlerTest extends TestCase
                                 'login' => [
                                     'controller' => [
                                         'class' => 'LoginController',
-                                        'n_args' => 0,
                                     ],
                                 ],
                                 'account' => [
                                     'controller' => [
                                         'class' => 'AccountController',
-                                        'n_args' => 0,
                                     ],
                                 ],
                             ]
@@ -42,14 +35,12 @@ final class HttpRequestHandlerTest extends TestCase
                         'articles' => [
                             'controller' => [
                                 'class' => 'ArticleController',
-                                'min_n_args' => 1,
-                                'max_n_args' => 1,
+                                'n_args' => 1,
                             ],
                             'routes' => [
                                 'edit' => [
                                     'controller' => [
                                         'class' => 'EditArticleController',
-                                        'n_args' => 0,
                                     ]
                                 ]
                             ]
@@ -68,7 +59,8 @@ final class HttpRequestHandlerTest extends TestCase
         $this->assertEquals(
             [
                 'class' => 'LoginController',
-                'n_args' => 0,
+                'max_n_args' => 0,
+                'min_n_args' => 0,
             ],
             $config->getControllerFqcn(['admin', 'login']),
         );
@@ -79,7 +71,8 @@ final class HttpRequestHandlerTest extends TestCase
         $this->assertEquals(
             [
                 'class' => 'EditArticleController',
-                'n_args' => 0,
+                'max_n_args' => 0,
+                'min_n_args' => 0,
             ],
             $config->getControllerFqcn(['articles', 'edit']),
         );
@@ -87,7 +80,8 @@ final class HttpRequestHandlerTest extends TestCase
         $this->assertEquals(
             [
                 'class' => 'ArticleController',
-                'n_args' => 1,
+                'max_n_args' => 1,
+                'min_n_args' => 1,
             ],
             $config->getControllerFqcn(['articles', 'foo']),
         );
@@ -95,9 +89,41 @@ final class HttpRequestHandlerTest extends TestCase
         $this->assertEquals(
             [
                 'class' => 'ArticleController',
-                'n_args' => 1,
+                'max_n_args' => 1,
+                'min_n_args' => 1,
             ],
             $config->getControllerFqcn(['articles']),
+        );
+    }
+
+    public function testGetPathSegments(): void
+    {
+        $this->assertEquals(
+            [
+                '',
+            ],
+            HttpRequestHandler::getPathSegments(''),
+        );
+        
+        $this->assertEquals(
+            [
+                '',
+            ],
+            HttpRequestHandler::getPathSegments('/'),
+        );
+        
+        $this->assertEquals(
+            [
+                '',
+            ],
+            HttpRequestHandler::getPathSegments('//'),
+        );
+        
+        $this->assertEquals(
+            [
+                'aui',
+            ],
+            HttpRequestHandler::getPathSegments('/aui/'),
         );
     }
 }

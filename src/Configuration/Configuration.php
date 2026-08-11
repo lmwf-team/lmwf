@@ -51,12 +51,12 @@ final class Configuration
                 $currentRoute = $currentRoute['routes'][$pathSegments[$i]];
             } elseif ($currentRoute->hasProperty('controller')) {
                 $nRemainingPathSegments = $nPathSegments - ($i + 1);
-                $maxNArgs = $currentRoute['controller']['max_n_args'] ?? $currentRoute['controller']['n_args'];
-                $minNArgs = $currentRoute['controller']['min_n_args'] ?? $currentRoute['controller']['n_args'];
+                $maxNArgs = $currentRoute['controller']['max_n_args'] ?? $currentRoute['controller']['n_args'] ?? 0;
+                $minNArgs = $currentRoute['controller']['min_n_args'] ?? $currentRoute['controller']['n_args'] ?? 0;
                 if ($nRemainingPathSegments <= $maxNArgs && $nRemainingPathSegments >= $minNArgs) {
                     break;
                 } else {
-                    throw new SettingNotFoundException("Found a route but not the right number of arguments.");
+                    throw new SettingNotFoundException("Found a route but not the right number of arguments ($nRemainingPathSegments not between $minNArgs and $maxNArgs.");
                 }
             } else {
                 throw new SettingNotFoundException("Requested route with path segment {$pathSegments[$i]} does not exist.");
@@ -67,7 +67,12 @@ final class Configuration
             throw new SettingNotFoundException("Requested route does not have an associated controller.");
         }
 
-        return $currentRoute['controller']->toArray();
+
+
+        $controllerRoute = $currentRoute['controller']->toArray();
+        $controllerRoute['max_n_args'] = $controllerRoute['max_n_args'] ?? $controllerRoute['n_args'] ?? 0;
+        $controllerRoute['min_n_args'] = $controllerRoute['min_n_args'] ?? $controllerRoute['n_args'] ?? 0;
+        return $controllerRoute;
     } 
 
     /**
