@@ -14,5 +14,5 @@ interface ControllerInterface
 
     public function getAccessControl(): Clearance;
 
-    public function getPage(): Page;
+    public function getPage(array $pageParams): Page;
 }
