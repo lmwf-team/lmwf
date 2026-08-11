@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace LM\WebFramework\Form\Transformer;
 
 use UnexpectedValueException;
-use LM\WebFramework\ErrorHandling\Log;
-use LM\WebFramework\Form\Exceptions\ExtractionException;
 
 final class ArrayTransformer implements IFormTransformer
 {
@@ -30,7 +28,7 @@ final class ArrayTransformer implements IFormTransformer
      * arrays of transformed submitted data mapped by $fieldTransformers keys.
      */
     #[\Override]
-    public function transformSubmittedData(array $parsedPayload, array $uploadedFiles): ?array
+    public function transformSubmittedData(array $parsedPayload, array $uploadedFiles): array
     {
         // Even if this transformer has a name, $parsedPayload[$this->name] might
         // still not exist if it contains fields that are not included in the

@@ -8,6 +8,7 @@ parameters:
         - ../../tests
     bootstrapFiles:
         - ../../vendor/autoload.php
+    treatPhpDocTypesAsCertain: false
     ergebnis:
         declareStrictTypes:
             enabled: true
