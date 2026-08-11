@@ -11,6 +11,7 @@ use LM\WebFramework\Form\FormReader;
 
 class LoginController implements IPageController
 {
+	public function
 	public function doGet(): void
 	{
 		$view = new LoginView(new FormReader(array()));
