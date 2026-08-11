@@ -3,6 +3,7 @@
 namespace LM\WebFramework\Http;
 
 use GuzzleHttp\Psr7\ServerRequest;
+use LM\WebFramework\Configuration;
 use LM\WebFramework\Controller\ControllerInterface;
 use MF\Enum\Clearance;
 use MF\Session\SessionManager;
