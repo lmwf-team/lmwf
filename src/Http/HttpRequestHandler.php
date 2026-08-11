@@ -8,6 +8,7 @@ use LM\WebFramework\Configuration;
 use LM\WebFramework\Controller\ControllerInterface;
 use LM\WebFramework\Controller\Exception\AccessDenied;
 use LM\WebFramework\Controller\Exception\AlreadyAuthenticated;
+use LM\WebFramework\Controller\Exception\RequestedResourceNotFound;
 use LM\WebFramework\Controller\Exception\RequestedRouteNotFound;
 use LM\WebFramework\Session\SessionManager;
 use Psr\Container\ContainerInterface;
@@ -57,7 +58,7 @@ class HttpRequestHandler
         try {
             $controller = $this->getController($request);
             return $controller->generateResponse($request, $this->extractRouteParams($request));
-        } catch (RequestedResourceNotFound) {
+        } catch (RequestedRouteNotFound|RequestedResourceNotFound) {
             return $this->container->get($this->configuration->getErrorNotFoundControllerFQCN());
         }catch (AlreadyAuthenticated) {
             return $this->container->get($this->configuration->getErrorLoggedInControllerFQCN());
