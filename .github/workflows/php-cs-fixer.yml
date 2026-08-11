@@ -19,4 +19,4 @@ jobs:
       - uses: ./.github/actions/set-up-repository
 
       - name: Check coding style
-        run: vendor/bin/php-cs-fixer --silent -n check .
+        run: vendor/bin/php-cs-fixer -n --silent check
