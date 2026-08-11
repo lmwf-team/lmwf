@@ -26,12 +26,6 @@ final class Kernel
         string $language,
         array $runtimeConfig = [],
     ): ContainerInterface {
-        if (self::CLI_ID !== php_sapi_name()) {
-            // Basic error handler designed to be fail-proof
-            set_error_handler(self::getFailProofErrorHandler());
-            set_error_handler(self::getFailProofExceptionHandler());
-        }
-
         $config = Configuration::createFromEnvFile(
             $projectRootPath,
             $language,
@@ -70,26 +64,5 @@ final class Kernel
         ;
 
         return $container;
-    }
-
-    public static function getFailProofErrorHandler(): callable
-    {
-        return function(
-            $errNo,
-            $errStr,
-            $errFile,
-            $errLine,
-        ): void {
-            echo(":(");
-            exit();
-        };
-    }
-
-    public static function getFailProofExceptionHandler(): callable
-    {
-        return function($exception): void {
-            echo(":-(");
-            exit();
-        };
     }
 }
