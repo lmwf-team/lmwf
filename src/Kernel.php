@@ -23,7 +23,7 @@ final class Kernel
     public const string CLI_ID = 'cli';
 
     /**
-     * Initialize the lmwf.
+     * Initialize the LMWF.
      *
      * Initialize the app configuration (from the provided configuration data,
      * from the provided path containing valid configuration files, or a mix of

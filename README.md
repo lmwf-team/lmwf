@@ -2,7 +2,7 @@
 [![PHPUnit](https://github.com/lmwf-team/lmwf/actions/workflows/phpunit.yml/badge.svg)](https://github.com/lmwf-team/lmwf/actions/workflows/phpunit.yml)
 [![PHPStan](https://github.com/lmwf-team/lmwf/actions/workflows/phpstan.yml/badge.svg)](https://github.com/lmwf-team/lmwf/actions/workflows/phpstan.yml)
 
-# lmwf
+# LMWF
 
 Lightweight web framework that doesn’t require tons of dependencies and keeps you in control.
 
@@ -10,7 +10,7 @@ Lightweight web framework that doesn’t require tons of dependencies and keeps 
 
 # Security
 
- - Deactivate `display_errors` and `display_warnings`. `lmwf` does not take care of that for you.
+ - Deactivate `display_errors` and `display_warnings`. `LMWF` does not take care of that for you.
 
 ## TODO
 
