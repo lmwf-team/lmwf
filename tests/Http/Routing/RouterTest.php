@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace LMWF\Tests\Http\Routing;
 
 use DomainException;
-use LMWF\Http\Routing\Exception\RootRouteWithDefaultControllerException;
 use LMWF\Http\Routing\Exception\RouteNotFoundException;
 use LMWF\Http\Routing\Route;
 use LMWF\Conf\Http\RouteDef;

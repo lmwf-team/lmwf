@@ -2,7 +2,7 @@ name: Documentation
 
 on:
   workflow_run:
-    workflows: ["PHPUnit"]
+    workflows: [PHPUnit]
     types: [completed]
 
   workflow_dispatch:
