@@ -4,6 +4,8 @@
 
 # LMWF
 
+**[Documentation](https://lmwf-team.github.io/lmwf/phpdoc/)**
+
 Lightweight web framework that doesn’t require tons of dependencies and keeps you in control.
 
 ![Modules of LMWF](https://lmwf-team.github.io/lmwf/diagram.png)
