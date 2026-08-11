@@ -17,11 +17,7 @@ use LM\WebFramework\Model\Type\IntModel;
 use LM\WebFramework\Model\Type\EntityListModel;
 use LM\WebFramework\Model\Type\ListModel;
 use LM\WebFramework\Model\Type\StringModel;
-use PhpParser\Node\Expr\Cast\String_;
 use PHPUnit\Framework\TestCase;
-
-use function PHPUnit\Framework\isNan;
-use function PHPUnit\Framework\isNull;
 
 final class DbEntityManagerTest extends TestCase
 {
