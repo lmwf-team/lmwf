@@ -11,8 +11,9 @@ final class Logger
     private string $prefix;
 
     public function __construct(
-        private Configuration $configuration,
+        Configuration $configuration,
     ) {
+        $this->prefix = $configuration->getLoggingPrefix();
     }
 
     public function log(string $message): void
