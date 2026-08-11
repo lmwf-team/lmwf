@@ -23,7 +23,7 @@ class HomeView extends TemplateView
 	<body>
 		<?php $this->displayPageHeader('Login', $this->breadcrumb) ?>
 		<main>
-			<div class="main-black-transparent-background">
+			<div class="main-content-container">
 				<p>Personal Data Manager is the essential tool to help you manage your life! <a href="index.php?page=login">Log in!</a></p>
 			</div>
 		</main>
