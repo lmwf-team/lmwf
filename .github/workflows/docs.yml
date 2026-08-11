@@ -49,8 +49,9 @@ jobs:
           phpdoc
       - uses: actions/download-artifact@v8
         continue-on-error: true
-        run-id: ${{ github.event.workflow_run.id }}
         with:
+          artifact-ids: coverage
+          run-id: ${{ github.event.workflow_run.id }}
           name: coverage
       - name: Generate JSON file for coverage badge
         if: ${{ steps.download.outcome == 'success' }}
