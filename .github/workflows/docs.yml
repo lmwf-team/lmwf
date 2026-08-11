@@ -1,8 +1,9 @@
 name: Documentation
 
 on:
-  push:
-    branches: ["master"]
+  workflow_run:
+    workflows: ["PHPUnit"]
+    types: [completed]
 
   workflow_dispatch:
 
@@ -40,7 +41,7 @@ jobs:
       - name: Create "docs" folder if it does not exits
         run: mkdir -p ./docs
       - name: Run deptrac
-        continue-on-error: true # Deptrac returns 1 for some reason, even when there is no issue...
+        continue-on-error: true
         run: vendor/bin/deptrac analyse --formatter=graphviz-image --output docs/diagram.png
       - name: Run phpdoc
         run: |
@@ -49,6 +50,7 @@ jobs:
       - uses: actions/download-artifact@v5
         continue-on-error: true
         id: download
+        run-id: ${{ github.event.workflow_run.id }}
         with:
           name: coverage
       - name: Generate JSON file for coverage badge
