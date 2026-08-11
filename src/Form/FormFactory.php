@@ -16,7 +16,13 @@ use LM\WebFramework\Form\Transformer\FileTransformer;
 use LM\WebFramework\Form\Transformer\IFormTransformer;
 use LM\WebFramework\Form\Transformer\ListTransformer;
 use LM\WebFramework\Form\Transformer\StringTransformer;
+use LM\WebFramework\Model\Type\BoolModel;
+use LM\WebFramework\Model\Type\DateTimeModel;
+use LM\WebFramework\Model\Type\EntityModel;
 use LM\WebFramework\Model\Type\IModel;
+use LM\WebFramework\Model\Type\IntModel;
+use LM\WebFramework\Model\Type\ListModel;
+use LM\WebFramework\Model\Type\StringModel;
 
 /**
  * Automatically creates a Form object from a model definition.
@@ -32,17 +38,17 @@ final class FormFactory
     }
 
     public function createForm(IModel $model, array $config = []): ArrayTransformer {
-        if (null === $model->getArrayDefinition()) {
+        if (!$model instanceof EntityModel) {
             throw new InvalidArgumentException('Model must possess an array definition.');
         }
         return $this->createTransformer($model, $config, null, true);
     }
 
     public function createTransformer(IModel $model, array $config = [], ?string $name = null, bool $csrf = false): IFormTransformer {
-        if (null !== $model->getArrayDefinition()) {
+        if ($model instanceof EntityModel) {
             $formElements = [];
             $defaultCallbacks = [];
-            foreach ($model->getArrayDefinition() as $key => $property) {
+            foreach ($model->getProperties() as $key => $property) {
                 if (!isset($config[$key]['ignore']) || false === $config[$key]['ignore']) {
                     $formElements[$key] = $this->createTransformer($property, $config[$key] ?? [], $key);
                 }
@@ -56,23 +62,22 @@ final class FormFactory
         if (null === $name) {
             throw new InvalidArgumentException('A name must be provided for non-array transformers.');
         }
-        if (null !== $model->getListNodeModel()) {
-            return new ListTransformer($model->getListNodeModel(), $config, $this, $name);
+        if ($model instanceof ListModel) {
+            return new ListTransformer($model->getItemModel(), $config, $this, $name);
         }
-        if (null !== $model->getStringConstraints() || null !== $model->getIntegerConstraints()) {
-            if (null !== $model->getStringConstraints()) {
-                foreach ($model->getStringConstraints() as $c) {
-                    if ($c instanceof IUploadedImageConstraint) {
-                        return new FileTransformer($this->config->getPathOfUploadedFiles(), $name);
-                    }
-                }
+        if ($model instanceof StringModel) {
+            if (null !== $model->getUploadedImageConstraint()) {
+                return new FileTransformer($this->config->getPathOfUploadedFiles(), $name);
             }
             return new StringTransformer($name);
         }
-        if (null !== $model->getDateTimeConstraints()) {
+        if ($model instanceof IntModel) {
+            return new StringTransformer($name);
+        }
+        if ($model instanceof DateTimeModel) {
             return new DateTimeTransformer($name);
         }
-        if ($model->isBool()) {
+        if ($model instanceof BoolModel) {
             return new CheckboxTransformer($name);
         }
 

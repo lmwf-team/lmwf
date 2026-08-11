@@ -74,32 +74,34 @@ final class DbEntityManager
      * @param AbstractEntityModel $model The model of each row.
      * @param int $index The row identifier of the main entity.
      */
-    public function convertDbRowsToAppObject(array $dbRows, AbstractEntityModel $model, int $index = 0): AppObject
+    public function convertDbRowsToAppObject(array $dbRows, EntityModel $model, int $index = 0): AppObject
     {
         if (!array_is_list($dbRows)) {
             throw new InvalidArgumentException('$dbRows must be a list of rows.');
         }
 
         $transientAppObject = [];
+
         foreach ($model->getProperties() as $key => $property) {
             $value = null;
 
             if ($property instanceof ForeignEntityModel) {
-                $parentId = $dbRows[$index][$model->getIdentifier() . self::SEP . $property->getParentIdKey()];
+                $parentId = $dbRows[$index][$model->getIdentifier() . self::SEP . $property->getReferenceKeyInParent()];
                 $linkedRowsKeys = array_filter(
                     array_keys($dbRows),
                     function ($rowKey) use ($dbRows, $parentId, $property) {
-                        return $dbRows[$rowKey][$property->getIdentifier() . self::SEP . $property->getChildIdKey()] === $parentId;
+                        return $dbRows[$rowKey][$property->getEntityModel()->getIdentifier() . self::SEP . $property->getReferencedKeyInChild()] === $parentId;
                     },
                 );
                 if (count($linkedRowsKeys) > 0) {
-                    $value = $this->convertDbRowsToAppObject($dbRows, $property, $linkedRowsKeys[0]);
+                    $value = $this->convertDbRowsToAppObject($dbRows, $property->getEntityModel(), $linkedRowsKeys[0]);
                 }
             } elseif ($property instanceof EntityModel) {
                 $value = $this->convertDbRowsToAppObject($dbRows, $property, $index);
             } elseif ($property instanceof EntityListModel) {
                 $itemModel = $property->getItemModel();
-                $parentId = $dbRows[$index][$itemModel->getIdentifier() . self::SEP . $itemModel->getParentIdKey()];
+                var_dump($itemModel);
+                $parentId = $dbRows[$index][$model->getIdentifier() . self::SEP . $itemModel->getReferenceKeyInParent()];
                 $value = $this->convertDbEntityList($dbRows, $property, $parentId);
             } else {
                 $value = $this->convertDbScalar($dbRows[$index][$model->getIdentifier() . self::SEP . $key], $property);
@@ -107,19 +109,20 @@ final class DbEntityManager
 
             $transientAppObject[$key] = $value;
         }
+
         return new AppObject($transientAppObject);
     }
 
-    public function convertDbEntityList(array $dbRows, EntityListModel $EntityListModel, ?string $parentId) : array
+    public function convertDbEntityList(array $dbRows, EntityListModel $entityListModel, ?string $parentId) : array
     {
-        $itemModel = $EntityListModel->getItemModel();
+        $itemModel = $entityListModel->getItemModel();
         $appItems = [];
         $ids = [];
         
         foreach ($dbRows as $rowIndex => $row) {
-            $rowId = $row[$itemModel->getIdentifier() . self::SEP . $itemModel->getChildIdKey()];
+            $rowId = $row[$itemModel->getEntityModel()->getIdentifier() . self::SEP . $itemModel->getReferencedKeyInChild()];
             if ((null === $parentId || $rowId === $parentId) && !in_array($rowId, $ids)) {
-                $appItems[] = $this->convertDbRowsToAppObject($dbRows, $itemModel, $rowIndex);
+                $appItems[] = $this->convertDbRowsToAppObject($dbRows, $itemModel->getEntityModel(), $rowIndex);
             }
         }
 
@@ -133,8 +136,10 @@ final class DbEntityManager
         foreach ($dbRows as $key => $row) {
             if ($itemModel instanceof IScalarModel) {
                 $appData[] = $this->convertDbScalar($row, $itemModel);
-            } elseif ($itemModel instanceof AbstractEntityModel) {
+            } elseif ($itemModel instanceof EntityModel) {
                 $appData[] = $this->convertDbRowsToAppObject($dbRows, $itemModel, $key);
+            } elseif ($itemModel instanceof ForeignEntityModel) {
+                $appData[] = $this->convertDbRowsToAppObject($dbRows, $itemModel->getEntityModel(), $key);
             } elseif ($itemModel instanceof ListModel) {
                 $appData[] = $this->convertDbList($row, $itemModel);
             }

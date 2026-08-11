@@ -12,7 +12,8 @@ final class Configuration
 
     private string $language;
 
-    public function __construct(string $configFolderPath, string $language) {
+    public function __construct(string $configFolderPath, string $language)
+    {
         $this->configFolderPath = $configFolderPath;
         $this->language = $language;
 
@@ -23,43 +24,53 @@ final class Configuration
         ;
     }
 
-    public function getBoolSetting(string $key): bool {
+    public function getBoolSetting(string $key): bool
+    {
         return $this->env[$key];
     }
 
-    public function getErrorLoggedInControllerFQCN(): string {
+    public function getErrorLoggedInControllerFQCN(): string
+    {
         return $this->getSetting('routeErrorAlreadyLoggedInControllerFQCN');
     }
 
-    public function getErrorNotFoundControllerFQCN(): string {
+    public function getErrorNotFoundControllerFQCN(): string
+    {
         return $this->getSetting('routeError404ControllerFQCN');
     }
 
-    public function getErrorNotLoggedInControllerFQCN(): string {
+    public function getErrorNotLoggedInControllerFQCN(): string
+    {
         return $this->getSetting('routeErrorNotLoggedInControllerFQCN');
     }
 
-    public function getHomeUrl(): string {
+    public function getHomeUrl(): string
+    {
         return $this->getSetting('homeUrl');
     }
 
-    public function getLanguage(): string {
+    public function getLanguage(): string
+    {
         return $this->language;
     }
 
-    public function getPathOfProjectDirectory(): string {
+    public function getPathOfProjectDirectory(): string
+    {
         return $this->configFolderPath;
     }
 
-    public function getPathOfUploadedFiles(): string {
+    public function getPathOfUploadedFiles(): string
+    {
         return $this->env['pathOfUploadedFiles'];
     }
 
-    public function getPublicUrl(): string {
+    public function getPublicUrl(): string
+    {
         return $this->getSetting('publicUrl');
     }
 
-    public function getRoutes(): array {
+    public function getRoutes(): array
+    {
         return $this->env['routes'];
     }
 
@@ -67,11 +78,13 @@ final class Configuration
         return $this->getSetting('serverErrorControllerFQCN');
     }
 
-    public function getSetting(string $key): string {
+    public function getSetting(string $key): string
+    {
         return $this->env[$key];
     }
 
-    public function isDev(): bool {
+    public function isDev(): bool
+    {
         return $this->getBoolSetting('dev');
     }
 }

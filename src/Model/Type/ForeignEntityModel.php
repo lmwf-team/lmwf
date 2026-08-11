@@ -4,26 +4,29 @@ declare(strict_types=1);
 
 namespace LM\WebFramework\Model\Type;
 
-final class ForeignEntityModel extends AbstractEntityModel
+final class ForeignEntityModel extends AbstractModel
 {
     public function __construct(
-        private string $childIdKey,
-        private string $parentIdKey,
-        string $identifier,
-        array $properties,
-        private string $idKey = 'id',
+        private EntityModel $entityModel,
+        private string $referenceKeyInChild,
+        private string $referenceKeyInParent,
         bool $isNullable = false,
     ) {
-        parent::__construct($identifier, $properties, $idKey, $isNullable);
+        parent::__construct($isNullable);
     }
 
-    public function getChildIdKey(): string
+    public function getEntityModel(): EntityModel
     {
-        return $this->childIdKey;
+        return $this->entityModel;
     }
 
-    public function getParentIdKey(): string
+    public function getReferencedKeyInChild(): string
     {
-        return $this->parentIdKey;
+        return $this->referenceKeyInChild;
+    }
+
+    public function getReferenceKeyInParent(): string
+    {
+        return $this->referenceKeyInParent;
     }
 }

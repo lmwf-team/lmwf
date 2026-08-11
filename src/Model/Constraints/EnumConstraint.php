@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace LM\WebFramework\Model\Constraints;
 
-final class EnumConstraint implements IStringConstraint
+final class EnumConstraint implements IEnumConstraint
 {
     private array $values;
 
@@ -20,7 +20,8 @@ final class EnumConstraint implements IStringConstraint
         }
     }
 
-    public function getValues(): array {
+    public function getValues(): array
+    {
         return $this->values;
     }
 }

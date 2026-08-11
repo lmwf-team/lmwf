@@ -135,13 +135,15 @@ final class DbEntityManagerTest extends TestCase
             [
                 'id' => new StringModel(),
                 'parent' => new ForeignEntityModel(
+                    new EntityModel(
+                        'category',
+                        [
+                            'id' => new StringModel(),
+                        ],
+                    ),
                     'id',
                     'parent_id',
-                    'category',
-                    [
-                        'id' => new StringModel(),
-                    ],
-                )
+                ),
             ],
         );
 
@@ -154,16 +156,20 @@ final class DbEntityManagerTest extends TestCase
             'category',
             [
                 'id' => new StringModel(),
-                'children' => new EntityListModel(new ForeignEntityModel(
-                    'parent_id',
-                    'id',
-                    'category',
-                    [
-                        'id' => new StringModel(),
-                        'parent_id' => new StringModel(),
-                    ],
-                )),
-            ]
+                'children' => new EntityListModel(
+                    new ForeignEntityModel(
+                        new EntityModel(
+                            'category',
+                            [
+                                'id' => new StringModel(),
+                                'parent_id' => new StringModel(),
+                            ],
+                        ),
+                        'parent_id',
+                        'id',
+                    )
+                ),
+            ],
         );
 
         $expectedParent = new AppObject([

@@ -9,19 +9,21 @@ use InvalidArgumentException;
 final class RangeConstraint implements IRangeConstraint
 {
     public function __construct(
-        private ?int $min = 0,
-        private ?int $max = null,
+        private ?int $lowerLimit = 0,
+        private ?int $upperLimit = null,
     ) {
-        if (null !== $min && null !== $max && $min > $max) {
+        if (null !== $lowerLimit && null !== $upperLimit && $lowerLimit > $upperLimit) {
             throw new InvalidArgumentException('Min cannot be higher than max.');
+        } elseif (null === $lowerLimit && null === $upperLimit) {
+            throw new InvalidArgumentException('Both the lower and upper limits cannot be null.');
         }
     }
 
-    public function getMin(): ?int {
-        return $this->min;
+    public function getLowerLimit(): ?int {
+        return $this->lowerLimit;
     }
 
-    public function getMax(): ?int {
-        return $this->max;
+    public function getUpperLimit(): ?int {
+        return $this->upperLimit;
     }
 }

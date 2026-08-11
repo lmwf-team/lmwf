@@ -11,8 +11,7 @@ final class ListModel extends AbstractModel
     public function __construct(
         private IScalarModel|EntityModel|ListModel $itemModel,
         bool $isNullable = false,
-    )
-    {
+    ) {
         parent::__construct($isNullable);
     }
 

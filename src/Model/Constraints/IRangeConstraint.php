@@ -6,6 +6,6 @@ namespace LM\WebFramework\Model\Constraints;
 
 interface IRangeConstraint extends IConstraint
 {
-    public function getMax(): ?int;
-    public function getMin(): ?int;
+    public function getLowerLimit(): ?int;
+    public function getUpperLimit(): ?int;
 }

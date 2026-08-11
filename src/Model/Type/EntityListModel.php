@@ -21,7 +21,8 @@ final class EntityListModel extends AbstractModel
         parent::__construct($isNullable);
     }
 
-    public function getItemModel() : ForeignEntityModel {
+    public function getItemModel() : ForeignEntityModel
+    {
         return $this->itemModel;
     }
 }

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace LM\WebFramework\Model\Constraints;
 
-interface IRegexConstraint extends IConstraint
+class UploadedImageConstraint implements IUploadedImageConstraint
 {
-    public function getRegex(): string;
 }

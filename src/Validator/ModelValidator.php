@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace LM\WebFramework\Validator;
 
-use BadMethodCallException;
 use InvalidArgumentException;
 use LM\WebFramework\DataStructures\ConstraintViolation;
 use LM\WebFramework\Model\Type\IModel;
@@ -20,7 +19,7 @@ use LM\WebFramework\Model\Type\StringModel;
 /**
  * Validator for type model data.
  */
-final class ModelValidator implements ITypeValidator
+final class ModelValidator
 {
     private ITypeValidator $validator;
 
@@ -28,10 +27,13 @@ final class ModelValidator implements ITypeValidator
         private IModel $model,
     ) {
         switch ($model::class) {
-            case EntityModel::class:
             case ForeignEntityModel::class:
-                // @todo
-                throw new BadMethodCallException();
+                $this->validator = new ForeignEntityValidator($model);
+                break;
+
+            case EntityModel::class:
+                $this->validator = new EntityValidator($model);
+                break;
 
             case BoolModel::class:
                 $this->validator = new BoolValidator($model);
