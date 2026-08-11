@@ -82,15 +82,15 @@ final class RouterTest extends TestCase
 
         $routeDef = new RouteDef(self::class, nArgsLowerLimit: 1, nArgsUpperLimit: 1);
 
-        $this->assertEquals(
+        self::assertEquals(
             new RoutingParamIssue(RoutingParamIssueCode::TooManyParams, $routeDef, 2),
             $router->getRouteFromPath($routeDef, '/param1/param2'),
         );
-        $this->assertEquals(
+        self::assertEquals(
             new RoutingParamIssue(RoutingParamIssueCode::TooManyParams, $routeDef, 2),
             $router->getRouteFromPath($routeDef, '/param1/'),
         );
-        $this->assertEquals(
+        self::assertEquals(
             new Route($routeDef, '', ['param1']),
             $router->getRouteFromPath($routeDef, '/param1'),
         );
@@ -118,7 +118,7 @@ final class RouterTest extends TestCase
             '' => new RouteDef(null, [])
         ]);
 
-        $this->assertEquals(
+        self::assertEquals(
             new RouteNotFoundIssue('test'),
             $router->getRouteFromPath($rootRoute->def, '/test'),
         );

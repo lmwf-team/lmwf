@@ -24,7 +24,7 @@ use LMWF\Http\Routing\Exception\RootRouteWithDefaultControllerException;
 final readonly class Route
 {
     /**
-     * @param non-empty-array<string, RouteDef> $routes
+     * @param non-empty-array<string, RouteDef> $subroutes
      */
     public static function createRootRouteDef(array $subroutes): self
     {
