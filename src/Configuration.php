@@ -8,8 +8,11 @@ class Configuration
 
     private string $configFolderPath;
 
-    public function __construct(string $configFolderPath) {
+    private string $language;
+
+    public function __construct(string $configFolderPath, string $language) {
         $this->configFolderPath = $configFolderPath;
+        $this->language = $language;
 
         $env = file_get_contents("$configFolderPath/.env.json");
         $envLocal = file_get_contents("$configFolderPath/.env.local.json");
@@ -36,6 +39,10 @@ class Configuration
 
     public function getHomeUrl(): string {
         return $this->getSetting('homeUrl');
+    }
+
+    public function getLanguage(): string {
+        return $this->language;
     }
 
     public function getPathOfProjectDirectory(): string {

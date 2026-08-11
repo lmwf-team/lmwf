@@ -11,13 +11,13 @@ class Kernel
 {
     const CLI_ID = 'cli';
 
-    public static function initialize(string $projectRootPath): ?ContainerInterface {
+    public static function initialize(string $projectRootPath, string $language): ?ContainerInterface {
         set_error_handler(function ($errNo, $errStr, $errFile, $errLine) {
             $msg = "$errNo, $errStr in $errFile on line $errLine";
             throw new RuntimeException($msg, $errNo);
         });
 
-        $config = new Configuration($projectRootPath);
+        $config = new Configuration($projectRootPath, $language);
 
         $cb = (new ContainerBuilder());
         if (!$config->isDev()) {
