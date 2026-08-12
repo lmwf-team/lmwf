@@ -22,17 +22,15 @@ final class ValidatorFactory
     public function create(IModel $model): ITypeValidator
     {
         if ($model instanceof DataArrayModel) {
-            return new EntityValidator($model);
+            return new ArrayValidator($model);
         } elseif ($model instanceof EntityModel) {
-            return new EntityValidator($model);
+            return new ArrayValidator($model);
         } elseif ($model instanceof BoolModel) {
             return new BoolValidator($model);
         } elseif ($model instanceof DateTimeModel) {
             return new DateTimeValidator($model);
         } elseif ($model instanceof EntityListModel) {
             return new ListValidator($model);
-        } elseif ($model instanceof ForeignEntityModel) {
-            return new ForeignEntityValidator($model);
         } elseif ($model instanceof IntModel) {
             return new IntValidator($model);
         } elseif ($model instanceof ListModel) {

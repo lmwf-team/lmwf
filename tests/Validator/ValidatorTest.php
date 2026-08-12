@@ -20,8 +20,7 @@ use LMWF\Constraint\Type\StringModel;
 use LMWF\Validation\AbstractTypeValidator;
 use LMWF\Validation\BoolValidator;
 use LMWF\Validation\DateTimeValidator;
-use LMWF\Validation\EntityValidator;
-use LMWF\Validation\ForeignEntityValidator;
+use LMWF\Validation\ArrayValidator;
 use LMWF\Validation\IntValidator;
 use LMWF\Validation\ListValidator;
 use LMWF\Validation\StringValidator;
@@ -70,7 +69,7 @@ final class ValidatorTest extends TestCase
         self::assertInstanceOf(ValueViolation::class, new StringValidator(new StringModel(regex: '[0-9]+'))->validate($myString));
     }
 
-    public function testEntityValidator(): void
+    public function testArrayValidator(): void
     {
         $entity = [
             'id' => 'hello',
@@ -100,8 +99,8 @@ final class ValidatorTest extends TestCase
             ],
             'id',
         );
-        self::assertInstanceOf(DictValueViolation::class, new EntityValidator($model)->validate($entity));
+        self::assertInstanceOf(DictValueViolation::class, new ArrayValidator($model)->validate($entity));
         $entity['sub_entity_id'] = 'hi';
-        self::assertNull((new EntityValidator($model))->validate($entity));
+        self::assertNull((new ArrayValidator($model))->validate($entity));
     }
 }
