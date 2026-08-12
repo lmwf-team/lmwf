@@ -45,7 +45,7 @@ final class DbEntityManager
      * @param list<non-decimal-int-string> $propertiesToIgnore
      * @return dbrow
      */
-    public function convertAppArrayIntoDbArray(
+    public function convertAppArrayToDbArray(
         iterable $appArray,
         string $prefix = '',
         array $propertiesToIgnore = [],
@@ -61,7 +61,7 @@ final class DbEntityManager
                 }
 
                 // @phpstan-ignore argument.type, argument.type
-                $dbArray += $this->convertAppArrayIntoDbArray($pValue, prefix: $prefix . $pName);
+                $dbArray += $this->convertAppArrayToDbArray($pValue, prefix: $prefix . $pName);
             } else {
                 $dbArray[$prefix . $pName] = $this->convertAppVarToDbScalar($pValue);
             }
