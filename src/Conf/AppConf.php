@@ -48,7 +48,10 @@ final readonly class AppConf
     public string $homeUrl;
     public string $language;
     public string $appRootPath;
+    // @var Path, relative to the appRootPath and homeUrl, to the folder where uploaded images (resources) are stored.
+    // @todo Delete, only keep publicRelPath? (some overlap)
     public string $uploadRelPath;
+    // @var Path, relative to the appRootPath and homeUrl, to the folder where assets and resources are stored.
     public string $publicRelPath;
 
     /**

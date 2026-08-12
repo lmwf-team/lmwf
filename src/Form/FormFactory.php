@@ -52,7 +52,7 @@ final class FormFactory
     public function createForm(ArrayModel $model, array $formConfParams = []): ArrayTransformer
     {
         $formConf = $this->formConfFactory->createConf($model, $formConfParams);
-        return $this->createFormTransformer($formConf, null, true);
+        return $this->createFormTransformer($formConf, null);
     }
 
     /**
@@ -99,7 +99,7 @@ final class FormFactory
     public function createFormTransformer(
         array $formConf,
         ?string $name = null,
-        bool $withCsrf = false,
+        bool $withCsrf = true,
     ): ArrayTransformer {
         $fieldTransformers = [];
         $fieldDefaults = [];
