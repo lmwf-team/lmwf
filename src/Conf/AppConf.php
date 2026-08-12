@@ -160,7 +160,7 @@ final readonly class AppConf
     }
 
     /**
-     * @param list<non-decimal-int-string>|string $keys
+     * @param list<non-decimal-int-string>|non-decimal-int-string $key
      */
     public function getSetting(array|string $key): string
     {

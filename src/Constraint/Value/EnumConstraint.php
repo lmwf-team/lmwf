@@ -34,6 +34,7 @@ final readonly class EnumConstraint implements IEnumConstraint
     /**
      * @return list<string>
      */
+    #[\Override]
     public function getValues(): array
     {
         return $this->values;

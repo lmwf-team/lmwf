@@ -24,7 +24,7 @@ final readonly class ArrayValidator implements ITypeValidator
     public function validate(mixed $value): null|TypeViolation|DictValueViolation
     {
         if (!is_array($value)) {
-            if (null === $value && false === $this->model->isNullable()) {
+            if (null === $value && null !== $this->model->getNotNullConstraint()) {
                 return new TypeViolation($this->model->getNotNullConstraint(), 'Data is not allowed to be null.');
             }
             return new TypeViolation($this->model);

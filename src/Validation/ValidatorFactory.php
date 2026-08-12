@@ -25,6 +25,8 @@ final class ValidatorFactory
             return new ArrayValidator($model);
         } elseif ($model instanceof EntityModel) {
             return new ArrayValidator($model);
+        } elseif ($model instanceof ForeignEntityModel) {
+            return new ArrayValidator($model->getEntityModel());
         } elseif ($model instanceof BoolModel) {
             return new BoolValidator($model);
         } elseif ($model instanceof DateTimeModel) {
