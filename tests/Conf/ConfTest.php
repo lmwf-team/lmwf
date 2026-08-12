@@ -13,8 +13,6 @@ use PHPUnit\Framework\TestCase;
 
 final class ConfTest extends TestCase
 {
-    
-
     public function testCsp(): void
     {
         $csps = [

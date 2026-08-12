@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace LMWF\Validation\Violation;
 
-use LMWF\Constraint\Type\ArrayModel;
 use LMWF\Constraint\Type\IModel;
 
 final class MissingItemViolation implements ValueViolation
