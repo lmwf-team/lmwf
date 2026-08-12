@@ -15,15 +15,8 @@ final class FileServiceTest extends TestCase
         $fileService = new FileService(ConfMock::createConf([
             'appRootPath' => __DIR__,
             'uploadRelPath' => 'resources',
-            // 'thumbnailFormats' => [
-            //     'small' => new AppObject([
-            //         'minSizeX' => 1920,
-            //         'minSizeY' => 1080,
-            //         'webpQuality' => 90,
-            //     ])
-            // ]
         ]));
-        $this->assertEquals([
+        self::assertEquals([
             'Alternate_Example_2.webp',
         ], $fileService->getUploadedImages());
     }

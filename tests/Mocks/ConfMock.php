@@ -32,6 +32,9 @@ final readonly class ConfMock
 
     ];
 
+    /**
+     * @param array<string, mixed> $confParams
+     */
     public static function createConf(array $confParams): AppConf
     {
         return new AppConf(CollectionFactory::createDeepAppObject($confParams + self::VALID_DUMMY_CONF));
