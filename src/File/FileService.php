@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace LMWF\File;
 
 use LMWF\Conf\AppConf;
-use LMWF\Constraint\Value\IUploadedImageConstraint;
 use LMWF\DataStructures\Filename;
 use LMWF\DataStructures\Slug;
 use UnexpectedValueException;
@@ -85,11 +84,12 @@ final class FileService
      */
     public function getUploadedImages(): array
     {
-        $filenames = scandir($this->conf->getPathOfUploadedFiles());
+        $resourcesDiskPath = $this->conf->getPathOfUploadedFiles();
+        $filenames = scandir($resourcesDiskPath);
 
         return array_filter(
             $filenames,
-            fn ($filename) => in_array(mime_content_type($filename), self::IMG_SUPPORTED_MIME_TYPES, strict: true)
+            fn ($filename) => in_array(mime_content_type("$resourcesDiskPath/$filename"), self::IMG_SUPPORTED_MIME_TYPES, strict: true)
         ) |> array_values(...);
     }
 }

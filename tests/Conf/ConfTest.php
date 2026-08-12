@@ -7,33 +7,13 @@ namespace LMWF\Tests\Conf;
 use LMWF\Conf\AppConf;
 use LMWF\DataStructures\Factory\CollectionFactory;
 use LMWF\Tests\Http\ServerErrorController;
+use LMWF\Tests\Mocks\ConfMock;
 use LMWF\Tests\Mocks\RandomErrorController;
 use PHPUnit\Framework\TestCase;
 
 final class ConfTest extends TestCase
 {
-    const array VALID_DUMMY_CONF = [
-        'thumbnailFormats' => [],
-        'handleExceptions' => true,
-        'isDev' => true,
-        'homeUrl' => 'http://localhost',
-        'language' => 'en',
-        'appRootPath' => __DIR__,
-        'uploadRelPath' => 'upload',
-        'publicRelPath' => 'public',
-        'csp' => [],
-        'rootRoute' => [
-            'roles' => [],
-        ],
-        'errorControllers' => [
-            'alreadyLoggedInFqcn' => RandomErrorController::class,
-            'defaultErrorFqcn' => RandomErrorController::class,
-            'methodNotSupportedFqcn' => RandomErrorController::class,
-            'notFoundFqcn' => RandomErrorController::class,
-            'notLoggedInFqcn' => RandomErrorController::class,
-        ]
-
-    ];
+    
 
     public function testCsp(): void
     {
@@ -46,9 +26,9 @@ final class ConfTest extends TestCase
             ],
         ];
 
-        $conf = new AppConf(CollectionFactory::createDeepAppObject([
+        $conf = ConfMock::createConf([
             'csp' => $csps,
-        ] + self::VALID_DUMMY_CONF));
+        ]);
 
         self::assertEquals($csps, $conf->httpConf->csp);
     }
@@ -79,10 +59,9 @@ final class ConfTest extends TestCase
         ];
 
         foreach ($thumbnailFormatsList as $thumbnailFormats) {
-            $confParams = CollectionFactory::createDeepAppObject([
+            $conf = ConfMock::createConf([
                 'thumbnailFormats' => $thumbnailFormats,
-            ] + self::VALID_DUMMY_CONF);
-            $conf = new AppConf($confParams);
+            ]);
 
             self::assertEquals($thumbnailFormats, array_map(fn ($imgFormat) => [
                 'minSizeX' => $imgFormat->minSizeX,
