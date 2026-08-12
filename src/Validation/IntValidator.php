@@ -9,7 +9,6 @@ use LMWF\Constraint\Type\IntModel;
 use LMWF\Validation\Violation\ScalarValueViolation;
 use LMWF\Validation\Violation\TypeViolation;
 use LMWF\Validation\Violation\ValueViolation;
-use Override;
 
 final readonly class IntValidator extends AbstractTypeValidator
 {
@@ -19,7 +18,7 @@ final readonly class IntValidator extends AbstractTypeValidator
         parent::__construct($model->getNotNullConstraint());
     }
 
-    #[Override]
+    #[\Override]
     public function validateNonNullValue(array|bool|float|int|object|string $value): null|TypeViolation|ValueViolation
     {
         if (!is_int($value)) {

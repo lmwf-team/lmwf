@@ -10,7 +10,6 @@ use LMWF\Validation\Violation\IndividualViolation;
 use LMWF\Constraint\Type\StringModel;
 use LMWF\Validation\Violation\ScalarValueViolation;
 use LMWF\Validation\Violation\TypeViolation;
-use Override;
 
 final readonly class StringValidator extends AbstractTypeValidator
 {
@@ -20,7 +19,7 @@ final readonly class StringValidator extends AbstractTypeValidator
         parent::__construct($model->getNotNullConstraint());
     }
 
-    #[Override]
+    #[\Override]
     public function validateNonNullValue(array|bool|float|int|object|string $value): null|TypeViolation|ScalarValueViolation
     {
         if (!is_string($value)) {

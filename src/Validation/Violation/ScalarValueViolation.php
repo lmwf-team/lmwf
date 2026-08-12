@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace LMWF\Validation\Violation;
 
-use LMWF\Constraint\IConstraint;
-use Override;
 use Stringable;
 
 final readonly class ScalarValueViolation implements Stringable, ValueViolation

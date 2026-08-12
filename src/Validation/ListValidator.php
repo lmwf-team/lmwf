@@ -9,7 +9,6 @@ use LMWF\Constraint\Type\ListModel;
 use LMWF\Validation\Violation\ListValueViolation;
 use LMWF\Validation\Violation\TypeViolation;
 use LMWF\Validation\Violation\ValueViolation;
-use Override;
 
 final readonly class ListValidator extends AbstractTypeValidator
 {
@@ -19,7 +18,7 @@ final readonly class ListValidator extends AbstractTypeValidator
         parent::__construct($model->getNotNullConstraint());
     }
 
-    #[Override]
+    #[\Override]
     public function validateNonNullValue(array|bool|float|int|object|string $value): null|TypeViolation|ValueViolation
     {
         if (!is_array($value) || !array_is_list($value)) {

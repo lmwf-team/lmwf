@@ -6,7 +6,6 @@ namespace LMWF\DataStructures\Exceptions;
 
 use LMWF\ErrorHandling\ExceptionCode;
 use Throwable;
-use Override;
 use UnexpectedValueException;
 
 final class UnexpectedPropertyType extends UnexpectedValueException

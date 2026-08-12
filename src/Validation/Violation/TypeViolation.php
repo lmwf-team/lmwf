@@ -7,7 +7,6 @@ namespace LMWF\Validation\Violation;
 use LMWF\Constraint\IConstraint;
 use LMWF\Constraint\Value\INotNullConstraint;
 use LMWF\Constraint\Type\IModel;
-use Override;
 use Stringable;
 
 final readonly class TypeViolation implements IConstraintViolation, Stringable
@@ -33,7 +32,7 @@ final readonly class TypeViolation implements IConstraintViolation, Stringable
         return $this->message;
     }
 
-    #[Override]
+    #[\Override]
     public function __toString(): string
     {
         return $this->message;

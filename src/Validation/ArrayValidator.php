@@ -17,10 +17,15 @@ final readonly class ArrayValidator implements ITypeValidator
     ) {
     }
 
-    #[\Override]
     /**
-     * @return ($value is array ? DictValueViolation : TypeViolation)
+     * Validates that the given value is not null if the model does not allow
+     * null values, that it is an an array and that it only defines the keys
+     * associated with a property and all of the keys, and that the values
+     * associated with the key fit the corresponding property's model.
+     *
+     * @return ($value is array ? null|DictValueViolation : TypeViolation)
      */
+    #[\Override]
     public function validate(mixed $value): null|TypeViolation|DictValueViolation
     {
         if (!is_array($value)) {
