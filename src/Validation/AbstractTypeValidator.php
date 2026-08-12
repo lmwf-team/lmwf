@@ -25,8 +25,10 @@ use LMWF\Validation\Violation\TypeViolation;
 use LMWF\Validation\Violation\ValueViolation;
 
 /**
- * Abstract class that checks that the app data to validate is not null if the
- * model does not allow that, and then deleguates to the implementation method.
+ * Validator for app data.
+ *
+ * Validates the data is not null if the model does not allow that, that it is
+ * of the correct type and that the value is allowed.
  */
 abstract readonly class AbstractTypeValidator implements ITypeValidator
 {
