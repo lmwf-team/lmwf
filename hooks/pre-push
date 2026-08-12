@@ -1,6 +1,5 @@
 #!/bin/bash
-
 set -euo pipefail
+SDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 
-sdir=$(dirname "${BASH_SOURCE[0]}")/../..
-"$sdir/docker/all.bash"
+"$SDIR/dev/all.sh"
