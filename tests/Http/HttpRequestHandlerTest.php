@@ -8,15 +8,22 @@ use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\ServerRequest;
 use LMWF\Conf\HttpConf;
 use LMWF\Conf\ErrorControllerConf;
-use LMWF\Http\Controller\Exception\AlreadyAuthenticated;
 use LMWF\Http\Controller\IController;
 use LMWF\Http\Controller\IRoutedController;
 use LMWF\Http\Security\CspNonce;
 use LMWF\Http\HttpRequestHandler;
 use LMWF\Http\Routing\Route;
 use LMWF\Conf\Http\RouteDef;
+use LMWF\DataStructures\PageParam;
 use LMWF\Kernel;
 use LMWF\Session\SessionManager;
+use LMWF\Tests\Factory\PageParamFactory;
+use LMWF\Tests\Mocks\MethodNotSupportedController;
+use LMWF\Tests\Mocks\NotAuthenticatedController;
+use LMWF\Tests\Mocks\NotFoundController;
+use LMWF\Tests\Mocks\OkController;
+use LMWF\Tests\Mocks\PathController;
+use LMWF\Tests\Mocks\ServerErrorController;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -35,11 +42,13 @@ final class HttpRequestHandlerTest extends TestCase
             HttpConf::class => new HttpConf(
                 new RouteDef(
                     null,
+                    null,
                     ['ADMIN', 'VISITOR'],
                     subroutes: [
-                        '' => new RouteDef(HomeController::class),
+                        '' => new RouteDef(OkController::class, PageParamFactory::create()),
                         'my' => new RouteDef(
-                            MyController::class,
+                            PathController::class,
+                            PageParamFactory::create(),
                             ['VISITOR']
                         ),
                     ],
@@ -53,10 +62,10 @@ final class HttpRequestHandlerTest extends TestCase
                     ],
                 ],
                 new ErrorControllerConf(
-                    AlreadyAuthenticated::class,
+                    ServerErrorController::class,
                     ServerErrorController::class,
                     MethodNotSupportedController::class,
-                    ResourceNotFoundController::class,
+                    NotFoundController::class,
                     NotAuthenticatedController::class,
                 ),
             ),
@@ -134,71 +143,5 @@ final class HttpRequestHandlerTest extends TestCase
             $response = $this->handler->generateResponse($request);
             self::assertEquals(404, $response->getStatusCode(), "Expected 404 for {$p}, got {$response->getStatusCode()}.");
         }
-    }
-}
-
-final class ResourceNotFoundController implements IController
-{
-    #[\Override]
-    public function generateResponse(
-        ServerRequestInterface $request,
-        array $serverParams,
-    ): ResponseInterface {
-        return new Response(404);
-    }
-}
-
-final class MethodNotSupportedController implements IController
-{
-    #[\Override]
-    public function generateResponse(
-        ServerRequestInterface $request,
-        array $serverParams,
-    ): ResponseInterface {
-        return new Response(501);
-    }
-}
-
-final class NotAuthenticatedController implements IController
-{
-    #[\Override]
-    public function generateResponse(
-        ServerRequestInterface $request,
-        array $serverParams,
-    ): ResponseInterface {
-        return new Response(403);
-    }
-}
-
-final class ServerErrorController implements IController
-{
-    #[\Override]
-    public function generateResponse(
-        ServerRequestInterface $request,
-        array $serverParams,
-    ): ResponseInterface {
-        return new Response(500);
-    }
-}
-
-final class HomeController implements IRoutedController
-{
-    #[\Override]
-    public function generateResponse(
-        Route $route,
-        ServerRequestInterface $request,
-    ): ResponseInterface {
-        return new Response(200);
-    }
-}
-
-final class MyController implements IRoutedController
-{
-    #[\Override]
-    public function generateResponse(
-        Route $route,
-        ServerRequestInterface $request,
-    ): ResponseInterface {
-        return new Response(200, body: $route->getPath());
     }
 }

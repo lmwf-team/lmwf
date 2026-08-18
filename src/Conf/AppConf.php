@@ -45,13 +45,13 @@ final readonly class AppConf
     public bool $handleExceptions;
     public bool $isDev;
 
-    public string $homeUrl;
+    public string $baseUrl;
     public string $language;
     public string $appRootPath;
-    // @var Path, relative to the appRootPath and homeUrl, to the folder where uploaded images (resources) are stored.
+    // @var Path, relative to the appRootPath and baseUrl, to the folder where uploaded images (resources) are stored.
     // @todo Delete, only keep publicRelPath? (some overlap)
     public string $uploadRelPath;
-    // @var Path, relative to the appRootPath and homeUrl, to the folder where assets and resources are stored.
+    // @var Path, relative to the appRootPath and baseUrl, to the folder where assets and resources are stored.
     public string $publicRelPath;
 
     /**
@@ -102,7 +102,7 @@ final readonly class AppConf
         $this->handleExceptions = $this->data->getBool('handleExceptions');
         $this->isDev = $this->data->getBool('isDev');
 
-        $this->homeUrl = $this->data->getString('homeUrl');
+        $this->baseUrl = $this->data->getString('baseUrl');
         $this->language = $this->data->getString('language');
         $this->appRootPath = $this->data->getString('appRootPath');
         $this->uploadRelPath = $this->data->getString('uploadRelPath');
@@ -121,7 +121,7 @@ final readonly class AppConf
         $csps = $this->readCsps($this->data);
 
         $this->httpConf = new HttpConf(
-            (new RouteDefParser())->parse($this->data->getAppObject('rootRoute')),
+            (new RouteDefParser($this->baseUrl))->parse($this->data->getAppObject('rootRoute')),
             $this->handleExceptions,
             $csps,
             new ErrorControllerConf(

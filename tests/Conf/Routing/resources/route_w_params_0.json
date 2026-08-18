@@ -1,5 +1,8 @@
 {
     "fqcn": "LMWF.Tests.Mocks.RoutedController",
+    "page": {
+        "title": "_"
+    },
     "minArgs": 0,
     "maxArgs": 0,
     "roles": []

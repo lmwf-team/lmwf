@@ -1,11 +1,14 @@
 {
     "appRootPath": "",
     "csp": [],
-    "homeUrl": "",
+    "baseUrl": "",
     "language": "en",
     "publicRelPath": "",
     "rootRoute": {
         "fqcn": "LMWF.Tests.Mocks.RoutedController",
+        "page": {
+            "title": "_"
+        },
         "roles": []
     },
     "thumbnailFormats": {

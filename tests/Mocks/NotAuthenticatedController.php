@@ -9,13 +9,13 @@ use LMWF\Http\Controller\IController;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-class NotFoundController implements IController
+final class NotAuthenticatedController implements IController
 {
     #[\Override]
     public function generateResponse(
         ServerRequestInterface $request,
         array $serverParams,
     ): ResponseInterface {
-        return new Response(404);
+        return new Response(403);
     }
 }

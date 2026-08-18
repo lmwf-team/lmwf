@@ -5,24 +5,27 @@ declare(strict_types=1);
 namespace LMWF\Tests\Http\Routing;
 
 use DomainException;
-use InvalidArgumentException;
-use LMWF\Http\Routing\Exception\RouteNotFoundException;
 use LMWF\Http\Routing\Route;
 use LMWF\Conf\Http\RouteDef;
+use LMWF\DataStructures\PageParam;
 use LMWF\Http\Controller\Issue\RouteNotFoundIssue;
 use LMWF\Http\Controller\Issue\RoutingParamIssue;
 use LMWF\Http\Controller\Issue\RoutingParamIssueCode;
 use LMWF\Http\Routing\Router;
+use LMWF\Tests\Factory\PageFactory;
+use LMWF\Tests\Factory\PageParamFactory;
+use LMWF\Tests\Factory\RouteFactory;
 use PHPUnit\Framework\TestCase;
 
 final class RouterTest extends TestCase
 {
-    public function testHomeUrl(): void
+    public function testBaseUrl(): void
     {
         $router = new Router();
+        $pageParam = PageParamFactory::create();
 
-        $homeRouteDef = new RouteDef(self::class);
-        $rootRoute = Route::createRootRouteDef([
+        $homeRouteDef = new RouteDef(self::class, $pageParam);
+        $rootRoute = RouteFactory::createRootRoute([
             '' => $homeRouteDef,
         ]);
 
@@ -35,11 +38,12 @@ final class RouterTest extends TestCase
     public function testRouteIdWithSpecialChars(): void
     {
         $router = new Router();
+        $pageParam = PageParamFactory::create();
 
         $subrouteId = 'c’est mon idée de route !';
-        $subrouteDef = new RouteDef(self::class);
+        $subrouteDef = new RouteDef(self::class, $pageParam);
 
-        $rootRoute = Route::createRootRouteDef([
+        $rootRoute = RouteFactory::createRootRoute([
             $subrouteId => $subrouteDef,
         ]);
         $subroute = new Route($subrouteDef, $subrouteId, parent: $rootRoute);
@@ -49,8 +53,9 @@ final class RouterTest extends TestCase
 
     public function testRootRouteWithZeroMinParams(): void
     {
-        $routeDef = new RouteDef(null, [], nArgsUpperLimit: 1);
         $router = new Router();
+
+        $routeDef = new RouteDef(null, null, [], nArgsUpperLimit: 1);
 
         $this->expectException(DomainException::class);
         $router->getRouteFromPath($routeDef, '');
@@ -63,24 +68,25 @@ final class RouterTest extends TestCase
      */
     public function testRootRouteWithZeroParams(): void
     {
-        $routeDef = new RouteDef(null, []);
         $router = new Router();
+
+        $routeDef = new RouteDef(null, null, []);
 
         $this->expectException(DomainException::class);
         $router->getRouteFromPath($routeDef, '');
     }
 
-    public function testRootRouteWithNoChild(): void
-    {
-        $this->expectException(DomainException::class);
-        Route::createRootRouteDef([]);
-    }
-
     public function testRootRouteWithOneParamOnly(): void
     {
         $router = new Router();
+        $routeParam = PageParamFactory::create();
 
-        $routeDef = new RouteDef(self::class, nArgsLowerLimit: 1, nArgsUpperLimit: 1);
+        $routeDef = new RouteDef(
+            self::class,
+            $routeParam,
+            nArgsLowerLimit: 1,
+            nArgsUpperLimit: 1,
+        );
 
         self::assertEquals(
             new RoutingParamIssue(RoutingParamIssueCode::TooManyParams, $routeDef, 2),
@@ -103,7 +109,7 @@ final class RouterTest extends TestCase
     public function testNonAbsolutePath(): void
     {
         $router = new Router();
-        $routeDef = new RouteDef(null, nArgsLowerLimit: 1, nArgsUpperLimit: 1);
+        $routeDef = new RouteDef(null, null, nArgsLowerLimit: 1, nArgsUpperLimit: 1);
 
         $this->expectException(DomainException::class);
 
@@ -114,8 +120,8 @@ final class RouterTest extends TestCase
     {
         $router = new Router();
 
-        $rootRoute = Route::createRootRouteDef([
-            '' => new RouteDef(null, [])
+        $rootRoute = RouteFactory::createRootRoute([
+            '' => new RouteDef(null, null, [])
         ]);
 
         self::assertEquals(
@@ -126,12 +132,13 @@ final class RouterTest extends TestCase
 
     public function testSubroute(): void
     {
-        $sub1SubrouteDef = new RouteDef(self::class);
-        $sub2SubrouteDef = new RouteDef(self::class, nArgsUpperLimit: 3);
-
         $router = new Router();
+        $pageParam = PageParamFactory::create();
 
-        $rootRoute = Route::createRootRouteDef([
+        $sub1SubrouteDef = new RouteDef(self::class, $pageParam);
+        $sub2SubrouteDef = new RouteDef(self::class, $pageParam, nArgsUpperLimit: 3);
+
+        $rootRoute = RouteFactory::createRootRoute([
             'sub1' => $sub1SubrouteDef,
             'sub2' => $sub2SubrouteDef,
         ]);
@@ -148,7 +155,7 @@ final class RouterTest extends TestCase
 
     public function testRootRouteWithOneToTwoParams(): void
     {
-        $routeDef = new RouteDef(null, nArgsLowerLimit: 1, nArgsUpperLimit: 2);
+        $routeDef = new RouteDef(null, null, nArgsLowerLimit: 1, nArgsUpperLimit: 2);
         $router = new Router();
 
         self::assertEquals(new Route($routeDef, '', ['']), $router->getRouteFromPath($routeDef, ''));

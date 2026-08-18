@@ -13,7 +13,7 @@ final readonly class ConfMock
         'thumbnailFormats' => [],
         'handleExceptions' => true,
         'isDev' => true,
-        'homeUrl' => 'http://localhost',
+        'baseUrl' => 'http://localhost',
         'language' => 'en',
         'appRootPath' => __DIR__,
         'uploadRelPath' => 'upload',

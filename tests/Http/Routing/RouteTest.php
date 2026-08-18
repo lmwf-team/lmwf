@@ -4,43 +4,47 @@ declare(strict_types=1);
 
 namespace LMWF\Tests\Http\Routing;
 
-use InvalidArgumentException;
 use LMWF\Conf\Http\RouteDef;
 use LMWF\Http\Routing\Route;
 use PHPUnit\Framework\TestCase;
 use DomainException;
+use LMWF\DataStructures\Page;
+use LMWF\DataStructures\PageParam;
+use LMWF\Tests\Factory\PageParamFactory;
+use LMWF\Tests\Factory\RouteFactory;
+use LMWF\Tests\Http\ControllerMock;
 
 final class RouteTest extends TestCase
 {
     public function testInvalidRootRouteWithSeg(): void
     {
         $this->expectException(DomainException::class);
-        new Route(new RouteDef(self::class), 'seg');
+        new Route(new RouteDef(self::class, PageParamFactory::create()), 'seg');
     }
 
     public function testInvalidRootRouteWithFqcn(): void
     {
         $this->expectException(DomainException::class);
-        new Route(new RouteDef(self::class), '');
+        new Route(new RouteDef(self::class, PageParamFactory::create()), '');
     }
 
     public function testInvalidRootRouteWithNoParams(): void
     {
         $this->expectException(DomainException::class);
-        new Route(new RouteDef(self::class), '');
+        new Route(new RouteDef(self::class, PageParamFactory::create()), '');
     }
 
     public function testInvalidRouteParams(): void
     {
-        $rootRouteDef = new RouteDef(null, nArgsLowerLimit: 1, nArgsUpperLimit: 2);
+        $rootRouteDef = new RouteDef(null, null, nArgsLowerLimit: 1, nArgsUpperLimit: 2);
         $this->expectException(DomainException::class);
-        $rootRouteArgs4 = new Route($rootRouteDef, '', ['args1', 'args2', 'args3']);
+        new Route($rootRouteDef, '', ['args1', 'args2', 'args3']);
     }
 
     public function testRootRoute(): void
     {
-        $homeRouteDef = new RouteDef(self::class);
-        $rootRoute = Route::createRootRouteDef(['' => $homeRouteDef]);
+        $homeRouteDef = new RouteDef(self::class, PageParamFactory::create());
+        $rootRoute = RouteFactory::createRootRoute(['' => $homeRouteDef]);
         $homeRoute = new Route($homeRouteDef, '', parent: $rootRoute);
         self::assertSame('', $rootRoute->getPath());
         self::assertSame('/', $homeRoute->getPath());
@@ -48,7 +52,7 @@ final class RouteTest extends TestCase
 
     public function testRootRouteWithParams(): void
     {
-        $rootRouteDef = new RouteDef(null, nArgsLowerLimit: 1, nArgsUpperLimit: 2);
+        $rootRouteDef = new RouteDef(null, null, nArgsLowerLimit: 1, nArgsUpperLimit: 2);
         $rootRouteArgs1 = new Route($rootRouteDef, '', ['']);
         $rootRouteArgs2 = new Route($rootRouteDef, '', ['args2']);
         $rootRouteArgs3 = new Route($rootRouteDef, '', ['args3a', 'args3b']);
@@ -61,18 +65,19 @@ final class RouteTest extends TestCase
     {
         $homeRouteDef = new RouteDef(
             self::class,
+            PageParamFactory::create(),
             nArgsLowerLimit: 1,
             nArgsUpperLimit: 1,
         );
-        $rootRoute = Route::createRootRouteDef(['' => $homeRouteDef]);
+        $rootRoute = RouteFactory::createRootRoute(['' => $homeRouteDef]);
         $homeRoute = new Route($homeRouteDef, '', ['test-param'], parent: $rootRoute);
         self::assertSame('//test-param', $homeRoute->getPath());
     }
 
     public function testParentRoute(): void
     {
-        $subrouteDef = new RouteDef(self::class);
-        $rootRoute = Route::createRootRouteDef(['sub' => $subrouteDef]);
+        $subrouteDef = new RouteDef(self::class, PageParamFactory::create());
+        $rootRoute = RouteFactory::createRootRoute(['sub' => $subrouteDef]);
 
         $subroute = new Route($subrouteDef, 'sub', parent: $rootRoute);
         self::assertSame('/sub', $subroute->getPath());
@@ -80,14 +85,15 @@ final class RouteTest extends TestCase
 
     public function testNestedRoutes(): void
     {
-        $subSubrouteDef = new RouteDef(self::class);
+        $subSubrouteDef = new RouteDef(self::class, PageParamFactory::create());
         $subrouteDef = new RouteDef(
             self::class,
+            PageParamFactory::create(),
             subroutes: [
                 'sub2' => $subSubrouteDef,
             ],
         );
-        $rootRoute = Route::createRootRouteDef([
+        $rootRoute = RouteFactory::createRootRoute([
             'sub1' => $subrouteDef,
         ]);
 
@@ -99,16 +105,17 @@ final class RouteTest extends TestCase
     public function testComplexParentRoute(): void
     {
 
-        $sub1RouteDef = new RouteDef(self::class);
-        $subSub2RouteDef = new RouteDef(self::class);
+        $sub1RouteDef = new RouteDef(self::class, PageParamFactory::create());
+        $subSub2RouteDef = new RouteDef(self::class, PageParamFactory::create());
 
         $sub2RouteDef = new RouteDef(
             self::class,
+            PageParamFactory::create(),
             subroutes: [
                 '' => $subSub2RouteDef,
             ],
         );
-        $rootRoute = Route::createRootRouteDef([
+        $rootRoute = RouteFactory::createRootRoute([
             '' => $sub1RouteDef,
             'sub2' => $sub2RouteDef,
         ]);
@@ -120,5 +127,54 @@ final class RouteTest extends TestCase
         self::assertSame('/', $sub1Route->getPath());
         self::assertSame('/sub2', $sub2Route->getPath());
         self::assertSame('/sub2/', $subSub2Route->getPath());
+    }
+
+    public function testHomeAndRootPage(): void
+    {
+        /**
+         * Constants.
+         */
+        $childSeg = 'child';
+        $homeSeg = 'home';
+        $baseUrl = 'https://example.org';
+
+        $homePageParam = new PageParam('Home Page', $baseUrl, true, true);
+        $childPageParam = new PageParam('Child Page', $baseUrl, false, false);    
+
+        $childRouteDef = new RouteDef(ControllerMock::class, $childPageParam);
+        $homeRouteDef = new RouteDef(ControllerMock::class, $homePageParam, subroutes: [
+            $childSeg => $childRouteDef,
+        ]);
+
+        $rootRoute = RouteFactory::createRootRoute([
+            $homeSeg => $homeRouteDef,
+        ]);
+
+        $this->assertNull($rootRoute->getPage());
+
+
+        $childRoute = new Route(
+            $childRouteDef,
+            $childSeg,
+            parent: new Route($homeRouteDef, $homeSeg, parent: $rootRoute),
+        );
+
+        $homePage = new Page(
+            null,
+            $homePageParam->title,
+            "$baseUrl/$homeSeg",
+            $homePageParam->isIndexed,
+            $homePageParam->isPartOfHierarchy,
+        );
+        $this->assertEquals($homePage, $childRoute->parent->getPage());
+
+        $childPage = new Page(
+            $homePage,
+            $childPageParam->title,
+            "$baseUrl/$homeSeg/$childSeg",
+            $childPageParam->isIndexed,
+            $childPageParam->isPartOfHierarchy,
+        );
+        $this->assertEquals($childPage, $childRoute->getPage());
     }
 }

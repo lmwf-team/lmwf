@@ -5,10 +5,18 @@
     ],
     "routes": {
         "": {
-            "fqcn": "LMWF.Tests.Mocks.HomeController"
+            "fqcn": "LMWF.Tests.Mocks.ControllerMock",
+            "page": {
+                "title": "Home"
+            }
         },
         "test": {
-            "fqcn": "LMWF.Tests.Mocks.TestController"
+            "fqcn": "LMWF.Tests.Mocks.TestController",
+            "page": {
+                "title": "Test Page",
+                "isIndexed": false,
+                "isPartOfHierarchy": false
+            }
         }
     }
 }

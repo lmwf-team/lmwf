@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace LMWF\Conf;
 
+use InvalidArgumentException;
 use LMWF\Conf\Http\RouteDef;
 use LMWF\Conf\Http\SubrouteCannotAddRoleConfException;
 use LMWF\Conf\Http\UnauthorizedAttributeConfException;
 use LMWF\DataStructures\AppObject;
+use LMWF\DataStructures\PageParam;
+use LMWF\ErrorHandling\ExceptionCode;
 use LMWF\Http\Controller\IRoutedController;
 use UnexpectedValueException;
 
@@ -17,6 +20,10 @@ final readonly class RouteDefParser
     const string ARGS_MIN_KN = 'minArgs';
     const string FQCN_IF_PARAMS_KN = 'fqcnIfParams';
     const string FQCN_KN = 'fqcn';
+    const string PAGE_IS_INDEXED_KN = 'isIndexed';
+    const string PAGE_IS_PART_OF_HIERARCHY_KN = 'isPartOfHierarchy';
+    const string PAGE_KN = 'page';
+    const string PAGE_TITLE_KN = 'title';
     const string ROLES_KN = 'roles';
     const string ROUTES_KN = 'routes';
     const array ALL_KNS = [
@@ -24,11 +31,29 @@ final readonly class RouteDefParser
         self::ARGS_MIN_KN,
         self::FQCN_IF_PARAMS_KN,
         self::FQCN_KN,
+        self::PAGE_IS_INDEXED_KN,
+        self::PAGE_IS_PART_OF_HIERARCHY_KN,
+        self::PAGE_KN,
+        self::PAGE_TITLE_KN,
         self::ROLES_KN,
         self::ROUTES_KN,
     ];
 
-    const string AMBIGUOUS_DEF_MSG_FMT = 'A route definition cannot both defines ' . self::ROUTES_KN . ' and ' . self::ARGS_MIN_KN . ' or ' . self::ARGS_MAX_KN . '.';
+    const string AMBIGUOUS_DEF_MSG_FMT = 'A route definition cannot define both ' . self::ROUTES_KN . ' and ' . self::ARGS_MIN_KN . ' or ' . self::ARGS_MAX_KN . '.';
+
+    /**
+     * @param string $baseUrl The URL to the app's home, without trailing slash.
+     */
+    public function __construct(
+        private string $baseUrl,
+    ) {
+        if (str_ends_with($baseUrl, '/')) {
+            throw new InvalidArgumentException(
+                "Cannot create RouteDefParser with a leading slash, \$baseUrl '$baseUrl': given string has trailing slash.",
+                ExceptionCode::CONF_ROUTEDEFPARSER_BASE_URL_MUST_NOT_HAVE_TRAILING_SLASH->value,
+            );
+        }
+    }
 
     /**
      * @param AppObject<mixed> $route The JSON-decoded route as an associative array.
@@ -50,6 +75,7 @@ final readonly class RouteDefParser
         // Parse FQCN and FQCN when route is accessed with parameters.
         $fqcn = $this->parseFqcn($route, self::FQCN_KN);
         $fqcnIfParams = $this->parseFqcn($route, self::FQCN_IF_PARAMS_KN);
+        $pageParam = $this->parsePageParam($route);
 
         $roles = null;
         if ($route->hasProperty(self::ROLES_KN) || null === $parentRoles) {
@@ -84,6 +110,7 @@ final readonly class RouteDefParser
 
         return new RouteDef(
             $fqcn,
+            $pageParam,
             $roles ?? $parentRoles,
             $subroutes,
             $route->hasProperty(self::ARGS_MIN_KN) ? $route->getInt(self::ARGS_MIN_KN) : 0,
@@ -107,5 +134,18 @@ final readonly class RouteDefParser
             return $fqcn;
         }
         return null;
+    }
+
+    private function parsePageParam(AppObject $routeDef, ?RouteDef $parent = null): ?PageParam
+    {
+        if (!$routeDef->hasProperty(self::PAGE_KN)) {
+            return null;
+        }
+        return new PageParam(
+            $routeDef[self::PAGE_KN][self::PAGE_TITLE_KN],
+            $this->baseUrl,
+            $routeDef[self::PAGE_KN][self::PAGE_IS_INDEXED_KN] ?? true,
+            $routeDef[self::PAGE_KN][self::PAGE_IS_PART_OF_HIERARCHY_KN] ?? true,
+        );
     }
 }

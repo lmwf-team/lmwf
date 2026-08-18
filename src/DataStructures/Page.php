@@ -5,16 +5,17 @@ declare(strict_types=1);
 namespace LMWF\DataStructures;
 
 /**
- * @todo Should go in web namespace.
+ * @todo Should go in Http namespace?
+ * @todo Remove accessor methods?
  */
 final readonly class Page
 {
     public function __construct(
-        private ?Page $parent,
-        private string $name,
-        private string $url,
-        private bool $isIndexed = true,
-        private bool $isPartOfHierarchy = true,
+        public ?Page $parent,
+        public string $name,
+        public string $url,
+        public bool $isIndexed = true,
+        public bool $isPartOfHierarchy = true,
     ) {
     }
 

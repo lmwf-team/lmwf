@@ -6,6 +6,9 @@
     "routes": {
         "sub": {
             "fqcn": "LMWF.Tests.Mocks.RoutedController",
+            "page": {
+                "title": "Sub Page"
+            },
             "roles": [
                 "ADMIN"
             ],

@@ -5,17 +5,18 @@ declare(strict_types=1);
 namespace LMWF\Tests\Mocks;
 
 use GuzzleHttp\Psr7\Response;
-use LMWF\Http\Controller\IController;
+use LMWF\Http\Controller\IRoutedController;
+use LMWF\Http\Routing\Route;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-class NotFoundController implements IController
+class PathController implements IRoutedController
 {
     #[\Override]
     public function generateResponse(
+        Route $route,
         ServerRequestInterface $request,
-        array $serverParams,
     ): ResponseInterface {
-        return new Response(404);
+        return new Response(200, body: $route->getPath());
     }
 }
