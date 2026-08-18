@@ -100,11 +100,15 @@ final readonly class Route
         }
 
         $nearestParentWithPage = $this->parent;
-        while (null !== $nearestParentWithPage && null === $nearestParentWithPage->getPage()) {
+        $nearestPageAncestor = null;
+        while (null !== $nearestParentWithPage) {
+            if (null !== $nearestPageAncestor = $nearestParentWithPage->getPage()) {
+                break;
+            }
             $nearestParentWithPage = $nearestParentWithPage->parent;
         }
 
-        $url = $nearestParentWithPage?->getPage()->getUrl() ?? $this->def->pageParam->baseUrl;
+        $url = null !== $nearestPageAncestor ? $nearestPageAncestor->url : $this->def->pageParam->baseUrl;
 
         return new Page(
             $this->parent?->getPage(),

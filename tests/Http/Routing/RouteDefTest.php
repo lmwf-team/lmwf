@@ -5,10 +5,9 @@ declare(strict_types=1);
 namespace LMWF\Tests\Http\Routing;
 
 use LMWF\Conf\Http\RouteDef;
-use LMWF\DataStructures\PageParam;
 use LMWF\ErrorHandling\ExceptionCode;
 use LMWF\Tests\Factory\PageParamFactory;
-use LMWF\Tests\Http\ControllerMock;
+use LMWF\Tests\Mocks\ControllerMock;
 use PHPUnit\Framework\TestCase;
 
 final class RouteDefTest extends TestCase

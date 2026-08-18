@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use LMWF\Conf\AppConf;
+use LMWF\DataStructures\Exceptions\UnexpectedPropertyType;
 use LMWF\DataStructures\Factory\CollectionFactory;
 use LMWF\Tests\Mocks\NotFoundController;
 use LMWF\Tests\Mocks\RandomErrorController;
@@ -37,7 +38,7 @@ final class ConfFileTest extends TestCase
     #[WithoutErrorHandler]
     public function testEmptyConf(): void
     {
-        $this->expectException(ErrorException::class);
+        $this->expectException(UnexpectedPropertyType::class);
         AppConf::createFromEnvFile(__DIR__ . "/resources/empty_conf");
     }
 

@@ -136,16 +136,26 @@ final readonly class RouteDefParser
         return null;
     }
 
-    private function parsePageParam(AppObject $routeDef, ?RouteDef $parent = null): ?PageParam
+    /**
+     * @param AppObject<mixed> $routeDef
+     */
+    private function parsePageParam(AppObject $routeDef): ?PageParam
     {
         if (!$routeDef->hasProperty(self::PAGE_KN)) {
             return null;
         }
+        $pageDefConf = $routeDef[self::PAGE_KN];
+        if (!$pageDefConf instanceof AppObject) {
+            throw new InvalidArgumentException(
+                "If present, the '{self::PAGE_KN}' property of the route definition must be a dictionnary.",
+                ExceptionCode::CONF_ROUTEDEFPARSER_PAGEPARAM_CONF_WRONG_TYPE->value,
+            );
+        }
         return new PageParam(
-            $routeDef[self::PAGE_KN][self::PAGE_TITLE_KN],
+            $pageDefConf->getString(self::PAGE_TITLE_KN),
             $this->baseUrl,
-            $routeDef[self::PAGE_KN][self::PAGE_IS_INDEXED_KN] ?? true,
-            $routeDef[self::PAGE_KN][self::PAGE_IS_PART_OF_HIERARCHY_KN] ?? true,
+            $pageDefConf->getBoolOrNull(self::PAGE_IS_INDEXED_KN) ?? true,
+            $pageDefConf->getBoolOrNull(self::PAGE_IS_PART_OF_HIERARCHY_KN) ?? true,
         );
     }
 }

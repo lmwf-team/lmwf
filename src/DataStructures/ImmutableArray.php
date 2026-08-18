@@ -179,6 +179,22 @@ abstract readonly class ImmutableArray implements ArrayAccess, Countable, IArray
      */
     public function getBool(int|string $key): bool
     {
+        $value = $this->getBoolOrNull($key);
+        if (is_bool($value)) {
+            return $value;
+        }
+        throw new UnexpectedPropertyType($key, 'bool', $value);
+    }
+
+
+    /**
+     * @param TKey $key
+     */
+    public function getBoolOrNull(int|string $key): ?bool
+    {
+        if (!key_exists($key, $this->data)) {
+            return null;
+        }
         $value = $this->data[$key];
         if (is_bool($value)) {
             return $value;

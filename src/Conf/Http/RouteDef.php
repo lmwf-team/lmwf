@@ -75,7 +75,7 @@ final readonly class RouteDef
             }
             if (!$routeDef instanceof RouteDef) {
                 throw new InvalidArgumentException(
-                    "Routes must define a route definition. (Got a route definition of type " . is_object($routeDef) ? $routeDef::class : gettype($routeDef) . ".)",
+                    "Routes must define a route definition. (Got a route definition of type " . (is_object($routeDef) ? $routeDef::class : gettype($routeDef)) . ".)",
                     ExceptionCode::CONF_HTTP_ROUTEDEF_SUBROUTE_DEF_IS_NOT_A_ROUTEDEF->value,
                 );
             }

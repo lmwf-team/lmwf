@@ -12,7 +12,7 @@ use LMWF\DataStructures\Page;
 use LMWF\DataStructures\PageParam;
 use LMWF\Tests\Factory\PageParamFactory;
 use LMWF\Tests\Factory\RouteFactory;
-use LMWF\Tests\Http\ControllerMock;
+use LMWF\Tests\Mocks\ControllerMock;
 
 final class RouteTest extends TestCase
 {
@@ -139,7 +139,7 @@ final class RouteTest extends TestCase
         $baseUrl = 'https://example.org';
 
         $homePageParam = new PageParam('Home Page', $baseUrl, true, true);
-        $childPageParam = new PageParam('Child Page', $baseUrl, false, false);    
+        $childPageParam = new PageParam('Child Page', $baseUrl, false, false);
 
         $childRouteDef = new RouteDef(ControllerMock::class, $childPageParam);
         $homeRouteDef = new RouteDef(ControllerMock::class, $homePageParam, subroutes: [
@@ -150,7 +150,7 @@ final class RouteTest extends TestCase
             $homeSeg => $homeRouteDef,
         ]);
 
-        $this->assertNull($rootRoute->getPage());
+        self::assertNull($rootRoute->getPage());
 
 
         $childRoute = new Route(
@@ -166,7 +166,7 @@ final class RouteTest extends TestCase
             $homePageParam->isIndexed,
             $homePageParam->isPartOfHierarchy,
         );
-        $this->assertEquals($homePage, $childRoute->parent->getPage());
+        self::assertEquals($homePage, $childRoute->parent?->getPage());
 
         $childPage = new Page(
             $homePage,
@@ -175,6 +175,6 @@ final class RouteTest extends TestCase
             $childPageParam->isIndexed,
             $childPageParam->isPartOfHierarchy,
         );
-        $this->assertEquals($childPage, $childRoute->getPage());
+        self::assertEquals($childPage, $childRoute->getPage());
     }
 }
