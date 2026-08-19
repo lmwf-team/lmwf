@@ -10,10 +10,9 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
- * @todo Add getPage(Route $route) method.
- * @todo Errors should also be routed controllers.
- * @todo Should return either an error or a response.
- * @todo Shoud have a different method for GET and POST, this would make each
+ * @todo Add getPage(Route $route) method?
+ * @todo Errors should also be routed controllers?
+ * @todo Shoud have a different method for GET and POST? This could make each
  * function lighter and would avoid duplicating
  * `if ('POST' === $request->getMethod())`.
  */

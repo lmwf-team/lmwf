@@ -27,6 +27,8 @@ use UnexpectedValueException;
  * @implements ArrayAccess<TKey, TValue>
  * @implements IArrayable<TKey, TValue>
  * @implements IteratorAggregate<TKey, TValue>
+ *
+ * @todo Should not contain references to AppObject or AppList.
  */
 abstract readonly class ImmutableArray implements ArrayAccess, Countable, IArrayable, IteratorAggregate
 {
@@ -80,7 +82,6 @@ abstract readonly class ImmutableArray implements ArrayAccess, Countable, IArray
     #[\Override]
     public function getIterator(): Traversable
     {
-
         /**
          * @todo Open issue in phpstan.
          * @phpstan-ignore return.type
@@ -119,7 +120,7 @@ abstract readonly class ImmutableArray implements ArrayAccess, Countable, IArray
         if ($value instanceof AppObject) {
             return $value;
         } elseif ($value instanceof AppList and 0 === $value->count()) {
-            return new AppObject([]);
+            return new AppObject();
         }
         throw new UnexpectedPropertyType($key, AppObject::class, $value);
     }
@@ -141,7 +142,7 @@ abstract readonly class ImmutableArray implements ArrayAccess, Countable, IArray
             }
             return $value;
         } elseif ($value instanceof AppList and 0 === $value->count()) {
-            return new AppObject([]);
+            return new AppObject();
         }
         throw new UnexpectedPropertyType($key, AppObject::class, $value);
     }
@@ -213,6 +214,21 @@ abstract readonly class ImmutableArray implements ArrayAccess, Countable, IArray
             return $value;
         }
         throw new UnexpectedPropertyType($key, 'float', $value);
+    }
+
+    /**
+     * @template T of object
+     * @param TKey $key
+     * @param class-string<T> $fqcn
+     * @return class-string<T>
+     */
+    public function getFqcn(int|string $key, string $fqcn): string
+    {
+        $fqcnStr = $this->getString($key);
+        if (is_subclass_of($fqcnStr, $fqcn)) {
+            return $fqcnStr;
+        }
+        throw new UnexpectedPropertyType($key, "class-string<$fqcn>", $fqcnStr);
     }
 
     /**

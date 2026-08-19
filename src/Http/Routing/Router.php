@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace LMWF\Http\Routing;
 
 use DomainException;
-use InvalidArgumentException;
 use LMWF\Conf\Http\RouteDef;
 use LMWF\ErrorHandling\Log;
 use LMWF\Http\Controller\Issue\RouteNotFoundIssue;

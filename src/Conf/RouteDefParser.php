@@ -9,9 +9,11 @@ use LMWF\Conf\Http\RouteDef;
 use LMWF\Conf\Http\SubrouteCannotAddRoleConfException;
 use LMWF\Conf\Http\UnauthorizedAttributeConfException;
 use LMWF\DataStructures\AppObject;
-use LMWF\DataStructures\PageParam;
+use LMWF\Http\DataStructures\PageConf;
 use LMWF\ErrorHandling\ExceptionCode;
 use LMWF\Http\Controller\IRoutedController;
+use LMWF\Http\DataStructures\PageEntConf;
+use LMWF\Repo\IRepo;
 use UnexpectedValueException;
 
 final readonly class RouteDefParser
@@ -20,6 +22,9 @@ final readonly class RouteDefParser
     const string ARGS_MIN_KN = 'minArgs';
     const string FQCN_IF_PARAMS_KN = 'fqcnIfParams';
     const string FQCN_KN = 'fqcn';
+    const string PAGE_ENT_KN = 'entConf';
+    const string PAGE_ENT_REPO_FQCN_KN = 'repo';
+    const string PAGE_ENT_TITLE_KN = 'title';
     const string PAGE_IS_INDEXED_KN = 'isIndexed';
     const string PAGE_IS_PART_OF_HIERARCHY_KN = 'isPartOfHierarchy';
     const string PAGE_KN = 'page';
@@ -31,6 +36,9 @@ final readonly class RouteDefParser
         self::ARGS_MIN_KN,
         self::FQCN_IF_PARAMS_KN,
         self::FQCN_KN,
+        self::PAGE_ENT_KN,
+        self::PAGE_ENT_REPO_FQCN_KN,
+        self::PAGE_ENT_TITLE_KN,
         self::PAGE_IS_INDEXED_KN,
         self::PAGE_IS_PART_OF_HIERARCHY_KN,
         self::PAGE_KN,
@@ -75,7 +83,7 @@ final readonly class RouteDefParser
         // Parse FQCN and FQCN when route is accessed with parameters.
         $fqcn = $this->parseFqcn($route, self::FQCN_KN);
         $fqcnIfParams = $this->parseFqcn($route, self::FQCN_IF_PARAMS_KN);
-        $pageParam = $this->parsePageParam($route);
+        $pageParam = $this->parsePageConf($route);
 
         $roles = null;
         if ($route->hasProperty(self::ROLES_KN) || null === $parentRoles) {
@@ -139,7 +147,7 @@ final readonly class RouteDefParser
     /**
      * @param AppObject<mixed> $routeDef
      */
-    private function parsePageParam(AppObject $routeDef): ?PageParam
+    private function parsePageConf(AppObject $routeDef): ?PageConf
     {
         if (!$routeDef->hasProperty(self::PAGE_KN)) {
             return null;
@@ -151,11 +159,27 @@ final readonly class RouteDefParser
                 ExceptionCode::CONF_ROUTEDEFPARSER_PAGEPARAM_CONF_WRONG_TYPE->value,
             );
         }
-        return new PageParam(
+        return new PageConf(
             $pageDefConf->getString(self::PAGE_TITLE_KN),
             $this->baseUrl,
             $pageDefConf->getBoolOrNull(self::PAGE_IS_INDEXED_KN) ?? true,
             $pageDefConf->getBoolOrNull(self::PAGE_IS_PART_OF_HIERARCHY_KN) ?? true,
+            $this->parsePageEntConf($pageDefConf),
+        );
+    }
+
+    /**
+     * @param AppObject<mixed> $pageConf
+     */
+    private function parsePageEntConf(AppObject $pageConf): ?PageEntConf
+    {
+        if (!$pageConf->hasProperty(self::PAGE_ENT_KN)) {
+            return null;
+        }
+        $entConf = $pageConf->getAppObject(self::PAGE_ENT_KN);
+        return new PageEntConf(
+            $entConf->getString(self::PAGE_ENT_TITLE_KN),
+            $entConf->getFqcn(self::PAGE_ENT_REPO_FQCN_KN, IRepo::class),
         );
     }
 }

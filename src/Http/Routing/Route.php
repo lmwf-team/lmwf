@@ -7,7 +7,6 @@ namespace LMWF\Http\Routing;
 use DomainException;
 use InvalidArgumentException;
 use LMWF\Conf\Http\RouteDef;
-use LMWF\DataStructures\Page;
 use LMWF\Http\Routing\Exception\RootRouteWithDefaultControllerException;
 
 /**
@@ -85,38 +84,6 @@ final readonly class Route
             return null;
         }
         return $this->params[$index];
-    }
-
-    /**
-     * @return Page The page extracted from the route and its definition, or
-     * null if the definition does not provide any controller.
-     * @todo Find a way to type that return type depends on routedef's pageTitle
-     * type.
-     */
-    public function getPage(): ?Page
-    {
-        if (null === $this->def->pageParam) {
-            return null;
-        }
-
-        $nearestParentWithPage = $this->parent;
-        $nearestPageAncestor = null;
-        while (null !== $nearestParentWithPage) {
-            if (null !== $nearestPageAncestor = $nearestParentWithPage->getPage()) {
-                break;
-            }
-            $nearestParentWithPage = $nearestParentWithPage->parent;
-        }
-
-        $url = null !== $nearestPageAncestor ? $nearestPageAncestor->url : $this->def->pageParam->baseUrl;
-
-        return new Page(
-            $this->parent?->getPage(),
-            $this->def->pageParam->title,
-            "$url/{$this->seg}",
-            $this->def->pageParam->isIndexed,
-            $this->def->pageParam->isPartOfHierarchy,
-        );
     }
 
     /**

@@ -1,0 +1,12 @@
+{
+    "fqcn": "LMWF.Tests.Mocks.RoutedController",
+    "page": {
+        "title": "_",
+        "ifEntity": {
+            "title": "{{ name }}",
+            "repoFqcn": "LMWF.Tests.Mock.UserRepo"
+        }
+    },
+    "minArgs": 1,
+    "maxArgs": 1
+}

@@ -9,13 +9,31 @@ use LMWF\Http\Routing\Route;
 use PHPUnit\Framework\TestCase;
 use DomainException;
 use LMWF\DataStructures\Page;
-use LMWF\DataStructures\PageParam;
+use LMWF\Http\DataStructures\PageConf;
+use LMWF\Http\Factory\PageFactory;
+use LMWF\Http\Routing\EntPageTitleFormatter;
 use LMWF\Tests\Factory\PageParamFactory;
 use LMWF\Tests\Factory\RouteFactory;
+use LMWF\Tests\Mocks\ContainerMock;
 use LMWF\Tests\Mocks\ControllerMock;
+use LMWF\Tests\Mocks\UserRepo;
 
 final class RouteTest extends TestCase
 {
+    private PageFactory $pageFactory;
+
+    #[\Override]
+    public function setUp(): void
+    {
+        $this->pageFactory = new PageFactory(
+            new EntPageTitleFormatter(
+                new ContainerMock([
+                    UserRepo::class => new UserRepo(),
+                ]),
+            ),
+        );
+    }
+
     public function testInvalidRootRouteWithSeg(): void
     {
         $this->expectException(DomainException::class);
@@ -138,8 +156,8 @@ final class RouteTest extends TestCase
         $homeSeg = 'home';
         $baseUrl = 'https://example.org';
 
-        $homePageParam = new PageParam('Home Page', $baseUrl, true, true);
-        $childPageParam = new PageParam('Child Page', $baseUrl, false, false);
+        $homePageParam = new PageConf('Home Page', $baseUrl, true, true);
+        $childPageParam = new PageConf('Child Page', $baseUrl, false, false);
 
         $childRouteDef = new RouteDef(ControllerMock::class, $childPageParam);
         $homeRouteDef = new RouteDef(ControllerMock::class, $homePageParam, subroutes: [
@@ -150,7 +168,7 @@ final class RouteTest extends TestCase
             $homeSeg => $homeRouteDef,
         ]);
 
-        self::assertNull($rootRoute->getPage());
+        self::assertNull($this->pageFactory->getPage($rootRoute));
 
 
         $childRoute = new Route(
@@ -166,7 +184,7 @@ final class RouteTest extends TestCase
             $homePageParam->isIndexed,
             $homePageParam->isPartOfHierarchy,
         );
-        self::assertEquals($homePage, $childRoute->parent?->getPage());
+        self::assertEquals($homePage, $this->pageFactory->getPage($childRoute->parent));
 
         $childPage = new Page(
             $homePage,
@@ -175,6 +193,6 @@ final class RouteTest extends TestCase
             $childPageParam->isIndexed,
             $childPageParam->isPartOfHierarchy,
         );
-        self::assertEquals($childPage, $childRoute->getPage());
+        self::assertEquals($childPage, $this->pageFactory->getPage($childRoute));
     }
 }

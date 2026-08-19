@@ -14,7 +14,7 @@ use LMWF\Http\Security\CspNonce;
 use LMWF\Http\HttpRequestHandler;
 use LMWF\Http\Routing\Route;
 use LMWF\Conf\Http\RouteDef;
-use LMWF\DataStructures\PageParam;
+use LMWF\Http\DataStructures\PageConf;
 use LMWF\Kernel;
 use LMWF\Session\SessionManager;
 use LMWF\Tests\Factory\PageParamFactory;

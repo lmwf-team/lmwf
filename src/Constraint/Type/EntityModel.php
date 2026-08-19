@@ -12,6 +12,7 @@ use InvalidArgumentException;
  *
  * @todo Disallow sub EntityModel sub properties that are not contained within
  * a ForeignEntityModel?
+ * @todo Check all property keys are snake_case.
  */
 final class EntityModel extends ArrayModel
 {

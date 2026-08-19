@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace LMWF\Conf\Http;
 
 use InvalidArgumentException;
-use LMWF\DataStructures\PageParam;
+use LMWF\Http\DataStructures\PageConf;
 use LMWF\ErrorHandling\ExceptionCode;
 
 /**
@@ -27,7 +27,7 @@ final readonly class RouteDef
      * @param ?class-string<\LMWF\Http\Controller\IRoutedController> $fqcn The FQCN of the controller responsible for this
      * particular partition of paths. If null, this route definition only serves
      * to set the paths of sub route definitions, set shared roles, etc.
-     * @param ($fqcn is string ? PageParam : $fqcnIfParams is string ? PageParam : null) $pageParam Parameters for the page, required if the route def has an associated controller ($fqcn or $fqcnIfParams).
+     * @param ($fqcn is string ? PageConf : $fqcnIfParams is string ? PageConf : null) $pageParam Parameters for the page, required if the route def has an associated controller ($fqcn or $fqcnIfParams).
      * @param list<string> $roles Required roles to access this route.
      * @param array<string, self> $subroutes The child routes as an array of route definitions, indexed by the path segment through which they are accessed.
      * @param ?class-string<\LMWF\Http\Controller\IRoutedController> $fqcnIfParams The controller if the route has parameters.
@@ -35,7 +35,7 @@ final readonly class RouteDef
      */
     public function __construct(
         public ?string $fqcn,
-        public ?PageParam $pageParam,
+        public ?PageConf $pageParam,
         public array $roles = [],
         public array $subroutes = [],
         public int $nArgsLowerLimit = 0,
@@ -45,14 +45,14 @@ final readonly class RouteDef
         if (null === $fqcn && null === $fqcnIfParams) {
             if (null !== $pageParam) {
                 throw new InvalidArgumentException(
-                    'PageParam must be null if the route does not specify any associated controller.',
+                    'PageConf must be null if the route does not specify any associated controller.',
                     ExceptionCode::CONF_HTTP_ROUTEDEF_PAGEPARAM_IS_NOT_NULL->value,
                 );
             }
         } else {
             if (null === $pageParam) {
                 throw new InvalidArgumentException(
-                    "PageParam must NOT be NULL if the route specifies at least one controller (\$fqcn is '$fqcn' and \$fqcnIfParams is '$fqcnIfParams'.",
+                    "PageConf must NOT be NULL if the route specifies at least one controller (\$fqcn is '$fqcn' and \$fqcnIfParams is '$fqcnIfParams'.",
                     ExceptionCode::CONF_HTTP_ROUTEDEF_PAGEPARAM_IS_NULL->value,
                 );
             }

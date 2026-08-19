@@ -8,15 +8,20 @@ use LMWF\Conf\RouteDefParser;
 use LMWF\Conf\Http\RouteDef;
 use LMWF\Conf\Http\SubrouteCannotAddRoleConfException;
 use LMWF\Conf\Http\UnauthorizedAttributeConfException;
+use LMWF\DataStructures\AppList;
+use LMWF\DataStructures\AppObject;
 use LMWF\DataStructures\Factory\CollectionFactory;
-use LMWF\DataStructures\PageParam;
+use LMWF\Http\DataStructures\PageConf;
 use LMWF\ErrorHandling\ExceptionCode;
+use LMWF\Http\DataStructures\PageEntConf;
 use LMWF\Tests\Factory\PageParamFactory;
 use LMWF\Tests\Mocks\ControllerMock;
+use LMWF\Tests\Mocks\OkController;
 use PHPUnit\Framework\TestCase;
 use UnexpectedValueException;
 use LMWF\Tests\Mocks\RoutedController;
 use LMWF\Tests\Mocks\TestController;
+use LMWF\Tests\Mocks\UserRepo;
 
 final class RouteDefParserTest extends TestCase
 {
@@ -37,13 +42,47 @@ final class RouteDefParserTest extends TestCase
     public function testParsingBasicConf(): void
     {
         $rootRouteDef = new RouteDef(null, null, ["ADMIN", "VISITOR"], subroutes: [
-            '' => new RouteDef(ControllerMock::class, new PageParam('Home', 'https://example.org', true, true), ["ADMIN", 'VISITOR']),
+            '' => new RouteDef(ControllerMock::class, new PageConf('Home', 'https://example.org', true, true), ["ADMIN", 'VISITOR']),
             'test' => new RouteDef(TestController::class, PageParamFactory::create('Test Page', 'https://example.org', false, false), ["ADMIN", "VISITOR"]),
         ]);
 
         $actualRouteDef = $this->parseJson(__DIR__ . "/resources/route.json");
 
         self::assertEquals($rootRouteDef, $actualRouteDef);
+    }
+
+    public function testParsingWithEntityConf(): void
+    {
+        $expected = new PageEntConf('{{ name }}', UserRepo::class);
+
+        $routeDef = new RouteDefParser(self::BASE_URL)->parse(new AppObject([
+            'fqcn' => OkController::class,
+            'roles' => new AppList(),
+            'page' => new AppObject([
+                'fqcn' => OkController::class,
+                'title' => 'Users',
+                'entConf' => new AppObject([
+                    'title' => '{{ name }}',
+                    'repo' => UserRepo::class,
+                ])
+            ])
+        ]));
+
+        self::assertEquals($expected, $routeDef->pageParam?->entConf);
+    }
+
+    public function testParsingWithEntityConfMissing(): void
+    {
+        $routeDef = new RouteDefParser(self::BASE_URL)->parse(new AppObject([
+            'fqcn' => OkController::class,
+            'roles' => new AppList(),
+            'page' => new AppObject([
+                'fqcn' => OkController::class,
+                'title' => 'Users',
+            ])
+        ]));
+
+        self::assertNull($routeDef->pageParam?->entConf);
     }
 
     public function testParsingWithParams(): void
