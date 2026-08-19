@@ -21,7 +21,7 @@ final readonly class AppObject extends ImmutableArray
     /**
      * @param array<string, TValue> $array
      */
-    public function __construct(array $array)
+    public function __construct(array $array = [])
     {
         if (array_is_list($array) && [] !== $array) {
             throw new InvalidArgumentException('App array must be an associative array with string keys, not a list.');

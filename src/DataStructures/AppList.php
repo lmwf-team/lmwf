@@ -18,7 +18,7 @@ final readonly class AppList extends ImmutableArray
     /**
      * @param list<TValue> $data
      */
-    public function __construct(array $data)
+    public function __construct(array $data = [])
     {
         if (!array_is_list($data)) {
             throw new InvalidArgumentException('Constructor must receive a list.');
