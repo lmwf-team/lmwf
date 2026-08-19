@@ -41,11 +41,10 @@ final class HttpRequestHandlerTest extends TestCase
         $this->container = Kernel::initBare([
             HttpConf::class => new HttpConf(
                 new RouteDef(
-                    null,
-                    null,
+                    OkController::class,
+                    PageParamFactory::create(),
                     ['ADMIN', 'VISITOR'],
                     subroutes: [
-                        '' => new RouteDef(OkController::class, PageParamFactory::create()),
                         'my' => new RouteDef(
                             PathController::class,
                             PageParamFactory::create(),

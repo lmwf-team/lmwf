@@ -30,14 +30,27 @@ final readonly class PageFactory
             return null;
         }
 
-        $currentParentRoute = $route->parent;
+        $currentParentRoute = $route;
         $nearestPageAncestor = null;
-        while (null !== $currentParentRoute) {
+        while (null !== $currentParentRoute = $currentParentRoute->parent) {
             // If the current parent route has a page, we save it and break.
             if (null !== $nearestPageAncestor = $this->getPage($currentParentRoute)) {
                 break;
             }
-            $currentParentRoute = $currentParentRoute->parent;
+            // Test if we’ve reached the root route.
+            // if (null === $currentParentRoute->parent) {
+            //     if (key_exists('', $currentParentRoute->def->subroutes)) {
+            //         $homeRoute = new Route(
+            //             $currentParentRoute->def->subroutes[''],
+            //             '',
+            //             parent: $currentParentRoute,
+            //         );
+            //         if ($homeRoute !== $route) {
+            //             $nearestPageAncestor = $this->getPage($homeRoute);
+            //         }
+            //     }
+            //     break;
+            // }
         }
 
         if ($nearestPageAncestor instanceof PageEntTitleErr) {

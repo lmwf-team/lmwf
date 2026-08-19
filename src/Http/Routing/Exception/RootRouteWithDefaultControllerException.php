@@ -16,7 +16,7 @@ final class RootRouteWithDefaultControllerException extends DomainException
     {
         parent::__construct(
             self::MESSAGE,
-            ExceptionCode::HTTP_ROUTING_ROOT_ROUTE_WITH_DFT_CONTROLLER->value,
+            ExceptionCode::HTTP_ROUTING_ROUTE_ROOT_ROUTE_WITH_DFT_CONTROLLER->value,
             $previous,
         );
     }

@@ -16,9 +16,11 @@ use LMWF\ErrorHandling\ExceptionCode;
  * with defining an exclusive set of URL paths (a route definition) in order to
  * provide informations about them, including how to respond to them.
  * Meanwhile, the actual route matches only specific path (a route) and is
- * instantited at runtime necessarily.
- * In the future, these classes could be deleted for a more simple array that
- * would contain all the route definitions.
+ * instantiated at runtime necessarily.
+ *
+ * Unlike Route-s, a RouteDef only knows about its direct descendants not about
+ * its parent.
+ *
  * @todo Make it implement ArrayAccess to access sub-route definitions.
  */
 final readonly class RouteDef

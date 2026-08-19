@@ -47,23 +47,18 @@ final class RouterTest extends TestCase
 
     public function testBaseUrl(): void
     {
-        $pageParam = PageParamFactory::create();
+        $rootRoute = RouteFactory::createRootRoute([]);
 
-        $homeRouteDef = new RouteDef(self::class, $pageParam);
-        $rootRoute = RouteFactory::createRootRoute([
-            '' => $homeRouteDef,
-        ]);
-
-        $homeRoute = new Route($homeRouteDef, '', [], parent: $rootRoute);
-
-        self::assertEquals($homeRoute, $this->router->getRouteFromPath($rootRoute->def, ''));
-        self::assertEquals($homeRoute, $this->router->getRouteFromPath($rootRoute->def, '/'));
+        self::assertEquals($rootRoute, $this->router->getRouteFromPath($rootRoute->def, ''));
+        self::assertEquals($rootRoute, $this->router->getRouteFromPath($rootRoute->def, '/'));
     }
 
     public function testWithEntConf(): void
     {
-        $rootRoute = RouteFactory::createRootRoute([
-            '' => new RouteDef(
+        $segName = 'users';
+
+        $rootRouteDef = new RouteDef(null, null, subroutes: [
+            $segName => new RouteDef(
                 OkController::class,
                 new PageConf(
                     'Users',
@@ -78,18 +73,28 @@ final class RouterTest extends TestCase
         ]);
 
         self::assertEquals(
-            new Page(null, 'Users', url: self::BASE_URL),
-            $this->pageFactory->getPage($this->router->getRouteFromPath($rootRoute->def, "/")),
+            null,
+            $this->pageFactory->getPage($this->router->getRouteFromPath($rootRouteDef, '/')),
         );
 
         self::assertEquals(
-            new Page(null, 'User: ' . UserRepo::USER_NAME, self::BASE_URL . '//' . UserRepo::USER_ID),
-            $this->pageFactory->getPage($this->router->getRouteFromPath($rootRoute->def, '//' . UserRepo::USER_ID)),
+            null,
+            $this->pageFactory->getPage($this->router->getRouteFromPath($rootRouteDef, '')),
+        );
+
+        self::assertEquals(
+            new Page(null, 'Users', url: self::BASE_URL . "/$segName"),
+            $this->pageFactory->getPage($this->router->getRouteFromPath($rootRouteDef, "/$segName")),
+        );
+
+        self::assertEquals(
+            new Page(null, 'User: ' . UserRepo::USER_NAME, self::BASE_URL . "/$segName/" . UserRepo::USER_ID),
+            $this->pageFactory->getPage($this->router->getRouteFromPath($rootRouteDef, "/$segName/" . UserRepo::USER_ID)),
         );
 
         self::assertEquals(
             new PageEntTitleErr(FormatErr::EntNotFound),
-            $this->pageFactory->getPage($this->router->getRouteFromPath($rootRoute->def, '//typo-' . UserRepo::USER_ID)),
+            $this->pageFactory->getPage($this->router->getRouteFromPath($rootRouteDef, "/$segName/typo-" . UserRepo::USER_ID)),
         );
     }
 
@@ -110,25 +115,13 @@ final class RouterTest extends TestCase
     {
 
         $rootRoute = RouteFactory::createRootRoute([
-            '' => new RouteDef(null, null, [])
+            '_' => new RouteDef(null, null, [])
         ]);
 
         self::assertEquals(
             new RouteNotFoundIssue('test'),
             $this->router->getRouteFromPath($rootRoute->def, '/test'),
         );
-    }
-
-    public function testRootRouteWithOneToTwoParams(): void
-    {
-        $routeDef = new RouteDef(null, null, nArgsLowerLimit: 1, nArgsUpperLimit: 2);
-
-        self::assertEquals(new Route($routeDef, '', ['']), $this->router->getRouteFromPath($routeDef, ''));
-        self::assertEquals(new Route($routeDef, '', ['']), $this->router->getRouteFromPath($routeDef, '/'));
-        self::assertEquals(new Route($routeDef, '', ['', '']), $this->router->getRouteFromPath($routeDef, '//'));
-        self::assertEquals(new Route($routeDef, '', ['param1']), $this->router->getRouteFromPath($routeDef, '/param1'));
-        self::assertEquals(new Route($routeDef, '', ['param1', '']), $this->router->getRouteFromPath($routeDef, '/param1/'));
-        self::assertEquals(new RoutingParamIssue(RoutingParamIssueCode::TooManyParams, $routeDef, 3), $this->router->getRouteFromPath($routeDef, '/param1/param2/param3'));
     }
 
     public function testRouteIdWithSpecialChars(): void
@@ -141,57 +134,9 @@ final class RouterTest extends TestCase
         $rootRoute = RouteFactory::createRootRoute([
             $subrouteId => $subrouteDef,
         ]);
-        $subroute = new Route($subrouteDef, $subrouteId, parent: $rootRoute);
+        $subroute = new Route($subrouteDef, $subrouteId, $rootRoute);
 
         self::assertEquals($subroute, $this->router->getRouteFromPath($rootRoute->def, "/{$subrouteId}"));
-    }
-
-    public function testRootRouteWithZeroMinParams(): void
-    {
-
-        $routeDef = new RouteDef(null, null, [], nArgsUpperLimit: 1);
-
-        $this->expectException(DomainException::class);
-        $this->router->getRouteFromPath($routeDef, '');
-    }
-
-    /**
-     * If the root route does not define any child, we should get an exception
-     * from the router as it makes it impossible for any path to match any
-     * route (since a path is at least composed of two segments).
-     */
-    public function testRootRouteWithZeroParams(): void
-    {
-
-        $routeDef = new RouteDef(null, null, []);
-
-        $this->expectException(DomainException::class);
-        $this->router->getRouteFromPath($routeDef, '');
-    }
-
-    public function testRootRouteWithOneParamOnly(): void
-    {
-        $routeParam = PageParamFactory::create();
-
-        $routeDef = new RouteDef(
-            self::class,
-            $routeParam,
-            nArgsLowerLimit: 1,
-            nArgsUpperLimit: 1,
-        );
-
-        self::assertEquals(
-            new RoutingParamIssue(RoutingParamIssueCode::TooManyParams, $routeDef, 2),
-            $this->router->getRouteFromPath($routeDef, '/param1/param2'),
-        );
-        self::assertEquals(
-            new RoutingParamIssue(RoutingParamIssueCode::TooManyParams, $routeDef, 2),
-            $this->router->getRouteFromPath($routeDef, '/param1/'),
-        );
-        self::assertEquals(
-            new Route($routeDef, '', ['param1']),
-            $this->router->getRouteFromPath($routeDef, '/param1'),
-        );
     }
 
     public function testSubroute(): void
@@ -205,9 +150,9 @@ final class RouterTest extends TestCase
             'sub1' => $sub1SubrouteDef,
             'sub2' => $sub2SubrouteDef,
         ]);
-        $sub1Route = new Route($sub1SubrouteDef, 'sub1', [], $rootRoute);
-        $sub2Route = new Route($sub2SubrouteDef, 'sub2', ['param1', 'param2'], $rootRoute);
-        $sub2RouteNoParams = new Route($sub2SubrouteDef, 'sub2', [], $rootRoute);
+        $sub1Route = new Route($sub1SubrouteDef, 'sub1', $rootRoute);
+        $sub2Route = new Route($sub2SubrouteDef, 'sub2', $rootRoute, ['param1', 'param2']);
+        $sub2RouteNoParams = new Route($sub2SubrouteDef, 'sub2', $rootRoute);
 
         self::assertEquals($sub1Route, $this->router->getRouteFromPath($rootRoute->def, '/sub1'));
         self::assertEquals($sub2Route, $this->router->getRouteFromPath($rootRoute->def, '/sub2/param1/param2'));

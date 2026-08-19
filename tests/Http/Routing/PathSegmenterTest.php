@@ -14,8 +14,8 @@ final class PathSegmenterTest extends TestCase
     {
         $router = new Router();
 
-        self::assertSame(['', '', ], $router->getSegs('/'));
-        self::assertSame(['', '', ], $router->getSegs(''));
+        self::assertSame([''], $router->getSegs('/'));
+        self::assertSame([''], $router->getSegs(''));
         self::assertSame(['', '', ''], $router->getSegs('//'));
         self::assertSame(['', '', '', ''], $router->getSegs('///'));
         self::assertSame(['', 'test'], $router->getSegs('/test'));

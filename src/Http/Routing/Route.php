@@ -7,6 +7,7 @@ namespace LMWF\Http\Routing;
 use DomainException;
 use InvalidArgumentException;
 use LMWF\Conf\Http\RouteDef;
+use LMWF\ErrorHandling\ExceptionCode;
 use LMWF\Http\Routing\Exception\RootRouteWithDefaultControllerException;
 
 /**
@@ -20,6 +21,9 @@ use LMWF\Http\Routing\Exception\RootRouteWithDefaultControllerException;
  * path segment of any request is '', which matches the root route.
  * The home route is the root route's child (assuming it is a parent route) with
  * the key '', assuming it is defined.
+ *
+ * Unlike RouteDef-s, a Route only knows about its direct parent, and
+ * not about its child routes.
  */
 final readonly class Route
 {
@@ -33,8 +37,8 @@ final readonly class Route
     public function __construct(
         public RouteDef $def,
         public string $seg,
+        public ?Route $parent,
         public array $params = [],
-        public ?Route $parent = null,
     ) {
         $nArgs = count($params);
 
@@ -50,13 +54,27 @@ final readonly class Route
             }
         }
 
+        // If it is the root route.
         if (null === $this->parent) {
             if ('' !== $this->seg) {
-                throw new DomainException('The root route can only match an empty path segment.');
-            } elseif (null !== $def->fqcn) {
-                if (0 === $def->nArgsLowerLimit && 0 === count($def->subroutes)) {
-                    throw new RootRouteWithDefaultControllerException();
-                }
+                throw new DomainException(
+                    'The root route can only match an empty path segment.',
+                    ExceptionCode::HTTP_ROUTING_ROUTE_ROOT_ROUTE_HAS_NON_EMPTY_SEG->value,
+                );
+            } elseif (key_exists('', $this->def->subroutes)) {
+                // The root route cannot have a child with an empty seg. This
+                // would conflict with our definition of a route definition
+                // which is a partition (in the mathematical sense) of all the
+                // paths.
+                throw new InvalidArgumentException(
+                    'The root route has a direct child with an empty seg.',
+                    ExceptionCode::HTTP_ROUTING_ROUTE_ROOT_ROUTE_HAS_CHILD_WITH_EMPTY_SEG->value,
+                );
+            } elseif ($def->nArgsUpperLimit > 0) {
+                throw new InvalidArgumentException(
+                    "The root route cannot accept parameters, but received a route definition that says max is {$def->nArgsUpperLimit}. This is because it could match the path '/', which is ambiguous with the default path for the root route with no parameters.",
+                    ExceptionCode::HTTP_ROUTING_ROUTE_ROOT_ROUTE_ACCEPTS_PARAMS->value,
+                );
             }
         }
     }
@@ -89,14 +107,21 @@ final readonly class Route
     /**
      * Compute the absolute path from the root route up to this route.
      *
-     * This will always have a leading slash.
+     * *This will always have a leading slash.*
+     *
+     * @todo Should the root route return "/"? On one hand, it makes everything
+     * more consistent (a path always begins with "/"), on the other hand it
+     * makes it harder to generate a canonical URL for the home. (example.org
+     * instead of example.org/).
      */
     public function getPath(): string
     {
-        $path = '';
-        if (null !== $this->parent) {
-            $path .= "{$this->parent->getPath()}/{$this->seg}";
-        }
+        $path = null === $this->parent ?
+            '/' :
+            (null === $this->parent->parent ?
+                "/{$this->seg}" :
+                "{$this->parent->getPath()}/{$this->seg}");
+
         if (count($this->params) > 0) {
             $path .= '/' . implode('/', $this->params);
         }

@@ -14,7 +14,7 @@ use LMWF\Http\Controller\Issue\RoutingParamIssueCode;
 final readonly class Router
 {
     /**
-     * Convert an ABSOLUTE path to a list of path segments, CONVERTS "" to "/".
+     * Convert an ABSOLUTE path to a list of path segments, CONVERTS "/" to "".
      *
      * A "path segment" is defined in the context of LMWF as the
      * URL-decoded part of each path segment of the given absolute path.
@@ -24,27 +24,25 @@ final readonly class Router
      */
     public function getSegs(string $absPath): array
     {
-        if (0 !== strpos($absPath, '/')) {
-            if ('' !== $absPath) {
-                throw new DomainException('Passed path is not absolute.');
-            }
-            $absPath = '/';
+        if ('/' === $absPath || '' === $absPath) {
+            return [''];
+        } elseif (0 === strpos($absPath, '/')) {
+            // If the path begins with a slash and is not simply "/", split it
+            // by slash. This is guaranteed to have a first, empty element ("").
+            return array_map(fn ($seg) => urldecode($seg), explode('/', $absPath));
         }
-
-        return array_map(fn ($seg) => urldecode($seg), explode('/', $absPath));
+        // $absPath does not begin with a slash AND is not empty.
+        throw new DomainException('Passed path is not absolute.');
     }
 
     /**
      * @param string $path An arbitrary string made of segments separated by one or more forward slashes.
      */
-    public function getRouteFromPath(RouteDef $routeDef, string $path): Route|RoutingParamIssue|RouteNotFoundIssue
+    public function getRouteFromPath(RouteDef $rootRouteDef, string $path): Route|RoutingParamIssue|RouteNotFoundIssue
     {
-        if ([] === $routeDef->subroutes && 0 === $routeDef->nArgsLowerLimit) {
-            throw new DomainException('Invalid root route definition: it MUST either defines chilren or accepts at least one parameter.');
-        }
         $segs = self::getSegs($path);
         Log::debug('Segments are: [' . implode(',', $segs) . ']');
-        return $this->getRouteFromSegs($routeDef, null, $segs[0], array_slice($segs, 1));
+        return $this->getRouteFromSegs($rootRouteDef, null, $segs[0], array_slice($segs, 1));
     }
 
     /**
@@ -63,7 +61,7 @@ final readonly class Router
         if ($routeDef->nArgsLowerLimit > $nArgs) {
             return new RoutingParamIssue(RoutingParamIssueCode::NotEnoughParams, $routeDef, $nArgs);
         }
-        $route = new Route($routeDef, $currentSeg, array_slice($nextSegs, 0, $routeDef->nArgsUpperLimit), $parentRoute);
+        $route = new Route($routeDef, $currentSeg, $parentRoute, array_slice($nextSegs, 0, $routeDef->nArgsUpperLimit));
         if ($routeDef->nArgsUpperLimit < $nArgs) {
             if (0 === count($routeDef->subroutes)) {
                 return new RoutingParamIssue(RoutingParamIssueCode::TooManyParams, $routeDef, $nArgs);
