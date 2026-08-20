@@ -27,16 +27,16 @@ final class RouteDefParserTest extends TestCase
 {
     const string BASE_URL = 'https://example.org';
 
-    public function testBaseUrlInvalid(): void
-    {
-        $this->expectExceptionCode(ExceptionCode::CONF_ROUTEDEFPARSER_BASE_URL_MUST_NOT_HAVE_TRAILING_SLASH->value);
-        new RouteDefParser('https://example.org/');
-    }
-
     public function testAddingRoles(): void
     {
         $this->expectException(SubrouteCannotAddRoleConfException::class);
         $this->parseJson(__DIR__ . "/resources/added_role_in_sub_route.json");
+    }
+
+    public function testBaseUrlInvalid(): void
+    {
+        $this->expectExceptionCode(ExceptionCode::CONF_ROUTEDEFPARSER_BASE_URL_MUST_NOT_HAVE_TRAILING_SLASH->value);
+        new RouteDefParser('https://example.org/');
     }
 
     public function testParsingBasicConf(): void
@@ -63,7 +63,7 @@ final class RouteDefParserTest extends TestCase
                 'title' => 'Users',
                 'entConf' => new AppObject([
                     'title' => '{{ name }}',
-                    'repo' => UserRepo::class,
+                    'repoFqcn' => UserRepo::class,
                 ])
             ])
         ]));
@@ -85,18 +85,7 @@ final class RouteDefParserTest extends TestCase
         self::assertNull($routeDef->pageParam?->entConf);
     }
 
-    public function testParsingWithParams(): void
-    {
-        $expected = new RouteDef(RoutedController::class, PageParamFactory::create(baseUrl: self::BASE_URL));
-        self::assertEquals($expected, $this->parseJson(__DIR__ . "/resources/route_w_params_0.json"));
-        self::assertEquals($expected, $this->parseJson(__DIR__ . "/resources/route_w_params_1.json"));
-        self::assertEquals($expected, $this->parseJson(__DIR__ . "/resources/route_w_params_2.json"));
-
-        $expected2 = new RouteDef(RoutedController::class, PageParamFactory::create(baseUrl: self::BASE_URL), ["VISITOR"], nArgsLowerLimit: 1, nArgsUpperLimit: 5);
-        self::assertEquals($expected2, $this->parseJson(__DIR__ . "/resources/route_w_params_3.json"));
-    }
-
-    public function testParsingWithBoth(): void
+    public function testJsonWithBoth(): void
     {
         $expected = new RouteDef(
             null,
@@ -115,22 +104,42 @@ final class RouteDefParserTest extends TestCase
         self::assertEquals($expected, $this->parseJson(__DIR__ . "/resources/route_w_both.json"));
     }
 
-    public function testParsingRouteWithExtra0(): void
+    public function testJsonWithExtra0(): void
     {
         $this->expectException(UnauthorizedAttributeConfException::class);
         $this->parseJson(__DIR__ . "/resources/route_w_extra_0.json");
     }
 
-    public function testParsingRouteWithExtra1(): void
+    public function testJsonWithExtra1(): void
     {
         $this->expectException(UnexpectedValueException::class);
         $this->parseJson(__DIR__ . "/resources/route_w_extra_1.json");
     }
 
-    public function testParsingRouteWithExtra2(): void
+    public function testJsonWithExtra2(): void
     {
         $this->expectException(UnexpectedValueException::class);
         $this->parseJson(__DIR__ . "/resources/route_w_extra_2.json");
+    }
+
+    public function testJsonWithEntConf(): void
+    {
+        $rootRouteDef = $this->parseJson(__DIR__ . '/resources/route_w_params_4.json');
+        self::assertEquals(
+            UserRepo::class,
+            $rootRouteDef->pageParam?->entConf?->repoFqcn,
+        );
+    }
+
+    public function testJsonWithParams(): void
+    {
+        $expected = new RouteDef(RoutedController::class, PageParamFactory::create(baseUrl: self::BASE_URL));
+        self::assertEquals($expected, $this->parseJson(__DIR__ . "/resources/route_w_params_0.json"));
+        self::assertEquals($expected, $this->parseJson(__DIR__ . "/resources/route_w_params_1.json"));
+        self::assertEquals($expected, $this->parseJson(__DIR__ . "/resources/route_w_params_2.json"));
+
+        $expected2 = new RouteDef(RoutedController::class, PageParamFactory::create(baseUrl: self::BASE_URL), ["VISITOR"], nArgsLowerLimit: 1, nArgsUpperLimit: 5);
+        self::assertEquals($expected2, $this->parseJson(__DIR__ . "/resources/route_w_params_3.json"));
     }
 
     public function parseJson(string $filePath, bool $allowOverridingRoles = false): RouteDef

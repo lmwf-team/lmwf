@@ -23,7 +23,7 @@ final readonly class RouteDefParser
     const string FQCN_IF_PARAMS_KN = 'fqcnIfParams';
     const string FQCN_KN = 'fqcn';
     const string PAGE_ENT_KN = 'entConf';
-    const string PAGE_ENT_REPO_FQCN_KN = 'repo';
+    const string PAGE_ENT_REPO_FQCN_KN = 'repoFqcn';
     const string PAGE_ENT_TITLE_KN = 'title';
     const string PAGE_IS_INDEXED_KN = 'isIndexed';
     const string PAGE_IS_PART_OF_HIERARCHY_KN = 'isPartOfHierarchy';
@@ -179,7 +179,7 @@ final readonly class RouteDefParser
         $entConf = $pageConf->getAppObject(self::PAGE_ENT_KN);
         return new PageEntConf(
             $entConf->getString(self::PAGE_ENT_TITLE_KN),
-            $entConf->getFqcn(self::PAGE_ENT_REPO_FQCN_KN, IRepo::class),
+            $entConf->getFqcn(self::PAGE_ENT_REPO_FQCN_KN, IRepo::class, convertDotsToBackslashes: true),
         );
     }
 }

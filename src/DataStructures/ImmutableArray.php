@@ -222,9 +222,18 @@ abstract readonly class ImmutableArray implements ArrayAccess, Countable, IArray
      * @param class-string<T> $fqcn
      * @return class-string<T>
      */
-    public function getFqcn(int|string $key, string $fqcn): string
-    {
-        $fqcnStr = $this->getString($key);
+    public function getFqcn(
+        int|string $key,
+        string $fqcn,
+        bool $convertDotsToBackslashes = false,
+    ): string {
+        $fqcnStr = $convertDotsToBackslashes ?
+            str_replace('.', '\\', $this->getString($key)) :
+            $this->getString($key);
+
+        // if (!class_exists($fqcn) || !is_subclass_of($fqcn, IRoutedController::class)) {
+        //     throw new UnexpectedValueException("The route definition defined a FQCN with key '$key' and value '$fqcn' but it is either not a FQCN of an existing class, not a FQCN at all, or the FQCN of a class that does not implement IRoutedController.");
+        // } :
         if (is_subclass_of($fqcnStr, $fqcn)) {
             return $fqcnStr;
         }
