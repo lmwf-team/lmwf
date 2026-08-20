@@ -13,7 +13,7 @@ use LMWF\DataStructures\AppObject;
 use LMWF\DataStructures\Factory\CollectionFactory;
 use LMWF\Http\DataStructures\PageConf;
 use LMWF\ErrorHandling\ExceptionCode;
-use LMWF\Http\DataStructures\PageEntConf;
+use LMWF\Http\DataStructures\PageMetadata;
 use LMWF\Tests\Factory\PageParamFactory;
 use LMWF\Tests\Mocks\ControllerMock;
 use LMWF\Tests\Mocks\OkController;
@@ -41,7 +41,7 @@ final class RouteDefParserTest extends TestCase
 
     public function testParsingBasicConf(): void
     {
-        $rootRouteDef = new RouteDef(null, null, ["ADMIN", "VISITOR"], subroutes: [
+        $rootRouteDef = new RouteDef(null, null, ["ADMIN", "VISITOR"], subRouteDefs: [
             '' => new RouteDef(ControllerMock::class, new PageConf('Home', 'https://example.org', true, true), ["ADMIN", 'VISITOR']),
             'test' => new RouteDef(TestController::class, PageParamFactory::create('Test Page', 'https://example.org', false, false), ["ADMIN", "VISITOR"]),
         ]);
@@ -53,7 +53,7 @@ final class RouteDefParserTest extends TestCase
 
     public function testParsingWithEntityConf(): void
     {
-        $expected = new PageEntConf('{{ name }}', UserRepo::class);
+        $expected = new PageMetadata('{{ name }}', UserRepo::class);
 
         $routeDef = new RouteDefParser(self::BASE_URL)->parse(new AppObject([
             'fqcn' => OkController::class,
@@ -91,7 +91,7 @@ final class RouteDefParserTest extends TestCase
             null,
             null,
             ["ADMIN", "VISITOR"],
-            subroutes: [
+            subRouteDefs: [
                 'sub' => new RouteDef(
                     RoutedController::class,
                     PageParamFactory::create('Sub Page', self::BASE_URL),

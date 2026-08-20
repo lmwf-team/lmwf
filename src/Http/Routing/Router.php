@@ -36,11 +36,11 @@ final readonly class Router
     }
 
     /**
-     * @param string $path An arbitrary string made of segments separated by one or more forward slashes.
+     * @param string $absPath An absolute HTTP path (that must begin with a forward slash, unless it is empty).
      */
-    public function getRouteFromPath(RouteDef $rootRouteDef, string $path): Route|RoutingParamIssue|RouteNotFoundIssue
+    public function getRouteFromPath(RouteDef $rootRouteDef, string $absPath): Route|RoutingParamIssue|RouteNotFoundIssue
     {
-        $segs = self::getSegs($path);
+        $segs = self::getSegs($absPath);
         Log::debug('Segments are: [' . implode(',', $segs) . ']');
         return $this->getRouteFromSegs($rootRouteDef, null, $segs[0], array_slice($segs, 1));
     }
@@ -61,18 +61,33 @@ final readonly class Router
         if ($routeDef->nArgsLowerLimit > $nArgs) {
             return new RoutingParamIssue(RoutingParamIssueCode::NotEnoughParams, $routeDef, $nArgs);
         }
-        $route = new Route($routeDef, $currentSeg, $parentRoute, array_slice($nextSegs, 0, $routeDef->nArgsUpperLimit));
+
+        for ($i = $routeDef->nArgsLowerLimit; $i < min($nArgs, $routeDef->nArgsUpperLimit); $i++) {
+            $parentRoute = new Route(
+                $routeDef,
+                $currentSeg,
+                $parentRoute,
+                array_slice($nextSegs, 0, $i),
+            );
+        }
+        $route = new Route(
+            $routeDef,
+            $currentSeg,
+            $parentRoute,
+            array_slice($nextSegs, 0, min($nArgs, $routeDef->nArgsUpperLimit)),
+        );
+
         if ($routeDef->nArgsUpperLimit < $nArgs) {
-            if (0 === count($routeDef->subroutes)) {
+            if (0 === count($routeDef->subRouteDefs)) {
                 return new RoutingParamIssue(RoutingParamIssueCode::TooManyParams, $routeDef, $nArgs);
             }
-            Log::debug("Current route has subroutes.");
+            Log::debug("Current route has sub-route definitions.");
             $nextSeg = $nextSegs[$routeDef->nArgsUpperLimit];
-            if (!key_exists($nextSeg, $routeDef->subroutes)) {
+            if (!key_exists($nextSeg, $routeDef->subRouteDefs)) {
                 return new RouteNotFoundIssue($nextSeg);
             }
 
-            return $this->getRouteFromSegs($routeDef->subroutes[$nextSeg], $route, $nextSeg, array_slice($nextSegs, $routeDef->nArgsUpperLimit + 1));
+            return $this->getRouteFromSegs($routeDef->subRouteDefs[$nextSeg], $route, $nextSeg, array_slice($nextSegs, $routeDef->nArgsUpperLimit + 1));
         }
 
         return $route;

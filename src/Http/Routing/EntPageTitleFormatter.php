@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace LMWF\Http\Routing;
 
-use LMWF\Http\DataStructures\PageEntConf;
+use LMWF\Http\DataStructures\PageMetadata;
 use Psr\Container\ContainerInterface;
 
 final readonly class EntPageTitleFormatter
@@ -14,7 +14,7 @@ final readonly class EntPageTitleFormatter
     ) {
     }
 
-    public function format(PageEntConf $entConf, string $entId): string|FormatErr
+    public function format(PageMetadata $entConf, string $entId): string|FormatErr
     {
         $matches = [];
         $pregMatchResult = preg_match_all('/{{ ([a-z][a-z_]+[a-z]) }}/', $entConf->title, $matches);

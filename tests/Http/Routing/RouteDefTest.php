@@ -21,7 +21,7 @@ final class RouteDefTest extends TestCase
     public function testWithNoRouteId(): void
     {
         $this->expectExceptionCode(ExceptionCode::CONF_HTTP_ROUTEDEF_SUBROUTE_PATH_SEGMENT_IS_NOT_A_STRING->value);
-        new RouteDef(null, null, subroutes: [new RouteDef(self::class, PageParamFactory::create())]);
+        new RouteDef(null, null, subRouteDefs: [new RouteDef(self::class, PageParamFactory::create())]);
     }
 
     public function testWithNegativeMinArgs(): void

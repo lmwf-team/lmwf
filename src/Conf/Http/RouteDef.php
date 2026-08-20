@@ -31,7 +31,7 @@ final readonly class RouteDef
      * to set the paths of sub route definitions, set shared roles, etc.
      * @param ($fqcn is string ? PageConf : $fqcnIfParams is string ? PageConf : null) $pageParam Parameters for the page, required if the route def has an associated controller ($fqcn or $fqcnIfParams).
      * @param list<string> $roles Required roles to access this route.
-     * @param array<string, self> $subroutes The child routes as an array of route definitions, indexed by the path segment through which they are accessed.
+     * @param array<string, self> $subRouteDefs The child routes as an array of route definitions, indexed by the path segment through which they are accessed.
      * @param ?class-string<\LMWF\Http\Controller\IRoutedController> $fqcnIfParams The controller if the route has parameters.
      * @todo What happens when an object argument has a default???
      */
@@ -39,7 +39,7 @@ final readonly class RouteDef
         public ?string $fqcn,
         public ?PageConf $pageParam,
         public array $roles = [],
-        public array $subroutes = [],
+        public array $subRouteDefs = [],
         public int $nArgsLowerLimit = 0,
         public int $nArgsUpperLimit = 0,
         public ?string $fqcnIfParams = null,
@@ -68,7 +68,7 @@ final readonly class RouteDef
             }
         }
 
-        foreach ($subroutes as $pathSegment => $routeDef) {
+        foreach ($subRouteDefs as $pathSegment => $routeDef) {
             if (!is_string($pathSegment)) {
                 throw new InvalidArgumentException(
                     "Each route definition must be identified by one path segment. (Found path segment equal to '$pathSegment'.)",

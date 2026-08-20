@@ -44,7 +44,7 @@ final class HttpRequestHandlerTest extends TestCase
                     OkController::class,
                     PageParamFactory::create(),
                     ['ADMIN', 'VISITOR'],
-                    subroutes: [
+                    subRouteDefs: [
                         'my' => new RouteDef(
                             PathController::class,
                             PageParamFactory::create(),

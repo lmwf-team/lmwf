@@ -12,7 +12,7 @@ use LMWF\DataStructures\AppObject;
 use LMWF\Http\DataStructures\PageConf;
 use LMWF\ErrorHandling\ExceptionCode;
 use LMWF\Http\Controller\IRoutedController;
-use LMWF\Http\DataStructures\PageEntConf;
+use LMWF\Http\DataStructures\PageMetadata;
 use LMWF\Repo\IRepo;
 use UnexpectedValueException;
 
@@ -105,14 +105,14 @@ final readonly class RouteDefParser
             }
         }
 
-        // Set subroutes.
-        $subroutes = [];
+        // Set sub-route definitions.
+        $subRouteDefs = [];
         if ($route->hasProperty(self::ROUTES_KN)) {
-            foreach ($route->getAppObject(self::ROUTES_KN) as $subrouteSeg => $subroute) {
+            foreach ($route->getAppObject(self::ROUTES_KN) as $seg => $subroute) {
                 if (!$subroute instanceof AppObject) {
                     throw new UnexpectedValueException('Subroute configuration is expected to be an AppObject.');
                 }
-                $subroutes[$subrouteSeg] = $this->parse($subroute, $roles ?? $parentRoles);
+                $subRouteDefs[$seg] = $this->parse($subroute, $roles ?? $parentRoles);
             }
         }
 
@@ -120,7 +120,7 @@ final readonly class RouteDefParser
             $fqcn,
             $pageParam,
             $roles ?? $parentRoles,
-            $subroutes,
+            $subRouteDefs,
             $route->hasProperty(self::ARGS_MIN_KN) ? $route->getInt(self::ARGS_MIN_KN) : 0,
             $route->hasProperty(self::ARGS_MAX_KN) ? $route->getInt(self::ARGS_MAX_KN) : 0,
             $fqcnIfParams,
@@ -171,13 +171,13 @@ final readonly class RouteDefParser
     /**
      * @param AppObject<mixed> $pageConf
      */
-    private function parsePageEntConf(AppObject $pageConf): ?PageEntConf
+    private function parsePageEntConf(AppObject $pageConf): ?PageMetadata
     {
         if (!$pageConf->hasProperty(self::PAGE_ENT_KN)) {
             return null;
         }
         $entConf = $pageConf->getAppObject(self::PAGE_ENT_KN);
-        return new PageEntConf(
+        return new PageMetadata(
             $entConf->getString(self::PAGE_ENT_TITLE_KN),
             $entConf->getFqcn(self::PAGE_ENT_REPO_FQCN_KN, IRepo::class, convertDotsToBackslashes: true),
         );

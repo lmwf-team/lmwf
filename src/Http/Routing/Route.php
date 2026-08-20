@@ -61,7 +61,7 @@ final readonly class Route
                     'The root route can only match an empty path segment.',
                     ExceptionCode::HTTP_ROUTING_ROUTE_ROOT_ROUTE_HAS_NON_EMPTY_SEG->value,
                 );
-            } elseif (key_exists('', $this->def->subroutes)) {
+            } elseif (key_exists('', $this->def->subRouteDefs)) {
                 // The root route cannot have a child with an empty seg. This
                 // would conflict with our definition of a route definition
                 // which is a partition (in the mathematical sense) of all the

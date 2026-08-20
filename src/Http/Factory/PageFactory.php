@@ -37,20 +37,6 @@ final readonly class PageFactory
             if (null !== $nearestPageAncestor = $this->getPage($currentParentRoute)) {
                 break;
             }
-            // Test if we’ve reached the root route.
-            // if (null === $currentParentRoute->parent) {
-            //     if (key_exists('', $currentParentRoute->def->subroutes)) {
-            //         $homeRoute = new Route(
-            //             $currentParentRoute->def->subroutes[''],
-            //             '',
-            //             parent: $currentParentRoute,
-            //         );
-            //         if ($homeRoute !== $route) {
-            //             $nearestPageAncestor = $this->getPage($homeRoute);
-            //         }
-            //     }
-            //     break;
-            // }
         }
 
         if ($nearestPageAncestor instanceof PageEntTitleErr) {
@@ -59,9 +45,16 @@ final readonly class PageFactory
 
         $url = null !== $nearestPageAncestor ? $nearestPageAncestor->url : $pageConf->baseUrl;
         if ('' !== $route->seg || [] !== $route->params) {
-            $url .= "/{$route->seg}";
-            foreach ($route->params as $param) {
-                $url .= "/$param";
+            // If this route and its parent share the same definition, i.e. if
+            // this route is the same route with only one more parameter.
+            if ($route->parent->def === $route->def) {
+                $parentLastParam = count($route->parent->params);
+                $url .= "/{$route->params[$parentLastParam]}";
+            } else {
+                $url .= "/{$route->seg}";
+                foreach ($route->params as $param) {
+                    $url .= "/$param";
+                }
             }
         }
 

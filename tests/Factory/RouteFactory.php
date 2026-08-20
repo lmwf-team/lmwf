@@ -12,12 +12,12 @@ use LMWF\Http\Routing\Route;
 final readonly class RouteFactory
 {
     /**
-     * @param non-empty-array<string, RouteDef> $subroutes
+     * @param non-empty-array<string, RouteDef> $subRouteDefs
      */
     public static function createRootRoute(
-        array $subroutes,
+        array $subRouteDefs,
     ): Route {
-        $routeDef = new RouteDef(null, null, subroutes: $subroutes);
+        $routeDef = new RouteDef(fqcn: null, pageParam: null, subRouteDefs: $subRouteDefs);
         return new Route($routeDef, '', parent: null);
     }
 }
