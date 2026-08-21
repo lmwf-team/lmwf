@@ -181,7 +181,7 @@ final readonly class AppConf
      */
     public function hasSetting(string $key): bool
     {
-        return $this->data->hasProperty($key);
+        return $this->data->hasKey($key);
     }
 
     /**

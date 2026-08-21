@@ -12,7 +12,8 @@ use LMWF\DataStructures\AppObject;
 use LMWF\Http\DataStructures\PageConf;
 use LMWF\ErrorHandling\ExceptionCode;
 use LMWF\Http\Controller\IRoutedController;
-use LMWF\Http\DataStructures\PageMetadata;
+use LMWF\Http\DataStructures\PageMetadataConfEnt;
+use LMWF\Http\DataStructures\PageMetadataConfStatic;
 use LMWF\Repo\IRepo;
 use UnexpectedValueException;
 
@@ -28,6 +29,7 @@ final readonly class RouteDefParser
     const string PAGE_IS_INDEXED_KN = 'isIndexed';
     const string PAGE_IS_PART_OF_HIERARCHY_KN = 'isPartOfHierarchy';
     const string PAGE_KN = 'page';
+    const string PAGE_METADATA_CONFS = 'metadata';
     const string PAGE_TITLE_KN = 'title';
     const string ROLES_KN = 'roles';
     const string ROUTES_KN = 'routes';
@@ -42,6 +44,7 @@ final readonly class RouteDefParser
         self::PAGE_IS_INDEXED_KN,
         self::PAGE_IS_PART_OF_HIERARCHY_KN,
         self::PAGE_KN,
+        self::PAGE_METADATA_CONFS,
         self::PAGE_TITLE_KN,
         self::ROLES_KN,
         self::ROUTES_KN,
@@ -80,13 +83,16 @@ final readonly class RouteDefParser
             }
         }
 
+        $nParamsLowerLimit = $route->hasKey(self::ARGS_MIN_KN) ? $route->getInt(self::ARGS_MIN_KN) : 0;
+        $nParamsUpperlimit = $route->hasKey(self::ARGS_MAX_KN) ? $route->getInt(self::ARGS_MAX_KN) : 0;
+
         // Parse FQCN and FQCN when route is accessed with parameters.
         $fqcn = $this->parseFqcn($route, self::FQCN_KN);
         $fqcnIfParams = $this->parseFqcn($route, self::FQCN_IF_PARAMS_KN);
-        $pageParam = $this->parsePageConf($route);
+        $pageParam = $this->parsePageConf($route, $nParamsLowerLimit, $nParamsUpperlimit);
 
         $roles = null;
-        if ($route->hasProperty(self::ROLES_KN) || null === $parentRoles) {
+        if ($route->hasKey(self::ROLES_KN) || null === $parentRoles) {
             $roles = $route->getAppList(self::ROLES_KN)->toArray();
             if (!array_is_list($roles)) {
                 throw new UnexpectedValueException();
@@ -107,7 +113,7 @@ final readonly class RouteDefParser
 
         // Set sub-route definitions.
         $subRouteDefs = [];
-        if ($route->hasProperty(self::ROUTES_KN)) {
+        if ($route->hasKey(self::ROUTES_KN)) {
             foreach ($route->getAppObject(self::ROUTES_KN) as $seg => $subroute) {
                 if (!$subroute instanceof AppObject) {
                     throw new UnexpectedValueException('Subroute configuration is expected to be an AppObject.');
@@ -121,8 +127,8 @@ final readonly class RouteDefParser
             $pageParam,
             $roles ?? $parentRoles,
             $subRouteDefs,
-            $route->hasProperty(self::ARGS_MIN_KN) ? $route->getInt(self::ARGS_MIN_KN) : 0,
-            $route->hasProperty(self::ARGS_MAX_KN) ? $route->getInt(self::ARGS_MAX_KN) : 0,
+            $nParamsLowerLimit,
+            $nParamsUpperlimit,
             $fqcnIfParams,
         );
     }
@@ -134,7 +140,7 @@ final readonly class RouteDefParser
      */
     private function parseFqcn(AppObject $parsedRouteDefConf, string $key): ?string
     {
-        if ($parsedRouteDefConf->hasProperty($key)) {
+        if ($parsedRouteDefConf->hasKey($key)) {
             $fqcn = str_replace('.', '\\', $parsedRouteDefConf->getString($key));
             if (!class_exists($fqcn) || !is_subclass_of($fqcn, IRoutedController::class)) {
                 throw new UnexpectedValueException("The route definition defined a FQCN with key '$key' and value '$fqcn' but it is either not a FQCN of an existing class, not a FQCN at all, or the FQCN of a class that does not implement IRoutedController.");
@@ -147,9 +153,9 @@ final readonly class RouteDefParser
     /**
      * @param AppObject<mixed> $routeDef
      */
-    private function parsePageConf(AppObject $routeDef): ?PageConf
+    private function parsePageConf(AppObject $routeDef, int $nParamsLowerLimit, int $nParamsUpperLimit): ?PageConf
     {
-        if (!$routeDef->hasProperty(self::PAGE_KN)) {
+        if (!$routeDef->hasKey(self::PAGE_KN)) {
             return null;
         }
         $pageDefConf = $routeDef[self::PAGE_KN];
@@ -159,25 +165,51 @@ final readonly class RouteDefParser
                 ExceptionCode::CONF_ROUTEDEFPARSER_PAGEPARAM_CONF_WRONG_TYPE->value,
             );
         }
+        $metadataConfsRaw = $pageDefConf->getArrayable(self::PAGE_METADATA_CONFS)->toArray();
+
+        $metadataConfs = [];
+        foreach ($metadataConfsRaw as $nParams => $metadataConf) {
+            if ($nParams > $nParamsUpperLimit) {
+                throw new InvalidArgumentException(
+                    "The page metadata configurations cannot define a case for {$nParams} when the maximum for the route definition is {$nParamsUpperLimit}.",
+                    // @todo
+                );
+            } elseif ($nParams < $nParamsLowerLimit) {
+                throw new InvalidArgumentException(
+                    "The page metadata configurations cannot define a case for {$nParams} when the minimum for the route definition is {$nParamsLowerLimit}.",
+                    // @todo
+                );
+            }
+            if ($metadataConf->hasKey(self::PAGE_ENT_REPO_FQCN_KN)) {
+                $metadataConfs[$nParams] = new PageMetadataConfEnt(
+                    $metadataConf[self::PAGE_TITLE_KN],
+                    $metadataConf[self::PAGE_ENT_REPO_FQCN_KN],
+                );
+            } else {
+                $metadataConfs[$nParams] = new PageMetadataConfStatic(
+                    $metadataConf[self::PAGE_TITLE_KN],
+                );
+            }
+        }
+        
         return new PageConf(
-            $pageDefConf->getString(self::PAGE_TITLE_KN),
             $this->baseUrl,
+            $metadataConfs,
             $pageDefConf->getBoolOrNull(self::PAGE_IS_INDEXED_KN) ?? true,
             $pageDefConf->getBoolOrNull(self::PAGE_IS_PART_OF_HIERARCHY_KN) ?? true,
-            $this->parsePageEntConf($pageDefConf),
         );
     }
 
     /**
      * @param AppObject<mixed> $pageConf
      */
-    private function parsePageEntConf(AppObject $pageConf): ?PageMetadata
+    private function parsePageEntConf(AppObject $pageConf): ?PageMetadataConfEnt
     {
-        if (!$pageConf->hasProperty(self::PAGE_ENT_KN)) {
+        if (!$pageConf->hasKey(self::PAGE_ENT_KN)) {
             return null;
         }
         $entConf = $pageConf->getAppObject(self::PAGE_ENT_KN);
-        return new PageMetadata(
+        return new PageMetadataConfEnt(
             $entConf->getString(self::PAGE_ENT_TITLE_KN),
             $entConf->getFqcn(self::PAGE_ENT_REPO_FQCN_KN, IRepo::class, convertDotsToBackslashes: true),
         );

@@ -47,15 +47,6 @@ final readonly class AppObject extends ImmutableArray
     }
 
     /**
-     * @param non-decimal-int-string $key The key of the property.
-     * @return bool Whether the AppObject instance has the specified property.
-     */
-    public function hasProperty(string $key): bool
-    {
-        return $this->offsetExists($key);
-    }
-
-    /**
      * Create a new AppObject with the specified property removed.
      *
      * @param non-decimal-int-string $keyToRemove The key of the property to remove.

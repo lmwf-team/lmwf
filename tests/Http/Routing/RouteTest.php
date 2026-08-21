@@ -121,9 +121,11 @@ final class RouteTest extends TestCase
     public function testPagesOfRootRouteAndChild(): void
     {
         $childSeg = 'child';
+        $rootTitle = 'Home Page';
+        $childTitle = 'Child Page';
 
-        $rootPageConf = new PageConf('Home Page', self::BASE_URL, true, true);
-        $childPageParam = new PageConf('Child Page', self::BASE_URL, false, false);
+        $rootPageConf = PageConf::createStatic($rootTitle, self::BASE_URL, true, true);
+        $childPageParam = PageConf::createStatic($childTitle, self::BASE_URL, false, false);
 
         $rootRouteDef = new RouteDef(ControllerMock::class, $rootPageConf, subRouteDefs: [
             $childSeg => new RouteDef(ControllerMock::class, $childPageParam),
@@ -137,7 +139,7 @@ final class RouteTest extends TestCase
 
         $homePage = new Page(
             null,
-            $rootPageConf->title,
+            $rootTitle,
             self::BASE_URL,
             $rootPageConf->isIndexed,
             $rootPageConf->isPartOfHierarchy,
@@ -146,7 +148,7 @@ final class RouteTest extends TestCase
 
         $childPage = new Page(
             $homePage,
-            $childPageParam->title,
+            $childTitle,
             self::BASE_URL . "/$childSeg",
             $childPageParam->isIndexed,
             $childPageParam->isPartOfHierarchy,

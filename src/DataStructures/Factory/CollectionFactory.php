@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace LMWF\DataStructures\Factory;
 
 use LMWF\DataStructures\AppList;
+use LMWF\DataStructures\AppNonSequentialList;
 use LMWF\DataStructures\AppObject;
 use UnexpectedValueException;
 
@@ -42,41 +43,61 @@ class CollectionFactory
     }
 
     /**
-     * @param array<string, mixed> $arrayEntity
+     * @param array<string, mixed> $dataRaw
      * @return AppObject<mixed>
      * @todo Delete this method, make AppObject (and AppList) handle it, this
      * would result in less imports (CollectionFactory), more predictable
      * (AppObjects and AppArrays never store arrays), stronger typing
      * (null|scalar|object instead of mixed).
      */
-    public static function createDeepAppObject(array $arrayEntity): AppObject
+    public static function createDeepAppObject(array $dataRaw): AppObject
+    {
+        return self::createDeepImmutableArray($dataRaw, AppObject::class);
+    }
+
+    /**
+     * @template T of AppObject|AppNonSequentialList
+     * @param array<string, mixed> $dataRaw
+     * @param class-string<T> $class
+     * @return T
+     */
+    private static function createDeepImmutableArray(array $dataRaw, string $class): AppObject
     {
         $data = [];
-        foreach ($arrayEntity as $property => $value) {
+        foreach ($dataRaw as $key => $value) {
             if (is_array($value)) {
                 if (array_is_list($value)) {
-                    $data[$property] = self::createDeepAppList($value);
+                    $data[$key] = self::createDeepImmutableArray($value, AppList::class);
                 } else {
                     // @todo Duplicate section of code with createDeepAppList
                     $onlyStringKeys = true;
-                    foreach ($value as $key => $_) {
-                        if (is_int($key)) {
+                    $onlyIntKeys = true;
+                    foreach ($value as $subKey => $_) {
+                        if (is_int($subKey)) {
                             $onlyStringKeys = false;
-                            break;
+                        } elseif (is_string($subKey)) {
+                            $onlyIntKeys = false;
                         }
                     }
                     if ($onlyStringKeys) {
                         // @phpstan-ignore argument.type
-                        $data[$property] = self::createDeepAppObject($value);
+                        $data[$key] = self::createDeepImmutableArray($value, AppObject::class);
+                    } elseif ($onlyIntKeys) {
+                        $data[$key] = self::createDeepImmutableArray($value, AppNonSequentialList::class);
                     } else {
-                        $data[$property] = $value;
+                        $data[$key] = $value;
                     }
                 }
             } else {
-                $data[$property] = $value;
+                $data[$key] = $value;
             }
         }
-        return new AppObject($data);
+        return match ($class) {
+            AppObject::class => new AppObject($data),
+            AppNonSequentialList::class => new AppNonSequentialList($data),
+            AppList::class => new AppList($data),
+            default => throw new UnexpectedValueException("Did not recognise provided collection class: '$class'.")
+        };
     }
 
     /**

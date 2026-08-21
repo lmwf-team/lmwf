@@ -12,7 +12,8 @@ use LMWF\Http\DataStructures\PageConf;
 use LMWF\Http\Controller\Issue\RouteNotFoundIssue;
 use LMWF\Http\Controller\Issue\RoutingParamIssue;
 use LMWF\Http\Controller\Issue\RoutingParamIssueCode;
-use LMWF\Http\DataStructures\PageMetadata;
+use LMWF\Http\DataStructures\PageMetadataConfEnt;
+use LMWF\Http\DataStructures\PageMetadataConfStatic;
 use LMWF\Http\Factory\PageEntTitleErr;
 use LMWF\Http\Factory\PageFactory;
 use LMWF\Http\Routing\EntPageTitleFormatter;
@@ -115,7 +116,7 @@ final class RouterTest extends TestCase
         self::assertEquals($sub2Route2Params, $this->router->getRouteFromPath($rootRoute->def, '/sub2/param1/param2'));
     }
 
-    public function testWithEntConf(): void
+    public function testWithMetadataAndParams(): void
     {
         $segName = 'users';
 
@@ -123,12 +124,14 @@ final class RouterTest extends TestCase
             $segName => new RouteDef(
                 OkController::class,
                 new PageConf(
-                    'Users',
                     self::BASE_URL,
-                    entConf: new PageMetadata(
-                        'User: {{ name }}',
-                        UserRepo::class,
-                    ),
+                    [
+                        0 => new PageMetadataConfStatic('Users'),
+                        1 => new PageMetadataConfEnt(
+                            'User: {{ name }}',
+                            UserRepo::class,
+                        )
+                    ],
                 ),
                 nArgsUpperLimit: 1,
             ),

@@ -312,6 +312,14 @@ abstract readonly class ImmutableArray implements ArrayAccess, Countable, IArray
     }
 
     /**
+     * @param TKey $key
+     */
+    public function hasKey(int|string $key): bool
+    {
+        return key_exists($key, $this->data);
+    }
+
+    /**
      * @param TKey $offset
      */
     #[\Override]

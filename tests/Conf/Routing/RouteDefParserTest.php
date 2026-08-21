@@ -9,11 +9,12 @@ use LMWF\Conf\Http\RouteDef;
 use LMWF\Conf\Http\SubrouteCannotAddRoleConfException;
 use LMWF\Conf\Http\UnauthorizedAttributeConfException;
 use LMWF\DataStructures\AppList;
+use LMWF\DataStructures\AppNonSequentialList;
 use LMWF\DataStructures\AppObject;
 use LMWF\DataStructures\Factory\CollectionFactory;
 use LMWF\Http\DataStructures\PageConf;
 use LMWF\ErrorHandling\ExceptionCode;
-use LMWF\Http\DataStructures\PageMetadata;
+use LMWF\Http\DataStructures\PageMetadataConfEnt;
 use LMWF\Tests\Factory\PageParamFactory;
 use LMWF\Tests\Mocks\ControllerMock;
 use LMWF\Tests\Mocks\OkController;
@@ -27,12 +28,6 @@ final class RouteDefParserTest extends TestCase
 {
     const string BASE_URL = 'https://example.org';
 
-    public function testAddingRoles(): void
-    {
-        $this->expectException(SubrouteCannotAddRoleConfException::class);
-        $this->parseJson(__DIR__ . "/resources/added_role_in_sub_route.json");
-    }
-
     public function testBaseUrlInvalid(): void
     {
         $this->expectExceptionCode(ExceptionCode::CONF_ROUTEDEFPARSER_BASE_URL_MUST_NOT_HAVE_TRAILING_SLASH->value);
@@ -42,7 +37,7 @@ final class RouteDefParserTest extends TestCase
     public function testParsingBasicConf(): void
     {
         $rootRouteDef = new RouteDef(null, null, ["ADMIN", "VISITOR"], subRouteDefs: [
-            '' => new RouteDef(ControllerMock::class, new PageConf('Home', 'https://example.org', true, true), ["ADMIN", 'VISITOR']),
+            '' => new RouteDef(ControllerMock::class, PageConf::createStatic('Home', 'https://example.org', true, true), ["ADMIN", 'VISITOR']),
             'test' => new RouteDef(TestController::class, PageParamFactory::create('Test Page', 'https://example.org', false, false), ["ADMIN", "VISITOR"]),
         ]);
 
@@ -51,24 +46,29 @@ final class RouteDefParserTest extends TestCase
         self::assertEquals($rootRouteDef, $actualRouteDef);
     }
 
-    public function testParsingWithEntityConf(): void
+    public function testParsingWithPageMetatadaConfWithParams(): void
     {
-        $expected = new PageMetadata('{{ name }}', UserRepo::class);
+        $expected = new PageMetadataConfEnt('{{ name }}', UserRepo::class);
 
         $routeDef = new RouteDefParser(self::BASE_URL)->parse(new AppObject([
             'fqcn' => OkController::class,
             'roles' => new AppList(),
             'page' => new AppObject([
                 'fqcn' => OkController::class,
-                'title' => 'Users',
-                'entConf' => new AppObject([
-                    'title' => '{{ name }}',
-                    'repoFqcn' => UserRepo::class,
-                ])
-            ])
+                'metadata' => new AppNonSequentialList([
+                    0 => new AppObject([
+                        'title' => 'Users',
+                    ]),
+                    1 => new AppObject([
+                        'title' => '{{ name }}',
+                        'repoFqcn' => UserRepo::class,
+                    ])
+                ]),
+            ]),
+            'maxArgs' => 1,
         ]));
 
-        self::assertEquals($expected, $routeDef->pageParam?->entConf);
+        self::assertEquals($expected, $routeDef->pageParam?->pageMetadataConfs[1]);
     }
 
     public function testParsingWithEntityConfMissing(): void
@@ -83,6 +83,12 @@ final class RouteDefParserTest extends TestCase
         ]));
 
         self::assertNull($routeDef->pageParam?->entConf);
+    }
+
+    public function testJsonThatAddsRoles(): void
+    {
+        $this->expectException(SubrouteCannotAddRoleConfException::class);
+        $this->parseJson(__DIR__ . "/resources/added_role_in_sub_route.json");
     }
 
     public function testJsonWithBoth(): void

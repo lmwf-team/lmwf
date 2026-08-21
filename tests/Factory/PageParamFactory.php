@@ -10,6 +10,6 @@ final readonly class PageParamFactory
 {
     public static function create(string $title = '_', string $baseUrl = '_', bool $isIndexed = true, bool $isPartOfHierarchy = true): PageConf
     {
-        return new PageConf($title, $baseUrl, $isIndexed, $isPartOfHierarchy);
+        return PageConf::createStatic($title, $baseUrl, $isIndexed, $isPartOfHierarchy);
     }
 }

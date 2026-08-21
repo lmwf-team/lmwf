@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace LMWF\Tests\Http\Routing;
 
-use LMWF\Http\DataStructures\PageMetadata;
+use LMWF\Http\DataStructures\PageMetadataConfEnt;
 use LMWF\Http\Routing\EntPageTitleFormatter;
 use LMWF\Tests\Mocks\ContainerMock;
 use LMWF\Tests\Mocks\UserRepo;
@@ -24,19 +24,19 @@ final class EntPageTitleFormatterTest extends TestCase
 
     public function testEmptyStr(): void
     {
-        self::assertEquals('', $this->formatter->format(new PageMetadata('', UserRepo::class), UserRepo::USER_ID));
+        self::assertEquals('', $this->formatter->format(new PageMetadataConfEnt('', UserRepo::class), UserRepo::USER_ID));
     }
 
     public function testStaticStr(): void
     {
-        self::assertEquals('Hello!', $this->formatter->format(new PageMetadata('Hello!', UserRepo::class), UserRepo::USER_ID));
+        self::assertEquals('Hello!', $this->formatter->format(new PageMetadataConfEnt('Hello!', UserRepo::class), UserRepo::USER_ID));
     }
 
     public function testOneParam(): void
     {
         self::assertEquals(
             'Hello ' . UserRepo::USER_NAME . '!',
-            $this->formatter->format(new PageMetadata('Hello {{ name }}!', UserRepo::class), UserRepo::USER_ID),
+            $this->formatter->format(new PageMetadataConfEnt('Hello {{ name }}!', UserRepo::class), UserRepo::USER_ID),
         );
     }
 }

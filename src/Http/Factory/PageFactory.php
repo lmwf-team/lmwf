@@ -5,8 +5,11 @@ declare(strict_types=1);
 namespace LMWF\Http\Factory;
 
 use LMWF\DataStructures\Page;
+use LMWF\ErrorHandling\ExceptionCode;
+use LMWF\Http\DataStructures\PageMetadataConfEnt;
 use LMWF\Http\Routing\{EntPageTitleFormatter, FormatErr};
 use LMWF\Http\Routing\Route;
+use UnexpectedValueException;
 
 final readonly class PageFactory
 {
@@ -58,12 +61,27 @@ final readonly class PageFactory
             }
         }
 
-        $titleResult = 1 === count($route->params) && null !== $pageConf->entConf ?
-            $this->formatter->format($pageConf->entConf, $route->params[0]) :
-            $pageConf->title;
-        if ($titleResult instanceof FormatErr) {
-            return new PageEntTitleErr($titleResult);
+        for ($nParams = count($route->params); $nParams >= 0; $nParams--) {
+            if (key_exists($nParams, $pageConf->pageMetadataConfs)) {
+                $pageMetadataConf = $pageConf->pageMetadataConfs[$nParams];
+                if ($pageMetadataConf instanceof PageMetadataConfEnt) {
+                    if (0 === $nParams) {
+                        throw new UnexpectedValueException(
+                            'The page metadata configuration for the route with no parameters cannot be an PageMetadataConfEnt as it would expect a parameter.',
+                            ExceptionCode::HTTP_FACTORY_PAGEFACTORY_ENT_PAGE_METADATA_CONF_WITH_0_PARAM->value,
+                        );
+                    }
+                    $titleResult = $this->formatter->format($pageMetadataConf, $route->params[$nParams - 1]);
+                    if ($titleResult instanceof FormatErr) {
+                        return new PageEntTitleErr($titleResult);
+                    }
+                } else {
+                    $titleResult = $pageMetadataConf->getTitle();
+                }
+                break;
+            }
         }
+        
 
         return new Page(
             $nearestPageAncestor,
