@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace LMWF\DataStructures\Factory;
 
 use LMWF\DataStructures\AppList;
-use LMWF\DataStructures\AppNonSequentialList;
+use LMWF\DataStructures\AppPosIntArray;
 use LMWF\DataStructures\AppObject;
 use UnexpectedValueException;
 
@@ -56,7 +56,7 @@ class CollectionFactory
     }
 
     /**
-     * @template T of AppObject|AppNonSequentialList
+     * @template T of AppObject|AppPosIntArray
      * @param array<string, mixed> $dataRaw
      * @param class-string<T> $class
      * @return T
@@ -83,7 +83,7 @@ class CollectionFactory
                         // @phpstan-ignore argument.type
                         $data[$key] = self::createDeepImmutableArray($value, AppObject::class);
                     } elseif ($onlyIntKeys) {
-                        $data[$key] = self::createDeepImmutableArray($value, AppNonSequentialList::class);
+                        $data[$key] = self::createDeepImmutableArray($value, AppPosIntArray::class);
                     } else {
                         $data[$key] = $value;
                     }
@@ -94,7 +94,7 @@ class CollectionFactory
         }
         return match ($class) {
             AppObject::class => new AppObject($data),
-            AppNonSequentialList::class => new AppNonSequentialList($data),
+            AppPosIntArray::class => new AppPosIntArray($data),
             AppList::class => new AppList($data),
             default => throw new UnexpectedValueException("Did not recognise provided collection class: '$class'.")
         };

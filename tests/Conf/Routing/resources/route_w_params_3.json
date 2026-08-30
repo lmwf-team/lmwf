@@ -1,5 +1,5 @@
 {
-    "fqcn": "LMWF.Tests.Mocks.RoutedController",
+    "fqcn": "LMWF.Tests.Mocks.MockController",
     "page": {
         "title": "_"
     },

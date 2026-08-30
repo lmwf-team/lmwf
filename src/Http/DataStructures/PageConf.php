@@ -10,10 +10,10 @@ namespace LMWF\Http\DataStructures;
 final readonly class PageConf
 {
     /**
-     * @param list<IPageMetadataConf> $pageMetadataConfs An IPageMetadataConf
+     * @param \LMWF\DataStructures\AppPosIntArray<IPageConf> $pageMetadataConfs An IPageConf
      * (an object used to generate the metadata for the page after from the
      * route, after it is generated) for each number of arguments passed to the
-     * route. If no IPageMetadataConf is defined for a particular number of
+     * route. If no IPageConf is defined for a particular number of
      * arguments, the closest one defined for less arguments is used.
      * @todo Maybe there is no reason that baseUrl is there, maybe it should be
      * in router? Maybe it makes sense because this object is used to generate
@@ -34,6 +34,6 @@ final readonly class PageConf
         bool $isIndexed = true,
         bool $isPartOfHierarchy = true,
     ): self {
-        return new self($baseUrl, [0 => new PageMetadataConfStatic($title)], $isIndexed, $isPartOfHierarchy);
+        return new self($baseUrl, [0 => new StaticPageConf($title)], $isIndexed, $isPartOfHierarchy);
     }
 }

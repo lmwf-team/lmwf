@@ -42,10 +42,10 @@ final readonly class Route
     ) {
         $nArgs = count($params);
 
-        if ($nArgs < $def->nArgsLowerLimit) {
-            throw new DomainException("Instantiation of a route has a number of arguments below the minimum in the route definition ({$nArgs} < {$def->nArgsLowerLimit}).");
-        } elseif ($nArgs > $def->nArgsUpperLimit) {
-            throw new DomainException("Instantiation of a route has a number of arguments above the maximum in the route definition ({$nArgs} > {$def->nArgsUpperLimit}).");
+        if ($nArgs < $def->nParamsLeast) {
+            throw new DomainException("Instantiation of a route has a number of arguments below the minimum in the route definition ({$nArgs} < {$def->nParamsLeast}).");
+        } elseif ($nArgs > $def->nParamsMax) {
+            throw new DomainException("Instantiation of a route has a number of arguments above the maximum in the route definition ({$nArgs} > {$def->nParamsMax}).");
         }
 
         foreach ($params as $param) {
@@ -70,9 +70,9 @@ final readonly class Route
                     'The root route has a direct child with an empty seg.',
                     ExceptionCode::HTTP_ROUTING_ROUTE_ROOT_ROUTE_HAS_CHILD_WITH_EMPTY_SEG->value,
                 );
-            } elseif ($def->nArgsUpperLimit > 0) {
+            } elseif ($def->nParamsMax > 0) {
                 throw new InvalidArgumentException(
-                    "The root route cannot accept parameters, but received a route definition that says max is {$def->nArgsUpperLimit}. This is because it could match the path '/', which is ambiguous with the default path for the root route with no parameters.",
+                    "The root route cannot accept parameters, but received a route definition that says max is {$def->nParamsMax}. This is because it could match the path '/', which is ambiguous with the default path for the root route with no parameters.",
                     ExceptionCode::HTTP_ROUTING_ROUTE_ROOT_ROUTE_ACCEPTS_PARAMS->value,
                 );
             }
@@ -105,27 +105,27 @@ final readonly class Route
     }
 
     /**
-     * Compute the absolute path from the root route up to this route.
-     *
-     * *This will always have a leading slash.*
-     *
-     * @todo Should the root route return "/"? On one hand, it makes everything
-     * more consistent (a path always begins with "/"), on the other hand it
-     * makes it harder to generate a canonical URL for the home. (example.org
-     * instead of example.org/).
+     * Compute the absolute path of the route.
+     * 
+     * If the route is the root route, an empty path is returned. An empty
+     * slash should never be returned as the root route cannot accept parameters
+     * and cannot have a child with an empty seg.
      */
     public function getPath(): string
     {
-        $path = null === $this->parent ?
-            '/' :
-            (null === $this->parent->parent ?
-                "/{$this->seg}" :
-                "{$this->parent->getPath()}/{$this->seg}");
-
-        if (count($this->params) > 0) {
-            $path .= '/' . implode('/', $this->params);
+        if (null === $this->parent) {
+            // The root route does not take parameters, and its seg is empty.
+            return '';
         }
-        return $path;
+
+        if ([] !== $this->params) {
+            // This route's parent is the same route definition with one less
+            // parameters.
+            return $this->parent->getPath() . '/' . $this->params[count($this->params) - 1];
+        }
+
+        // Route is not route and does not have parameters.
+        return $this->parent->getPath() . '/' . $this->seg;
     }
 
     /**

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace LMWF\Http\DataStructures;
 
-interface IPageMetadataConf
+final readonly class InheritedPageConf
 {
-    public function getTitle(): string;
 }

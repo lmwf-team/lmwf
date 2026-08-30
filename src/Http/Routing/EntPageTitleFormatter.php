@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace LMWF\Http\Routing;
 
-use LMWF\Http\DataStructures\PageMetadataConfEnt;
+use LMWF\Http\DataStructures\EntPageConf;
 use Psr\Container\ContainerInterface;
 
 final readonly class EntPageTitleFormatter
@@ -14,10 +14,10 @@ final readonly class EntPageTitleFormatter
     ) {
     }
 
-    public function format(PageMetadataConfEnt $entConf, string $entId): string|FormatErr
+    public function format(EntPageConf $entConf, string $entId): string|FormatErr
     {
         $matches = [];
-        $pregMatchResult = preg_match_all('/{{ ([a-z][a-z_]+[a-z]) }}/', $entConf->title, $matches);
+        $pregMatchResult = preg_match_all('/{{ ([a-z][a-z_]+[a-z]) }}/', $entConf->getTitle(), $matches);
 
         if (false === $pregMatchResult) {
             return FormatErr::MatchErr;
@@ -28,7 +28,7 @@ final readonly class EntPageTitleFormatter
         if (null === $ent) {
             return FormatErr::EntNotFound;
         }
-        $title = $entConf->title;
+        $title = $entConf->getTitle();
         for ($i = 0; $i < $pregMatchResult; $i++) {
             $propertyName = $this->getNonDecimalIntStr($matches[1][$i]);
             if (null === $propertyName) {

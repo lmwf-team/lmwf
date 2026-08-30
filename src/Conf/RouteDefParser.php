@@ -6,14 +6,14 @@ namespace LMWF\Conf;
 
 use InvalidArgumentException;
 use LMWF\Conf\Http\RouteDef;
-use LMWF\Conf\Http\SubrouteCannotAddRoleConfException;
+use LMWF\Conf\Http\SubRouteCannotAddRoleConfException;
 use LMWF\Conf\Http\UnauthorizedAttributeConfException;
 use LMWF\DataStructures\AppObject;
 use LMWF\Http\DataStructures\PageConf;
 use LMWF\ErrorHandling\ExceptionCode;
 use LMWF\Http\Controller\IRoutedController;
-use LMWF\Http\DataStructures\PageMetadataConfEnt;
-use LMWF\Http\DataStructures\PageMetadataConfStatic;
+use LMWF\Http\DataStructures\EntPageConf;
+use LMWF\Http\DataStructures\StaticPageConf;
 use LMWF\Repo\IRepo;
 use UnexpectedValueException;
 
@@ -29,7 +29,7 @@ final readonly class RouteDefParser
     const string PAGE_IS_INDEXED_KN = 'isIndexed';
     const string PAGE_IS_PART_OF_HIERARCHY_KN = 'isPartOfHierarchy';
     const string PAGE_KN = 'page';
-    const string PAGE_METADATA_CONFS = 'metadata';
+    const string PAGE_METADATA_CONFS = 'confByParam';
     const string PAGE_TITLE_KN = 'title';
     const string ROLES_KN = 'roles';
     const string ROUTES_KN = 'routes';
@@ -69,7 +69,7 @@ final readonly class RouteDefParser
     /**
      * @param AppObject<mixed> $route The JSON-decoded route as an associative array.
      * @param null|list<string> $parentRoles The parent roles if defined, null if the current route is the root route.
-     * @param bool $allowOverridingParentRoles If true, a subroute can add role its parent does not have.
+     * @param bool $allowOverridingParentRoles If true, a sub-route can add role its parent does not have.
      */
     public function parse(
         AppObject $route,
@@ -105,7 +105,7 @@ final readonly class RouteDefParser
             if (!$allowOverridingParentRoles && null !== $parentRoles) {
                 foreach ($roles as $role) {
                     if (!in_array($role, $parentRoles, strict: true)) {
-                        throw new SubrouteCannotAddRoleConfException($fqcn);
+                        throw new SubRouteCannotAddRoleConfException($fqcn);
                     }
                 }
             }
@@ -114,11 +114,11 @@ final readonly class RouteDefParser
         // Set sub-route definitions.
         $subRouteDefs = [];
         if ($route->hasKey(self::ROUTES_KN)) {
-            foreach ($route->getAppObject(self::ROUTES_KN) as $seg => $subroute) {
-                if (!$subroute instanceof AppObject) {
-                    throw new UnexpectedValueException('Subroute configuration is expected to be an AppObject.');
+            foreach ($route->getAppObject(self::ROUTES_KN) as $seg => $subRoute) {
+                if (!$subRoute instanceof AppObject) {
+                    throw new UnexpectedValueException('SubRoute configuration is expected to be an AppObject.');
                 }
-                $subRouteDefs[$seg] = $this->parse($subroute, $roles ?? $parentRoles);
+                $subRouteDefs[$seg] = $this->parse($subRoute, $roles ?? $parentRoles);
             }
         }
 
@@ -181,17 +181,17 @@ final readonly class RouteDefParser
                 );
             }
             if ($metadataConf->hasKey(self::PAGE_ENT_REPO_FQCN_KN)) {
-                $metadataConfs[$nParams] = new PageMetadataConfEnt(
+                $metadataConfs[$nParams] = new EntPageConf(
                     $metadataConf[self::PAGE_TITLE_KN],
                     $metadataConf[self::PAGE_ENT_REPO_FQCN_KN],
                 );
             } else {
-                $metadataConfs[$nParams] = new PageMetadataConfStatic(
+                $metadataConfs[$nParams] = new StaticPageConf(
                     $metadataConf[self::PAGE_TITLE_KN],
                 );
             }
         }
-        
+
         return new PageConf(
             $this->baseUrl,
             $metadataConfs,
@@ -203,13 +203,13 @@ final readonly class RouteDefParser
     /**
      * @param AppObject<mixed> $pageConf
      */
-    private function parsePageEntConf(AppObject $pageConf): ?PageMetadataConfEnt
+    private function parsePageEntConf(AppObject $pageConf): ?EntPageConf
     {
         if (!$pageConf->hasKey(self::PAGE_ENT_KN)) {
             return null;
         }
         $entConf = $pageConf->getAppObject(self::PAGE_ENT_KN);
-        return new PageMetadataConfEnt(
+        return new EntPageConf(
             $entConf->getString(self::PAGE_ENT_TITLE_KN),
             $entConf->getFqcn(self::PAGE_ENT_REPO_FQCN_KN, IRepo::class, convertDotsToBackslashes: true),
         );

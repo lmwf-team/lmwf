@@ -17,12 +17,14 @@ final readonly class Router
      * Convert an ABSOLUTE path to a list of path segments, CONVERTS "/" to "".
      *
      * A "path segment" is defined in the context of LMWF as the
-     * URL-decoded part of each path segment of the given absolute path.
+     * URL-decoded part of each path segment of the given absolute path. It must
+     * begin with a slash, except for the empty string. If it only contains a
+     * slash, it is converted into an empty string.
      *
      * @param string $absPath An *ABSOLUTE*, valid HTTP path.
      * @return list<string>
      */
-    public function getSegs(string $absPath): array
+    public function splitPathInSegs(string $absPath): array
     {
         if ('/' === $absPath || '' === $absPath) {
             return [''];
@@ -36,13 +38,19 @@ final readonly class Router
     }
 
     /**
-     * @param string $absPath An absolute HTTP path (that must begin with a forward slash, unless it is empty).
+     * @param string $absPath An absolute HTTP path. Must begin with a forward slash, unless it is empty.
      */
     public function getRouteFromPath(RouteDef $rootRouteDef, string $absPath): Route|RoutingParamIssue|RouteNotFoundIssue
     {
-        $segs = self::getSegs($absPath);
+        $segs = self::splitPathInSegs($absPath);
         Log::debug('Segments are: [' . implode(',', $segs) . ']');
-        return $this->getRouteFromSegs($rootRouteDef, null, $segs[0], array_slice($segs, 1));
+
+        return $this->getRouteFromSegs(
+            $rootRouteDef, 
+            parentRoute: null,
+            currentSeg: $segs[0],
+            nextSegs: array_slice($segs, 1),
+        );
     }
 
     /**
@@ -57,37 +65,44 @@ final readonly class Router
     ): Route|RoutingParamIssue|RouteNotFoundIssue {
         Log::debug("Current seg is '{$currentSeg}', next segs are: [" . implode(', ', $nextSegs) . "].");
 
-        $nArgs = count($nextSegs);
-        if ($routeDef->nArgsLowerLimit > $nArgs) {
-            return new RoutingParamIssue(RoutingParamIssueCode::NotEnoughParams, $routeDef, $nArgs);
+        $nNextSegs = count($nextSegs);
+
+        if ($routeDef->nParamsLeast > $nNextSegs) {
+            return new RoutingParamIssue(RoutingParamIssueCode::NotEnoughParams, $routeDef, $nNextSegs);
         }
 
-        for ($i = $routeDef->nArgsLowerLimit; $i < min($nArgs, $routeDef->nArgsUpperLimit); $i++) {
-            $parentRoute = new Route(
+        $nParamsTotal = min($nNextSegs, $routeDef->nParamsMax);
+
+        $mutRoute = null;
+        for ($nParams = $routeDef->nParamsLeast; $nParams <= $nParamsTotal; $nParams++) {
+            $mutRoute = new Route(
                 $routeDef,
                 $currentSeg,
-                $parentRoute,
-                array_slice($nextSegs, 0, $i),
+                $mutRoute ?? $parentRoute,
+                array_slice($nextSegs, 0, $nParams),
             );
         }
-        $route = new Route(
-            $routeDef,
-            $currentSeg,
-            $parentRoute,
-            array_slice($nextSegs, 0, min($nArgs, $routeDef->nArgsUpperLimit)),
-        );
+        $route = $mutRoute;
 
-        if ($routeDef->nArgsUpperLimit < $nArgs) {
+        if ($nParamsTotal < $nNextSegs) {
             if (0 === count($routeDef->subRouteDefs)) {
-                return new RoutingParamIssue(RoutingParamIssueCode::TooManyParams, $routeDef, $nArgs);
+                return new RoutingParamIssue(RoutingParamIssueCode::TooManyParams, $routeDef, $nNextSegs);
             }
+
             Log::debug("Current route has sub-route definitions.");
-            $nextSeg = $nextSegs[$routeDef->nArgsUpperLimit];
+
+            $nextSeg = $nextSegs[$nParamsTotal];
+
             if (!key_exists($nextSeg, $routeDef->subRouteDefs)) {
                 return new RouteNotFoundIssue($nextSeg);
             }
 
-            return $this->getRouteFromSegs($routeDef->subRouteDefs[$nextSeg], $route, $nextSeg, array_slice($nextSegs, $routeDef->nArgsUpperLimit + 1));
+            return $this->getRouteFromSegs(
+                $routeDef->subRouteDefs[$nextSeg],
+                $route,
+                $nextSeg, 
+                array_slice($nextSegs, $nParamsTotal + 1),
+            );
         }
 
         return $route;

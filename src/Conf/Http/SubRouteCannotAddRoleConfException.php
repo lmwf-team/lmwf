@@ -7,7 +7,7 @@ namespace LMWF\Conf\Http;
 use Exception;
 use Throwable;
 
-final class SubrouteCannotAddRoleConfException extends Exception
+final class SubRouteCannotAddRoleConfException extends Exception
 {
     const string MSG_FMT = "Unless explicitely authorized, a sub-route cannot allow roles its parent does not have, yet child node '%s' adds a role.";
     public function __construct(

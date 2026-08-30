@@ -6,7 +6,10 @@ namespace LMWF\Http\Factory;
 
 use LMWF\DataStructures\Page;
 use LMWF\ErrorHandling\ExceptionCode;
-use LMWF\Http\DataStructures\PageMetadataConfEnt;
+use LMWF\Http\DataStructures\EntPageConf;
+use LMWF\Http\DataStructures\InheritedPageConf;
+use LMWF\Http\DataStructures\IPageConf;
+use LMWF\Http\DataStructures\StaticPageConf;
 use LMWF\Http\Routing\{EntPageTitleFormatter, FormatErr};
 use LMWF\Http\Routing\Route;
 use UnexpectedValueException;
@@ -20,24 +23,35 @@ final readonly class PageFactory
 
     /**
      * @return null|Page|PageEntTitleErr The page extracted from the route and
-     * its definition, null if the definition does not provide any controller,
+     * its definition, null if the route does not provide a page,
      * or PageEntTitleErr if there was a problem formatting the title for the
      * page when an entity was requested.
      * @todo Find a way to type that return type depends on routedef's pageTitle
      * type.
      */
-    public function getPage(Route $route): null|Page|PageEntTitleErr
+    public function create(Route $route): null|Page|PageEntTitleErr
     {
-        $pageConf = $route->def->pageParam;
+        $nParams = count($route->params);
+
+        $pageConf = array_filter(
+                $route->def->pageConfs,
+                fn (null|IPageConf|InheritedPageConf $conf, int $key) => $key <= $nParams && !$conf instanceof InheritedPageConf,
+                ARRAY_FILTER_USE_BOTH,
+            )
+            |> array_keys(...)
+            |> max(...)
+            |> (fn ($max) => $route->def->pageConfs[$max])
+        ;
+
         if (null === $pageConf) {
             return null;
         }
 
-        $currentParentRoute = $route;
+        $mutRoute = $route;
         $nearestPageAncestor = null;
-        while (null !== $currentParentRoute = $currentParentRoute->parent) {
+        while (null !== $mutRoute = $mutRoute->parent) {
             // If the current parent route has a page, we save it and break.
-            if (null !== $nearestPageAncestor = $this->getPage($currentParentRoute)) {
+            if (null !== $nearestPageAncestor = $this->create($mutRoute)) {
                 break;
             }
         }
@@ -46,49 +60,53 @@ final readonly class PageFactory
             return $nearestPageAncestor;
         }
 
-        $url = null !== $nearestPageAncestor ? $nearestPageAncestor->url : $pageConf->baseUrl;
-        if ('' !== $route->seg || [] !== $route->params) {
-            // If this route and its parent share the same definition, i.e. if
-            // this route is the same route with only one more parameter.
-            if ($route->parent->def === $route->def) {
-                $parentLastParam = count($route->parent->params);
-                $url .= "/{$route->params[$parentLastParam]}";
-            } else {
-                $url .= "/{$route->seg}";
-                foreach ($route->params as $param) {
-                    $url .= "/$param";
-                }
+        $mutUrl = $pageConf->getBaseUrl() . $route->getPath();
+        // $mutUrl = null !== $nearestPageAncestor ? $nearestPageAncestor->url : $pageConf->getBaseUrl();
+        // if (null !== $route->parent && $route->parent->def->nParamsMax > count($route->parent->params)) {
+        //     // The parent route is the same route definition with one more parameter.
+        //     $mutUrl .= '/' . $route->params[count($route->params) - 1];
+        // } elseif (null !== $route->parent) {
+        //     $mutUrl .= "/{$route->seg}";
+        //     if ([] !== $route->params) {
+        //         $mutUrl .= '/' . implode('/', $route->params);
+        //     }
+        // }
+
+        if ($pageConf instanceof EntPageConf) {
+            if (0 === $nParams) {
+                throw new UnexpectedValueException(
+                    'The "by-param" configuration for a route with no parameters cannot be an EntPageConf as it would expect a parameter.',
+                    ExceptionCode::HTTP_FACTORY_PAGEFACTORY_ENT_PAGE_METADATA_CONF_WITH_0_PARAM->value,
+                );
             }
+            $titleResult = $this->formatter->format($pageConf, $route->params[$nParams - 1]);
+            if ($titleResult instanceof FormatErr) {
+                return new PageEntTitleErr($titleResult);
+            }
+        } else {
+            $titleResult = $pageConf->getTitle();
         }
 
-        for ($nParams = count($route->params); $nParams >= 0; $nParams--) {
-            if (key_exists($nParams, $pageConf->pageMetadataConfs)) {
-                $pageMetadataConf = $pageConf->pageMetadataConfs[$nParams];
-                if ($pageMetadataConf instanceof PageMetadataConfEnt) {
-                    if (0 === $nParams) {
-                        throw new UnexpectedValueException(
-                            'The page metadata configuration for the route with no parameters cannot be an PageMetadataConfEnt as it would expect a parameter.',
-                            ExceptionCode::HTTP_FACTORY_PAGEFACTORY_ENT_PAGE_METADATA_CONF_WITH_0_PARAM->value,
-                        );
-                    }
-                    $titleResult = $this->formatter->format($pageMetadataConf, $route->params[$nParams - 1]);
-                    if ($titleResult instanceof FormatErr) {
-                        return new PageEntTitleErr($titleResult);
-                    }
-                } else {
-                    $titleResult = $pageMetadataConf->getTitle();
-                }
-                break;
-            }
-        }
-        
 
         return new Page(
             $nearestPageAncestor,
+            $pageConf->getControllerFqcn(),
             $titleResult,
-            $url,
-            $pageConf->isIndexed,
-            $pageConf->isPartOfHierarchy,
+            $mutUrl,
+            $pageConf->isIndexed(),
+            $pageConf->isInHierarchy(),
+        );
+    }
+
+    public function fromStaticPageConf(StaticPageConf $conf, string $path, ?Page $parent): Page
+    {
+        return new Page(
+            $parent,
+            $conf->getControllerFqcn(),
+            $conf->getTitle(),
+            $conf->getBaseUrl() . $path,
+            $conf->isIndexed(),
+            $conf->isInHierarchy(),
         );
     }
 }

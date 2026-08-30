@@ -4,14 +4,22 @@ declare(strict_types=1);
 
 namespace LMWF\DataStructures;
 
+use LMWF\Http\Controller\IRoutedController;
+
 /**
+ * @param class-string<IRoutedController> $controllerFqcn
  * @todo Should go in Http namespace?
  * @todo Remove accessor methods?
  */
 final readonly class Page
 {
+    /**
+     * @param string $url An absolute URL without trailing slash.
+     * @todo Url should be handled by routes?
+     */
     public function __construct(
         public ?Page $parent,
+        public string $controllerFqcn,
         public string $name,
         public string $url,
         public bool $isIndexed = true,

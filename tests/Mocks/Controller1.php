@@ -4,6 +4,6 @@ declare(strict_types=1);
 
 namespace LMWF\Tests\Mocks;
 
-class ControllerMock extends RoutedController
+final class Controller1 extends MockController
 {
 }

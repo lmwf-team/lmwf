@@ -10,7 +10,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
- * @todo Add getPage(Route $route) method?
+ * @todo Add create(Route $route) method?
  * @todo Errors should also be routed controllers?
  * @todo Shoud have a different method for GET and POST? This could make each
  * function lighter and would avoid duplicating

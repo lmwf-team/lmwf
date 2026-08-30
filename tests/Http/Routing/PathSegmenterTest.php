@@ -14,26 +14,26 @@ final class PathSegmenterTest extends TestCase
     {
         $router = new Router();
 
-        self::assertSame([''], $router->getSegs('/'));
-        self::assertSame([''], $router->getSegs(''));
-        self::assertSame(['', '', ''], $router->getSegs('//'));
-        self::assertSame(['', '', '', ''], $router->getSegs('///'));
-        self::assertSame(['', 'test'], $router->getSegs('/test'));
-        self::assertSame(['', 'test', 'sub'], $router->getSegs('/test/sub'));
-        self::assertSame(['', 'test', 'sub', ''], $router->getSegs('/test/sub/'));
+        self::assertSame([''], $router->splitPathInSegs('/'));
+        self::assertSame([''], $router->splitPathInSegs(''));
+        self::assertSame(['', '', ''], $router->splitPathInSegs('//'));
+        self::assertSame(['', '', '', ''], $router->splitPathInSegs('///'));
+        self::assertSame(['', 'test'], $router->splitPathInSegs('/test'));
+        self::assertSame(['', 'test', 'sub'], $router->splitPathInSegs('/test/sub'));
+        self::assertSame(['', 'test', 'sub', ''], $router->splitPathInSegs('/test/sub/'));
     }
 
     public function testRelativePaths(): void
     {
         $router = new Router();
         $this->expectException(DomainException::class);
-        $router->getSegs('relative/url');
+        $router->splitPathInSegs('relative/url');
     }
 
     public function testRelativePaths2(): void
     {
         $router = new Router();
         $this->expectException(DomainException::class);
-        $router->getSegs('test');
+        $router->splitPathInSegs('test');
     }
 }

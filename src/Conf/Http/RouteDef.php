@@ -7,6 +7,10 @@ namespace LMWF\Conf\Http;
 use InvalidArgumentException;
 use LMWF\Http\DataStructures\PageConf;
 use LMWF\ErrorHandling\ExceptionCode;
+use LMWF\ErrorHandling\UnexpectedValueTypeException;
+use LMWF\Http\DataStructures\StaticPageConf;
+use OutOfBoundsException;
+use PHP_CodeSniffer\Util\ExitCode;
 
 /**
  * A route definition.
@@ -25,47 +29,68 @@ use LMWF\ErrorHandling\ExceptionCode;
  */
 final readonly class RouteDef
 {
+    // @todo Find a better name.
+    public array $pageConfs;
+    public array $subRouteDefs;
+    public int $nParamsLeast;
+    public int $nParamsMax;
+
     /**
-     * @param ?class-string<\LMWF\Http\Controller\IRoutedController> $fqcn The FQCN of the controller responsible for this
-     * particular partition of paths. If null, this route definition only serves
-     * to set the paths of sub route definitions, set shared roles, etc.
-     * @param ($fqcn is string ? PageConf : $fqcnIfParams is string ? PageConf : null) $pageParam Parameters for the page, required if the route def has an associated controller ($fqcn or $fqcnIfParams).
-     * @param list<string> $roles Required roles to access this route.
      * @param array<string, self> $subRouteDefs The child routes as an array of route definitions, indexed by the path segment through which they are accessed.
-     * @param ?class-string<\LMWF\Http\Controller\IRoutedController> $fqcnIfParams The controller if the route has parameters.
-     * @todo What happens when an object argument has a default???
      */
     public function __construct(
-        public ?string $fqcn,
-        public ?PageConf $pageParam,
-        public array $roles = [],
-        public array $subRouteDefs = [],
-        public int $nArgsLowerLimit = 0,
-        public int $nArgsUpperLimit = 0,
-        public ?string $fqcnIfParams = null,
+        array|null|StaticPageConf $pageConfs = [null],
+        array $subRouteDefs = [],
+        int $nParamsLeast = 0,
+        int $nParamsMax = 0,
     ) {
-        if (null === $fqcn && null === $fqcnIfParams) {
-            if (null !== $pageParam) {
-                throw new InvalidArgumentException(
-                    'PageConf must be null if the route does not specify any associated controller.',
-                    ExceptionCode::CONF_HTTP_ROUTEDEF_PAGEPARAM_IS_NOT_NULL->value,
+        $this->pageConfs = is_array($pageConfs) ? $pageConfs : [$pageConfs];
+        $this->subRouteDefs = $subRouteDefs;
+        $this->nParamsLeast = $nParamsLeast;
+        $this->nParamsMax = $nParamsMax;
+
+        // @todo To move in PageConf
+        // foreach ($roles as $role) {
+        //     if (!is_string($role)) {
+        //         throw new InvalidArgumentException(
+        //             "A role must be a string (Found role equal to '$role'.)",
+        //             ExceptionCode::CONF_HTTP_ROUTEDEF_ROLE_IS_NOT_A_STRING->value,
+        //         );
+        //     }
+        // }
+
+        if ($nParamsLeast < 0) {
+            throw new InvalidArgumentException(
+                "The minimum number of arguments for a route cannot be negative, received {$nParamsLeast}.",
+                ExceptionCode::CONF_HTTP_ROUTEDEF_N_ARGS_LOWER_IS_NEG->value,
+            );
+        } elseif ($nParamsLeast > $nParamsMax) {
+            throw new InvalidArgumentException(
+                "The minimum number of arguments for a route (here {$nParamsLeast}) cannot be above its maximum number of arguments (here {$nParamsMax}).",
+                ExceptionCode::CONF_HTTP_ROUTEDEF_N_ARGS_UPPER_IS_BELOW_LOWER_IS_NEG->value,
+            );
+        }
+
+        // @todo Check type of value
+        foreach ($this->pageConfs as $nOfParams => $paramConf) {
+            if (!is_int($nOfParams)) {
+                throw new UnexpectedValueTypeException(
+                    'int',
+                    $nOfParams,
+                    ExceptionCode::CONF_HTTP_ROUTEDEF_PAGE_CONF_KEY_NOT_INT->value,
                 );
-            }
-        } else {
-            if (null === $pageParam) {
-                throw new InvalidArgumentException(
-                    "PageConf must NOT be NULL if the route specifies at least one controller (\$fqcn is '$fqcn' and \$fqcnIfParams is '$fqcnIfParams'.",
-                    ExceptionCode::CONF_HTTP_ROUTEDEF_PAGEPARAM_IS_NULL->value,
+            } elseif (!is_int($nOfParams) || $nOfParams < $nParamsLeast || $nOfParams > $nParamsMax) {
+                throw new OutOfBoundsException(
+                    "The 'by-param' configuration array has the invalid key '{$nOfParams}', it must be within the specified nParamsLeast ($nParamsLeast) and nParamsMax ($nParamsMax).",
+                    ExceptionCode::CONF_HTTP_ROUTEDEF_PAGE_CONF_KEY_OUT_OF_BOUNDS->value,
                 );
             }
         }
-        foreach ($roles as $role) {
-            if (!is_string($role)) {
-                throw new InvalidArgumentException(
-                    "A role must be a string (Found role equal to '$role'.)",
-                    ExceptionCode::CONF_HTTP_ROUTEDEF_ROLE_IS_NOT_A_STRING->value,
-                );
-            }
+        if (!key_exists($nParamsLeast, $this->pageConfs)) {
+            throw new InvalidArgumentException(
+                "No configuration defined for the mininum number of parameters this route definition accepts ($nParamsLeast).",
+                ExceptionCode::CONF_HTTP_ROUTEDEF_PAGE_CONF_MISSING->value,
+            );
         }
 
         foreach ($subRouteDefs as $pathSegment => $routeDef) {
@@ -81,18 +106,6 @@ final readonly class RouteDef
                     ExceptionCode::CONF_HTTP_ROUTEDEF_SUBROUTE_DEF_IS_NOT_A_ROUTEDEF->value,
                 );
             }
-        }
-
-        if ($nArgsLowerLimit < 0) {
-            throw new InvalidArgumentException(
-                "The minimum number of arguments for a route cannot be negative, received {$nArgsLowerLimit}.",
-                ExceptionCode::CONF_HTTP_ROUTEDEF_N_ARGS_LOWER_IS_NEG->value,
-            );
-        } elseif ($nArgsLowerLimit > $nArgsUpperLimit) {
-            throw new InvalidArgumentException(
-                "The minimum number of arguments for a route (here {$nArgsLowerLimit}) cannot be above its maximum number of arguments (here {$nArgsUpperLimit}).",
-                ExceptionCode::CONF_HTTP_ROUTEDEF_N_ARGS_UPPER_IS_BELOW_LOWER_IS_NEG->value,
-            );
         }
     }
 }

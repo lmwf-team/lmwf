@@ -5,7 +5,7 @@
     ],
     "routes": {
         "sub": {
-            "fqcn": "LMWF.Tests.Mocks.RoutedController",
+            "fqcn": "LMWF.Tests.Mocks.MockController",
             "page": {
                 "title": "Sub Page"
             },

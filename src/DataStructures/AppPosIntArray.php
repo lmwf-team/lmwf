@@ -12,8 +12,10 @@ use InvalidArgumentException;
  *
  * @template TValue = mixed
  * @extends ImmutableArray<int, TValue, list<TValue>>
+ * @todo Add tests
+ * @todo Maybe not necessary, could be done with PHPStan?
  */
-final readonly class AppNonSequentialList extends ImmutableArray
+final readonly class AppPosIntArray extends ImmutableArray
 {
     /**
      * @param list<TValue> $data
@@ -23,7 +25,7 @@ final readonly class AppNonSequentialList extends ImmutableArray
         foreach ($data as $key => $_) {
             if (!is_int($key)) {
                 throw new InvalidArgumentException(
-                    'Keys of AppNonSequentialList must be integers.',
+                    'Keys of AppPosIntArray must be integers.',
                 );
             }
         }

@@ -4,7 +4,7 @@
     ],
     "routes": {
         "sub-page": {
-            "fqcn": "LMWF.Tests.Mocks.RoutedController",
+            "fqcn": "LMWF.Tests.Mocks.MockController",
             "roles": [
                 "VISITOR"
             ]
