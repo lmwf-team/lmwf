@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace LMWF\Http\DataStructures;
 
+use LMWF\Conf\ErrorControllerConf;
+
 final class HttpConf
 {
     const string NONCE_SPECIFIER = '{NONCE}';

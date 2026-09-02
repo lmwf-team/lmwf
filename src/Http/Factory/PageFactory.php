@@ -32,7 +32,7 @@ final readonly class PageFactory
     {
         $nParams = $route->getNParams();
 
-        $pageConf = 0 === $nParams ? $route->def->noParamConf : $route->def->params[$nParams - 1];
+        $pageConf = $route->getPageConf();
 
         if (null === $pageConf) {
             return null;
@@ -52,16 +52,6 @@ final readonly class PageFactory
         }
 
         $mutUrl = $pageConf->getBaseUrl() . $route->getPath();
-        // $mutUrl = null !== $nearestPageAncestor ? $nearestPageAncestor->url : $pageConf->getBaseUrl();
-        // if (null !== $route->parent && $route->parent->def->nParamsMax > count($route->parent->params)) {
-        //     // The parent route is the same route definition with one more parameter.
-        //     $mutUrl .= '/' . $route->params[count($route->params) - 1];
-        // } elseif (null !== $route->parent) {
-        //     $mutUrl .= "/{$route->seg}";
-        //     if ([] !== $route->params) {
-        //         $mutUrl .= '/' . implode('/', $route->params);
-        //     }
-        // }
 
         if ($pageConf instanceof EntPageConf) {
             if (0 === $nParams) {

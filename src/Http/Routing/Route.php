@@ -8,6 +8,7 @@ use DomainException;
 use InvalidArgumentException;
 use LMWF\ErrorHandling\ExceptionCode;
 use LMWF\ErrorHandling\UnexpectedValueTypeException;
+use LMWF\Http\DataStructures\IPageConf;
 use LMWF\Http\DataStructures\RouteDef;
 
 /**
@@ -91,24 +92,17 @@ final readonly class Route
     }
 
     /**
-     * The FQCN of the controller associated with this route.
-     *
-     * @return null|class-string<\LMWF\Http\Controller\IRoutedController>
-     */
-    public function getFqcn(): ?string
-    {
-        if (null !== $this->def->fqcnIfParams && count($this->params) > 0) {
-            return $this->def->fqcnIfParams;
-        }
-        return $this->def->fqcn;
-    }
-
-    /**
      * @return positive-int
      */
     public function getNParams(): int
     {
         return count($this->params);
+    }
+
+    public function getPageConf(): ?IPageConf
+    {
+        $nParams = $this->getNParams();
+        return 0 === $nParams ? $this->def->noParamConf : $this->def->params[$nParams - 1];
     }
 
     /**

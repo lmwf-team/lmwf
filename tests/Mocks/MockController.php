@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace LMWF\Tests\Mocks;
 
+use GuzzleHttp\Psr7\Response;
 use LMWF\Http\Controller\IRoutedController;
 use LMWF\Http\Routing\Route;
 use Psr\Http\Message\ResponseInterface;
@@ -17,6 +18,6 @@ class MockController implements IRoutedController
         Route $route,
         ServerRequestInterface $request,
     ): ResponseInterface {
-        throw new MethodNotImplementedException();
+        return new Response(body: static::class);
     }
 }

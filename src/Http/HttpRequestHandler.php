@@ -58,7 +58,7 @@ final class HttpRequestHandler
         $controllerResult = $this->generateResponseFromRoute($request);
 
         $response = $controllerResult instanceof ControllerIssue ?
-            $this->generateResponseFromRouteException($request, $controllerResult) :
+            $this->generateResponseFromRoutingIssue($request, $controllerResult) :
             $controllerResult
         ;
 
@@ -67,7 +67,8 @@ final class HttpRequestHandler
 
     public function generateResponseFromRoute(ServerRequestInterface $request): ResponseInterface|ControllerIssue
     {
-        if (!in_array($request->getMethod(), self::SUPPORTED_METHODS, true)) {
+        if (!in_array($request->getMethod(), self::SUPPORTED_METHODS, strict: true)) {
+            // @todo Store requested method in error
             return new ControllerIssue(ControllerIssueCode::UnsupportedMethod);
         }
 
@@ -77,19 +78,22 @@ final class HttpRequestHandler
         } elseif ($route instanceof RoutingParamIssue) {
             return new ControllerIssue(ControllerIssueCode::ResourceNotFound);
         }
-        Log::info("Request matches controller \"{$route->getFqcn()}\".");
-        if (null === $route->getFqcn()) {
+        $pageConf = $route->getPageConf();
+        if (null === $pageConf) {
+            Log::info("Request matches route with no page configuration for this number of parameters.");
             return new ControllerIssue(ControllerIssueCode::ResourceNotFound);
         }
-        $controller = $this->container->get($route->getFqcn());
+        $controllerFqcn = $pageConf->getControllerFqcn();
+        Log::info("Request matches route with controller \"{$controllerFqcn}\".");
+        $controller = $this->container->get($controllerFqcn);
 
         // @todo Add real role system
-        $roles = $this->session->isUserLoggedIn() ? ['ADMIN'] : ['VISITOR'];
+        $userRoles = $this->session->isUserLoggedIn() ? ['ADMIN'] : ['VISITOR'];
 
         if (count($route->getRoles()) > 0) {
             Log::info("Route roles are \"" . implode(",", $route->getRoles()) . "\".");
             $isAllowed = false;
-            foreach ($roles as $role) {
+            foreach ($userRoles as $role) {
                 if (in_array($role, $route->getRoles(), strict: true)) {
                     $isAllowed = true;
                     break;
@@ -108,7 +112,7 @@ final class HttpRequestHandler
         return $response;
     }
 
-    public function generateResponseFromRouteException(
+    public function generateResponseFromRoutingIssue(
         ServerRequestInterface $request,
         ControllerIssue $issue,
     ): ResponseInterface {
