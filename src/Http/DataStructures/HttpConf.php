@@ -2,9 +2,7 @@
 
 declare(strict_types=1);
 
-namespace LMWF\Conf;
-
-use LMWF\Conf\Http\RouteDef;
+namespace LMWF\Http\DataStructures;
 
 final class HttpConf
 {

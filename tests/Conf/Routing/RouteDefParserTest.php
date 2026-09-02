@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace LMWF\Tests\Conf\Routing;
 
 use LMWF\Conf\RouteDefParser;
-use LMWF\Conf\Http\RouteDef;
+use LMWF\Http\DataStructures\RouteDef;
 use LMWF\Conf\Http\SubRouteCannotAddRoleConfException;
 use LMWF\Conf\Http\UnauthorizedAttributeConfException;
 use LMWF\DataStructures\AppList;
@@ -36,7 +36,7 @@ final class RouteDefParserTest extends TestCase
 
     public function testParsingBasicConf(): void
     {
-        $rootRouteDef = new RouteDef(null, null, ["ADMIN", "VISITOR"], subRouteDefs: [
+        $rootRouteDef = new RouteDef(null, null, ["ADMIN", "VISITOR"], children: [
             '' => new RouteDef(Controller3::class, PageConf::createStatic('Home', 'https://example.org', true, true), ["ADMIN", 'VISITOR']),
             'test' => new RouteDef(Controller2::class, PageParamFactory::create('Test Page', 'https://example.org', false, false), ["ADMIN", "VISITOR"]),
         ]);
@@ -85,12 +85,12 @@ final class RouteDefParserTest extends TestCase
             null,
             null,
             ["ADMIN", "VISITOR"],
-            subRouteDefs: [
+            children: [
                 'sub' => new RouteDef(
                     MockController::class,
                     PageParamFactory::create('Sub Page', self::BASE_URL),
                     ["ADMIN"],
-                    nParamsLeast: 0,
+                    nParamsMin: 0,
                     nParamsMax: 3,
                 ),
             ],
@@ -132,7 +132,7 @@ final class RouteDefParserTest extends TestCase
         self::assertEquals($expected, $this->parseJson(__DIR__ . "/resources/route_w_params_1.json"));
         self::assertEquals($expected, $this->parseJson(__DIR__ . "/resources/route_w_params_2.json"));
 
-        $expected2 = new RouteDef(MockController::class, PageParamFactory::create(baseUrl: self::BASE_URL), ["VISITOR"], nParamsLeast: 1, nParamsMax: 5);
+        $expected2 = new RouteDef(MockController::class, PageParamFactory::create(baseUrl: self::BASE_URL), ["VISITOR"], nParamsMin: 1, nParamsMax: 5);
         self::assertEquals($expected2, $this->parseJson(__DIR__ . "/resources/route_w_params_3.json"));
     }
 

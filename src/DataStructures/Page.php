@@ -15,7 +15,7 @@ final readonly class Page
 {
     /**
      * @param string $url An absolute URL without trailing slash.
-     * @todo Url should be handled by routes?
+     * @todo Url should be handled by routes? At least it should be computed there.
      */
     public function __construct(
         public ?Page $parent,

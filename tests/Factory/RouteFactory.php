@@ -4,35 +4,35 @@ declare(strict_types=1);
 
 namespace LMWF\Tests\Factory;
 
-use LMWF\Conf\Http\RouteDef;
+use LMWF\Http\DataStructures\RouteDef;
 use LMWF\Http\DataStructures\StaticPageConf;
 use LMWF\Http\Routing\Route;
+use LMWF\Tests\Mocks\UnderscoreController;
 
 final readonly class RouteFactory
 {
     /**
-     * @param non-empty-array<string, RouteDef> $subRouteDefs
+     * @param non-empty-array<string, RouteDef> $children
      */
     public static function createRootRoute(
-        array $subRouteDefs = [],
+        array $children = [],
     ): Route {
-        $routeDef = new RouteDef(subRouteDefs: $subRouteDefs);
-        return new Route($routeDef, '', parent: null);
+        $routeDef = new RouteDef( children: $children);
+        return new Route($routeDef, parent: null, seg: '');
     }
 
 
     public static function createDef(
         string $title = '_',
-        string $controllerFqcn = Controller2::class,
+        string $controllerFqcn = UnderscoreController::class,
         string $baseUrl = '_',
         bool $isIndexed = true,
         bool $isPartOfHierarchy = true,
-        array $subRouteDefs = [],
-        int $nParamsLeast = 0,
-        int $nParamsMax = 0,
+        array $children = [],
     ): RouteDef {
-        return new RouteDef([
-            0 => new StaticPageConf($title, $controllerFqcn, $baseUrl, $isIndexed, $isPartOfHierarchy),
-        ], subRouteDefs: $subRouteDefs, nParamsLeast: $nParamsLeast, nParamsMax: $nParamsMax);
+        return new RouteDef(
+            new StaticPageConf($title, $controllerFqcn, $baseUrl, $isIndexed, $isPartOfHierarchy),
+            children: $children,
+        );
     }
 }

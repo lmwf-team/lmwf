@@ -6,14 +6,14 @@ namespace LMWF\Tests\Http;
 
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\ServerRequest;
-use LMWF\Conf\HttpConf;
+use LMWF\Http\DataStructures\HttpConf;
 use LMWF\Conf\ErrorControllerConf;
 use LMWF\Http\Controller\IController;
 use LMWF\Http\Controller\IRoutedController;
 use LMWF\Http\Security\CspNonce;
 use LMWF\Http\HttpRequestHandler;
 use LMWF\Http\Routing\Route;
-use LMWF\Conf\Http\RouteDef;
+use LMWF\Http\DataStructures\RouteDef;
 use LMWF\Http\DataStructures\PageConf;
 use LMWF\Kernel;
 use LMWF\Session\SessionManager;
@@ -44,7 +44,7 @@ final class HttpRequestHandlerTest extends TestCase
                     OkController::class,
                     PageParamFactory::create(),
                     ['ADMIN', 'VISITOR'],
-                    subRouteDefs: [
+                    children: [
                         'my' => new RouteDef(
                             PathController::class,
                             PageParamFactory::create(),

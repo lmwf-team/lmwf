@@ -10,6 +10,7 @@ use LMWF\DataStructures\Exceptions\UnexpectedPropertyType;
 use LMWF\DataStructures\Factory\CollectionFactory;
 use LMWF\DataStructures\ImgFormat;
 use LMWF\Http\Controller\IController;
+use LMWF\Http\DataStructures\HttpConf;
 use UnexpectedValueException;
 
 /**

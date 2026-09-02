@@ -6,12 +6,12 @@ namespace LMWF;
 
 use DI\ContainerBuilder;
 use LMWF\Conf\AppConf;
-use LMWF\Conf\HttpConf;
 use LMWF\ErrorHandling\Log;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use ErrorException;
 use LMWF\DataStructures\Factory\CollectionFactory;
+use LMWF\Http\DataStructures\HttpConf;
 
 /**
  * Provides static methods to initialize the Dependency Injection container,

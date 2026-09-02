@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace LMWF\Http\Controller\Issue;
 
-use LMWF\Conf\Http\RouteDef;
+use LMWF\Http\DataStructures\RouteDef;
 
 final readonly class RoutingParamIssue
 {

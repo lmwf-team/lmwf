@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace LMWF\Http\Routing;
 
 use DomainException;
-use LMWF\Conf\Http\RouteDef;
+use InvalidArgumentException;
+use LMWF\ErrorHandling\ExceptionCode;
+use LMWF\Http\DataStructures\RouteDef;
 use LMWF\ErrorHandling\Log;
 use LMWF\Http\Controller\Issue\RouteNotFoundIssue;
 use LMWF\Http\Controller\Issue\RoutingParamIssue;
@@ -13,6 +15,81 @@ use LMWF\Http\Controller\Issue\RoutingParamIssueCode;
 
 final readonly class Router
 {
+    /**
+     * @param string $absPath An absolute, URL-decoded HTTP path. Must begin
+     * with a forward slash, unless it is empty.
+     */
+    public function getRouteFromPath(RouteDef $rootRouteDef, string $absPath): Route|RoutingParamIssue|RouteNotFoundIssue
+    {
+        $segs = $this->splitPathInSegs($absPath);
+        Log::debug('Segments are: [' . implode(',', $segs) . ']');
+
+        return $this->getRouteFromSegs(
+            $rootRouteDef, 
+            parentRoute: null,
+            currentSeg: $segs[0],
+            nextSegs: array_slice($segs, 1),
+        );
+    }
+
+    /**
+     * @todo Create SegsList type?
+     * @param list<string> $nextSegs
+     * @todo Always return a route. RoutingParamIssue and RouteNotFoundIssue
+     * are routes themselves.
+     */
+    public function getRouteFromSegs(
+        RouteDef $routeDef,
+        ?Route $parentRoute,
+        string $currentSeg,
+        array $nextSegs,
+    ): Route|RoutingParamIssue|RouteNotFoundIssue {
+        Log::debug("Current seg is '{$currentSeg}', next segs are: [" . implode(', ', $nextSegs) . "].");
+
+        if (!array_is_list($nextSegs)) {
+            // @todo Test
+            throw new InvalidArgumentException();
+        }
+
+        $nNextSegs = count($nextSegs);
+
+        $nParamsTotal = min($nNextSegs, $routeDef->getNParamsMax());
+
+        $mutRoute = null;
+        for ($nParams = 0; $nParams <= $nParamsTotal; $nParams++) {
+            $mutRoute = new Route(
+                $routeDef,
+                $mutRoute ?? $parentRoute,
+                $currentSeg,
+                array_slice($nextSegs, 0, $nParams),
+            );
+        }
+        $route = $mutRoute;
+
+        if ($nParamsTotal < $nNextSegs) {
+            if (0 === count($routeDef->children)) {
+                return new RoutingParamIssue(RoutingParamIssueCode::TooManyParams, $routeDef, $nNextSegs);
+            }
+
+            Log::debug("Current route has sub-route definitions.");
+
+            $nextSeg = $nextSegs[$nParamsTotal];
+
+            if (!key_exists($nextSeg, $routeDef->children)) {
+                return new RouteNotFoundIssue($nextSeg);
+            }
+
+            return $this->getRouteFromSegs(
+                $routeDef->children[$nextSeg],
+                $route,
+                $nextSeg, 
+                array_slice($nextSegs, $nParamsTotal + 1),
+            );
+        }
+
+        return $route;
+    }
+
     /**
      * Convert an ABSOLUTE path to a list of path segments, CONVERTS "/" to "".
      *
@@ -34,77 +111,9 @@ final readonly class Router
             return array_map(fn ($seg) => urldecode($seg), explode('/', $absPath));
         }
         // $absPath does not begin with a slash AND is not empty.
-        throw new DomainException('Passed path is not absolute.');
-    }
-
-    /**
-     * @param string $absPath An absolute HTTP path. Must begin with a forward slash, unless it is empty.
-     */
-    public function getRouteFromPath(RouteDef $rootRouteDef, string $absPath): Route|RoutingParamIssue|RouteNotFoundIssue
-    {
-        $segs = self::splitPathInSegs($absPath);
-        Log::debug('Segments are: [' . implode(',', $segs) . ']');
-
-        return $this->getRouteFromSegs(
-            $rootRouteDef, 
-            parentRoute: null,
-            currentSeg: $segs[0],
-            nextSegs: array_slice($segs, 1),
+        throw new DomainException(
+            'Passed path is not absolute.',
+            ExceptionCode::HTTP_ROUTING_ROUTER_GIVEN_PATH_IS_NOT_ABSOLUTE->value,
         );
-    }
-
-    /**
-     * @todo Create SegsList type?
-     * @param list<string> $nextSegs
-     */
-    public function getRouteFromSegs(
-        RouteDef $routeDef,
-        ?Route $parentRoute,
-        string $currentSeg,
-        array $nextSegs,
-    ): Route|RoutingParamIssue|RouteNotFoundIssue {
-        Log::debug("Current seg is '{$currentSeg}', next segs are: [" . implode(', ', $nextSegs) . "].");
-
-        $nNextSegs = count($nextSegs);
-
-        if ($routeDef->nParamsLeast > $nNextSegs) {
-            return new RoutingParamIssue(RoutingParamIssueCode::NotEnoughParams, $routeDef, $nNextSegs);
-        }
-
-        $nParamsTotal = min($nNextSegs, $routeDef->nParamsMax);
-
-        $mutRoute = null;
-        for ($nParams = $routeDef->nParamsLeast; $nParams <= $nParamsTotal; $nParams++) {
-            $mutRoute = new Route(
-                $routeDef,
-                $currentSeg,
-                $mutRoute ?? $parentRoute,
-                array_slice($nextSegs, 0, $nParams),
-            );
-        }
-        $route = $mutRoute;
-
-        if ($nParamsTotal < $nNextSegs) {
-            if (0 === count($routeDef->subRouteDefs)) {
-                return new RoutingParamIssue(RoutingParamIssueCode::TooManyParams, $routeDef, $nNextSegs);
-            }
-
-            Log::debug("Current route has sub-route definitions.");
-
-            $nextSeg = $nextSegs[$nParamsTotal];
-
-            if (!key_exists($nextSeg, $routeDef->subRouteDefs)) {
-                return new RouteNotFoundIssue($nextSeg);
-            }
-
-            return $this->getRouteFromSegs(
-                $routeDef->subRouteDefs[$nextSeg],
-                $route,
-                $nextSeg, 
-                array_slice($nextSegs, $nParamsTotal + 1),
-            );
-        }
-
-        return $route;
     }
 }

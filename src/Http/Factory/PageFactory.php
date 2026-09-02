@@ -31,17 +31,10 @@ final readonly class PageFactory
      */
     public function create(Route $route): null|Page|PageEntTitleErr
     {
-        $nParams = count($route->params);
+        $nParams = $route->getNParams();
 
-        $pageConf = array_filter(
-                $route->def->pageConfs,
-                fn (null|IPageConf|InheritedPageConf $conf, int $key) => $key <= $nParams && !$conf instanceof InheritedPageConf,
-                ARRAY_FILTER_USE_BOTH,
-            )
-            |> array_keys(...)
-            |> max(...)
-            |> (fn ($max) => $route->def->pageConfs[$max])
-        ;
+        $iLastParam = 0 === $nParams ? null : $nParams - 1;
+        $pageConf = $this->getEffectivePageConf($route, $iLastParam);
 
         if (null === $pageConf) {
             return null;
@@ -79,7 +72,7 @@ final readonly class PageFactory
                     ExceptionCode::HTTP_FACTORY_PAGEFACTORY_ENT_PAGE_METADATA_CONF_WITH_0_PARAM->value,
                 );
             }
-            $titleResult = $this->formatter->format($pageConf, $route->params[$nParams - 1]);
+            $titleResult = $this->formatter->format($pageConf, $route->params[$iLastParam]);
             if ($titleResult instanceof FormatErr) {
                 return new PageEntTitleErr($titleResult);
             }
@@ -108,6 +101,19 @@ final readonly class PageFactory
             $conf->isIndexed(),
             $conf->isInHierarchy(),
         );
+    }
+
+    /**
+     * @param null|int $iLastParam Index of the last received parameter, null if no parameters.
+     * @todo Put in Route? Or even instantiate pageConf on route creation?
+     */
+    private function getEffectivePageConf(Route $route, ?int $iLastParam): null|IPageConf
+    {
+        return match ($iLastParam) {
+            null => $route->def->noParamConf,
+            0 => $route->def->params[0] instanceof InheritedPageConf ? $route->def->noParamConf : $route->def->params[0],
+            default => $route->def->params[$iLastParam] instanceof InheritedPageConf ? $this->getEffectivePageConf($route, $iLastParam - 1) : $route->def->params[$iLastParam],
+        };
     }
 }
 

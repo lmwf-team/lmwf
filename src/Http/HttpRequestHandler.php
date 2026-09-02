@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace LMWF\Http;
 
 use GuzzleHttp\Psr7\ServerRequest;
-use LMWF\Conf\HttpConf;
 use LMWF\ErrorHandling\Log;
 use LMWF\Http\Controller\Issue\ControllerIssue;
 use LMWF\Http\Controller\Issue\ControllerIssueCode;
 use LMWF\Http\Controller\Issue\RouteNotFoundIssue;
 use LMWF\Http\Controller\Issue\RoutingParamIssue;
+use LMWF\Http\DataStructures\HttpConf;
 use LMWF\Http\Routing\Router;
 use LMWF\Http\Security\CspNonce;
 use LMWF\Session\SessionManager;

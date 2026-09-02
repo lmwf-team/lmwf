@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace LMWF\Conf;
 
 use InvalidArgumentException;
-use LMWF\Conf\Http\RouteDef;
+use LMWF\Http\DataStructures\RouteDef;
 use LMWF\Conf\Http\SubRouteCannotAddRoleConfException;
 use LMWF\Conf\Http\UnauthorizedAttributeConfException;
 use LMWF\DataStructures\AppObject;
@@ -112,13 +112,13 @@ final readonly class RouteDefParser
         }
 
         // Set sub-route definitions.
-        $subRouteDefs = [];
+        $children = [];
         if ($route->hasKey(self::ROUTES_KN)) {
             foreach ($route->getAppObject(self::ROUTES_KN) as $seg => $subRoute) {
                 if (!$subRoute instanceof AppObject) {
                     throw new UnexpectedValueException('SubRoute configuration is expected to be an AppObject.');
                 }
-                $subRouteDefs[$seg] = $this->parse($subRoute, $roles ?? $parentRoles);
+                $children[$seg] = $this->parse($subRoute, $roles ?? $parentRoles);
             }
         }
 
@@ -126,7 +126,7 @@ final readonly class RouteDefParser
             $fqcn,
             $pageParam,
             $roles ?? $parentRoles,
-            $subRouteDefs,
+            $children,
             $nParamsLowerLimit,
             $nParamsUpperlimit,
             $fqcnIfParams,

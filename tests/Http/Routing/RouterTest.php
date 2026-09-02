@@ -6,13 +6,14 @@ namespace LMWF\Tests\Http\Routing;
 
 use DomainException;
 use LMWF\Http\Routing\Route;
-use LMWF\Conf\Http\RouteDef;
 use LMWF\DataStructures\Page;
+use LMWF\ErrorHandling\ExceptionCode;
 use LMWF\Http\DataStructures\PageConf;
 use LMWF\Http\Controller\Issue\RouteNotFoundIssue;
 use LMWF\Http\Controller\Issue\RoutingParamIssue;
 use LMWF\Http\Controller\Issue\RoutingParamIssueCode;
 use LMWF\Http\DataStructures\EntPageConf;
+use LMWF\Http\DataStructures\RouteDef;
 use LMWF\Http\DataStructures\StaticPageConf;
 use LMWF\Http\Factory\PageEntTitleErr;
 use LMWF\Http\Factory\PageFactory;
@@ -28,30 +29,22 @@ use PHPUnit\Framework\TestCase;
 
 final class RouterTest extends TestCase
 {
-    const string BASE_URL = 'example.org';
-
     private Router $router;
-    private PageFactory $pageFactory;
 
     #[\Override]
     public function setUp(): void
     {
         $this->router = new Router();
-        $this->pageFactory = new PageFactory(
-            new EntPageTitleFormatter(
-                new ContainerMock([
-                    UserRepo::class => new UserRepo(),
-                ]),
-            ),
-        );
     }
 
     public function testEmptyPath(): void
     {
-        $rootRoute = RouteFactory::createRootRoute([]);
-
-        self::assertEquals($rootRoute, $this->router->getRouteFromPath($rootRoute->def, ''));
-        self::assertEquals($rootRoute, $this->router->getRouteFromPath($rootRoute->def, '/'));
+        // sar <3
+        $rootDef = new RouteDef(noParamConf: null);
+        
+        $expectedRoute = new Route($rootDef, parent: null, seg: '');
+        self::assertTrue($expectedRoute->isEqual($this->router->getRouteFromPath($rootDef, '')));
+        self::assertTrue($expectedRoute->isEqual($this->router->getRouteFromPath($rootDef, '/')));
     }
 
     /**
@@ -62,7 +55,7 @@ final class RouterTest extends TestCase
     {
         $route = RouteFactory::createRootRoute();
 
-        $this->expectException(DomainException::class);
+        $this->expectExceptionCode(ExceptionCode::HTTP_ROUTING_ROUTER_GIVEN_PATH_IS_NOT_ABSOLUTE->value);
 
         $this->router->getRouteFromPath($route->def, 'test');
     }
@@ -70,13 +63,13 @@ final class RouterTest extends TestCase
     public function testNonExistingRoute(): void
     {
 
-        $rootRoute = RouteFactory::createRootRoute([
-            '_' => new RouteDef()
+        $rootDef = new RouteDef( children: [
+            '_' => new RouteDef(noParamConf: null)
         ]);
 
         self::assertEquals(
             new RouteNotFoundIssue('test'),
-            $this->router->getRouteFromPath($rootRoute->def, '/test'),
+            $this->router->getRouteFromPath($rootDef, '/test'),
         );
     }
 
@@ -91,73 +84,36 @@ final class RouterTest extends TestCase
         );
     }
 
-    public function testNOfParamsTooLow(): void
-    {
-        $routeDef = new RouteDef([1 => PageParamFactory::createStaticConf()], nParamsLeast: 1, nParamsMax: 1);
-        $rootRoute = RouteFactory::createRootRoute([
-            '_' => $routeDef,
-        ]);
-
-        self::assertEquals(
-            new RoutingParamIssue(RoutingParamIssueCode::NotEnoughParams, $routeDef, 0),
-            $this->router->getRouteFromPath($rootRoute->def, '/_'),
-        );
-    }
-
     public function testRouteIdWithSpecialChars(): void
     {
-        $subRouteId = 'c’est mon idée de route !';
         $subRouteDef = RouteFactory::createDef();
         $rootRoute = RouteFactory::createRootRoute([
-            $subRouteId => $subRouteDef,
+            $seg = 'c’est mon idée de route !' => $subRouteDef,
         ]);
 
-        $expectedRoute = new Route($subRouteDef, $subRouteId, $rootRoute);
-
-        $actualRoute = $this->router->getRouteFromPath($rootRoute->def, "/{$subRouteId}");
-
-        self::assertEquals($expectedRoute, $actualRoute);
+        $expectedRoute = new Route($subRouteDef, $rootRoute, $seg);
+        self::assertTrue($expectedRoute->isEqual($this->router->getRouteFromPath($rootRoute->def, "/{$seg}")));
     }
 
     public function testSubRoutes(): void
     {
-        $sub1Seg = 'sub1';
-        $sub2Seg = 'sub2';
         $sub1SubRouteDef = RouteFactory::createDef();
-        $sub2SubRouteDef = RouteFactory::createDef(nParamsMax: 3);
+        $sub2SubRouteDef = new RouteDef( params: [null, null]);
         $rootRoute = RouteFactory::createRootRoute([
-            $sub1Seg => $sub1SubRouteDef,
-            $sub2Seg => $sub2SubRouteDef,
+            $seg1 = 'sub1' => $sub1SubRouteDef,
+            $seg2 = 'sub2' => $sub2SubRouteDef,
         ]);
 
-        $sub1Route = new Route($sub1SubRouteDef, $sub1Seg, $rootRoute);
-        self::assertEquals($sub1Route, $this->router->getRouteFromPath($rootRoute->def, "/$sub1Seg"));
+        $route1Excepted = new Route($sub1SubRouteDef, $rootRoute, $seg1);
+        self::assertTrue($route1Excepted->isEqual($this->router->getRouteFromPath($rootRoute->def, "/$seg1")));
 
-        $sub2Route0Param = new Route($sub2SubRouteDef, $sub2Seg, $rootRoute);
-        self::assertEquals($sub2Route0Param, $this->router->getRouteFromPath($rootRoute->def, "/$sub2Seg"));
+        $route2Params0Expected = new Route($sub2SubRouteDef, $rootRoute, $seg2);
+        self::assertTrue($route2Params0Expected->isEqual($this->router->getRouteFromPath($rootRoute->def, "/$seg2")));
 
-        $sub2Route1Param = new Route($sub2SubRouteDef, $sub2Seg, $sub2Route0Param, ['param1']);
-        $sub2Route2Params = new Route($sub2SubRouteDef, $sub2Seg, $sub2Route1Param, ['param1', 'param2']);
-        self::assertEquals($sub2Route2Params, $this->router->getRouteFromPath($rootRoute->def, "/$sub2Seg/param1/param2"));
-    }
+        $route2Params1Expected = new Route($sub2SubRouteDef, $route2Params0Expected, $seg2, ['param1']);
+        self::assertTrue($route2Params1Expected->isEqual($this->router->getRouteFromPath($rootRoute->def, "/$seg2/param1")));
 
-    public function testWithMultipleParams(): void
-    {
-        $routeDef = new RouteDef(nParamsMax: 3);
-
-        $rootRoute = RouteFactory::createRootRoute([
-            '_' => $routeDef,
-        ]);
-
-        $expectedRoute = new Route($routeDef, '_', parent: $rootRoute);
-        $expectedSubRoute = new Route($routeDef, '_', $expectedRoute, ['1']);
-        $expectedSubSubRoute = new Route($routeDef, '_', $expectedSubRoute, ['1', '2']);
-
-        $actualRoute = $this->router->getRouteFromPath($rootRoute->def, '/_/1/2');
-
-        self::assertEquals($rootRoute, $actualRoute->parent->parent->parent);
-        self::assertEquals($expectedRoute, $actualRoute->parent->parent);
-        self::assertEquals($expectedSubRoute, $actualRoute->parent);
-        self::assertEquals($expectedSubSubRoute, $actualRoute);
+        $route2Params2Expected = new Route($sub2SubRouteDef, $route2Params1Expected, $seg2, ['param1', 'param2']);
+        self::assertTrue($route2Params2Expected->isEqual($this->router->getRouteFromPath($rootRoute->def, "/$seg2/param1/param2")));
     }
 }
