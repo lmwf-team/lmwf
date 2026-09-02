@@ -22,7 +22,7 @@ interface IPageConf
      * The app's base URL, without trailing slash.
      */
     public function getBaseUrl(): string;
-    
+
     public function isIndexed(): bool;
 
     public function isInHierarchy(): bool;

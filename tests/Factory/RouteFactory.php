@@ -17,7 +17,7 @@ final readonly class RouteFactory
     public static function createRootRoute(
         array $children = [],
     ): Route {
-        $routeDef = new RouteDef( children: $children);
+        $routeDef = new RouteDef(children: $children);
         return new Route($routeDef, parent: null, seg: '');
     }
 

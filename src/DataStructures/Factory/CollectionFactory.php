@@ -7,6 +7,7 @@ namespace LMWF\DataStructures\Factory;
 use LMWF\DataStructures\AppList;
 use LMWF\DataStructures\AppPosIntArray;
 use LMWF\DataStructures\AppObject;
+use LMWF\DataStructures\ImmutableArray;
 use UnexpectedValueException;
 
 class CollectionFactory
@@ -61,7 +62,7 @@ class CollectionFactory
      * @param class-string<T> $class
      * @return T
      */
-    private static function createDeepImmutableArray(array $dataRaw, string $class): AppObject
+    private static function createDeepImmutableArray(array $dataRaw, string $class): ImmutableArray
     {
         $data = [];
         foreach ($dataRaw as $key => $value) {

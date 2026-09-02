@@ -5,10 +5,12 @@
     "language": "en",
     "publicRelPath": "",
     "rootRoute": {
-        "fqcn": "LMWF.Tests.Mocks.MockController",
-        "page": {
+        "page": [
+            {
+            "fqcn": "LMWF.Tests.Mocks.MockController",
             "title": "_"
-        },
+            }
+        ],
         "roles": []
     },
     "thumbnailFormats": {

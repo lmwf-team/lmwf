@@ -45,8 +45,8 @@ final class RouteTest extends TestCase
 
     public function testConstructorWhenNOfParamsTooHigh(): void
     {
-        $rootDef = new RouteDef( children: [
-            '_' => new RouteDef( params: [
+        $rootDef = new RouteDef(children: [
+            '_' => new RouteDef(params: [
                 0 => PageParamFactory::createStaticConf(),
             ]),
         ]);
@@ -93,7 +93,7 @@ final class RouteTest extends TestCase
             ExceptionCode::HTTP_ROUTING_ROUTE_ROOT_ROUTE_HAS_CHILD_WITH_EMPTY_SEG->value,
         );
         new Route(
-            new RouteDef( children: [
+            new RouteDef(children: [
                 '' => new RouteDef(noParamConf: null)
             ]),
             seg: '',
@@ -110,7 +110,7 @@ final class RouteTest extends TestCase
             ExceptionCode::HTTP_ROUTING_ROUTE_ROOT_ROUTE_ACCEPTS_PARAMS->value,
         );
         new Route(
-            new RouteDef( params: [
+            new RouteDef(params: [
                 0 => PageParamFactory::createStaticConf(),
             ]),
             parent: null,
@@ -147,7 +147,7 @@ final class RouteTest extends TestCase
         $route2 = new Route($def, parent: new Route($rootDef, parent: null, seg: ''), seg: '');
         self::assertTrue($route1->isEqual($route2));
         self::assertTrue($route2->isEqual($route1));
-        
+
         $rootDef = new RouteDef(null, children: ['_' => $def]);
         $route3 = new Route($def, parent: new Route($rootDef, parent: null, seg: ''), seg: '');
         self::assertFalse($route1->isEqual($route3));
@@ -157,7 +157,7 @@ final class RouteTest extends TestCase
     public function testEqualityWithOneNullParent(): void
     {
         $rootDef = RouteFactory::createDef(children: [
-            '_' => $def = new RouteDef( children: [
+            '_' => $def = new RouteDef(children: [
                 '' => $subDef = new RouteDef(noParamConf: null),
             ]),
         ]);
@@ -174,7 +174,8 @@ final class RouteTest extends TestCase
                 PageParamFactory::createStaticConf(),
                 params: [
                     0 => null,
-                ])
+                ]
+            )
         ]);
         $route1 = new Route($def, new Route($rootDef, parent: null, seg: ''), '_');
         $route2 = new Route($def, new Route($rootDef, parent: null, seg: ''), '_');
@@ -254,12 +255,12 @@ final class RouteTest extends TestCase
 
         $parentRoute = new Route($parentDef, $rootRoute, '_');
         self::assertEquals('/_', $parentRoute->getPath());
-        
+
         $routeParams0 = new Route($def, $parentRoute, '');
         $pageParams0Expected = $this->pageFactory->fromStaticPageConf($def->noParamConf, '/_/', null);
         self::assertEquals('/_/', $routeParams0->getPath());
         self::assertEquals($pageParams0Expected, $this->pageFactory->create($routeParams0));
-        
+
         $routeParams1 = new Route($def, $routeParams0, '', ['p1']);
         self::assertEquals('/_//p1', $routeParams1->getPath());
         self::assertNull($this->pageFactory->create($routeParams1));

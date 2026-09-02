@@ -15,7 +15,10 @@ use LMWF\DataStructures\Factory\CollectionFactory;
 use LMWF\Http\DataStructures\PageConf;
 use LMWF\ErrorHandling\ExceptionCode;
 use LMWF\Http\DataStructures\EntPageConf;
+use LMWF\Http\DataStructures\StaticPageConf;
+use LMWF\Http\Routing\Route;
 use LMWF\Tests\Factory\PageParamFactory;
+use LMWF\Tests\Mocks\Controller1;
 use LMWF\Tests\Mocks\Controller3;
 use LMWF\Tests\Mocks\OkController;
 use PHPUnit\Framework\TestCase;
@@ -26,7 +29,7 @@ use LMWF\Tests\Mocks\UserRepo;
 
 final class RouteDefParserTest extends TestCase
 {
-    const string BASE_URL = 'https://example.org';
+    const string BASE_URL = '_';
 
     public function testBaseUrlInvalid(): void
     {
@@ -34,112 +37,125 @@ final class RouteDefParserTest extends TestCase
         new RouteDefParser('https://example.org/');
     }
 
-    public function testParsingBasicConf(): void
+    // @todo test defaults of isIndexed and isInHierarchy, and defaults based on ancestors
+    // @todo test either it’s page or it's params
+    // @todo test exception (?) if route adds role
+    public function testParsingValidConf(): void
     {
-        $rootRouteDef = new RouteDef(null, null, ["ADMIN", "VISITOR"], children: [
-            '' => new RouteDef(Controller3::class, PageConf::createStatic('Home', 'https://example.org', true, true), ["ADMIN", 'VISITOR']),
-            'test' => new RouteDef(Controller2::class, PageParamFactory::create('Test Page', 'https://example.org', false, false), ["ADMIN", "VISITOR"]),
-        ]);
-
-        $actualRouteDef = $this->parseJson(__DIR__ . "/resources/route.json");
-
-        self::assertEquals($rootRouteDef, $actualRouteDef);
-    }
-
-    public function testParsingWithPageMetatadaConfWithParams(): void
-    {
-        $expected = new RouteDef()
-        new EntPageConf('{{ name }}', UserRepo::class);
-        $routeConf = new AppObject([
-            'fqcn' => OkController::class,
-            'roles' => new AppList(),
-            'page' => new AppObject([
-                'fqcn' => OkController::class,
-                'confByParam' => new AppPosIntArray([
-                    0 => new AppObject([
-                        'title' => 'Users',
-                    ]),
-                    1 => new AppObject([
-                        'title' => '{{ name }}',
-                        'repoFqcn' => UserRepo::class,
-                    ])
-                ]),
-            ]),
-            'maxArgs' => 1,
-        ]);
-
-        $routeDef = new RouteDefParser(self::BASE_URL)->parse($routeConf);
-
-        self::assertEquals($expected, $routeDef);
-    }
-
-    public function testJsonThatAddsRoles(): void
-    {
-        $this->expectException(SubRouteCannotAddRoleConfException::class);
-        $this->parseJson(__DIR__ . "/resources/added_role_in_sub_route.json");
-    }
-
-    public function testJsonWithBoth(): void
-    {
-        $expected = new RouteDef(
-            null,
-            null,
-            ["ADMIN", "VISITOR"],
+        $expectedDef = new RouteDef(
+            new StaticPageConf('Home', Controller1::class, self::BASE_URL, isIndexed: true, isInHierarchy: true),
+            roles: ["ADMIN", "VISITOR"],
             children: [
-                'sub' => new RouteDef(
-                    MockController::class,
-                    PageParamFactory::create('Sub Page', self::BASE_URL),
-                    ["ADMIN"],
-                    nParamsMin: 0,
-                    nParamsMax: 3,
+                'profile' => new RouteDef(
+                    noParamConf: null,
+                    roles: ['ADMIN', 'VISITOR'],
+                    params: [
+                        0 => new EntPageConf(UserRepo::class, 'Hi {{ name }}', Controller2::class, self::BASE_URL, indexed: false, inHierarchy: true),
+                    ],
                 ),
+                'admin' => new RouteDef(
+                    roles: ['ADMIN'],
+                    children: [
+                        'logout' => new RouteDef(
+                            new StaticPageConf('Logout', Controller3::class, self::BASE_URL, isIndexed: false, isInHierarchy: false),
+                            roles: ['ADMIN'],
+                        )
+                    ]
+                )
             ],
         );
-        self::assertEquals($expected, $this->parseJson(__DIR__ . "/resources/route_w_both.json"));
+
+        $actualRouteDef = $this->parseArray([
+            'page' => [
+                0 => [
+                    'title' => 'Home',
+                    'fqcn' => Controller1::class,
+                ]
+            ],
+            'roles' => ['ADMIN', 'VISITOR'],
+            'routes' => [
+                'profile' => [
+                    'indexed' => false,
+                    'inHierarchy' => true,
+                    'page' => [
+                        0 => null,
+                        1 => [
+                            'type' => 'ent',
+                            'title' => 'Hi {{ name }}',
+                            'fqcn' => Controller2::class,
+                            'repoFqcn' => UserRepo::class
+                        ]
+                    ]
+                ],
+                'admin' => [
+                    'indexed' => false,
+                    'inHierarchy' => false,
+                    'roles' => ['ADMIN'],
+                    'routes' => [
+                        'logout' => [
+                            'page' => [
+                                [
+                                    'title' => 'Logout',
+                                    'fqcn' => Controller3::class,
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ]);
+
+        self::assertEquals($expectedDef, $actualRouteDef);
     }
 
-    public function testJsonWithExtra0(): void
+    public function testAddingRoles(): void
+    {
+        $this->expectException(SubRouteCannotAddRoleConfException::class);
+        $this->parseArray([
+            'roles' => ['ADMIN'],
+            'routes' => [
+                '_' => [
+                    'roles' => ['ADMIN', 'VISITOR'],
+                ],
+            ],
+        ]);
+    }
+
+    public function testUndefinedProperty(): void
     {
         $this->expectException(UnauthorizedAttributeConfException::class);
-        $this->parseJson(__DIR__ . "/resources/route_w_extra_0.json");
+        $this->parseArray([
+            'extra' => true,
+        ]);
     }
 
-    public function testJsonWithExtra1(): void
+    public function testInvalidDefData(): void
     {
         $this->expectException(UnexpectedValueException::class);
-        $this->parseJson(__DIR__ . "/resources/route_w_extra_1.json");
+        $this->parseArray([
+            'roles' => [],
+            'routes' => [
+                '_' => [],
+                '__' => 0,
+            ],
+        ]);
     }
 
-    public function testJsonWithExtra2(): void
+    public function testUndefinedProperty2(): void
     {
-        $this->expectException(UnexpectedValueException::class);
-        $this->parseJson(__DIR__ . "/resources/route_w_extra_2.json");
+        $this->expectException(UnauthorizedAttributeConfException::class);
+        $this->parseArray([
+            'roles' => [],
+            'routes' => [
+                '_' => [
+                    'extra' => true
+                ],
+            ],
+        ]);
     }
 
-    public function testJsonWithEntConf(): void
+    private function parseArray(array $defData): RouteDef
     {
-        $rootRouteDef = $this->parseJson(__DIR__ . '/resources/route_w_params_4.json');
-        self::assertEquals(
-            UserRepo::class,
-            $rootRouteDef->pageParam?->entConf?->repoFqcn,
-        );
-    }
-
-    public function testJsonWithParams(): void
-    {
-        $expected = new RouteDef(MockController::class, PageParamFactory::create(baseUrl: self::BASE_URL));
-        self::assertEquals($expected, $this->parseJson(__DIR__ . "/resources/route_w_params_0.json"));
-        self::assertEquals($expected, $this->parseJson(__DIR__ . "/resources/route_w_params_1.json"));
-        self::assertEquals($expected, $this->parseJson(__DIR__ . "/resources/route_w_params_2.json"));
-
-        $expected2 = new RouteDef(MockController::class, PageParamFactory::create(baseUrl: self::BASE_URL), ["VISITOR"], nParamsMin: 1, nParamsMax: 5);
-        self::assertEquals($expected2, $this->parseJson(__DIR__ . "/resources/route_w_params_3.json"));
-    }
-
-    public function parseJson(string $filePath, bool $allowOverridingRoles = false): RouteDef
-    {
-        $jsonDecoded = CollectionFactory::createDeepAppObject(CollectionFactory::fromJson($filePath));
-        $parser = new RouteDefParser(self::BASE_URL);
-        return $parser->parse($jsonDecoded, allowOverridingParentRoles: $allowOverridingRoles);
+        return new RouteDefParser(self::BASE_URL)->parse(CollectionFactory::createDeepAppObject($defData));
     }
 }

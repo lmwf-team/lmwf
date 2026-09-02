@@ -25,7 +25,7 @@ final readonly class Router
         Log::debug('Segments are: [' . implode(',', $segs) . ']');
 
         return $this->getRouteFromSegs(
-            $rootRouteDef, 
+            $rootRouteDef,
             parentRoute: null,
             currentSeg: $segs[0],
             nextSegs: array_slice($segs, 1),
@@ -82,7 +82,7 @@ final readonly class Router
             return $this->getRouteFromSegs(
                 $routeDef->children[$nextSeg],
                 $route,
-                $nextSeg, 
+                $nextSeg,
                 array_slice($nextSegs, $nParamsTotal + 1),
             );
         }

@@ -119,7 +119,7 @@ final readonly class Route
 
     /**
      * Compute the absolute path of the route.
-     * 
+     *
      * If the route is the root route, an empty path is returned. An empty
      * slash should never be returned as the root route cannot accept parameters
      * and cannot have a child with an empty seg.
@@ -151,7 +151,7 @@ final readonly class Route
 
     /**
      * Return true if both routes share the same route definition tree.
-     * 
+     *
      * This means that their definition is the same RouteDefinition INSTANCE,
      * that their parent, if defined, is equal by this method's standards, and
      * that other properties are strictly equal in terms of the data they

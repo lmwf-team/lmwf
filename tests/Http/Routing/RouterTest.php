@@ -41,7 +41,7 @@ final class RouterTest extends TestCase
     {
         // sar <3
         $rootDef = new RouteDef(noParamConf: null);
-        
+
         $expectedRoute = new Route($rootDef, parent: null, seg: '');
         self::assertTrue($expectedRoute->isEqual($this->router->getRouteFromPath($rootDef, '')));
         self::assertTrue($expectedRoute->isEqual($this->router->getRouteFromPath($rootDef, '/')));
@@ -63,7 +63,7 @@ final class RouterTest extends TestCase
     public function testNonExistingRoute(): void
     {
 
-        $rootDef = new RouteDef( children: [
+        $rootDef = new RouteDef(children: [
             '_' => new RouteDef(noParamConf: null)
         ]);
 
@@ -98,7 +98,7 @@ final class RouterTest extends TestCase
     public function testSubRoutes(): void
     {
         $sub1SubRouteDef = RouteFactory::createDef();
-        $sub2SubRouteDef = new RouteDef( params: [null, null]);
+        $sub2SubRouteDef = new RouteDef(params: [null, null]);
         $rootRoute = RouteFactory::createRootRoute([
             $seg1 = 'sub1' => $sub1SubRouteDef,
             $seg2 = 'sub2' => $sub2SubRouteDef,

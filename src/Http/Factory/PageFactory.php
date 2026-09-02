@@ -60,7 +60,7 @@ final readonly class PageFactory
                     ExceptionCode::HTTP_FACTORY_PAGEFACTORY_ENT_PAGE_METADATA_CONF_WITH_0_PARAM->value,
                 );
             }
-            $titleResult = $this->formatter->format($pageConf, $route->params[$nParams - 1]);
+            $titleResult = $this->formatter->format($pageConf->getTitle(), $route->params[$nParams - 1], $pageConf->repoFqcn);
             if ($titleResult instanceof FormatErr) {
                 return new PageEntTitleErr($titleResult);
             }

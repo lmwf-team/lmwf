@@ -24,19 +24,27 @@ final class EntPageTitleFormatterTest extends TestCase
 
     public function testEmptyStr(): void
     {
-        self::assertEquals('', $this->formatter->format(new EntPageConf('', UserRepo::class), UserRepo::USER_ID));
+        self::assertEquals('', $this->formatter->format('', UserRepo::USER_ID, UserRepo::class));
     }
 
     public function testStaticStr(): void
     {
-        self::assertEquals('Hello!', $this->formatter->format(new EntPageConf('Hello!', UserRepo::class), UserRepo::USER_ID));
+        self::assertEquals('Hello!', $this->formatter->format('Hello!', UserRepo::USER_ID, UserRepo::class));
     }
 
     public function testOneParam(): void
     {
         self::assertEquals(
             'Hello ' . UserRepo::USER_NAME . '!',
-            $this->formatter->format(new EntPageConf('Hello {{ name }}!', UserRepo::class), UserRepo::USER_ID),
+            $this->formatter->format('Hello {{ name }}!', UserRepo::USER_ID, UserRepo::class),
+        );
+    }
+
+    public function testOneParamTwice(): void
+    {
+        self::assertEquals(
+            UserRepo::USER_NAME . ' = ' . UserRepo::USER_NAME,
+            $this->formatter->format('{{ name }} = {{ name }}', UserRepo::USER_ID, UserRepo::class),
         );
     }
 }

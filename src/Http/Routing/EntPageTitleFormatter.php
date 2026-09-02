@@ -6,6 +6,7 @@ namespace LMWF\Http\Routing;
 
 use LMWF\Http\DataStructures\EntPageConf;
 use Psr\Container\ContainerInterface;
+use LMWF\Repo\IRepo;
 
 final readonly class EntPageTitleFormatter
 {
@@ -14,21 +15,24 @@ final readonly class EntPageTitleFormatter
     ) {
     }
 
-    public function format(EntPageConf $entConf, string $entId): string|FormatErr
+    /**
+     * @param class-string<IRepo> $repoFqcn
+     */
+    public function format(string $formatStr, string $entId, string $repoFqcn): string|FormatErr
     {
         $matches = [];
-        $pregMatchResult = preg_match_all('/{{ ([a-z][a-z_]+[a-z]) }}/', $entConf->getTitle(), $matches);
+        $pregMatchResult = preg_match_all('/{{ ([a-z][a-z_]+[a-z]) }}/', $formatStr, $matches);
 
         if (false === $pregMatchResult) {
             return FormatErr::MatchErr;
         }
 
-        $repo = $this->container->get($entConf->repoFqcn);
+        $repo = $this->container->get($repoFqcn);
         $ent = $repo->find($entId);
         if (null === $ent) {
             return FormatErr::EntNotFound;
         }
-        $title = $entConf->getTitle();
+        $title = $formatStr;
         for ($i = 0; $i < $pregMatchResult; $i++) {
             $propertyName = $this->getNonDecimalIntStr($matches[1][$i]);
             if (null === $propertyName) {

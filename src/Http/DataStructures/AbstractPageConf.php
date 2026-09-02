@@ -13,7 +13,6 @@ use LMWF\Http\Controller\IRoutedController;
  */
 abstract readonly class AbstractPageConf implements IPageConf
 {
-
     protected bool $isIndexed;
     protected bool $isInHierarchy;
     protected string $baseUrl;
@@ -61,7 +60,7 @@ abstract readonly class AbstractPageConf implements IPageConf
     {
         return $this->baseUrl;
     }
-    
+
     public function isIndexed(): bool
     {
         return $this->isIndexed;
