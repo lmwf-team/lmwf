@@ -13,33 +13,16 @@ use LMWF\Http\Controller\IRoutedController;
  */
 abstract readonly class AbstractPageConf implements IPageConf
 {
-    protected bool $isIndexed;
-    protected bool $isInHierarchy;
-    protected string $baseUrl;
-    protected string $controllerFqcn;
-    protected string $title;
-
     /**
      * @param class-string<IRoutedController> $controllerFqcn
-     * @param ($from is null ? string : ?string) $title
-     * @param ($from is null ? string : ?string) $controllerFqcn
-     * @param ($from is null ? string : ?string) $baseUrl
-     * @param ($from is null ? bool : ?bool) $isIndexed
-     * @param ($from is null ? bool : ?bool) $isInHierarchy
      */
     public function __construct(
-        ?string $title = null,
-        ?string $controllerFqcn = null,
-        ?string $baseUrl = null,
-        ?bool $isIndexed = null,
-        ?bool $isInHierarchy = null,
-        ?IPageConf $from = null,
+        protected string $title,
+        protected string $controllerFqcn,
+        protected string $baseUrl,
+        protected bool $isIndexed,
+        protected bool $isInHierarchy,
     ) {
-        $this->title = null === $title ? $from->getTitle() : $title;
-        $this->controllerFqcn = null === $controllerFqcn ? $from->getControllerFqcn() : $controllerFqcn;
-        $this->baseUrl = null === $baseUrl ? $from->getBaseUrl() : $baseUrl;
-        $this->isIndexed = null === $isIndexed ? $from->isIndexed() : $isIndexed;
-        $this->isInHierarchy = null === $isInHierarchy ? $from->isInHierarchy() : $isInHierarchy;
     }
 
     #[Override]
@@ -51,21 +34,25 @@ abstract readonly class AbstractPageConf implements IPageConf
     /**
      * @return class-string<IRoutedController>
      */
+    #[Override]
     public function getControllerFqcn(): string
     {
         return $this->controllerFqcn;
     }
 
+    #[Override]
     public function getBaseUrl(): string
     {
         return $this->baseUrl;
     }
 
+    #[Override]
     public function isIndexed(): bool
     {
         return $this->isIndexed;
     }
 
+    #[Override]
     public function isInHierarchy(): bool
     {
         return $this->isInHierarchy;

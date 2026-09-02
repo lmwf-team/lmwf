@@ -15,7 +15,7 @@ final class UnexpectedValueTypeException extends BaseUnexpectedValueException
         string $messageFmt = 'Expected value of type %1$s, got: %2$s.',
         Throwable|null $previous = null,
     ) {
-        return parent::__construct(
+        parent::__construct(
             sprintf($messageFmt, $expectedType, $this->getStringDesc($actualValue)),
             $code,
             $previous,

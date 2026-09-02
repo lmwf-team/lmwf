@@ -53,22 +53,26 @@ class CollectionFactory
      */
     public static function createDeepAppObject(array $dataRaw): AppObject
     {
-        return self::createDeepImmutableArray($dataRaw, AppObject::class);
+        $dataRawPrepared = self::prepareRawData($dataRaw);
+
+        // AppObject already checks the type anyway
+        // @phpstan-ignore argument.type
+        return new AppObject($dataRawPrepared);
     }
 
     /**
-     * @template T of AppObject|AppPosIntArray
-     * @param array<string, mixed> $dataRaw
-     * @param class-string<T> $class
-     * @return T
+     * @param array<string|int, mixed> $dataRaw
+     * @return array<int|string, mixed>
      */
-    private static function createDeepImmutableArray(array $dataRaw, string $class): ImmutableArray
+    private static function prepareRawData(array $dataRaw): array
     {
         $data = [];
         foreach ($dataRaw as $key => $value) {
             if (is_array($value)) {
                 if (array_is_list($value)) {
-                    $data[$key] = self::createDeepImmutableArray($value, AppList::class);
+                    // AppList already checks the type anyway
+                    // @phpstan-ignore argument.type
+                    $data[$key] = new AppList(self::prepareRawData($value));
                 } else {
                     // @todo Duplicate section of code with createDeepAppList
                     $onlyStringKeys = true;
@@ -81,10 +85,13 @@ class CollectionFactory
                         }
                     }
                     if ($onlyStringKeys) {
+                        // AppObject already checks the type anyway
                         // @phpstan-ignore argument.type
-                        $data[$key] = self::createDeepImmutableArray($value, AppObject::class);
+                        $data[$key] = new AppObject(self::prepareRawData($value));
                     } elseif ($onlyIntKeys) {
-                        $data[$key] = self::createDeepImmutableArray($value, AppPosIntArray::class);
+                        // AppPosIntArray already checks the type anyway
+                        // @phpstan-ignore argument.type
+                        $data[$key] = new AppPosIntArray(self::prepareRawData($value));
                     } else {
                         $data[$key] = $value;
                     }
@@ -93,12 +100,8 @@ class CollectionFactory
                 $data[$key] = $value;
             }
         }
-        return match ($class) {
-            AppObject::class => new AppObject($data),
-            AppPosIntArray::class => new AppPosIntArray($data),
-            AppList::class => new AppList($data),
-            default => throw new UnexpectedValueException("Did not recognise provided collection class: '$class'.")
-        };
+
+        return $data;
     }
 
     /**

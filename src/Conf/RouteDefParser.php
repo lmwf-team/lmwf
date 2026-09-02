@@ -15,6 +15,7 @@ use LMWF\Http\Controller\IRoutedController;
 use LMWF\Http\DataStructures\EntPageConf;
 use LMWF\Http\DataStructures\StaticPageConf;
 use LMWF\Repo\IRepo;
+use LMWF\Http\DataStructures\IPageConf;
 use UnexpectedValueException;
 
 final readonly class RouteDefParser
@@ -115,10 +116,11 @@ final readonly class RouteDefParser
                 if (!$subRoute instanceof ImmutableArray) {
                     // @todo Test
                     throw new UnexpectedValueException('SubRoute configuration is expected to be an AppObject or an empty ImmutableArray.');
-                } elseif (0 !== $subRoute->count() && !$subRoute instanceof AppObject) {
-                    // @todo Test
-                    throw new UnexpectedValueException('SubRoute configuration is expected to be an AppObject if not empty.');
-                } elseif (0 === $subRoute->count()) {
+                } elseif (!$subRoute instanceof AppObject) {
+                    if (0 !== $subRoute->count()) {
+                        // @todo Test
+                        throw new UnexpectedValueException('SubRoute configuration is expected to be an AppObject if not empty.');
+                    }
                     $children[$seg] = new RouteDef();
                 } else {
                     $children[$seg] = $this->parse(
@@ -158,6 +160,7 @@ final readonly class RouteDefParser
 
     /**
      * @param AppObject<mixed> $routeDefData
+     * @return list{null|StaticPageConf, ...<null|IPageConf>}
      */
     private function parsePageConf(AppObject $routeDefData, bool $isIndexed, bool $isInHierarchy): array
     {
@@ -166,9 +169,10 @@ final readonly class RouteDefParser
         }
         $pageDefConfs = $routeDefData->getAppList(self::PAGE_KN);
 
-        return $pageDefConfs->map(fn ($conf) => null === $conf ? null : ($conf->hasKey(self::PAGE_ENT_REPO_FQCN_KN) ?
+        // @todo Test, refactor, add code
+        $pageDefs = $pageDefConfs->map(fn (mixed $conf) => null === $conf ? null : (!$conf instanceof AppObject ? throw new InvalidArgumentException() : ($conf->hasKey(self::PAGE_ENT_REPO_FQCN_KN) ?
             new EntPageConf(
-                $conf->getString(self::PAGE_ENT_REPO_FQCN_KN),
+                $conf->getFqcn(self::PAGE_ENT_REPO_FQCN_KN, IRepo::class, convertDotsToBackslashes: true),
                 $conf->getString(self::PAGE_TITLE_KN),
                 $this->parseFqcn($conf->getString(self::PAGE_CONTROLLER_FQCN_KN), IRoutedController::class),
                 $this->baseUrl,
@@ -181,6 +185,12 @@ final readonly class RouteDefParser
                 $this->baseUrl,
                 $isIndexed,
                 $isInHierarchy,
-            )))->toArray();
+            ))))->toArray();
+
+        // @todo Test
+        if (!$pageDefs[0] instanceof StaticPageConf && null !== $pageDefs[0]) {
+            throw new UnexpectedValueException();
+        }
+        return $pageDefs;
     }
 }
