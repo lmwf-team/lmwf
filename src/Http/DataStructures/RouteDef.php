@@ -91,7 +91,7 @@ final readonly class RouteDef
     }
 
     /**
-     * @return positive-int
+     * @return int<0, max>
      */
     public function getNParamsMax(): int
     {

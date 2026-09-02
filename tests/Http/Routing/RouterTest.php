@@ -8,7 +8,6 @@ use DomainException;
 use LMWF\Http\Routing\Route;
 use LMWF\DataStructures\Page;
 use LMWF\ErrorHandling\ExceptionCode;
-use LMWF\Http\DataStructures\PageConf;
 use LMWF\Http\Controller\Issue\RouteNotFoundIssue;
 use LMWF\Http\Controller\Issue\RoutingParamIssue;
 use LMWF\Http\Controller\Issue\RoutingParamIssueCode;

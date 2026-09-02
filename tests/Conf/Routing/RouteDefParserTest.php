@@ -12,7 +12,6 @@ use LMWF\DataStructures\AppList;
 use LMWF\DataStructures\AppPosIntArray;
 use LMWF\DataStructures\AppObject;
 use LMWF\DataStructures\Factory\CollectionFactory;
-use LMWF\Http\DataStructures\PageConf;
 use LMWF\ErrorHandling\ExceptionCode;
 use LMWF\Http\DataStructures\EntPageConf;
 use LMWF\Http\DataStructures\StaticPageConf;
@@ -154,6 +153,9 @@ final class RouteDefParserTest extends TestCase
         ]);
     }
 
+    /**
+     * @param array<mixed> $defData
+     */
     private function parseArray(array $defData): RouteDef
     {
         return new RouteDefParser(self::BASE_URL)->parse(CollectionFactory::createDeepAppObject($defData));

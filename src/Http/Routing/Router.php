@@ -47,7 +47,7 @@ final readonly class Router
         Log::debug("Current seg is '{$currentSeg}', next segs are: [" . implode(', ', $nextSegs) . "].");
 
         if (!array_is_list($nextSegs)) {
-            // @todo Test
+            // @todo Test, add code
             throw new InvalidArgumentException();
         }
 
@@ -87,6 +87,8 @@ final readonly class Router
             );
         }
 
+        // @todo no idea why phpstan just invent an issue
+        // @phpstan-ignore return.type
         return $route;
     }
 

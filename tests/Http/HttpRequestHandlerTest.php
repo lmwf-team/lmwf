@@ -15,7 +15,6 @@ use LMWF\Http\Security\CspNonce;
 use LMWF\Http\HttpRequestHandler;
 use LMWF\Http\Routing\Route;
 use LMWF\Http\DataStructures\RouteDef;
-use LMWF\Http\DataStructures\PageConf;
 use LMWF\Http\DataStructures\StaticPageConf;
 use LMWF\Kernel;
 use LMWF\Session\SessionManager;

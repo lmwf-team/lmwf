@@ -92,7 +92,7 @@ final readonly class Route
     }
 
     /**
-     * @return positive-int
+     * @return int<0, max>
      */
     public function getNParams(): int
     {
@@ -157,9 +157,11 @@ final readonly class Route
      * that other properties are strictly equal in terms of the data they
      * contain.
      */
-    public function isEqual(Route $route): bool
+    public function isEqual(?Route $route): bool
     {
-        if ($route === $this) {
+        if (null === $route) {
+            return false;
+        } if ($route === $this) {
             return true;
         } elseif ($route->def !== $this->def) {
             return false;

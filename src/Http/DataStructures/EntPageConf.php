@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace LMWF\Http\DataStructures;
 
-use Override;
+use LMWF\Repo\IRepo;
 
 /**
  * Configuration for a page providing access to a resource fetched from a
@@ -12,10 +12,8 @@ use Override;
  */
 final readonly class EntPageConf extends AbstractPageConf
 {
-    public string $repoFqcn;
-
     /**
-     * @param class-string<\LMWF\Repo\IRepo> $repoFqcn The
+     * @param class-string<IRepo> $repoFqcn The
      * repository to fetch the resource
      * @param class-string<IRoutedController> $controllerFqcn
      * @param ($from is null ? string : ?string) $title
@@ -25,7 +23,7 @@ final readonly class EntPageConf extends AbstractPageConf
      * @param ($from is null ? bool : ?bool) $inHierarchy
      */
     public function __construct(
-        string $repoFqcn,
+        public string $repoFqcn,
         ?string $title = null,
         ?string $controllerFqcn = null,
         ?string $baseUrl = null,

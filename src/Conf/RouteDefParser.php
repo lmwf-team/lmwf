@@ -10,7 +10,6 @@ use LMWF\Conf\Http\SubRouteCannotAddRoleConfException;
 use LMWF\Conf\Http\UnauthorizedAttributeConfException;
 use LMWF\DataStructures\AppObject;
 use LMWF\DataStructures\ImmutableArray;
-use LMWF\Http\DataStructures\PageConf;
 use LMWF\ErrorHandling\ExceptionCode;
 use LMWF\Http\Controller\IRoutedController;
 use LMWF\Http\DataStructures\EntPageConf;

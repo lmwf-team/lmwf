@@ -12,7 +12,7 @@ use LMWF\Tests\Mocks\UnderscoreController;
 final readonly class RouteFactory
 {
     /**
-     * @param non-empty-array<string, RouteDef> $children
+     * @param array<string, RouteDef> $children
      */
     public static function createRootRoute(
         array $children = [],
@@ -21,7 +21,9 @@ final readonly class RouteFactory
         return new Route($routeDef, parent: null, seg: '');
     }
 
-
+    /**
+     * @param  array<string, RouteDef> $children
+     */
     public static function createDef(
         string $title = '_',
         string $controllerFqcn = UnderscoreController::class,
