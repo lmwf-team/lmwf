@@ -6,10 +6,7 @@ namespace LMWF\Tests\Http\Routing;
 
 use LMWF\Http\DataStructures\RouteDef;
 use LMWF\ErrorHandling\ExceptionCode;
-use LMWF\Http\DataStructures\InheritedPageConf;
-use LMWF\Http\DataStructures\StaticPageConf;
 use LMWF\Tests\Factory\PageParamFactory;
-use LMWF\Tests\Mocks\Controller3;
 use PHPUnit\Framework\TestCase;
 
 final class RouteDefTest extends TestCase

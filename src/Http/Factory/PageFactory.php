@@ -7,7 +7,6 @@ namespace LMWF\Http\Factory;
 use LMWF\DataStructures\Page;
 use LMWF\ErrorHandling\ExceptionCode;
 use LMWF\Http\DataStructures\EntPageConf;
-use LMWF\Http\DataStructures\InheritedPageConf;
 use LMWF\Http\DataStructures\IPageConf;
 use LMWF\Http\DataStructures\StaticPageConf;
 use LMWF\Http\Routing\{EntPageTitleFormatter, FormatErr};
@@ -33,8 +32,7 @@ final readonly class PageFactory
     {
         $nParams = $route->getNParams();
 
-        $iLastParam = 0 === $nParams ? null : $nParams - 1;
-        $pageConf = $this->getEffectivePageConf($route, $iLastParam);
+        $pageConf = 0 === $nParams ? $route->def->noParamConf : $route->def->params[$nParams - 1];
 
         if (null === $pageConf) {
             return null;
@@ -72,7 +70,7 @@ final readonly class PageFactory
                     ExceptionCode::HTTP_FACTORY_PAGEFACTORY_ENT_PAGE_METADATA_CONF_WITH_0_PARAM->value,
                 );
             }
-            $titleResult = $this->formatter->format($pageConf, $route->params[$iLastParam]);
+            $titleResult = $this->formatter->format($pageConf, $route->params[$nParams - 1]);
             if ($titleResult instanceof FormatErr) {
                 return new PageEntTitleErr($titleResult);
             }
@@ -101,19 +99,6 @@ final readonly class PageFactory
             $conf->isIndexed(),
             $conf->isInHierarchy(),
         );
-    }
-
-    /**
-     * @param null|int $iLastParam Index of the last received parameter, null if no parameters.
-     * @todo Put in Route? Or even instantiate pageConf on route creation?
-     */
-    private function getEffectivePageConf(Route $route, ?int $iLastParam): null|IPageConf
-    {
-        return match ($iLastParam) {
-            null => $route->def->noParamConf,
-            0 => $route->def->params[0] instanceof InheritedPageConf ? $route->def->noParamConf : $route->def->params[0],
-            default => $route->def->params[$iLastParam] instanceof InheritedPageConf ? $this->getEffectivePageConf($route, $iLastParam - 1) : $route->def->params[$iLastParam],
-        };
     }
 }
 

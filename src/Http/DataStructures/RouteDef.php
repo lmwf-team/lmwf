@@ -6,7 +6,6 @@ namespace LMWF\Http\DataStructures;
 
 use InvalidArgumentException;
 use LMWF\ErrorHandling\ExceptionCode;
-use LMWF\Http\DataStructures\InheritedPageConf;
 use LMWF\Http\DataStructures\IPageConf;
 use LMWF\Http\DataStructures\StaticPageConf;
 
@@ -39,7 +38,7 @@ final readonly class RouteDef
      * Defining a configuration for each number of parameters, including 0,
      * also allows us to remove the NotEnoughParams exception and the code
      * to check it is thrown.
-     * @param list<null|IPageConf|InheritedPageConf> $params Route configuration
+     * @param list<null|IPageConf> $params Route configuration
      * for each index of the last received route parameter.
      * @param array<string, self> $children The child routes as an array of route definitions, indexed by the path segment through which they are accessed.
      * @param list<string> $roles Roles for this route definition and its descendants if not overwritten.
@@ -58,9 +57,9 @@ final readonly class RouteDef
         }
         // @todo Check type of value
         foreach ($this->params as $iParam => $conf) {
-            if (null !== $conf && !$conf instanceof IPageConf && !$conf instanceof InheritedPageConf) {
+            if (null !== $conf && !$conf instanceof IPageConf) {
                 throw new InvalidArgumentException(
-                    "Configuration for {$iParam} route parameters must be an array containing only IPageConf, null, and InheritedPageConf values.",
+                    "Configuration for {$iParam} route parameters must be an array containing only IPageConf or null values.",
                     ExceptionCode::HTTP_DATASTRUCTURES_ROUTEDEF_PAGE_CONF_VALUE_INVALID_TYPE->value,
                 );
             }

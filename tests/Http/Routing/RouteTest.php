@@ -7,13 +7,10 @@ namespace LMWF\Tests\Http\Routing;
 use LMWF\Http\DataStructures\RouteDef;
 use LMWF\Http\Routing\Route;
 use PHPUnit\Framework\TestCase;
-use DomainException;
 use InvalidArgumentException;
 use LMWF\DataStructures\Page;
 use LMWF\ErrorHandling\ExceptionCode;
 use LMWF\Http\DataStructures\EntPageConf;
-use LMWF\Http\DataStructures\InheritedPageConf;
-use LMWF\Http\DataStructures\PageConf;
 use LMWF\Http\DataStructures\StaticPageConf;
 use LMWF\Http\Factory\PageFactory;
 use LMWF\Http\Routing\EntPageTitleFormatter;
@@ -22,9 +19,6 @@ use LMWF\Tests\Factory\RouteFactory;
 use LMWF\Tests\Mocks\ContainerMock;
 use LMWF\Tests\Mocks\Controller1;
 use LMWF\Tests\Mocks\Controller2;
-use LMWF\Tests\Mocks\Controller3;
-use LMWF\Tests\Mocks\OkController;
-use LMWF\Tests\Mocks\UnderscoreController;
 use LMWF\Tests\Mocks\UserRepo;
 
 final class RouteTest extends TestCase
@@ -53,8 +47,7 @@ final class RouteTest extends TestCase
     {
         $rootDef = new RouteDef( children: [
             '_' => new RouteDef( params: [
-                PageParamFactory::createStaticConf(),
-                new InheritedPageConf(),
+                0 => PageParamFactory::createStaticConf(),
             ]),
         ]);
 
@@ -179,7 +172,9 @@ final class RouteTest extends TestCase
         $rootDef = RouteFactory::createDef(children: [
             '_' => $def = new RouteDef(
                 PageParamFactory::createStaticConf(),
-                params: [new InheritedPageConf()])
+                params: [
+                    0 => null,
+                ])
         ]);
         $route1 = new Route($def, new Route($rootDef, parent: null, seg: ''), '_');
         $route2 = new Route($def, new Route($rootDef, parent: null, seg: ''), '_');
@@ -241,17 +236,15 @@ final class RouteTest extends TestCase
                         baseUrl: self::BASE_URL,
                     ),
                     params: [
-                        0 => new InheritedPageConf(),
+                        0 => null,
                         1 => $pageConf2Params = new EntPageConf(
                             UserRepo::class,
-                            '{{ name }}',
+                            'Hey {{ name }}!',
                             Controller2::class,
                             self::BASE_URL,
                             true,
                             true,
                         ),
-                        2 => new InheritedPageConf(),
-                        3 => null,
                     ],
                 ),
             ]),
@@ -263,37 +256,23 @@ final class RouteTest extends TestCase
         self::assertEquals('/_', $parentRoute->getPath());
         
         $routeParams0 = new Route($def, $parentRoute, '');
-        $routeParams0ExpectedPage = $this->pageFactory->fromStaticPageConf($def->noParamConf, '/_/', null);
+        $pageParams0Expected = $this->pageFactory->fromStaticPageConf($def->noParamConf, '/_/', null);
         self::assertEquals('/_/', $routeParams0->getPath());
-        self::assertEquals($routeParams0ExpectedPage, $this->pageFactory->create($routeParams0));
+        self::assertEquals($pageParams0Expected, $this->pageFactory->create($routeParams0));
         
         $routeParams1 = new Route($def, $routeParams0, '', ['p1']);
         self::assertEquals('/_//p1', $routeParams1->getPath());
-        self::assertEquals($routeParams0ExpectedPage, $this->pageFactory->create($routeParams1));
+        self::assertNull($this->pageFactory->create($routeParams1));
 
-        // $route2Params = new Route($def, '', $routeParams1, ['p1', UserRepo::USER_ID]);
-        // $page2Params = new Page(
-        //     parent: $routeParams1ExpectedPage,
-        //     controllerFqcn: $pageConf2Params->getControllerFqcn(),
-        //     name: UserRepo::USER_NAME,
-        //     url: self::BASE_URL . '/_//p1/' . UserRepo::USER_ID,
-        // );
-        // self::assertEquals('/_//p1/' . UserRepo::USER_ID, $route2Params->getPath());
-        // self::assertEquals($page2Params, $this->pageFactory->create($route2Params));
-        
-        // $route3Params = new Route($def, '', $route2Params, ['p1', 'p2', UserRepo::USER_ID]);
-        // $page3Params = new Page(
-        //     parent: $page2Params,
-        //     controllerFqcn: $pageConf2Params->getControllerFqcn(),
-        //     name: UserRepo::USER_NAME,
-        //     url: self::BASE_URL . '/_//p1/' . UserRepo::USER_ID . '/' . UserRepo::USER_ID,
-        // );
-        // self::assertEquals($route2Params->getPath() . '/' . UserRepo::USER_ID, $route3Params->getPath());
-        // self::assertEquals($page3Params, $this->pageFactory->create($route3Params));
-        
-        // $routeParam4 = new Route($def, '', $route3Params, ['p1', UserRepo::USER_ID, UserRepo::USER_ID, 'p4']);
-        // self::assertEquals($route3Params->getPath() . '/p4', $routeParam4->getPath());
-        // self::assertEquals(null, $this->pageFactory->create($routeParam4));
+        $route2Params = new Route($def, $routeParams1, seg: '', params: ['p1', UserRepo::USER_ID]);
+        $pageParams2Expected = new Page(
+            parent: $pageParams0Expected,
+            controllerFqcn: $pageConf2Params->getControllerFqcn(),
+            name: 'Hey ' . UserRepo::USER_NAME . '!',
+            url: self::BASE_URL . '/_//p1/' . UserRepo::USER_ID,
+        );
+        self::assertEquals('/_//p1/' . UserRepo::USER_ID, $route2Params->getPath());
+        self::assertEquals($pageParams2Expected, $this->pageFactory->create($route2Params));
     }
 
     public function testNestedPages(): void
