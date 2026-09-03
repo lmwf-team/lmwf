@@ -159,7 +159,7 @@ final readonly class RouteDefParser
 
     /**
      * @param AppObject<mixed> $routeDefData
-     * @return list{null|StaticPageConf, ...<null|IPageConf>}
+     * @return list<null|IPageConf>
      */
     private function parsePageConf(AppObject $routeDefData, bool $isIndexed, bool $isInHierarchy): array
     {
@@ -186,10 +186,6 @@ final readonly class RouteDefParser
                 $isInHierarchy,
             ))))->toArray();
 
-        // @todo Test
-        if (!$pageDefs[0] instanceof StaticPageConf && null !== $pageDefs[0]) {
-            throw new UnexpectedValueException();
-        }
         return $pageDefs;
     }
 }

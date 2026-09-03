@@ -28,7 +28,7 @@ use LMWF\Http\DataStructures\StaticPageConf;
 final readonly class RouteDef
 {
     /**
-     * @param null|StaticPageConf $noParamConf The route configuration for
+     * @param null|IPageConf $noParamConf The route configuration for
      * routes of this definition that did not receive any parameters. It's not
      * merged with $params for multiple reasons: makes counting actual parameters
      * easier (though the first segment could be considered a paraeter in its
