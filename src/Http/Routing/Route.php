@@ -146,7 +146,7 @@ final readonly class Route
     {
         if ($index >= $this->nParamsMax) {
             throw new OutOfBoundsException(
-                "Definition of route with segment '{$this->seg}' does not allow more than {$this->nParamsMax} parameters, but an attempt was made to access paramter #$index.",
+                "Definition of route with segment '{$this->seg}' does not allow more than {$this->nParamsMax} parameters, but an attempt was made to access parameter #$index.",
             );
         }
         if ($index >= count($this->params)) {

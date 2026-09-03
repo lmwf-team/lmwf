@@ -22,3 +22,11 @@ LMWF is composed of multiple modules. The following image is an overview of its 
 # Security
 
  - Deactivate `display_errors` and `display_warnings` in PHP settings. LMWF does not take care of that for you.
+
+# Style
+
+## Exceptions
+
+We avoid using exceptions to handle logics as much as possible. This means that when the code throws exception, it is not meant to be handled, but rather signifies an issue that needs to be fixed with the code (for instance, instantiating a struct with invalid paremeters). But this is still WIP.
+
+When we do throw exception, we usually rely on PHP built-in exception with a custom code defined in the enum ExceptionCode. Each thrown exception thus has a unique code that can be referenced against in Exceptioncode.

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace LMWF\DataStructures;
 
+use InvalidArgumentException;
+use LMWF\ErrorHandling\ExceptionCode;
 use LMWF\Http\Controller\IRoutedController;
 
 /**
@@ -25,6 +27,12 @@ final readonly class Page
         public bool $isIndexed = true,
         public bool $isPartOfHierarchy = true,
     ) {
+        if (null !== $parent && false === $parent->isPartOfHierarchy && true === $isPartOfHierarchy) {
+            throw new InvalidArgumentException(
+                'Page that is in hierarchy cannot descend from page that is not.',
+                ExceptionCode::DATASTRUCTURES_PAGE_PARENT_MUST_BE_IN_HIERARCHY->value,
+            );
+        }
     }
 
     public function getParent(): ?Page
