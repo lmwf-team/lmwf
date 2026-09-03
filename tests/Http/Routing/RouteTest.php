@@ -236,7 +236,7 @@ final class RouteTest extends TestCase
         $rootRoute = RouteFactory::createRootRoute([
             '_' => $parentDef = new RouteDef(null, children: [
                 '' => $def = new RouteDef(
-                    PageParamFactory::createStaticConf(
+                    $staticPageConf = PageParamFactory::createStaticConf(
                         controllerFqcn: Controller1::class,
                         baseUrl: self::BASE_URL,
                     ),
@@ -261,7 +261,14 @@ final class RouteTest extends TestCase
         self::assertEquals('/_', $parentRoute->path);
 
         $routeParams0 = new Route($def, $parentRoute, '');
-        $pageParams0Expected = $this->pageFactory->fromStaticPageConf($def->noParamConf, '/_/', null);
+        $pageParams0Expected = new Page(
+            null,
+            $staticPageConf->getControllerFqcn(),
+            $staticPageConf->getTitle(),
+            $staticPageConf->getBaseUrl() . '/_/',
+            $staticPageConf->isIndexed(),
+            $staticPageConf->isInHierarchy(),
+        );
         self::assertEquals('/_/', $routeParams0->path);
         self::assertEquals($pageParams0Expected, $this->pageFactory->create($routeParams0));
 

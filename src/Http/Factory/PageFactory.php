@@ -32,9 +32,7 @@ final readonly class PageFactory
     {
         $nParams = $route->nParams;
 
-        $pageConf = $route->pageConf;
-
-        if (null === $pageConf) {
+        if (null === $route->pageConf) {
             return null;
         }
 
@@ -51,43 +49,31 @@ final readonly class PageFactory
             return $nearestPageAncestor;
         }
 
-        $mutUrl = $pageConf->getBaseUrl() . $route->path;
+        $mutUrl = $route->pageConf->getBaseUrl() . $route->path;
 
-        if ($pageConf instanceof EntPageConf) {
+        if ($route->pageConf instanceof EntPageConf) {
             if (0 === $nParams) {
                 throw new UnexpectedValueException(
                     'The "by-param" configuration for a route with no parameters cannot be an EntPageConf as it would expect a parameter.',
                     ExceptionCode::HTTP_FACTORY_PAGEFACTORY_ENT_PAGE_METADATA_CONF_WITH_0_PARAM->value,
                 );
             }
-            $titleResult = $this->formatter->format($pageConf->getTitle(), $route->params[$nParams - 1], $pageConf->repoFqcn);
+            $titleResult = $this->formatter->format($route->pageConf->getTitle(), $route->params[$nParams - 1], $route->pageConf->repoFqcn);
             if ($titleResult instanceof FormatErr) {
                 return new PageEntTitleErr($titleResult);
             }
         } else {
-            $titleResult = $pageConf->getTitle();
+            $titleResult = $route->pageConf->getTitle();
         }
 
 
         return new Page(
             $nearestPageAncestor,
-            $pageConf->getControllerFqcn(),
+            $route->pageConf->getControllerFqcn(),
             $titleResult,
             $mutUrl,
-            $pageConf->isIndexed(),
-            $pageConf->isInHierarchy(),
-        );
-    }
-
-    public function fromStaticPageConf(StaticPageConf $conf, string $path, ?Page $parent): Page
-    {
-        return new Page(
-            $parent,
-            $conf->getControllerFqcn(),
-            $conf->getTitle(),
-            $conf->getBaseUrl() . $path,
-            $conf->isIndexed(),
-            $conf->isInHierarchy(),
+            $route->pageConf->isIndexed(),
+            $route->pageConf->isInHierarchy(),
         );
     }
 }

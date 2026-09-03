@@ -55,7 +55,7 @@ final class PageFactoryTest extends TestCase
                 isIndexed: true,
                 isPartOfHierarchy: true,
             );
-            
+
             self::assertEquals($expectedPage, $this->factory->create(new Route(
                 $def,
                 parent: $rootRoute,
