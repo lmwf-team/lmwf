@@ -78,7 +78,7 @@ final class HttpRequestHandler
         } elseif ($route instanceof RoutingParamIssue) {
             return new ControllerIssue(ControllerIssueCode::ResourceNotFound);
         }
-        $pageConf = $route->getPageConf();
+        $pageConf = $route->pageConf;
         if (null === $pageConf) {
             Log::info("Request matches route with no page configuration for this number of parameters.");
             return new ControllerIssue(ControllerIssueCode::ResourceNotFound);
@@ -90,11 +90,11 @@ final class HttpRequestHandler
         // @todo Add real role system
         $userRoles = $this->session->isUserLoggedIn() ? ['ADMIN'] : ['VISITOR'];
 
-        if (count($route->getRoles()) > 0) {
-            Log::info("Route roles are \"" . implode(",", $route->getRoles()) . "\".");
+        if (count($route->roles) > 0) {
+            Log::info("Route roles are \"" . implode(",", $route->roles) . "\".");
             $isAllowed = false;
             foreach ($userRoles as $role) {
-                if (in_array($role, $route->getRoles(), strict: true)) {
+                if (in_array($role, $route->roles, strict: true)) {
                     $isAllowed = true;
                     break;
                 }

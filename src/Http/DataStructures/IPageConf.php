@@ -7,7 +7,7 @@ namespace LMWF\Http\DataStructures;
 use LMWF\Http\Controller\IRoutedController;
 
 /**
- * @todo Rename
+ * @todo Rename?
  */
 interface IPageConf
 {

@@ -45,20 +45,29 @@ final class RouteTest extends TestCase
 
     public function testConstructorWhenNOfParamsTooHigh(): void
     {
-        $rootDef = new RouteDef(children: [
-            '_' => new RouteDef(params: [
-                0 => PageParamFactory::createStaticConf(),
-            ]),
-        ]);
+        $rootDef = new RouteDef();
 
         $this->expectException(InvalidArgumentException::class);
-        new Route($rootDef, parent: null, seg: '', params: ['seg', 'args1', 'args2', 'args3']);
+        new Route($rootDef, parent: null, seg: '', params: ['_']);
     }
 
     public function testConstructorWhenParamsIsNotAList(): void
     {
         $this->expectException(InvalidArgumentException::class);
         new Route(RouteFactory::createDef(), parent: null, seg: '', params: [1 => 'args1']);
+    }
+
+    public function testConstructorWithParentWithSameRouteDef(): void
+    {
+        $def = new RouteDef(children: [
+            '_' => $subDef = new RouteDef(children: [
+                '_' => $subSubDef = new RouteDef(),
+            ]),
+        ]);
+
+        // @todo Code
+        $this->expectException(InvalidArgumentException::class);
+        new Route($subDef, new Route($subDef, parent: null, seg: ''), seg: '_');
     }
 
     // @todo Test that a route cannot be instantiated with a seg that is not
@@ -142,14 +151,13 @@ final class RouteTest extends TestCase
     public function testEqualityWithIdenticalRouteWithParents(): void
     {
         $def = RouteFactory::createDef();
-        $rootDef = new RouteDef(null, children: ['_' => $def]);
-        $route1 = new Route($def, parent: new Route($rootDef, parent: null, seg: ''), seg: '');
-        $route2 = new Route($def, parent: new Route($rootDef, parent: null, seg: ''), seg: '');
+        $route1 = new Route($def, parent: null, seg: '');
+        $route2 = new Route($def, parent: null, seg: '');
         self::assertTrue($route1->isEqual($route2));
         self::assertTrue($route2->isEqual($route1));
 
         $rootDef = new RouteDef(null, children: ['_' => $def]);
-        $route3 = new Route($def, parent: new Route($rootDef, parent: null, seg: ''), seg: '');
+        $route3 = new Route($def, parent: new Route($rootDef, parent: null, seg: ''), seg: '_');
         self::assertFalse($route1->isEqual($route3));
         self::assertFalse($route3->isEqual($route1));
     }
@@ -183,10 +191,6 @@ final class RouteTest extends TestCase
         self::assertTrue($route2->isEqual($route1));
     }
 
-    /**
-     * Test root route behaviour. (A root route is a route with a null parent).
-     */
-
 
     /**
      * Test Paths.
@@ -197,10 +201,10 @@ final class RouteTest extends TestCase
     {
         $rootDef = new RouteDef();
         $rootRoute = new Route($rootDef, parent: null, seg: '');
-        self::assertSame('', $rootRoute->getPath());
+        self::assertSame('', $rootRoute->path);
     }
 
-    public function testNestedRoutes(): void
+    public function testPathNestedRoutes(): void
     {
         $rootDef = new RouteDef(children: [
             'sub' => $subDef = new RouteDef(children: [
@@ -213,12 +217,12 @@ final class RouteTest extends TestCase
         $root = new Route($rootDef, parent: null, seg: '');
         $subRoute = new Route($subDef, $root, 'sub');
         $subSubRoute = new Route($subSubDef, $subRoute, 'sub-sub');
-        $subSubRouteWithParam = new Route($subSubDef, $subSubRoute, 'sub-sub', ['param']);
+        $subSubRouteWithParam = new Route($subSubDef, $subRoute, 'sub-sub', ['param']);
 
-        self::assertEquals('', $root->getPath());
-        self::assertEquals('/sub', $subRoute->getPath());
-        self::assertEquals('/sub/sub-sub', $subSubRoute->getPath());
-        self::assertEquals('/sub/sub-sub/param', $subSubRouteWithParam->getPath());
+        self::assertEquals('', $root->path);
+        self::assertEquals('/sub', $subRoute->path);
+        self::assertEquals('/sub/sub-sub', $subSubRoute->path);
+        self::assertEquals('/sub/sub-sub/param', $subSubRouteWithParam->path);
     }
 
 
@@ -250,29 +254,29 @@ final class RouteTest extends TestCase
                 ),
             ]),
         ]);
-        self::assertEquals('', $rootRoute->getPath());
+        self::assertEquals('', $rootRoute->path);
         self::assertEquals(null, $this->pageFactory->create($rootRoute));
 
         $parentRoute = new Route($parentDef, $rootRoute, '_');
-        self::assertEquals('/_', $parentRoute->getPath());
+        self::assertEquals('/_', $parentRoute->path);
 
         $routeParams0 = new Route($def, $parentRoute, '');
         $pageParams0Expected = $this->pageFactory->fromStaticPageConf($def->noParamConf, '/_/', null);
-        self::assertEquals('/_/', $routeParams0->getPath());
+        self::assertEquals('/_/', $routeParams0->path);
         self::assertEquals($pageParams0Expected, $this->pageFactory->create($routeParams0));
 
-        $routeParams1 = new Route($def, $routeParams0, '', ['p1']);
-        self::assertEquals('/_//p1', $routeParams1->getPath());
+        $routeParams1 = new Route($def, $parentRoute, '', ['p1']);
+        self::assertEquals('/_//p1', $routeParams1->path);
         self::assertNull($this->pageFactory->create($routeParams1));
 
-        $route2Params = new Route($def, $routeParams1, seg: '', params: ['p1', UserRepo::USER_ID]);
+        $route2Params = new Route($def, $parentRoute, seg: '', params: ['p1', UserRepo::USER_ID]);
         $pageParams2Expected = new Page(
-            parent: $pageParams0Expected,
+            parent: null,
             controllerFqcn: $pageConf2Params->getControllerFqcn(),
             name: 'Hey ' . UserRepo::USER_NAME . '!',
             url: self::BASE_URL . '/_//p1/' . UserRepo::USER_ID,
         );
-        self::assertEquals('/_//p1/' . UserRepo::USER_ID, $route2Params->getPath());
+        self::assertEquals('/_//p1/' . UserRepo::USER_ID, $route2Params->path);
         self::assertEquals($pageParams2Expected, $this->pageFactory->create($route2Params));
     }
 

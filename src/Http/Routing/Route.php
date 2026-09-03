@@ -10,9 +10,14 @@ use LMWF\ErrorHandling\ExceptionCode;
 use LMWF\ErrorHandling\UnexpectedValueTypeException;
 use LMWF\Http\DataStructures\IPageConf;
 use LMWF\Http\DataStructures\RouteDef;
+use OutOfBoundsException;
 
 /**
- * Instantiation of a RouteDef, based on a given path.
+ * Convenience class representing a RouteDefinition instantiation, i.e. a couple
+ * (RouteDef, path).
+ *
+ * As it is static, it makes sure on creation that its properties are
+ * consistent.
  *
  * The root route is the parent of all routes in the context of any request. It
  * sets shared roles, but cannot be associated with a controller.
@@ -25,9 +30,34 @@ use LMWF\Http\DataStructures\RouteDef;
  *
  * Unlike RouteDef-s, a Route only knows about its direct parent, and
  * not about its child routes.
+ * @todo Remove def from its properties?
  */
 final readonly class Route
 {
+    /**
+     * @var int<0, max>
+     */
+    public int $nParams;
+
+    /**
+     * @var int<0, max> Maximum number of params allowed by the definition.
+     */
+    public int $nParamsMax;
+
+    /**
+     * @var string $path Absolute HTTP path. If the route is the root route, an
+     * empty path. Never a single slash as the root route cannot accept
+     * parameters and cannot have a child with an empty seg.
+     */
+    public string $path;
+
+    /**
+     * @var list<string> $roles
+     */
+    public array $roles;
+
+    public ?IPageConf $pageConf;
+
     /**
      * @param RouteDef $def The associated route definition.
      * @param list<string> $params the associated path segments of the path
@@ -45,21 +75,8 @@ final readonly class Route
             // @Todo Add code and message, test.
             throw new InvalidArgumentException();
         }
-        // @todo Check params is a list
-        foreach ($params as $i => $param) {
-            // @todo Check it is actually a segment
-            if (!is_string($param)) {
-                // @todo Test exception is thrown
-                throw new UnexpectedValueTypeException(
-                    'string',
-                    $param,
-                    ExceptionCode::HTTP_ROUTING_ROUTE_PARAM_IS_NOT_STRING->value,
-                    messageFmt: 'Route parameters are path segments, meaning they must be string, but param ' . $i . ' is %2$s.',
-                );
-            }
-        }
 
-        if (count($params) > $def->getNParamsMax()) {
+        if (count($params) > count($def->params)) {
             // @todo Test
             // @todo Code
             throw new InvalidArgumentException('Cannot instantiate a route with more parameters than its definition accepts.');
@@ -68,7 +85,6 @@ final readonly class Route
         // If it is the root route.
         if (null === $this->parent) {
             if ('' !== $this->seg) {
-                // @todo Also check that if parent, seg is the parent's seg.
                 throw new DomainException(
                     "The root route can only match an empty path segment, but a Route was instantiated with a segment of '{$this->seg}'.",
                     ExceptionCode::HTTP_ROUTING_ROUTE_ROOT_ROUTE_HAS_NON_EMPTY_SEG->value,
@@ -88,65 +104,53 @@ final readonly class Route
                     ExceptionCode::HTTP_ROUTING_ROUTE_ROOT_ROUTE_ACCEPTS_PARAMS->value,
                 );
             }
+        } elseif (null !== $parent) {
+            if (!in_array($seg, array_keys($parent->def->children), strict: true)) {
+                // @todo Test, add code.
+                throw new InvalidArgumentException("Definition of route parent does not define any child for the segment '$seg'.");
+            } elseif ($parent->def->children[$seg] !== $def) {
+                // @todo Test, add code.
+                throw new InvalidArgumentException("Definition of route parent has child for segment '$seg' but it differs from the route definition.");
+            }
         }
+
+        // @todo Check params is a list
+        foreach ($params as $i => $param) {
+            // @todo Check it is actually a segment
+            if (!is_string($param)) {
+                // @todo Test exception is thrown
+                throw new UnexpectedValueTypeException(
+                    'string',
+                    $param,
+                    ExceptionCode::HTTP_ROUTING_ROUTE_PARAM_IS_NOT_STRING->value,
+                    messageFmt: 'Route parameters are path segments, meaning they must be string, but param ' . $i . ' is %2$s.',
+                );
+            }
+        }
+
+        $this->nParams = count($params);
+        $this->nParamsMax = count($def->params);
+        $this->pageConf = [] === $params ? $def->noParamConf : $def->params[$this->nParams - 1];
+        $this->path = null === $this->parent ? '' : $this->parent->path . '/' . $this->seg . ([] === $params ? '' : '/' . implode('/', $this->params));
+        $this->roles = $def->roles;
     }
 
     /**
-     * @return int<0, max>
-     */
-    public function getNParams(): int
-    {
-        return count($this->params);
-    }
-
-    public function getPageConf(): ?IPageConf
-    {
-        $nParams = $this->getNParams();
-        return 0 === $nParams ? $this->def->noParamConf : $this->def->params[$nParams - 1];
-    }
-
-    /**
+     * @param int<0, max> $index
      * @return ?string the parameter from the given array at the given index, or null if
      * the index is beyond the array's range.
      */
     public function getParamOrNull(int $index): ?string
     {
+        if ($index >= $this->nParamsMax) {
+            throw new OutOfBoundsException(
+                "Definition of route with segment '{$this->seg}' does not allow more than {$this->nParamsMax} parameters, but an attempt was made to access paramter #$index.",
+            );
+        }
         if ($index >= count($this->params)) {
             return null;
         }
         return $this->params[$index];
-    }
-
-    /**
-     * Compute the absolute path of the route.
-     *
-     * If the route is the root route, an empty path is returned. An empty
-     * slash should never be returned as the root route cannot accept parameters
-     * and cannot have a child with an empty seg.
-     */
-    public function getPath(): string
-    {
-        if (null === $this->parent) {
-            // The root route does not take parameters, and its seg is empty.
-            return '';
-        }
-
-        if ([] !== $this->params) {
-            // This route's parent is the same route definition with one less
-            // parameters.
-            return $this->parent->getPath() . '/' . $this->params[count($this->params) - 1];
-        }
-
-        // Route is not route and does not have parameters.
-        return $this->parent->getPath() . '/' . $this->seg;
-    }
-
-    /**
-     * @return list<string>
-     */
-    public function getRoles(): array
-    {
-        return $this->def->roles;
     }
 
     /**

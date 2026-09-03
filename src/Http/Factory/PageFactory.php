@@ -30,9 +30,9 @@ final readonly class PageFactory
      */
     public function create(Route $route): null|Page|PageEntTitleErr
     {
-        $nParams = $route->getNParams();
+        $nParams = $route->nParams;
 
-        $pageConf = $route->getPageConf();
+        $pageConf = $route->pageConf;
 
         if (null === $pageConf) {
             return null;
@@ -51,7 +51,7 @@ final readonly class PageFactory
             return $nearestPageAncestor;
         }
 
-        $mutUrl = $pageConf->getBaseUrl() . $route->getPath();
+        $mutUrl = $pageConf->getBaseUrl() . $route->path;
 
         if ($pageConf instanceof EntPageConf) {
             if (0 === $nParams) {

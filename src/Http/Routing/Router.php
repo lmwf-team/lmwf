@@ -55,16 +55,7 @@ final readonly class Router
 
         $nParamsTotal = min($nNextSegs, $routeDef->getNParamsMax());
 
-        $mutRoute = null;
-        for ($nParams = 0; $nParams <= $nParamsTotal; $nParams++) {
-            $mutRoute = new Route(
-                $routeDef,
-                $mutRoute ?? $parentRoute,
-                $currentSeg,
-                array_slice($nextSegs, 0, $nParams),
-            );
-        }
-        $route = $mutRoute;
+        $route = new Route($routeDef, $parentRoute, $currentSeg, array_slice($nextSegs, 0, $nParamsTotal));
 
         if ($nParamsTotal < $nNextSegs) {
             if (0 === count($routeDef->children)) {
@@ -87,8 +78,6 @@ final readonly class Router
             );
         }
 
-        // @todo no idea why phpstan just invent an issue
-        // @phpstan-ignore return.type
         return $route;
     }
 

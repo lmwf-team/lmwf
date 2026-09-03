@@ -82,7 +82,6 @@ final readonly class RouteDefParser
             }
         }
 
-
         $isIndexed = $route->getBoolOrNull(self::IS_INDEXED_KN) ?? $isIndexed;
         $isInHierarchy = $route->getBoolOrNull(self::IS_IN_HIERARCHY_KN) ?? $isInHierarchy;
         $pageConfs = $this->parsePageConf($route, $isIndexed, $isInHierarchy);

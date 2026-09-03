@@ -17,6 +17,6 @@ class PathController implements IRoutedController
         Route $route,
         ServerRequestInterface $request,
     ): ResponseInterface {
-        return new Response(200, body: $route->getPath());
+        return new Response(200, body: $route->path);
     }
 }

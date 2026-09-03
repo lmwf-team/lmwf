@@ -109,10 +109,10 @@ final class RouterTest extends TestCase
         $route2Params0Expected = new Route($sub2SubRouteDef, $rootRoute, $seg2);
         self::assertTrue($route2Params0Expected->isEqual($this->router->getRouteFromPath($rootRoute->def, "/$seg2")));
 
-        $route2Params1Expected = new Route($sub2SubRouteDef, $route2Params0Expected, $seg2, ['param1']);
+        $route2Params1Expected = new Route($sub2SubRouteDef, $rootRoute, $seg2, ['param1']);
         self::assertTrue($route2Params1Expected->isEqual($this->router->getRouteFromPath($rootRoute->def, "/$seg2/param1")));
 
-        $route2Params2Expected = new Route($sub2SubRouteDef, $route2Params1Expected, $seg2, ['param1', 'param2']);
+        $route2Params2Expected = new Route($sub2SubRouteDef, $rootRoute, $seg2, ['param1', 'param2']);
         self::assertTrue($route2Params2Expected->isEqual($this->router->getRouteFromPath($rootRoute->def, "/$seg2/param1/param2")));
     }
 }
