@@ -79,7 +79,6 @@ final class RouteDefParserTest extends TestCase
                     'page' => [
                         0 => null,
                         1 => [
-                            'type' => 'ent',
                             'title' => 'Hi {{ name }}',
                             'fqcn' => Controller2::class,
                             'repoFqcn' => UserRepo::class

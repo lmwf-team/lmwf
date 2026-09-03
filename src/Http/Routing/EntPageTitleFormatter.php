@@ -21,7 +21,7 @@ final readonly class EntPageTitleFormatter
     public function format(string $formatStr, string $entId, string $repoFqcn): string|FormatErr
     {
         $matches = [];
-        $pregMatchResult = preg_match_all('/{{ ([a-z][a-z_]+[a-z]) }}/', $formatStr, $matches);
+        $pregMatchResult = preg_match_all('/{{ ([a-z]([a-z_]*[a-z])?) }}/', $formatStr, $matches);
 
         if (false === $pregMatchResult) {
             return FormatErr::MatchErr;
