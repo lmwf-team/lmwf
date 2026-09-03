@@ -106,8 +106,10 @@ final readonly class Route
             }
         } elseif (null !== $parent) {
             if (!in_array($seg, array_keys($parent->def->children), strict: true)) {
-                // @todo Test, add code.
-                throw new InvalidArgumentException("Definition of route parent does not define any child for the segment '$seg'.");
+                if (!in_array('*', array_keys($parent->def->children), strict: true)) {
+                    // @todo Test, add code.
+                    throw new InvalidArgumentException("Definition of route parent does not define any child for the segment '$seg'.");
+                }
             } elseif ($parent->def->children[$seg] !== $def) {
                 // @todo Test, add code.
                 throw new InvalidArgumentException("Definition of route parent has child for segment '$seg' but it differs from the route definition.");

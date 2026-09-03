@@ -67,11 +67,16 @@ final readonly class Router
             $nextSeg = $nextSegs[$nParamsTotal];
 
             if (!key_exists($nextSeg, $routeDef->children)) {
-                return new RouteNotFoundIssue($nextSeg);
+                if (!key_exists('*', $routeDef->children)) {
+                    return new RouteNotFoundIssue($nextSeg);
+                }
+                $def = $routeDef->children['*'];
+            } else {
+                $def = $routeDef->children[$nextSeg];
             }
 
             return $this->getRouteFromSegs(
-                $routeDef->children[$nextSeg],
+                $def,
                 $route,
                 $nextSeg,
                 array_slice($nextSegs, $nParamsTotal + 1),

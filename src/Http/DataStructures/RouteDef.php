@@ -44,7 +44,7 @@ final readonly class RouteDef
      * @param list<string> $roles Roles for this route definition and its descendants if not overwritten.
      */
     public function __construct(
-        public null|StaticPageConf $noParamConf = null,
+        public null|IPageConf $noParamConf = null,
         public array $params = [],
         public array $children = [],
         public array $roles = [],

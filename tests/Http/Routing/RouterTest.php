@@ -23,6 +23,7 @@ use LMWF\Tests\Factory\PageParamFactory;
 use LMWF\Tests\Factory\RouteFactory;
 use LMWF\Tests\Mocks\ContainerMock;
 use LMWF\Tests\Mocks\OkController;
+use LMWF\Tests\Mocks\UnderscoreController;
 use LMWF\Tests\Mocks\UserRepo;
 use PHPUnit\Framework\TestCase;
 
@@ -114,5 +115,33 @@ final class RouterTest extends TestCase
 
         $route2Params2Expected = new Route($sub2SubRouteDef, $rootRoute, $seg2, ['param1', 'param2']);
         self::assertTrue($route2Params2Expected->isEqual($this->router->getRouteFromPath($rootRoute->def, "/$seg2/param1/param2")));
+    }
+
+    public function testWildcard(): void
+    {
+        $rootDef = new RouteDef(children: [
+            '_' => $parentDef = new RouteDef(children: [
+                '*' => $def = new RouteDef(new EntPageConf(
+                    UserRepo::class,
+                    '{{ name }}',
+                    UnderscoreController::class,
+                    '_',
+                    indexed: true,
+                    inHierarchy: true
+                )),
+                '' => $emptyStrDef = new RouteDef()
+            ])
+        ]);
+        $parentRoute = new Route($parentDef, new Route($rootDef, parent: null, seg: ''), '_');
+
+        $wildcardRouteExpected = new Route(
+            $def,
+            $parentRoute,
+            UserRepo::USER_ID,
+        );
+        self::assertEquals($wildcardRouteExpected, $this->router->getRouteFromPath($rootDef, '/_/' . UserRepo::USER_ID));
+
+        $emptyStrRouteExpected = new Route($emptyStrDef, $parentRoute, seg: '');
+        self::assertEquals($emptyStrRouteExpected, $this->router->getRouteFromPath($rootDef, '/_/'));
     }
 }
