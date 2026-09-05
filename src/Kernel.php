@@ -48,6 +48,7 @@ final class Kernel
         array $confData = [],
         array $containerDefinitions = [],
         ?LoggerInterface $logger = null,
+        bool $setCustomErrorHandler = true,
     ): ContainerInterface {
         $conf = null === $confFolderPath ?
             new AppConf(CollectionFactory::createDeepAppObject($confData)) :
@@ -72,7 +73,9 @@ final class Kernel
 
         Log::init($logger);
 
-        self::initErrorHandler();
+        if (true === $setCustomErrorHandler) {
+            self::initErrorHandler();
+        }
 
         return $container;
     }
