@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace LMWF\Constraint\Type;
 
 /**
- * Model for data consisting of properties identified with a key.
+ * Model for data consisting of properties identified with a string key.
  *
  * The model specifies the keys, and the model for each of its properties.
  */
@@ -41,6 +41,7 @@ abstract class ArrayModel extends AbstractModel
 
     /**
      * @param list<string> $propertiesToKeep
+     * @todo Rename to keep, pick, or select.
      */
     abstract public function prune(array $propertiesToKeep): self;
 

@@ -24,7 +24,6 @@ final class DataArrayModel extends ArrayModel
     }
 
     /**
-     * @todo Find a better name?
      * @todo Use clone?
      */
     #[\Override]

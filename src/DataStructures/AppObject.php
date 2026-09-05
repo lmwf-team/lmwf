@@ -42,7 +42,6 @@ final readonly class AppObject extends ImmutableArray
      */
     public function map(callable $callback): self
     {
-        new self(array_map($callback, $this->data));
         return new self(array_map($callback, $this->data));
     }
 

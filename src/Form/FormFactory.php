@@ -29,6 +29,7 @@ use LMWF\Constraint\Type\IntModel;
 use LMWF\Constraint\Type\ListModel;
 use LMWF\Constraint\Type\StringModel;
 use LMWF\File\FileService;
+use UnexpectedValueException;
 
 /**
  * Creates a form transformer from a model.
@@ -82,15 +83,16 @@ final class FormFactory
             return new ListTransformer($fieldConf, $this, $name);
         } elseif (in_array($fieldConf->type, [FormFieldType::Text, FormFieldType::Textarea, FormFieldType::Pwd], strict: true)) {
             return new StringTransformer($name);
-        } elseif (FormFieldType::Img === $fieldConf->type) {
-            return new ImgFileTransformer($this->fileService, $name);
-        } elseif (FormFieldType::Checkbox === $fieldConf->type) {
-            return new CheckboxTransformer($name);
-        } elseif (FormFieldType::Date === $fieldConf->type) {
-            return new DateTimeTransformer($name);
-        } elseif (FormFieldType::Int === $fieldConf->type) {
-            return new IntTransformer($name);
         }
+
+        return match ($fieldConf->type) {
+            FormFieldType::Img => new ImgFileTransformer($this->fileService, $name),
+            FormFieldType::Checkbox => new CheckboxTransformer($name),
+            FormFieldType::Date => new DateTimeTransformer($name),
+            FormFieldType::Int => new IntTransformer($name),
+            // PHPStan should prevent this.
+            default => throw new UnexpectedValueException('Received unknown form field configuration type: ' . $fieldConf->type->value),
+        };
     }
 
     /**

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace LMWF\Tests\Validation;
+namespace LMWF\Tests\Model;
 
 use LMWF\Constraint\Type\EntityModel;
 use LMWF\Constraint\Type\IntModel;

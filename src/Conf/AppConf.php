@@ -64,7 +64,6 @@ final readonly class AppConf
      * The dist file must exists. The local file might not exist, but if it
      * exists it must be readable and valid.
      *
-     * @todo Add JSON_THROW_ON_ERROR everywhere, and automatically check its presence.
      * @todo Rename to "createFromFolderPath" or something like it.
      *
      * @param array<string, mixed> $confData
@@ -195,7 +194,6 @@ final readonly class AppConf
         if (!$csps->all(fn ($csp, $_) => $csp instanceof AppList && $csp->all(fn ($value, $_) => is_string($value)))) {
             throw new UnexpectedValueException('CSP configuration is not correct.');
         }
-        // @todo Remove that when PHPStan fixes the issue
         // @phpstan-ignore method.nonObject, return.type
         return $csps->map(fn ($values) => $values->toArray())->toArray();
     }
