@@ -41,6 +41,7 @@ final class FormFactory
     public const CSRF_FORM_ELEMENT_NAME = '_csrf';
 
     public function __construct(
+        private AppConf $conf,
         private CsrfTransformer $csrfTransformer,
         private FileService $fileService,
         private FormConfFactory $formConfFactory,
@@ -86,12 +87,12 @@ final class FormFactory
         }
 
         return match ($fieldConf->type) {
-            FormFieldType::Img => new ImgFileTransformer($this->fileService, $name),
+            FormFieldType::Img => new ImgFileTransformer($this->conf, $this->fileService, $name),
             FormFieldType::Checkbox => new CheckboxTransformer($name),
             FormFieldType::Date => new DateTimeTransformer($name),
             FormFieldType::Int => new IntTransformer($name),
             // PHPStan should prevent this.
-            default => throw new UnexpectedValueException('Received unknown form field configuration type: ' . $fieldConf->type->value),
+            // default => throw new UnexpectedValueException('Received unknown form field configuration type: ' . $fieldConf->type->value),
         };
     }
 

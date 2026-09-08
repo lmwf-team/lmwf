@@ -59,19 +59,17 @@ final class FileService
         }
     }
 
-    public function getAvailablePathForUploadedImg(Filename $destFilename): string
+    public function getAvailableImgFilename(Filename $destFilename): Filename
     {
-        $destPath = "{$this->conf->getPathOfUploadedFiles()}/$destFilename";
-
+        $mutFilename = $destFilename;
         $i = 0;
         do {
             $randomNumber = random_int(0, self::IMG_RANDOM_NUMBER_MAX * pow(10, $i));
-            $destFilename = $destFilename->withBasename("{$destFilename->basename}-{$randomNumber}");
-            $destPath = "{$this->conf->getPathOfUploadedFiles()}/$destFilename";
+            $mutFilename = $mutFilename->withBasename("{$mutFilename->basename}-{$randomNumber}");
             $i++;
-        } while (file_exists($destPath));
+        } while (file_exists("{$this->conf->getPathOfUploadedFiles()}/$mutFilename"));
 
-        return $destPath;
+        return $mutFilename;
     }
 
     /**

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace LMWF\Form\Transformer;
 
+use LMWF\Conf\AppConf;
 use LMWF\DataStructures\Filename;
 use LMWF\DataStructures\Slug;
 use LMWF\ErrorHandling\Log;
@@ -19,6 +20,7 @@ final readonly class ImgFileTransformer implements IFormTransformer
     public const PREVIOUS_SUFFIX = '_previous';
 
     public function __construct(
+        private AppConf $conf,
         private FileService $fileService,
         private string $name,
         private bool $createThumbnails = true,
@@ -84,18 +86,19 @@ final readonly class ImgFileTransformer implements IFormTransformer
         switch ($uploadedFile->getError()) {
             case UPLOAD_ERR_OK:
                 $clientFilename = $uploadedFile->getClientFilename();
-                $destFilename = null !== $clientFilename ?
+                $destFilename = (null !== $clientFilename ?
                     Filename::fromString($clientFilename, transform: true)->withExt('webp') :
-                    new Filename('untitled', 'webp')
+                    new Filename('untitled', 'webp'))
+                    |> $this->fileService->getAvailableImgFilename(...)
                 ;
 
-                $destinationPath = $this->fileService->getAvailablePathForUploadedImg($destFilename);
+                $destDiskPath = $this->conf->getPathOfUploadedFiles() . "/$destFilename";
 
                 $streamGdImg = imagecreatefromstring($uploadedFile->getStream()->getContents());
                 if (false === $streamGdImg) {
                     throw new UnexpectedValueException("Could not create GdImage from uploaded file with client name '{$uploadedFile->getClientFilename()}' and type '{$uploadedFile->getClientMediaType()}'.");
                 }
-                imagewebp($streamGdImg, $destinationPath, ImgFormat::WEBP_QUALITY_HIGH);
+                imagewebp($streamGdImg, $destDiskPath, ImgFormat::WEBP_QUALITY_HIGH);
 
 
                 if ($this->createThumbnails) {
