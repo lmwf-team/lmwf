@@ -41,7 +41,7 @@ final class Log
     //     self::log($msg, LogLevel::NOTICE);
     // }
 
-    public static function warn(string $msg)
+    public static function warn(string $msg): void
     {
         self::log($msg, LogLevel::WARNING);
     }
