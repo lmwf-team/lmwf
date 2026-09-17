@@ -41,10 +41,10 @@ final class Log
     //     self::log($msg, LogLevel::NOTICE);
     // }
 
-    // public static function warn(string $msg)
-    // {
-    //     self::log($msg, LogLevel::WARNING);
-    // }
+    public static function warn(string $msg)
+    {
+        self::log($msg, LogLevel::WARNING);
+    }
 
     public static function error(string $msg): void
     {
