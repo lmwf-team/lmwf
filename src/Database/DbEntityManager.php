@@ -21,6 +21,7 @@ use LMWF\Constraint\Type\IScalarModel;
 use LMWF\Constraint\Type\EntityListModel;
 use LMWF\Constraint\Type\ListModel;
 use LMWF\Constraint\Type\StringModel;
+use LMWF\Constraint\Value\EnumConstraint;
 use UnexpectedValueException;
 
 /**
@@ -108,6 +109,14 @@ final class DbEntityManager
         } elseif ($model instanceof IntModel && is_numeric($dbData)) {
             return intval($dbData);
         } elseif ($model instanceof StringModel && is_string($dbData)) {
+            if ($model->getEnumConstraint() instanceof EnumConstraint) {
+                foreach ($model->getEnumConstraint()->enumCases as $case) {
+                    if ($case->value === $dbData) {
+                        return $case;
+                    }
+                }
+                throw new InvalidArgumentException("Received \$dbData does not match any value of the provided enum.");
+            }
             return $dbData;
         } elseif ($model->isNullable() && is_null($dbData)) {
             return null;

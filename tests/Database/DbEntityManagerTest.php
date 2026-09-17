@@ -17,6 +17,9 @@ use LMWF\Constraint\Type\IntModel;
 use LMWF\Constraint\Type\EntityListModel;
 use LMWF\Constraint\Type\ListModel;
 use LMWF\Constraint\Type\StringModel;
+use LMWF\Constraint\Value\EnumConstraint;
+use LMWF\Constraint\Value\StringEnumConstraint;
+use LMWF\Tests\Mocks\StringEnum;
 use PHPUnit\Framework\TestCase;
 use TypeError;
 
@@ -410,5 +413,14 @@ final class DbEntityManagerTest extends TestCase
         ]);
 
         self::assertEquals($expected, $this->em->convertDbRowsToEntityList($dbRows, $personModel));
+    }
+
+    public function testToEnum(): void
+    {
+        $model = new StringModel(enumConstraint: new EnumConstraint(StringEnum::cases()));
+        self::assertEquals(
+            StringEnum::A,
+            $this->em->convertDbScalar('a', $model)
+        );
     }
 }

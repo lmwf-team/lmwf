@@ -19,8 +19,9 @@ final readonly class EnumConstraint implements IEnumConstraint
     /**
      * @param list<\BackedEnum> $enumCases List of permitted values.
      */
-    public function __construct(array $enumCases)
-    {
+    public function __construct(
+        public array $enumCases,
+    ) {
         $values = [];
         foreach ($enumCases as $c) {
             if (!is_string($c->value)) {

@@ -263,7 +263,6 @@ final class RouteTest extends TestCase
         $routeParams0 = new Route($def, $parentRoute, '');
         $pageParams0Expected = new Page(
             null,
-            $staticPageConf->getControllerFqcn(),
             $staticPageConf->getTitle(),
             $staticPageConf->getBaseUrl() . '/_/',
             $staticPageConf->isIndexed(),
@@ -279,7 +278,6 @@ final class RouteTest extends TestCase
         $route2Params = new Route($def, $parentRoute, seg: '', params: ['p1', UserRepo::USER_ID]);
         $pageParams2Expected = new Page(
             parent: null,
-            controllerFqcn: $pageConf2Params->getControllerFqcn(),
             name: 'Hey ' . UserRepo::USER_NAME . '!',
             url: self::BASE_URL . '/_//p1/' . UserRepo::USER_ID,
         );
@@ -319,7 +317,6 @@ final class RouteTest extends TestCase
 
         $rootPageExpected = new Page(
             null,
-            $rootPageConf->getControllerFqcn(),
             $rootPageConf->getTitle(),
             $rootPageConf->getBaseUrl(),
             $rootPageConf->isIndexed(),
@@ -327,7 +324,6 @@ final class RouteTest extends TestCase
         );
         $childPageExpected = new Page(
             $rootPageExpected,
-            $pageConf->getControllerFqcn(),
             $pageConf->getTitle(),
             self::BASE_URL . "/$seg",
             $pageConf->isIndexed(),

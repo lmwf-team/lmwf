@@ -64,7 +64,6 @@ final readonly class PageFactory
 
         return new Page(
             $nearestPageAncestor,
-            $route->pageConf->getControllerFqcn(),
             $titleResult,
             $mutUrl,
             $route->pageConf->isIndexed(),

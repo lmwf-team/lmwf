@@ -9,7 +9,6 @@ use LMWF\ErrorHandling\ExceptionCode;
 use LMWF\Http\Controller\IRoutedController;
 
 /**
- * @param class-string<IRoutedController> $controllerFqcn
  * @todo Should go in Http namespace?
  * @todo Remove accessor methods?
  */
@@ -21,7 +20,6 @@ final readonly class Page
      */
     public function __construct(
         public ?Page $parent,
-        public string $controllerFqcn,
         public string $name,
         public string $url,
         public bool $isIndexed = true,

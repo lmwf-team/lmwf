@@ -51,7 +51,6 @@ final class PageFactoryTest extends TestCase
             ]);
             $expectedPage = new Page(
                 null,
-                UnderscoreController::class,
                 $output,
                 self::BASE_URL . '/_/' . UserRepo::USER_ID,
                 isIndexed: true,
@@ -86,7 +85,6 @@ final class PageFactoryTest extends TestCase
 
         $expectedPage = new Page(
             null,
-            UnderscoreController::class,
             UserRepo::USER_NAME,
             self::BASE_URL . '/_/' . UserRepo::USER_ID,
             isIndexed: true,

@@ -14,8 +14,7 @@ final class PageTest extends TestCase
     {
         $this->expectExceptionCode(ExceptionCode::DATASTRUCTURES_PAGE_PARENT_MUST_BE_IN_HIERARCHY->value);
         new Page(
-            new Page(null, '_', '_', '_', isPartOfHierarchy: false),
-            '_',
+            new Page(null, '_', '_', isPartOfHierarchy: false),
             '_',
             '_',
             isPartOfHierarchy: true,
