@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace LMWF\Form\Conf;
 
-use Closure;
 use LMWF\Constraint\Value\IRangeConstraint;
 use LMWF\Constraint\Type\IModel;
 use Traversable;

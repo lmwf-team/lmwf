@@ -25,6 +25,16 @@ LMWF is composed of multiple modules. The following image is an overview of its 
 
 # Style
 
+## Files and namespaces
+
+The content of the library is contained inside the `src` folder. This is the primary target of our security policy.
+
+Inside this folder, the content is divided into subfolders corresponding to namespaces. Each namespace, at this level, corresponds to a specific feature that can be used and understood independently from the rest.
+
+The content of the library is entirely made of PHP classes adhering to the PSR standard of defining one class per file (expect for result-type classes, although this exception to the rule could be removed in the future).
+
+Those
+
 ## Exceptions
 
 We avoid using exceptions to handle logics as much as possible. This means that when the code throws exception, it is not meant to be handled, but rather signifies an issue that needs to be fixed with the code (for instance, instantiating a struct with invalid paremeters). But this is still WIP.

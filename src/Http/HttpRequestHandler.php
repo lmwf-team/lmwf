@@ -124,10 +124,16 @@ final class HttpRequestHandler
             ControllerIssueCode::Unspecified => $this->httpConf->errorControllers->defaultErrorFqcn,
         };
 
-        Log::info("Exception controller FQCN is \"{$fqcn}\".");
+        $hash = hash('sha256', $fqcn);
+
+        Log::info("Controller issue code is '$fqcn' (hash: $hash).");
 
         $controller = $this->container->get($fqcn);
-        return $controller->generateResponse($request, []);
+
+        // @todo refactoring Magic string.
+        return $controller->generateResponse($request, [
+            'throwable_hash' => $hash,
+        ]);
     }
 
     private function addCspSources(ResponseInterface $response): ResponseInterface
