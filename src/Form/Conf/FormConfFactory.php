@@ -15,6 +15,7 @@ use LMWF\Constraint\Type\DateTimeModel;
 use LMWF\Constraint\Type\ILengthModel;
 use LMWF\Constraint\Type\IntModel;
 use LMWF\Constraint\Type\IScalarModel;
+use LMWF\Constraint\Type\StringEnumModel;
 use LMWF\Constraint\Type\StringModel;
 use LMWF\Form\Defaults\IDefaultCallable;
 use LMWF\Form\Defaults\SlugDefaultCallable;
@@ -100,6 +101,7 @@ final readonly class FormConfFactory
             $rangeConstraint,
             $type,
             $fieldConfParams[self::VALUES_KN] ?? null,
+            $model instanceof StringEnumModel ? $model : null,
         );
     }
 
