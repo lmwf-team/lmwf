@@ -13,8 +13,8 @@ use LMWF\Constraint\Type\ArrayModel;
 use LMWF\Constraint\Type\BoolModel;
 use LMWF\Constraint\Type\DateTimeModel;
 use LMWF\Constraint\Type\ILengthModel;
-use LMWF\Constraint\Type\IModel;
 use LMWF\Constraint\Type\IntModel;
+use LMWF\Constraint\Type\IScalarModel;
 use LMWF\Constraint\Type\StringModel;
 use LMWF\Form\Defaults\IDefaultCallable;
 use LMWF\Form\Defaults\SlugDefaultCallable;
@@ -73,7 +73,7 @@ final readonly class FormConfFactory
     /**
      * @param fieldconfparams $fieldConfParams
      */
-    private function createFormFieldConf(?IModel $model, array $fieldConfParams): FormFieldConf
+    private function createFormFieldConf(?IScalarModel $model, array $fieldConfParams): FormFieldConf
     {
         $defaultFn = key_exists(self::DEFAULT_KN, $fieldConfParams) ? $this->getCallback($fieldConfParams[self::DEFAULT_KN]) : null;
         $isRequired = null === $defaultFn ?
@@ -92,7 +92,6 @@ final readonly class FormConfFactory
         $type = $this->getType($fieldConfParams, $model);
 
         return new FormFieldConf(
-            $model,
             $fieldConfParams[self::LABEL_KN],
             $fieldConfParams[self::AUTOCOMPLETE_KN] ?? null,
             $defaultFn,
@@ -117,7 +116,7 @@ final readonly class FormConfFactory
     /**
      * @param fieldconfparams $fieldConfParams
      */
-    private function getType(array $fieldConfParams, ?IModel $model): FormFieldType
+    private function getType(array $fieldConfParams, ?IScalarModel $model): FormFieldType
     {
         if (key_exists(self::TYPE_KN, $fieldConfParams)) {
             return FormFieldType::fromString($fieldConfParams[self::TYPE_KN]);
@@ -127,7 +126,7 @@ final readonly class FormConfFactory
         throw new InvalidArgumentException('Both the type and the model cannot be null as the type of the form field must be set.');
     }
 
-    private function getTypeFromModel(IModel $model): FormFieldType
+    private function getTypeFromModel(IScalarModel $model): FormFieldType
     {
         if ($model instanceof BoolModel) {
             return FormFieldType::Checkbox;

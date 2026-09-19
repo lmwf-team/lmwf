@@ -17,7 +17,6 @@ use LMWF\Form\Transformer\DateTimeTransformer;
 use LMWF\Form\Transformer\ImgFileTransformer;
 use LMWF\Form\Transformer\IFormTransformer;
 use LMWF\Form\Transformer\IntTransformer;
-use LMWF\Form\Transformer\ListTransformer;
 use LMWF\Form\Transformer\StringTransformer;
 use LMWF\Constraint\Type\ArrayModel;
 use LMWF\Constraint\Type\BoolModel;
@@ -32,7 +31,12 @@ use LMWF\File\FileService;
 use UnexpectedValueException;
 
 /**
- * Creates a form transformer from a model.
+ * Creates transformers for converting data received from a form submission into
+ * app data, based on its form configuration: a FormFieldConf or a dict of
+ * FormFieldConf (array<string, FormFieldConf>).
+ * 
+ * Why not transforming it from a model directly? This is because the model is
+ * used to validate the data.
  *
  * @phpstan-import-type fieldconfparams from FormConfFactory
  */
@@ -57,21 +61,6 @@ final class FormFactory
         return $this->createFormTransformer($formConf, null);
     }
 
-    /**
-     * @todo To delete?
-     * @param array<string, FormFieldConf>|FormFieldConf $conf
-     */
-    public function createTransformer(
-        array|FormFieldConf $conf,
-        ?string $name = null,
-        bool $withCsrf = false,
-    ): IFormTransformer {
-        if ($conf instanceof FormFieldConf) {
-            return $this->createFieldTransformer($conf, $name);
-        }
-        return $this->createFormTransformer($conf, $name, $withCsrf);
-    }
-
     public function createFieldTransformer(
         FormFieldConf $fieldConf,
         ?string $name = null,
@@ -79,10 +68,7 @@ final class FormFactory
         if (null === $name) {
             throw new InvalidArgumentException('A name must be provided for non-array transformers.');
         }
-        // @todo Add List, EntityList, and Json to FormFieldType
-        if ($fieldConf->model instanceof ListModel || $fieldConf->model instanceof EntityListModel) {
-            return new ListTransformer($fieldConf, $this, $name);
-        } elseif (in_array($fieldConf->type, [FormFieldType::Text, FormFieldType::Textarea, FormFieldType::Pwd], strict: true)) {
+        if (in_array($fieldConf->type, [FormFieldType::Text, FormFieldType::Textarea, FormFieldType::Pwd], strict: true)) {
             return new StringTransformer($name);
         }
 
@@ -107,10 +93,9 @@ final class FormFactory
         $fieldTransformers = [];
         $fieldDefaults = [];
         foreach ($formConf as $fieldName => $fieldConf) {
-            $fieldTransformers[$fieldName] = $this->createTransformer(
+            $fieldTransformers[$fieldName] = $this->createFieldTransformer(
                 $fieldConf,
                 $fieldName,
-                false,
             );
             if (null !== $fieldConf->default) {
                 $fieldDefaults[$fieldName] = $fieldConf->default;

@@ -16,6 +16,7 @@ use LMWF\Constraint\Type\ForeignEntityModel;
 use LMWF\Constraint\Type\IntModel;
 use LMWF\Constraint\Type\EntityListModel;
 use LMWF\Constraint\Type\ListModel;
+use LMWF\Constraint\Type\StringEnumModel;
 use LMWF\Constraint\Type\StringModel;
 use LMWF\Constraint\Value\EnumConstraint;
 use LMWF\Constraint\Value\StringEnumConstraint;
@@ -415,12 +416,38 @@ final class DbEntityManagerTest extends TestCase
         self::assertEquals($expected, $this->em->convertDbRowsToEntityList($dbRows, $personModel));
     }
 
-    public function testToEnum(): void
+    public function testStringWithEnumConstraint(): void
     {
         $model = new StringModel(enumConstraint: new EnumConstraint(StringEnum::cases()));
         self::assertEquals(
-            StringEnum::A,
+            StringEnum::A->value,
             $this->em->convertDbScalar('a', $model)
+        );
+    }
+
+    public function testFromStringEnum(): void
+    {
+        $model = new StringEnumModel(StringEnum::cases());
+        self::assertEquals(
+            StringEnum::A->value,
+            $this->em->convertAppVarToDbScalar(StringEnum::A),
+        );
+        self::assertEquals(
+            StringEnum::B->value,
+            $this->em->convertAppVarToDbScalar(StringEnum::B),
+        );
+    }
+
+    public function testToStringEnum(): void
+    {
+        $model = new StringEnumModel(StringEnum::cases());
+        self::assertEquals(
+            StringEnum::A,
+            $this->em->convertDbScalar(StringEnum::A->value, $model),
+        );
+        self::assertEquals(
+            StringEnum::B,
+            $this->em->convertDbScalar(StringEnum::B->value, $model),
         );
     }
 }

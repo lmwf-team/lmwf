@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace LMWF\Database;
 
+use BackedEnum;
 use DateTimeImmutable;
 use DateTimeInterface;
 use InvalidArgumentException;
@@ -20,6 +21,7 @@ use LMWF\Constraint\Type\IntModel;
 use LMWF\Constraint\Type\IScalarModel;
 use LMWF\Constraint\Type\EntityListModel;
 use LMWF\Constraint\Type\ListModel;
+use LMWF\Constraint\Type\StringEnumModel;
 use LMWF\Constraint\Type\StringModel;
 use LMWF\Constraint\Value\EnumConstraint;
 use UnexpectedValueException;
@@ -85,6 +87,8 @@ final class DbEntityManager
             return $appVar->format('Y-m-d H:i:s');
         } elseif (is_int($appVar) || is_float($appVar) || is_null($appVar) || is_string($appVar)) {
             return $appVar;
+        } elseif ($appVar instanceof BackedEnum) {
+            return $appVar->value;
         }
         throw new InvalidArgumentException("Could not convert App variable with type " . gettype($appVar) . " into DB scalar.");
     }
@@ -109,23 +113,20 @@ final class DbEntityManager
         } elseif ($model instanceof IntModel && is_numeric($dbData)) {
             return intval($dbData);
         } elseif ($model instanceof StringModel && is_string($dbData)) {
-            if ($model->getEnumConstraint() instanceof EnumConstraint) {
-                foreach ($model->getEnumConstraint()->enumCases as $case) {
-                    if ($case->value === $dbData) {
-                        return $case;
-                    }
-                }
-                throw new InvalidArgumentException("Received \$dbData does not match any value of the provided enum.");
-            }
             return $dbData;
+        } elseif ($model instanceof StringEnumModel) {
+            foreach ($model->cases as $case) {
+                if ($case->value === $dbData) {
+                    return $case;
+                }
+            }
         } elseif ($model->isNullable() && is_null($dbData)) {
             return null;
+        }
+        if (null === $dbData) {
+            throw new NullDbDataNotAllowedException($dbData, $model);
         } else {
-            if (null === $dbData) {
-                throw new NullDbDataNotAllowedException($dbData, $model);
-            } else {
-                throw new InvalidDbDataException($dbData, $model);
-            }
+            throw new InvalidDbDataException($dbData, $model);
         }
     }
 

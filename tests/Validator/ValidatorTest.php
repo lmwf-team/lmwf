@@ -16,7 +16,9 @@ use LMWF\Constraint\Type\ForeignEntityModel;
 use LMWF\Constraint\Type\IModel;
 use LMWF\Constraint\Type\IntModel;
 use LMWF\Constraint\Type\ListModel;
+use LMWF\Constraint\Type\StringEnumModel;
 use LMWF\Constraint\Type\StringModel;
+use LMWF\Tests\Mocks\StringEnum;
 use LMWF\Validation\AbstractTypeValidator;
 use LMWF\Validation\BoolValidator;
 use LMWF\Validation\DateTimeValidator;
@@ -71,14 +73,6 @@ final class ValidatorTest extends TestCase
 
     public function testArrayValidator(): void
     {
-        $entity = [
-            'id' => 'hello',
-            'age' => 23,
-            'sub_entity' => [
-                'id' => 'hi',
-                'age' => 24,
-            ],
-        ];
         $model = new EntityModel(
             'entity',
             [
@@ -96,9 +90,21 @@ final class ValidatorTest extends TestCase
                     'id',
                     'sub_entity_id',
                 ),
+                'type' => new StringEnumModel(StringEnum::cases()),
             ],
             'id',
         );
+
+
+        $entity = [
+            'id' => 'hello',
+            'age' => 23,
+            'sub_entity' => [
+                'id' => 'hi',
+                'age' => 24,
+            ],
+            'type' => StringEnum::A,
+        ];
         self::assertInstanceOf(DictValueViolation::class, new ArrayValidator($model)->validate($entity));
         $entity['sub_entity_id'] = 'hi';
         self::assertNull((new ArrayValidator($model))->validate($entity));

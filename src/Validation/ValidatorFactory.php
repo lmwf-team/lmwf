@@ -15,6 +15,7 @@ use LMWF\Constraint\Type\ForeignEntityModel;
 use LMWF\Constraint\Type\IModel;
 use LMWF\Constraint\Type\IntModel;
 use LMWF\Constraint\Type\ListModel;
+use LMWF\Constraint\Type\StringEnumModel;
 use LMWF\Constraint\Type\StringModel;
 
 final class ValidatorFactory
@@ -39,6 +40,8 @@ final class ValidatorFactory
             return new ListValidator($model);
         } elseif ($model instanceof StringModel) {
             return new StringValidator($model);
+        } elseif ($model instanceof StringEnumModel) {
+            return new StringEnumValidator($model);
         }
         throw new DomainException('Model is not of type known to the validator.');
     }
