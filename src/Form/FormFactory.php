@@ -28,13 +28,15 @@ use LMWF\Constraint\Type\IntModel;
 use LMWF\Constraint\Type\ListModel;
 use LMWF\Constraint\Type\StringModel;
 use LMWF\File\FileService;
+use LMWF\Form\Transformer\StringEnumTransformer;
+use StringBackedEnum;
 use UnexpectedValueException;
 
 /**
  * Creates transformers for converting data received from a form submission into
  * app data, based on its form configuration: a FormFieldConf or a dict of
  * FormFieldConf (array<string, FormFieldConf>).
- * 
+ *
  * Why not transforming it from a model directly? This is because the model is
  * used to validate the data.
  *
@@ -67,6 +69,10 @@ final class FormFactory
     ): IFormTransformer {
         if (null === $name) {
             throw new InvalidArgumentException('A name must be provided for non-array transformers.');
+        }
+
+        if (null !== $fieldConf->stringEnumModel) {
+            return new StringEnumTransformer($fieldConf->stringEnumModel, $name);
         }
         if (in_array($fieldConf->type, [FormFieldType::Text, FormFieldType::Textarea, FormFieldType::Pwd], strict: true)) {
             return new StringTransformer($name);

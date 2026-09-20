@@ -17,6 +17,7 @@ use LMWF\Constraint\Type\IntModel;
 use LMWF\Constraint\Type\IScalarModel;
 use LMWF\Constraint\Type\StringEnumModel;
 use LMWF\Constraint\Type\StringModel;
+use LMWF\ErrorHandling\ExceptionCode;
 use LMWF\Form\Defaults\IDefaultCallable;
 use LMWF\Form\Defaults\SlugDefaultCallable;
 use UnexpectedValueException;
@@ -61,7 +62,15 @@ final readonly class FormConfFactory
             if (key_exists(self::IGNORE_KN, $fieldConfParams) && true === $fieldConfParams[self::IGNORE_KN]) {
                 continue;
             }
-            $formConf[$fieldId] = $this->createFormFieldConf($properties[$fieldId] ?? null, $fieldConfParams);
+            $model = key_exists($fieldId, $properties) ? $properties[$fieldId] : null;
+            if (null !== $model && !$model instanceof IScalarModel) {
+                $modelClass = get_class($model);
+                throw new InvalidArgumentException(
+                    "Property '$fieldId' has model that is not supported ($modelClass).",
+                    code: ExceptionCode::FORM_CONF_FORMCONFFACTORY_MODEL_NOT_SUPPORTED->value,
+                );
+            }
+            $formConf[$fieldId] = $this->createFormFieldConf($model, $fieldConfParams);
         }
         foreach (array_keys($properties) as $pId) {
             if (false === in_array($pId, $processedFieldIds, strict: true)) {
@@ -140,7 +149,12 @@ final readonly class FormConfFactory
             return FormFieldType::Img;
         } elseif ($model instanceof StringModel) {
             return FormFieldType::Text;
+        } elseif ($model instanceof StringEnumModel) {
+            return FormFieldType::Text;
         }
-        throw new UnexpectedValueException('Model of type ' . get_class($model) . ' is not recognised.');
+        throw new UnexpectedValueException(
+            'Model of type ' . get_class($model) . ' is not supported.',
+            ExceptionCode::FORM_CONF_FORMCONFFACTORY_MODEL_NOT_SUPPORTED->value,
+        );
     }
 }

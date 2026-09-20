@@ -21,7 +21,7 @@ final readonly class StringEnumValidator extends AbstractTypeValidator
     }
 
     #[\Override]
-    public function validateNonNullValue(array|bool|float|int|object|string $value): null|TypeViolation|ScalarValueViolation
+    public function validateNonNullValue(array|bool|float|int|object|string $value): null|TypeViolation
     {
         foreach ($this->model->cases as $case) {
             if ($case === $value) {

@@ -12,8 +12,10 @@ use Override;
 final class StringEnumModel extends AbstractModel implements IScalarModel
 {
     /**
-     * @param list<BackedEnum<string>> $cases Set of allowed string-backed enum
+     * @param list<BackedEnum> $cases Set of allowed string-backed enum
      * cases.
+     * @todo ci_cd Tell Phpstan for support for generic in backed enums (e.g.
+     * BackedEnum<string>).
      */
     public function __construct(
         public readonly array $cases,
@@ -24,6 +26,6 @@ final class StringEnumModel extends AbstractModel implements IScalarModel
                 throw new InvalidArgumentException(code: ExceptionCode::CONSTRAINTS_TYPE_STRINGENUM_BAD_CASE->value);
             }
         }
-        return parent::__construct($isNullable);
+        parent::__construct($isNullable);
     }
 }

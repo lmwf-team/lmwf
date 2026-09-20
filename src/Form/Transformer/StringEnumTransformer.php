@@ -6,6 +6,7 @@ namespace LMWF\Form\Transformer;
 
 use BackedEnum;
 use LMWF\Constraint\Type\StringEnumModel;
+use LMWF\Form\DataStructures\NonExistingEnumCase;
 use Override;
 
 final class StringEnumTransformer extends AbstractStringTransformer implements IFormTransformer
@@ -14,18 +15,21 @@ final class StringEnumTransformer extends AbstractStringTransformer implements I
         private StringEnumModel $model,
         string $name,
     ) {
-        return parent::__construct($name);
+        parent::__construct($name);
     }
 
     #[\Override]
-    public function transformSubmittedData(array $parsedPayload, array $uploadedFiles): null|string|BackedEnum
+    public function transformSubmittedData(array $parsedPayload, array $uploadedFiles): null|BackedEnum|NonExistingEnumCase
     {
         $submittedStr = parent::extractTextInput($parsedPayload);
+        if (null === $submittedStr) {
+            return null;
+        }
         foreach ($this->model->cases as $case) {
             if ($case->value === $submittedStr) {
                 return $case;
             }
         }
-        return $submittedStr;
+        return new NonExistingEnumCase($submittedStr);
     }
 }
