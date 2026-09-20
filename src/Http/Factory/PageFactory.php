@@ -71,12 +71,3 @@ final readonly class PageFactory
         );
     }
 }
-
-// phpcs:ignore PSR1.Classes.ClassDeclaration.MultipleClasses
-final readonly class PageEntTitleErr
-{
-    public function __construct(
-        public FormatErr $formatErr,
-    ) {
-    }
-}

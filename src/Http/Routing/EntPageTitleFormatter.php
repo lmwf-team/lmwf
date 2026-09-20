@@ -63,12 +63,3 @@ final readonly class EntPageTitleFormatter
         return null;
     }
 }
-
-// phpcs:ignore PSR1.Classes.ClassDeclaration.MultipleClasses
-enum FormatErr
-{
-    case EntNotFound;
-    case MatchErr;
-    case PropertyNameIsNotStr;
-    case StrReplaceUnknownError;
-}
