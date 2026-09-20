@@ -98,6 +98,11 @@ final readonly class ImgFileTransformer implements IFormTransformer
                 if (false === $streamGdImg) {
                     throw new UnexpectedValueException("Could not create GdImage from uploaded file with client name '{$uploadedFile->getClientFilename()}' and type '{$uploadedFile->getClientMediaType()}'.");
                 }
+                if (!imageistruecolor($streamGdImg)) {
+                    imagepalettetotruecolor($streamGdImg);
+                }
+                imagealphablending($streamGdImg, enable: true);
+                imagesavealpha($streamGdImg, enable: true);
                 imagewebp($streamGdImg, $destDiskPath, ImgFormat::WEBP_QUALITY_HIGH);
 
 
@@ -109,7 +114,8 @@ final readonly class ImgFileTransformer implements IFormTransformer
 
             case UPLOAD_ERR_FORM_SIZE:
             case UPLOAD_ERR_INI_SIZE:
-                return IUploadedImageConstraint::FILE_TOO_BIG_ERROR;
+                // @todo Return error instead
+                throw new UnexpectedValueException("File or form submission is too big: {$uploadedFile->getClientFilename()}.");
 
             case UPLOAD_ERR_NO_FILE:
                 return null;
