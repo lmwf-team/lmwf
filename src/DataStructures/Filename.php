@@ -21,10 +21,10 @@ final readonly class Filename implements Stringable
         public string $ext,
     ) {
         if (false === $this->isPartCorrect($ext, allowSep: false)) {
-            throw new InvalidArgumentException("Extension is not valid.");
+            throw new InvalidArgumentException("Extension \"$ext\" of file with base \"$basename\" is not valid.");
         }
         if (false === $this->isPartCorrect($basename, allowSep: true)) {
-            throw new InvalidArgumentException("Filename is not valid.");
+            throw new InvalidArgumentException("Base name \"$basename\" of file with extension \"$ext\" is not valid.");
         }
     }
 
