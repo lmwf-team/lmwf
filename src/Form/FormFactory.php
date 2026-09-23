@@ -55,7 +55,7 @@ final class FormFactory
     }
 
     /**
-     * @param array<string, fieldconfparams> $formConfParams
+     * @param array<string, fieldconfparams|array{ignore: true}> $formConfParams
      */
     public function createForm(ArrayModel $model, array $formConfParams = []): ArrayTransformer
     {

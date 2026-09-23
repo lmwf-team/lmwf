@@ -30,7 +30,6 @@ use UnexpectedValueException;
  *   autocomplete?: null|string,
  *   default?: array{slug: non-decimal-int-string},
  *   id?: string,
- *   ignore?: bool,
  *   required?: bool,
  *   type?: string,
  *   values?: null|fieldvalues,
@@ -49,7 +48,7 @@ final readonly class FormConfFactory
     public const VALUES_KN = 'values';
 
     /**
-     * @param array<string, fieldconfparams> $formConfParams
+     * @param array<string, fieldconfparams|array{ignore: true}> $formConfParams
      * @return array<string, FormFieldConf>
      */
     public function createConf(ArrayModel $model, array $formConfParams): array
