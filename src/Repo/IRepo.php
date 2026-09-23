@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace LMWF\Repo;
 
+use LMWF\Constraint\Type\EntityModel;
 use LMWF\DataStructures\AppObject;
-use LMWF\Constraint\Type\IModel;
 
 /**
  * Retrieves persisted entities, with each implementation responsible for a
@@ -25,9 +25,9 @@ interface IRepo
 {
     /**
      * @param string $id The ID of the entity to retrieve.
-     * @param ?IModel $overrideModel If not null, override the model used to
+     * @param ?EntityModel $overrideModel If not null, override the model used to
      * extract the app data from the query's results.
      * @return ?AppObject<mixed>
      */
-    public function find(string $id, ?IModel $overrideModel = null): ?AppObject;
+    public function find(string $id, ?EntityModel $overrideModel = null): ?AppObject;
 }
