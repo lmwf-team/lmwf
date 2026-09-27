@@ -20,13 +20,15 @@ final readonly class ImgFileTransformer implements IFormTransformer
 {
     public const PREVIOUS_SUFFIX = '_previous';
 
+    private ThumbnailWriter $thumbnailWriter;
+
     public function __construct(
         private AppConf $conf,
         private FileService $fileService,
-        private ThumbnailWriter $thumbnailWriter,
         private string $name,
         private bool $createThumbnails = true,
     ) {
+        $this->thumbnailWriter = new ThumbnailWriter($conf->getPathOfUploadedFiles(), $conf->thumbnailFormats);
     }
 
     /**

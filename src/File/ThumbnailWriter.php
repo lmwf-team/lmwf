@@ -8,17 +8,22 @@ use LMWF\Conf\AppConf;
 use LMWF\DataStructures\Filename;
 use LMWF\DataStructures\Slug;
 use UnexpectedValueException;
+use LMWF\DataStructures\ImgFormat;
 
 final readonly class ThumbnailWriter
 {
+    /**
+     * @param array<string, ImgFormat> $formats
+     */
     public function __construct(
-        private AppConf $conf,
+        private string $uploadDirAbsDiskPath,
+        private array $formats,
     ) {
     }
 
     public function createThumbnails(Filename $filename): void
     {
-        $fileContent = file_get_contents("{$this->conf->getPathOfUploadedFiles()}/$filename");
+        $fileContent = file_get_contents("{$this->uploadDirAbsDiskPath}/$filename");
         if (false === $fileContent) {
             throw new UnexpectedValueException("Failed to read the destination image '$filename' to create thumbnail.");
         }
@@ -30,7 +35,7 @@ final readonly class ThumbnailWriter
 
         list($sizeX, $sizeY) = [imagesx($originalImg), imagesy($originalImg)];
 
-        foreach ($this->conf->thumbnailFormats as $formatId => $format) {
+        foreach ($this->formats as $formatId => $format) {
             if ($sizeX < $format->minSizeX || $sizeY < $format->minSizeY) {
                 return;
             }
@@ -47,7 +52,7 @@ final readonly class ThumbnailWriter
 
             imagewebp(
                 $thumbnailImg,
-                "{$this->conf->getPathOfUploadedFiles()}/{$folderName}/{$filename}",
+                "{$this->uploadDirAbsDiskPath}/{$folderName}/{$filename}",
                 $format->webpQuality,
             );
         }
