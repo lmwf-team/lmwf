@@ -31,6 +31,9 @@ final readonly class ThumbnailWriter
         list($sizeX, $sizeY) = [imagesx($originalImg), imagesy($originalImg)];
 
         foreach ($this->conf->thumbnailFormats as $formatId => $format) {
+            if ($sizeX < $format->minSizeX || $sizeY < $format->minSizeY) {
+                return;
+            }
             list($newSizeX, $newSizeY) = $format->scale($sizeX, $sizeY);
 
             $thumbnailImg = imagecreatetruecolor($newSizeX, $newSizeY);
