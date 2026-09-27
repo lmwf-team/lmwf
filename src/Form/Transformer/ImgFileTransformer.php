@@ -11,6 +11,7 @@ use LMWF\ErrorHandling\Log;
 use LMWF\Constraint\Value\IUploadedImageConstraint;
 use LMWF\DataStructures\ImgFormat;
 use LMWF\File\FileService;
+use LMWF\File\ThumbnailWriter;
 use PHP_CodeSniffer\Files\File;
 use Psr\Http\Message\UploadedFileInterface;
 use UnexpectedValueException;
@@ -22,6 +23,7 @@ final readonly class ImgFileTransformer implements IFormTransformer
     public function __construct(
         private AppConf $conf,
         private FileService $fileService,
+        private ThumbnailWriter $thumbnailWriter,
         private string $name,
         private bool $createThumbnails = true,
     ) {
@@ -107,7 +109,7 @@ final readonly class ImgFileTransformer implements IFormTransformer
 
 
                 if ($this->createThumbnails) {
-                    $this->fileService->createThumbnails($destFilename);
+                    $this->thumbnailWriter->createThumbnails($destFilename);
                 }
 
                 return $destFilename->getFilename();

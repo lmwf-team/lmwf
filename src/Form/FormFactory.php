@@ -28,6 +28,7 @@ use LMWF\Constraint\Type\IntModel;
 use LMWF\Constraint\Type\ListModel;
 use LMWF\Constraint\Type\StringModel;
 use LMWF\File\FileService;
+use LMWF\File\ThumbnailWriter;
 use LMWF\Form\Transformer\StringEnumTransformer;
 use StringBackedEnum;
 use UnexpectedValueException;
@@ -51,6 +52,7 @@ final class FormFactory
         private CsrfTransformer $csrfTransformer,
         private FileService $fileService,
         private FormConfFactory $formConfFactory,
+        private ThumbnailWriter $thumbnailWriter,
     ) {
     }
 
@@ -79,7 +81,7 @@ final class FormFactory
         }
 
         return match ($fieldConf->type) {
-            FormFieldType::Img => new ImgFileTransformer($this->conf, $this->fileService, $name),
+            FormFieldType::Img => new ImgFileTransformer($this->conf, $this->fileService, $this->thumbnailWriter, $name),
             FormFieldType::Checkbox => new CheckboxTransformer($name),
             FormFieldType::Date => new DateTimeTransformer($name),
             FormFieldType::Int => new IntTransformer($name),
