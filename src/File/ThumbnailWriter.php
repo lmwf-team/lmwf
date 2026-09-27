@@ -13,7 +13,7 @@ use LMWF\DataStructures\ImgFormat;
 final readonly class ThumbnailWriter
 {
     /**
-     * @param array<string, ImgFormat> $formats
+     * @param array<string, ImgFormat> $formats Formats sorted by size.
      */
     public function __construct(
         private string $uploadDirAbsDiskPath,
@@ -36,7 +36,7 @@ final readonly class ThumbnailWriter
         list($sizeX, $sizeY) = [imagesx($originalImg), imagesy($originalImg)];
 
         foreach ($this->formats as $formatId => $format) {
-            if ($sizeX < $format->minSizeX || $sizeY < $format->minSizeY) {
+            if ($sizeX <= $format->minSizeX || $sizeY <= $format->minSizeY) {
                 return;
             }
             list($newSizeX, $newSizeY) = $format->scale($sizeX, $sizeY);
