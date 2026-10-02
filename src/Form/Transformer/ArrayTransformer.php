@@ -35,8 +35,9 @@ final class ArrayTransformer implements IFormTransformer
         // still not exist if it contains fields that are not included in the
         // submitted value because they evaluate to false (checkboxes).
         $relevantParsedBody = null === $this->name ? $parsedPayload : ($parsedPayload[$this->name] ?? []);
+        $relevantUploadedFiles = null === $this->name ? $uploadedFiles : ($uploadedFiles[$this->name] ?? []);
 
-        if (!is_array($relevantParsedBody)) {
+        if (!is_array($relevantParsedBody) || !is_array($relevantUploadedFiles)) {
             throw new UnexpectedValueException("The form with name {$this->name} is expected to be an array, got {get_class($this->name)} instead.");
         }
 
@@ -45,7 +46,7 @@ final class ArrayTransformer implements IFormTransformer
         foreach ($this->fieldTransformers as $fieldName => $fieldTransformer) {
             $formData[$fieldName] = $fieldTransformer->transformSubmittedData(
                 $relevantParsedBody,
-                $uploadedFiles,
+                $relevantUploadedFiles,
             );
             if (null === $formData[$fieldName]) {
                 $nullFieldNames[] = $fieldName;
@@ -57,7 +58,7 @@ final class ArrayTransformer implements IFormTransformer
             }
         }
         if (null !== $this->csrf) {
-            $this->csrf->transformSubmittedData($relevantParsedBody, $uploadedFiles);
+            $this->csrf->transformSubmittedData($relevantParsedBody, $relevantUploadedFiles);
         }
         return $formData;
     }
