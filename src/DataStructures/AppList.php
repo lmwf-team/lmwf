@@ -28,6 +28,17 @@ final readonly class AppList extends ImmutableArray
     }
 
     /**
+     * @param TValue $value
+     * @return self<TValue>
+     */
+    public function append(mixed $value): self
+    {
+        $newData = $this->data;
+        $newData[] = $value;
+        return new self($newData);
+    }
+
+    /**
      * @template TReturn of mixed
      * @param callable(TValue): TReturn $callback
      * @return self<TReturn>

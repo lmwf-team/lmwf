@@ -9,10 +9,18 @@ use LMWF\DataStructures\AppList;
 use LMWF\DataStructures\Exceptions\UnexpectedPropertyType;
 use OutOfBoundsException;
 use PHPUnit\Framework\TestCase;
-use TypeError;
 
 final class AppListTest extends TestCase
 {
+    public function testAppend(): void
+    {
+        $arr1 = [];
+        $arr2 = $arr1;
+        $arr2[] = null;
+
+        self::assertEquals(new AppList($arr2), new AppList($arr1)->append(null));
+    }
+
     public function testWithListIndexedFrom1(): void
     {
         $notAList = [
