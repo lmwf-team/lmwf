@@ -11,7 +11,7 @@ final class Profiler
     public static float $totalTime = 0;
     public static float $viewTime = 0;
 
-    public static function toCsv(): string
+    public static function toCsvRow(): string
     {
         return sprintf('%.8F,%.8F,%.8F,%.8F', self::$dbTime, self::$logTime, self::$totalTime, self::$viewTime);
     }
