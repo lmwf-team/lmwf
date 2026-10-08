@@ -23,6 +23,6 @@ final class Profiler
 
     public static function toCsvRow(): string
     {
-        return sprintf('%d,%.8F,%.8F,%.8F,%.8F', time(), self::$dbTime, self::$logTime, self::$totalTime, self::$viewTime);
+        return sprintf("%d,%.8F,%.8F,%.8F,%.8F\n", time(), self::$dbTime, self::$logTime, self::$totalTime, self::$viewTime);
     }
 }
