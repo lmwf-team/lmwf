@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace LMWF\ErrorHandling;
 
+use LMWF\Profiling\Profiler as ProfilingProfiler;
+use Profiler;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 
@@ -21,9 +23,11 @@ final class Log
 
     public static function log(string $msg, string $level): void
     {
+        $time = microtime(as_float: true);
         if (null !== self::$logger) {
             self::$logger->log($level, $msg);
         }
+        ProfilingProfiler::$logTime += microtime(as_float: true) - $time;
     }
 
     public static function debug(string $msg): void
